@@ -1,0 +1,6 @@
+line-length = 100
+extend-exclude = [".just", "profiles/*/files"]
+
+[lint]
+extend-select = ["B", "I", "RUF", "SIM", "UP"]
+select = ["E4", "E7", "E9", "F", "I", "B", "SIM", "UP", "RUF", "PLC0415", "D102"]

@@ -1,0 +1,10 @@
+[profile]
+name        = "rust-nightly"
+description = "The house toolchain: one pinned nightly with miri, rustc-dev, llvm-tools and the sources"
+devset      = ">=0.1"
+requires    = [
+  { git = "https://github.com/atomix-labs/devset-profiles", tag = "v0.1.0", path = "profiles/rustup" },
+]
+
+[files."rust-toolchain.toml"]
+scope = "keys"

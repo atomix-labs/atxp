@@ -1,0 +1,4 @@
+# The house's own runners, which actionlint otherwise takes for a typo.
+self-hosted-runner:
+  labels:
+    - ubuntu-arm-latest

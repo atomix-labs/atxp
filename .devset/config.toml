@@ -1,0 +1,56 @@
+[[layers]]
+path = "../devset-profiles/profiles/editorconfig"
+
+[[layers]]
+path = "../devset-profiles/profiles/gitattributes"
+
+[[layers]]
+path = "../devset-profiles/profiles/mise"
+
+[[layers]]
+path = "../devset-profiles/profiles/profile-pins"
+
+[[layers]]
+path = "../devset-profiles/profiles/just"
+
+[[layers]]
+path = "../devset-profiles/profiles/github-ci"
+
+[[layers]]
+path = "../devset-profiles/profiles/github-watch"
+
+[[layers]]
+path = "../devset-profiles/profiles/github-bump"
+
+[[layers]]
+path = "../devset-profiles/profiles/taplo"
+
+[[layers]]
+path = "profiles/taplo-house"
+
+[[layers]]
+path = "profiles/dprint-house"
+
+[[layers]]
+path = "profiles/rumdl-house"
+
+[[layers]]
+path = "../devset-profiles/profiles/yamllint"
+
+[[layers]]
+path = "../devset-profiles/profiles/actionlint"
+
+[[layers]]
+path = "../devset-profiles/profiles/zizmor"
+
+[[layers]]
+path = "../devset-profiles/profiles/conftest"
+
+[[layers]]
+path = "../devset-profiles/profiles/shellcheck"
+
+[[layers]]
+path = "profiles/ruff-house"
+
+[[layers]]
+path = "profiles/automation-house"

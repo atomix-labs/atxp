@@ -1,0 +1,10 @@
+[profile]
+name        = "automation-house"
+description = "The house's automation settings: labels, issue types, who is assigned, and how far the bump goes"
+devset      = ">=0.1"
+
+[files.".github/automation.json"]
+scope  = "keys"
+policy = "merge"
+
+[files.".github/actionlint.yaml"]

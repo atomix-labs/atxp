@@ -1,0 +1,7 @@
+[profile]
+name        = "cargo-profiles"
+description = "The house build profiles: release, bench, dev, test, profiling and release-fast"
+devset      = ">=0.1"
+
+[files."Cargo.toml"]
+scope = "keys"

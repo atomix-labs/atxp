@@ -1,0 +1,28 @@
+[profile]
+name        = "claude-skills"
+description = "The house's Claude Code skills: writing rustdoc and writing Cargo manifests, with their linters"
+devset      = ">=0.1"
+
+[files.".claude/skills/writing-cargo-manifest/SKILL.md"]
+
+[files.".claude/skills/writing-cargo-manifest/references/sources.md"]
+
+[files.".claude/skills/writing-rustdoc/SKILL.md"]
+
+[files.".claude/skills/writing-rustdoc/references/comments.md"]
+
+[files.".claude/skills/writing-rustdoc/references/exemplars.md"]
+
+[files.".claude/skills/writing-rustdoc/references/sources.md"]
+
+[files.".claude/skills/writing-rustdoc/references/style.md"]
+
+[files.".claude/skills/writing-rustdoc/references/templates.md"]
+
+[files.".claude/skills/writing-rustdoc/references/tooling.md"]
+
+[files.".claude/skills/writing-rustdoc/scripts/doc-audit.sh"]
+
+[files.".claude/skills/writing-rustdoc/scripts/doc-inventory.py"]
+
+[files.".claude/skills/writing-rustdoc/scripts/doc-lint.py"]

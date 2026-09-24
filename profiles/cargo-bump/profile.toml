@@ -1,0 +1,16 @@
+[profile]
+name        = "cargo-bump"
+description = "The weekly bump of Cargo requirements and git revisions: one at a time, past the cooldown, kept if it resolves"
+devset      = ">=0.1"
+
+[files.".just/cargo-bump.just"]
+
+[files.".just/cargo-bump.py"]
+
+[files.".config/mise/conf.d/devset-cargo-bump.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"
+
+[files.".cargo/config.toml"]
+scope = "keys"

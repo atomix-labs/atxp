@@ -1,0 +1,3 @@
+[resolver]
+# A bump takes the newest release the workspace's `rust-version` builds.
+incompatible-rust-versions = "fallback"
