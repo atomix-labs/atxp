@@ -1,0 +1,16 @@
+[files]
+# What a tool writes: devset's records, the locks with their checksums, the book mdBook builds, and
+# vendored or minified code, as dprint leaves them out too.
+extend-exclude = [
+    ".devset/",
+    "*.lock",
+    "docs/book/",
+    "docs/theme/",
+    "docs/vendor/",
+    "*.min.css",
+    "*.min.js",
+]
+
+[default]
+# A commit id is no word, and changelogs and status lines carry them: `54ba0dc` is not `ba`.
+extend-ignore-identifiers-re = ["^[0-9a-f]{7,40}$"]

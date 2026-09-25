@@ -1,1 +1,5 @@
+assignees = ""
+bump_mode = "pr"
 line_width = "100"
+repository = "atomix-labs/atxp"
+runner_labels = ""

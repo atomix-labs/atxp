@@ -1,7 +1,8 @@
 {
   "broken": { "labels": ["bug"], "type": "Bug" },
   "chore": { "labels": ["dependencies"], "type": "Task" },
-  "assignees": ["rishi"],
+  "assignees": [],
   "bump": { "mode": "pr" },
-  "nightly": { "skip_unchanged": true }
+  "nightly": { "skip_unchanged": true },
+  "pages": { "recipe": "check-site", "path": "site" }
 }

@@ -1,5 +1,16 @@
 {
   "lineWidth": 100,
+  "excludes": [
+    "**/target/**",
+    "**/*.min.css",
+    "**/*.min.js",
+    ".just/**",
+    "docs/book/**",
+    "docs/theme/**",
+    "docs/vendor/**",
+    "CHANGELOG.md",
+    "profiles/*/files/**"
+  ],
   "markdown": { "lineWidth": 80, "textWrap": "always", "emphasisKind": "asterisks", "strongKind": "asterisks" },
   "yaml": { "braceSpacing": false, "quotes": "preferDouble", "trailingComma": false },
   "json": { "lineWidth": 160, "trailingCommas": "never", "object.preferSingleLine": true, "array.preferSingleLine": true },
@@ -12,6 +23,5 @@
     "https://plugins.dprint.dev/typescript-0.96.1.wasm@9c52244de2c25a33addc7ddacff4443234a2dc4b5d3f34131262d1e0df35007c",
     "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.6.0.wasm@40a2fdda7040317eb1b23520f3a00769a5571eedb049c4ca9175c1b9eeba01ae",
     "https://plugins.dprint.dev/g-plane/malva-v0.16.0.wasm@1c1b31f972ef5aae052f97b6723aaf962e0175c5bbe4ba877e092512af354113"
-  ],
-  "excludes": ["**/target/**", "**/*.min.css", "**/*.min.js", ".just/**", "docs/book/**", "docs/theme/**", "docs/vendor/**", "profiles/*/files/**"]
+  ]
 }

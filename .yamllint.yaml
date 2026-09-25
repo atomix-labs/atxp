@@ -18,3 +18,7 @@ rules:
   key-duplicates: enable
   octal-values: {forbid-implicit-octal: true, forbid-explicit-octal: true}
   truthy: {allowed-values: ["true", "false"], check-keys: false}
+
+# Payloads are templates until devset renders them; the suite checks them rendered.
+ignore: |
+  profiles/*/files/

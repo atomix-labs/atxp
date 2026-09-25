@@ -10,6 +10,15 @@ extend-enable = ["MD063"]
 [MD033]
 allowed_elements = ["details", "summary", "code", "span"]
 
+# A heading repeats across a changelog's releases: Features, Bug Fixes.
+[MD024]
+siblings_only = true
+
+# Names, which heading case leaves as they are.
 [MD063]
-# The repository's name, which is a name.
-ignore-words = ["atxp"]
+ignore-words = ["atxp", "devset"]
+
+# GitHub's templates are the body of an issue or a pull request, which has its own title.
+[per-file-ignores]
+".github/ISSUE_TEMPLATE/*.md"      = ["MD041"]
+".github/pull_request_template.md" = ["MD041"]

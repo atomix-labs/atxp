@@ -1,56 +1,77 @@
 [[layers]]
-path = "../devset-profiles/profiles/editorconfig"
+path = "profiles/editorconfig"
 
 [[layers]]
-path = "../devset-profiles/profiles/gitattributes"
+path = "profiles/gitattributes"
 
 [[layers]]
-path = "../devset-profiles/profiles/mise"
+path = "profiles/gitignore"
 
 [[layers]]
-path = "../devset-profiles/profiles/profile-pins"
+path = "profiles/mise"
 
 [[layers]]
-path = "../devset-profiles/profiles/just"
+path = "profiles/profile-pins"
 
 [[layers]]
-path = "../devset-profiles/profiles/github-ci"
+path = "profiles/just"
 
 [[layers]]
-path = "../devset-profiles/profiles/github-watch"
+path = "profiles/setup"
 
 [[layers]]
-path = "../devset-profiles/profiles/github-bump"
+path = "profiles/github-ci"
 
 [[layers]]
-path = "../devset-profiles/profiles/taplo"
+path = "profiles/github-watch"
 
 [[layers]]
-path = "profiles/taplo-house"
+path = "profiles/github-bump"
 
 [[layers]]
-path = "profiles/dprint-house"
+path = "profiles/dependabot"
 
 [[layers]]
-path = "profiles/rumdl-house"
+path = "profiles/automation"
 
 [[layers]]
-path = "../devset-profiles/profiles/yamllint"
+path = "profiles/committed"
 
 [[layers]]
-path = "../devset-profiles/profiles/actionlint"
+path = "profiles/git-cliff"
 
 [[layers]]
-path = "../devset-profiles/profiles/zizmor"
+path = "profiles/typos"
 
 [[layers]]
-path = "../devset-profiles/profiles/conftest"
+path = "profiles/taplo"
 
 [[layers]]
-path = "../devset-profiles/profiles/shellcheck"
+path = "profiles/dprint"
 
 [[layers]]
-path = "profiles/ruff-house"
+path = "profiles/rumdl"
 
 [[layers]]
-path = "profiles/automation-house"
+path = "profiles/ruff"
+
+[[layers]]
+path = "profiles/yamllint"
+
+[[layers]]
+path = "profiles/shellcheck"
+
+[[layers]]
+path = "profiles/actionlint"
+
+[[layers]]
+path = "profiles/zizmor"
+
+[[layers]]
+path = "profiles/conftest"
+
+[[layers]]
+path = "profiles/policies"
+
+[[layers]]
+path = "profiles/suppressions"

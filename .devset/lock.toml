@@ -5,130 +5,179 @@ name = "editorconfig"
 digest = "3053772865162fecf372b01c23669cd4f211743fd3feb2ef09f5871eff4cab84"
 
 [layers.source]
-path = "../devset-profiles/profiles/editorconfig"
+path = "profiles/editorconfig"
 
 [[layers]]
 name = "gitattributes"
 digest = "769b4c0321a9448e0a11daf7f00593c8ea97d77a6e0a8a260d131fd325748533"
 
 [layers.source]
-path = "../devset-profiles/profiles/gitattributes"
+path = "profiles/gitattributes"
+
+[[layers]]
+name = "gitignore"
+digest = "650cd60c9627814b58733a87fa25d21b6380530db2be97f2add0667055d2540f"
+
+[layers.source]
+path = "profiles/gitignore"
 
 [[layers]]
 name = "mise"
 digest = "70eb4bc05d91fa440b28c498932ef7cd86da30210da0b899b1d40f8fe5e55ba4"
 
 [layers.source]
-path = "../devset-profiles/profiles/mise"
+path = "profiles/mise"
 
 [[layers]]
 name = "profile-pins"
-digest = "8d24a54e0bb15b40818b0c1fb7998f9393e69872cd501a36ce77231e621f4725"
+digest = "ffb788c1e5b4c4355ae9ad9f69ab3124692e5cfe58d7efe771159206f574ff76"
 
 [layers.source]
-path = "../devset-profiles/profiles/profile-pins"
+path = "profiles/profile-pins"
 
 [[layers]]
 name = "just"
-digest = "5d5c71999093caba4db3b1997ee40d938806ee515f85cac75f275535718ccefd"
+digest = "67c8f80b14289ee640bec35ee2ce82412d74550c52657c0c664624207f51f9bd"
 
 [layers.source]
-path = "../devset-profiles/profiles/just"
+path = "profiles/just"
+
+[[layers]]
+name = "setup"
+digest = "e99f3713ca6e07fb620e523910198953912b7c0e619207a081c4ec8d28546976"
+
+[layers.source]
+path = "profiles/setup"
 
 [[layers]]
 name = "github-ci"
-digest = "9b260edb7628e8712fce2b23188021e4d47fedf9575fdcdf50da1ad1a5fd1566"
+digest = "61f30be43be5c17490e884572884792fe0759f5c75d5bd611a49f5218d40be9e"
 
 [layers.source]
-path = "../devset-profiles/profiles/github-ci"
+path = "profiles/github-ci"
 
 [[layers]]
 name = "github-watch"
 digest = "d45ab8f560d8da3cf8a60fab4140b6b3d9b784a8cd33469f9995916f431a6df5"
 
 [layers.source]
-path = "../devset-profiles/profiles/github-watch"
+path = "profiles/github-watch"
 
 [[layers]]
 name = "github-bump"
-digest = "3f1379dc5c8d12f0bc659e8d50c2c1b36a18ab9f0126467f1811e908c0271165"
+digest = "df9c1b609c848d10b60ea33b76edca333bfe150fd328447b61b99012abc716c2"
 
 [layers.source]
-path = "../devset-profiles/profiles/github-bump"
+path = "profiles/github-bump"
+
+[[layers]]
+name = "dependabot"
+digest = "6eeeb83927f9077afec663512c13572e7eb6829ba5bcbabda7d63e3f9a944dd8"
+
+[layers.source]
+path = "profiles/dependabot"
+
+[[layers]]
+name = "automation"
+digest = "9f29b4ad6a11a241f177742e7e6b6bfc28893aad392bf065cc543aab6fee19ff"
+
+[layers.source]
+path = "profiles/automation"
+
+[[layers]]
+name = "committed"
+digest = "6f4ef91ab827cb6fa20d8cb725c0a1ef795127d1c34399e40ff45aa674b9f565"
+
+[layers.source]
+path = "profiles/committed"
+
+[[layers]]
+name = "git-cliff"
+digest = "cdae462622672fb062c13ec69f2060b4fb96ad49f681f26852ae2200a54c9f54"
+
+[layers.source]
+path = "profiles/git-cliff"
+
+[[layers]]
+name = "typos"
+digest = "4a845713ce85af4c9718d0cadb470f1bea46c84095344e0ff8b37164014c942c"
+
+[layers.source]
+path = "profiles/typos"
 
 [[layers]]
 name = "taplo"
-digest = "173be6fd7e1f6f20a9d9e166b61bdb4a562a7c960ebb38535cb9a51955407618"
+digest = "0a4baa89971ebd2e9c90cb0ebf1c0c55ab2a9e1a9149029fa2a27cd278c87e97"
 
 [layers.source]
-path = "../devset-profiles/profiles/taplo"
+path = "profiles/taplo"
 
 [[layers]]
-name = "taplo-house"
-digest = "8f9dd14110470b6a9b384e82660f39a290224221f5e1f88386e7aa70932e6bb1"
+name = "dprint"
+digest = "63e461c2681418dc0d89853449bc6a33a87253857ae5e0a032b207ba8aced373"
 
 [layers.source]
-path = "profiles/taplo-house"
+path = "profiles/dprint"
 
 [[layers]]
-name = "dprint-house"
-digest = "9f74f4147c05e91039c8fce9729da6c86a534b1155b4bb634581d0bfe7a87730"
+name = "rumdl"
+digest = "050ac27a338c3eccfe6c32ea2f785f4aa22ca0f948e62594d769bacc01d6d921"
 
 [layers.source]
-path = "profiles/dprint-house"
+path = "profiles/rumdl"
 
 [[layers]]
-name = "rumdl-house"
-digest = "93b5c56addc52e03649ed757dccaf82ddd459192a6e6117334135a7c7b8f69ca"
+name = "ruff"
+digest = "86e44aa99fc31e6b9e997ab55b0a3a8dc1bbdc3fb44471aa29a584a0f9eb0828"
 
 [layers.source]
-path = "profiles/rumdl-house"
+path = "profiles/ruff"
 
 [[layers]]
 name = "yamllint"
-digest = "e22dc3d657aefcd10c47abeb9a2932b8115c9df194ce723f819b1ebace48c1d2"
+digest = "ec7619e9fdf19fb48ecb13450adf766882bdf52b53e8ac9b92274bf7bd77bec8"
 
 [layers.source]
-path = "../devset-profiles/profiles/yamllint"
-
-[[layers]]
-name = "actionlint"
-digest = "9ab193a34dd3dafc391a82698930cf4bba84313b142d91c841ac04b31e09cf2a"
-
-[layers.source]
-path = "../devset-profiles/profiles/actionlint"
-
-[[layers]]
-name = "zizmor"
-digest = "22646a76fc73ddec52f6093a6cad8c1949e740c0505c63ecb38476addf9c9545"
-
-[layers.source]
-path = "../devset-profiles/profiles/zizmor"
-
-[[layers]]
-name = "conftest"
-digest = "f02c8bf6cbc33c2e84f9d5ab8751adcd93211bcf7b558f684b9189210cbff4ca"
-
-[layers.source]
-path = "../devset-profiles/profiles/conftest"
+path = "profiles/yamllint"
 
 [[layers]]
 name = "shellcheck"
 digest = "2b7bb2311a37955cc4f0dd4a5dc6ffa057d567e2925fe44fe2dca98bcec674d6"
 
 [layers.source]
-path = "../devset-profiles/profiles/shellcheck"
+path = "profiles/shellcheck"
 
 [[layers]]
-name = "ruff-house"
-digest = "39070b8b5b09014877a3c668feec99ca090379ee17e989de1b5b609b7b24c8a9"
+name = "actionlint"
+digest = "b5d0ada4eef2552eb2597b409a40e55264c704d49f52fbc97e4524c7d6b7260d"
 
 [layers.source]
-path = "profiles/ruff-house"
+path = "profiles/actionlint"
 
 [[layers]]
-name = "automation-house"
-digest = "b18da1addec3d636d9027145e33838154a743d270a5b35d81bb3d19300368477"
+name = "zizmor"
+digest = "22646a76fc73ddec52f6093a6cad8c1949e740c0505c63ecb38476addf9c9545"
 
 [layers.source]
-path = "profiles/automation-house"
+path = "profiles/zizmor"
+
+[[layers]]
+name = "conftest"
+digest = "f02c8bf6cbc33c2e84f9d5ab8751adcd93211bcf7b558f684b9189210cbff4ca"
+
+[layers.source]
+path = "profiles/conftest"
+
+[[layers]]
+name = "policies"
+digest = "6ff3bfd53b2b67fba37201a2fc694529428bed4575b31418c12f3c59fda72fb6"
+
+[layers.source]
+path = "profiles/policies"
+
+[[layers]]
+name = "suppressions"
+digest = "6f73365a922de22b17431401ba6a44dcd2c4dc361e63ad99c3b1c6f89989bf2a"
+
+[layers.source]
+path = "profiles/suppressions"
