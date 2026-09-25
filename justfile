@@ -35,8 +35,8 @@ bump-self:
     #!/usr/bin/env bash
     set -euo pipefail
     if ! command -v devset > /dev/null; then
-        rustup toolchain install nightly --profile minimal
-        cargo +nightly install --locked --git https://github.com/atomix-labs/devset devset
+        rustup toolchain install stable --profile minimal
+        cargo +stable install --locked --git https://github.com/atomix-labs/devset devset-cli
     fi
     devset apply
 
