@@ -2,7 +2,7 @@
 
 The spine every profile's recipes hang from. It owns a block of the `justfile`:
 an `import?` for each profile's `.just/<id>.just`, which is skipped where the
-profile is not applied, and seven recipes.
+profile is not applied, and eight recipes.
 
 - `just check` runs every `check-*` recipe, and names each that fails. CI makes
   a job of each, so a clean local run is a clean CI run.
@@ -16,10 +16,12 @@ profile is not applied, and seven recipes.
   may ask for sudo.
 - `just release` runs every `release-*` recipe, for the version
   `RELEASE_VERSION` names.
+- `just package` runs every `package-*` recipe: what a release ships, built for
+  this machine into `dist/`. {link("github-release")} runs it on each platform.
 
 The repository's own recipes live outside the block. Name one `check-<name>` and
 `just check` runs it too. A recipe of the repository's own named after one of
-the seven clashes with the spine's, and `just` refuses both: rename it.
+the eight clashes with the spine's, and `just` refuses both: rename it.
 
 <!-- facts: written by scripts/catalog.py -->
 
