@@ -1,8 +1,9 @@
 # `lychee`
 
-lychee checks the links in every Markdown file. On every change it checks those
-into the repository, offline, fragments included; nightly it checks the web's
-too, which can fail for reasons no change caused.
+lychee checks the links in every Markdown file git does not ignore, so never in
+build output or installed packages. On every change it checks those into the
+repository, offline, fragments included; nightly it checks the web's too, which
+can fail for reasons no change caused.
 
 <!-- facts: written by scripts/catalog.py -->
 
@@ -16,7 +17,8 @@ too, which can fail for reasons no change caused.
 
 ## Recipes
 
-- `check-lychee`: Checks every link into the repository, offline.
+- `check-lychee`: Checks every link into the repository, offline, in each
+  Markdown file git does not ignore.
 - `nightly-lychee`: Checks every link, the web's too.
 
 <!-- /facts -->
