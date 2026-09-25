@@ -3,7 +3,9 @@
 One workflow, `check`, on every push to `main`, pull request and merge queue. It
 reads the justfile and runs every `check-*` recipe as a job of its own, prepared
 as a laptop is: mise-action runs `mise bootstrap`, so every locked tool is
-installed and `just setup` runs, then Cargo's build is cached per recipe. What
+installed and `just setup` runs, then Cargo's build is cached per recipe. The
+tools come from one cache, which the job `plan` fills before any recipe runs, so
+a changed lock downloads and builds each tool once rather than once a job. What
 `just check` runs on a checkout, CI runs, and no list of jobs can fall behind
 the recipes. Each job checks out the whole history, which `check-committed` and
 `check-git-cliff` read.
