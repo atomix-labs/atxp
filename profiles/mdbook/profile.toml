@@ -14,3 +14,7 @@ template = true
 
 [files.".config/mise/mise.lock"]
 scope = "keys"
+
+[files.".gitignore"]
+scope    = "block"
+template = true
