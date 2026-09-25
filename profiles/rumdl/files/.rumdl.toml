@@ -13,3 +13,8 @@ allowed_elements = ["details", "summary", "code", "span"]
 # A heading repeats across a changelog's releases: Features, Bug Fixes.
 [MD024]
 siblings_only = true
+
+# GitHub's templates are the body of an issue or a pull request, which has its own title.
+[per-file-ignores]
+".github/ISSUE_TEMPLATE/*.md"      = ["MD041"]
+".github/pull_request_template.md" = ["MD041"]
