@@ -3,6 +3,15 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.3.1](https://github.com/atomix-labs/atxp/releases/tag/v0.3.1) - 2026-09-25
+
+### Bug Fixes
+
+- [8839c7c](https://github.com/atomix-labs/atxp/commit/8839c7cd6b10b7a88e2151b42eacddf9a76df588) *(lychee)* Check the Markdown git does not ignore, never build output
+- [046a1b0](https://github.com/atomix-labs/atxp/commit/046a1b0c379bac2c7fb1d86638e0eae7ddc12281) *(crates-io)* Check the working tree as it is, and fail with cargo's error
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.3.0...v0.3.1>
+
 ## [0.3.0](https://github.com/atomix-labs/atxp/releases/tag/v0.3.0) - 2026-09-25
 
 ### Features

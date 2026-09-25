@@ -29,7 +29,7 @@ to apply as they are or to build on: each profile owns one concern, and the
 In a repository, apply the bundle, set the machine up, and run every check:
 
 ```sh
-devset init --git https://github.com/atomix-labs/atxp --tag v0.3.0 --path profiles/rust --var repository=<owner>/<name>
+devset init --git https://github.com/atomix-labs/atxp --tag v0.3.1 --path profiles/rust --var repository=<owner>/<name>
 ./setup.sh
 just check
 ```
