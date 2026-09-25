@@ -1,4 +1,4 @@
-# ansible-lint, beside the ansible-core the house's boxes run, installed together by uv.
+# ansible-lint, beside the ansible-core the playbooks run on, installed together by uv.
 [tools."pipx:ansible-lint"]
 version = "26.8.0"
 uvx_args = "--with ansible-core==2.21.4"

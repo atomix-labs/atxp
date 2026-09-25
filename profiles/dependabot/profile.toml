@@ -1,0 +1,7 @@
+[profile]
+name        = "dependabot"
+description = "Dependabot: weekly updates of the GitHub Actions a repository uses, in one pull request"
+devset      = ">=0.1"
+
+[files.".github/dependabot.yml"]
+policy = "merge"

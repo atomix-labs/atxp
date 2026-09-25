@@ -1,7 +1,0 @@
-[profile]
-name        = "just-house"
-description = "The house atoms' recipes, imported beside the collection's so `just check` and `just bump` run them, and every cargo command built for the host target"
-devset      = ">=0.1"
-
-[files."justfile"]
-scope = "block"

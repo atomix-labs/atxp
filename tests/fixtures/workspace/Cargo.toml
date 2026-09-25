@@ -1,0 +1,15 @@
+[workspace]
+resolver = "3"
+members  = ["crates/*"]
+
+[workspace.package]
+version      = "0.1.0"
+edition      = "2024"
+rust-version = "1.100"
+license      = "MIT"
+authors      = ["The atxp Developers"]
+publish      = false
+
+[workspace.dependencies]
+# internal
+fixture-core = { path = "crates/core", version = "0.1.0" }

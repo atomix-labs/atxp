@@ -1,0 +1,11 @@
+[profile]
+name        = "lychee"
+description = "lychee checks every Markdown link: the repository's own on every change, the web's nightly"
+devset      = ">=0.1"
+
+[files.".just/lychee.just"]
+
+[files.".config/mise/conf.d/devset-lychee.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

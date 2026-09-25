@@ -1,0 +1,7 @@
+[profile]
+name        = "github-ci"
+description = "GitHub Actions: every `check-*` recipe a job of its own, read from the justfile, tools from the mise lock; a Pages site built once and deployed"
+devset      = ">=0.1"
+requires    = ["../just"]
+
+[files.".github/workflows/check.yml"]

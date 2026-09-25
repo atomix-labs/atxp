@@ -1,0 +1,8 @@
+{%- set logins = assignees | split(",") | map("trim") | select | list -%}
+{
+  "broken": { "labels": ["bug"], "type": "Bug" },
+  "chore": { "labels": ["dependencies"], "type": "Task" },
+  "assignees": [{% if logins %}"{{ logins | join('", "') }}"{% endif %}],
+  "bump": { "mode": "{{ bump_mode }}" },
+  "nightly": { "skip_unchanged": true }
+}

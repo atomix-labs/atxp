@@ -1,0 +1,9 @@
+[profile]
+name        = "profile-pins"
+description = "For a repository of profiles: every pin locked for every platform, and bumped past the cooldown"
+devset      = ">=0.1"
+requires    = ["../mise"]
+
+[files.".just/profile-pins.just"]
+
+[files.".just/profile-pins.py"]

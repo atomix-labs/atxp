@@ -1,0 +1,13 @@
+[profile]
+name        = "mise"
+description = "mise installs every tool from its lock, verified on every platform, none under three days old"
+devset      = ">=0.1"
+
+[files.".config/mise/conf.d/devset-mise.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"
+
+[files.".just/mise.just"]
+
+[files.".just/mise.py"]

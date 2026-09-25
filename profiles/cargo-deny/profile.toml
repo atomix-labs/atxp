@@ -1,0 +1,14 @@
+[profile]
+name        = "cargo-deny"
+description = "cargo-deny: yanked and unmaintained crates, one version each, the bans, permissive licences, crates.io only"
+devset      = ">=0.1"
+
+[files."deny.toml"]
+scope = "keys"
+
+[files.".just/cargo-deny.just"]
+
+[files.".config/mise/conf.d/devset-cargo-deny.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

@@ -1,0 +1,18 @@
+[profile]
+name        = "actionlint"
+description = "actionlint checks every GitHub Actions workflow: syntax, expressions, and the shell in each step"
+devset      = ">=0.1"
+
+[vars.runner_labels]
+prompt  = "Self-hosted runner labels actionlint accepts, comma-separated"
+default = ""
+
+[files.".github/actionlint.yaml"]
+template = true
+
+[files.".just/actionlint.just"]
+
+[files.".config/mise/conf.d/devset-actionlint.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

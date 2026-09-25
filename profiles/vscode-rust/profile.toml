@@ -1,0 +1,12 @@
+[profile]
+name        = "vscode-rust"
+description = "VS Code: the extensions recommended, clippy as the check, dprint and rumdl on save"
+devset      = ">=0.1"
+
+[files.".vscode/extensions.json"]
+scope  = "keys"
+policy = "merge"
+
+[files.".vscode/settings.json"]
+scope  = "keys"
+policy = "merge"

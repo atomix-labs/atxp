@@ -25,8 +25,11 @@ DPRINT = re.compile(r"^(\s*)//\s*dprint-ignore\s*$", re.MULTILINE)
 
 
 def tracked(repo: Path, *globs: str) -> list[Path]:
-    out = subprocess.run(["git", "ls-files", *globs], cwd=repo, capture_output=True, text=True, check=True)
-    return [repo / line for line in out.stdout.split()]
+    """Every file the tools check, as they select them: tracked or new, and not ignored; and in the tree
+    still, as the index outlives a deletion not yet staged."""
+    args = ["git", "ls-files", "--cached", "--others", "--exclude-standard", *globs]
+    out = subprocess.run(args, cwd=repo, capture_output=True, text=True, check=True)
+    return [repo / line for line in out.stdout.split() if (repo / line).is_file()]
 
 
 def markers(paths: list[Path], pattern: re.Pattern, group: int = 1) -> Counter:

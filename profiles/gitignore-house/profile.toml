@@ -1,7 +1,0 @@
-[profile]
-name        = "gitignore-house"
-description = "Git ignores what the house's tools keep locally, editors' files, and anything that looks like a secret"
-devset      = ">=0.1"
-
-[files.".gitignore"]
-scope = "block"

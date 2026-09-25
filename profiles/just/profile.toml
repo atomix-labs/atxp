@@ -1,0 +1,12 @@
+[profile]
+name        = "just"
+description = "The recipe spine: imports each atom's recipes, and `check` and `fix` run them all"
+devset      = ">=0.1"
+
+[files."justfile"]
+scope = "block"
+
+[files.".config/mise/conf.d/devset-just.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

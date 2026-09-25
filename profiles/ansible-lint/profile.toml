@@ -1,6 +1,6 @@
 [profile]
 name        = "ansible-lint"
-description = "ansible-lint holds every playbook and role in .ansible/ to the house profile, on the pinned ansible-core"
+description = "ansible-lint holds every playbook and role in .ansible/ to its production profile, on the pinned ansible-core"
 devset      = ">=0.1"
 
 [files.".ansible-lint"]

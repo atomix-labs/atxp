@@ -1,0 +1,10 @@
+[profile]
+name        = "rust-toolchain"
+description = "The toolchain a checkout builds with: one pinned nightly, with miri, rustc-dev, llvm-tools and the sources"
+devset      = ">=0.1"
+requires    = ["../rustup"]
+
+[files."rust-toolchain.toml"]
+scope = "keys"
+
+[files.".just/rust-toolchain.just"]

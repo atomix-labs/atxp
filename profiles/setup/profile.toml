@@ -1,0 +1,10 @@
+[profile]
+name        = "setup"
+description = "One command readies a machine for a checkout: mise, pinned and verified, then mise bootstrap and just setup"
+devset      = ">=0.1"
+requires    = ["../just", "../mise"]
+
+[files."setup.sh"]
+executable = true
+
+[files.".config/mise/conf.d/devset-setup.toml"]

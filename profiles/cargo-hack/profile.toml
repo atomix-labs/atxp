@@ -1,0 +1,11 @@
+[profile]
+name        = "cargo-hack"
+description = "cargo-hack lints every crate with each of its features alone, nightly, where a feature can break"
+devset      = ">=0.1"
+
+[files.".just/cargo-hack.just"]
+
+[files.".config/mise/conf.d/devset-cargo-hack.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

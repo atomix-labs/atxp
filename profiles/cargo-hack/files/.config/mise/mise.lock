@@ -1,0 +1,3 @@
+[[tools."cargo:cargo-hack"]]
+version = "0.6.45"
+backend = "cargo:cargo-hack"

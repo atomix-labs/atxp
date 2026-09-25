@@ -69,7 +69,7 @@ def candidates(text):
 
 def fetch(url):
     """A JSON document from `url`, authenticated to GitHub when a token is at hand."""
-    headers = {"User-Agent": "atxp-cargo-bump (house tooling)", "Accept": "application/json"}
+    headers = {"User-Agent": "atxp-cargo-bump", "Accept": "application/json"}
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if token and url.startswith("https://api.github.com/"):
         headers["Authorization"] = f"Bearer {token}"

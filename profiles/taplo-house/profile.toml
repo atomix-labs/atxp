@@ -1,7 +1,0 @@
-[profile]
-name        = "taplo-house"
-description = "The house TOML layout beside the collection's taplo: entries aligned, dependencies alphabetized"
-devset      = ">=0.1"
-
-[files."taplo.toml"]
-scope = "keys"

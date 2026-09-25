@@ -1,0 +1,16 @@
+[profile]
+name        = "mdbook"
+description = "mdBook builds the book and runs its Rust examples as tests"
+devset      = ">=0.1"
+
+[vars.book_dir]
+prompt  = "Directory of the mdBook, its book.toml"
+default = "docs"
+
+[files.".just/mdbook.just"]
+template = true
+
+[files.".config/mise/conf.d/devset-mdbook.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

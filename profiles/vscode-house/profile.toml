@@ -1,8 +1,0 @@
-[profile]
-name        = "vscode-house"
-description = "The house VS Code settings beside the collection's: format on paste, rust-analyzer as clippy sees it"
-devset      = ">=0.1"
-
-[files.".vscode/settings.json"]
-scope  = "keys"
-policy = "merge"

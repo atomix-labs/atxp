@@ -1,7 +1,0 @@
-[profile]
-name        = "deny-house"
-description = "The house's cargo-deny policy beside the collection's: bans, one version per crate, maintained crates only"
-devset      = ">=0.1"
-
-[files."deny.toml"]
-scope = "keys"

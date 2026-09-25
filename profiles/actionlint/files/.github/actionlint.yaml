@@ -1,0 +1,4 @@
+{%- set labels = runner_labels | split(",") | map("trim") | select | list -%}
+# The self-hosted runner labels actionlint accepts beside GitHub's own.
+self-hosted-runner:
+  labels: [{{ labels | join(", ") }}]

@@ -1,0 +1,11 @@
+[profile]
+name        = "cargo-shear"
+description = "cargo-shear finds dependencies no crate uses, and workspace dependencies no member inherits"
+devset      = ">=0.1"
+
+[files.".just/cargo-shear.just"]
+
+[files.".config/mise/conf.d/devset-cargo-shear.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"
