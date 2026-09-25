@@ -3,6 +3,32 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.2.2](https://github.com/atomix-labs/atxp/releases/tag/v0.2.2) - 2026-09-25
+
+### Features
+
+- [dc0567e](https://github.com/atomix-labs/atxp/commit/dc0567ee1af3e4040a2ec0c07d1fa073005cc926) *(rumdl)* Let GitHub's templates open without a heading
+
+### Bug Fixes
+
+- [767ce68](https://github.com/atomix-labs/atxp/commit/767ce688601328fb8ea2163112f6a8cad1d62b8d) *(github-nightly)* Fill one mise cache before the jobs
+- [eb1de82](https://github.com/atomix-labs/atxp/commit/eb1de826b81fe9c814237eebf45815dfa08c53d1) *(github-ci)* Fill one mise cache before the jobs
+- [0474be5](https://github.com/atomix-labs/atxp/commit/0474be5ac52aba369e1ffc88c20a501dc611a1ce) *(mise)* Let a download take two minutes
+
+### Documentation
+
+- [6c3f291](https://github.com/atomix-labs/atxp/commit/6c3f291733ed0bf2556f01ebf71b5fc94f05c917) *(release)* Run the checks before tagging
+
+### CI
+
+- [905990e](https://github.com/atomix-labs/atxp/commit/905990e53f365569ef98ca32c613f6549c8775fb) Test the profiles with the devset release atxp pins
+
+### Miscellaneous
+
+- [3bec679](https://github.com/atomix-labs/atxp/commit/3bec679739688b31ca7994425b0fd034026fa977) Apply the changed profiles to atxp
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.2.1...v0.2.2>
+
 ## [0.2.1](https://github.com/atomix-labs/atxp/releases/tag/v0.2.1) - 2026-09-25
 
 ### Features
