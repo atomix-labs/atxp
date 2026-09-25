@@ -8,8 +8,15 @@ on linux-x64, linux-arm64 and macos-arm64, the platforms the locks cover; then
 it publishes the GitHub Release, git-cliff's notes for the tag and every archive
 attached. Without one, the Release has the notes alone.
 
+Where the repository has a `publish-*` recipe, the job `publish` then runs `just
+publish`, which puts the release in a registry. For
+[`crates-io`](../crates-io/README.md) it first takes a crates.io token by
+trusted publishing, good for 30 minutes and revoked when the job ends, so the
+repository stores none. That job runs in the environment `release`, which the
+trusted publisher names, and holds the only `id-token` permission.
+
 A release builds uncached, and one runs at a time, never cancelled halfway. The
-job that publishes holds the only write permission.
+job that creates the GitHub Release holds the only write permission.
 
 <!-- facts: written by scripts/catalog.py -->
 

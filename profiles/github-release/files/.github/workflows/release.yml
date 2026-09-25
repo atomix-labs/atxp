@@ -1,7 +1,7 @@
 # Publishes a release from its tag, `v<version>`: builds what every `package-*` recipe packages on
-# each platform the locks cover, then publishes the GitHub Release, git-cliff's notes for the tag
-# and every archive with its sha256. `just release` wrote the changelog and the versions before the
-# tag; RELEASE.md says how.
+# each platform the locks cover, publishes the GitHub Release, git-cliff's notes for the tag and
+# every archive with its sha256, then runs every `publish-*` recipe, which puts the release in a
+# registry. `just release` wrote the changelog and the versions before the tag; RELEASE.md says how.
 name: release
 
 on:
@@ -25,6 +25,8 @@ jobs:
     timeout-minutes: 5
     outputs:
       package: ${{ steps.plan.outputs.package }}
+      publish: ${{ steps.plan.outputs.publish }}
+      crates-io: ${{ steps.plan.outputs.crates-io }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -36,11 +38,13 @@ jobs:
           cache: false
       - id: plan
         run: |
-          if just --summary | tr ' ' '\n' | grep -q '^package-'; then
-            echo "package=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "package=false" >> "$GITHUB_OUTPUT"
-          fi
+          recipes=$(just --summary | tr ' ' '\n')
+          has() { if grep -q "$1" <<< "$recipes"; then echo true; else echo false; fi; }
+          {
+            echo "package=$(has '^package-')"
+            echo "publish=$(has '^publish-')"
+            echo "crates-io=$(has '^publish-crates-io$')"
+          } >> "$GITHUB_OUTPUT"
 
   package:
     needs: plan
@@ -68,7 +72,7 @@ jobs:
           path: dist/
           if-no-files-found: error
 
-  publish:
+  release:
     needs: [plan, package]
     if: always() && needs.plan.result == 'success' && contains(fromJSON('["success", "skipped"]'), needs.package.result)
     runs-on: ubuntu-latest
@@ -98,3 +102,31 @@ jobs:
           git cliff --latest --strip header > notes.md
           shopt -s nullglob
           gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --notes-file notes.md dist/*
+
+  publish:
+    needs: [plan, release]
+    if: needs.plan.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # The environment a registry's trusted publisher names, so that only this job can publish.
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # a registry's short-lived token for this workflow, by trusted publishing
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # just and Python, and before them the toolchain the preinstall hook installs.
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+        with:
+          version: 2026.9.12
+          install_args: just python
+          cache: false
+      # A crates.io token for 30 minutes, revoked when the job ends.
+      - id: crates-io
+        if: needs.plan.outputs.crates-io == 'true'
+        uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.5
+      - env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.crates-io.outputs.token }}
+        run: just publish
