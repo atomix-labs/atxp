@@ -1,0 +1,4 @@
+- [ ] The title is a Conventional Commit: `type(profile): subject`
+- [ ] `just check` passes
+- [ ] `just test-profiles` passes
+- [ ] A breaking change has its entry in `BREAKING-CHANGES.md`

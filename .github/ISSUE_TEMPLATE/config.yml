@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: devset
+    url: https://github.com/atomix-labs/devset/issues
+    about: Report a bug in devset itself, the tool that applies these profiles
