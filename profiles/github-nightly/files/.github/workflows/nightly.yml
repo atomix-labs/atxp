@@ -14,11 +14,15 @@ permissions:
 
 env:
   MISE_LOCKED: "1"
+  # One mise cache for a run: `plan` fills it with every locked tool, and each job after it restores
+  # it, so a changed lock downloads and builds each tool once, not once a job.
+  MISE_CACHE_KEY: "{{cache_key_prefix}}-{{platform}}-{{version}}-{{file_hash}}"
 
 jobs:
   plan:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # The jobs' own runner, whose image the cache is keyed by.
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 30
     outputs:
       recipes: ${{ steps.plan.outputs.recipes }}
     steps:
@@ -36,11 +40,12 @@ jobs:
               ...context.repo, workflow_id: 'nightly.yml', event: 'schedule', status: 'success', per_page: 1,
             })
             return data.workflow_runs[0]?.head_sha !== context.sha
+      # Every locked tool, into the cache the jobs restore.
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         if: steps.moved.outputs.result == 'true'
         with:
           version: 2026.9.12
-          install_args: just
+          cache_key: ${{ env.MISE_CACHE_KEY }}
       - id: plan
         if: steps.moved.outputs.result == 'true'
         run: echo "recipes=$(just --summary | tr ' ' '\n' | jq -Rnc '[inputs | select(startswith("nightly-"))]')" >> "$GITHUB_OUTPUT"
@@ -59,11 +64,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # Every locked tool, then the task `bootstrap`: `just setup`, as on a laptop.
+      # Every locked tool, from the cache `plan` filled, then the task `bootstrap`: `just setup`, as on
+      # a laptop.
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
           version: 2026.9.12
           bootstrap: true
+          cache_key: ${{ env.MISE_CACHE_KEY }}
       - if: hashFiles('Cargo.lock') != ''
         uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
