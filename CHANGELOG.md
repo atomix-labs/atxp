@@ -1,7 +1,21 @@
 # Changelog
 
-Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits. A tag
-versions every profile; [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to migrate.
+Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
+[BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
+
+## [0.2.1](https://github.com/atomix-labs/atxp/releases/tag/v0.2.1) - 2026-09-25
+
+### Features
+
+- [b0ebf4f](https://github.com/atomix-labs/atxp/commit/b0ebf4f4db2af87c27a6d8d93bf47d3b5924856e) *(mdbook)* Ignore the book it builds
+
+### Bug Fixes
+
+- [7656fba](https://github.com/atomix-labs/atxp/commit/7656fba391455882d44259dc4c55ddf75b6083b0) *(release)* Point the quick start at each new tag
+- [4dcf4e0](https://github.com/atomix-labs/atxp/commit/4dcf4e08f74497c90319005d363227f2637f154d) *(git-cliff)* Open the changelog in words any repository fits
+- [fc960bf](https://github.com/atomix-labs/atxp/commit/fc960bf71ea8f6d5e6cb4ffa9e9457cff8c6922b) *(ci)* Install devset as devset-cli, on stable
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.2.0...v0.2.1>
 
 ## [0.2.0](https://github.com/atomix-labs/atxp/releases/tag/v0.2.0) - 2026-09-25
 
