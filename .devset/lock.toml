@@ -93,7 +93,7 @@ path = "profiles/committed"
 
 [[layers]]
 name = "git-cliff"
-digest = "cdae462622672fb062c13ec69f2060b4fb96ad49f681f26852ae2200a54c9f54"
+digest = "97d7ac459418b59c5ff75ca353f4dfcf8126e3c4d4588c29dac4c58ce5952fb7"
 
 [layers.source]
 path = "profiles/git-cliff"

@@ -10,9 +10,10 @@ conventional, are left out; [`committed`](../committed/README.md) keeps the rest
 conventional.
 
 `repository`, the GitHub repository as `owner/name`, makes the links; it has no
-default, so every repository answers it. `check-git-cliff` renders the
-unreleased notes on every change, so a broken configuration is found before a
-release needs it.
+default, so every repository answers it. The changelog's opening paragraph links
+`BREAKING-CHANGES.md`, which the repository keeps beside it. `check-git-cliff`
+renders the unreleased notes on every change, so a broken configuration is found
+before a release needs it.
 
 <!-- facts: written by scripts/catalog.py -->
 
