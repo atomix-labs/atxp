@@ -6,7 +6,8 @@ release. A crate is published when its `publish` allows crates.io; one with
 
 - `check-crates-io` packages every such crate on each change, and builds each
   from its package, as crates.io will: a file the package leaves out, or a
-  dependency without a version, fails the change rather than the release.
+  dependency without a version, fails the change rather than the release. It
+  packages the working tree as it is, changes and all.
 - `publish-crates-io`, which `just publish` runs, publishes every crate
   crates.io does not have at its version, dependencies first. So a release that
   stopped halfway publishes the rest when it runs again.

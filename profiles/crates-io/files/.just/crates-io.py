@@ -47,10 +47,10 @@ def published(name, version):
         raise
 
 
-def cargo(verb, crates):
-    """Runs `cargo <verb>` over `crates`, the lock as it is."""
+def cargo(verb, crates, *flags):
+    """Runs `cargo <verb>` over `crates`, the lock as it is; cargo's exit code."""
     packages = [arg for name, _ in crates for arg in ("--package", name)]
-    subprocess.run(["cargo", verb, "--locked", *packages], check=True)
+    return subprocess.run(["cargo", verb, "--locked", *flags, *packages], check=False).returncode
 
 
 def check():
@@ -59,8 +59,8 @@ def check():
     if not crates:
         print("crates-io: the workspace publishes no crate")
         return 0
-    cargo("package", crates)
-    return 0
+    # The working tree as it is: a check runs before its changes are committed.
+    return cargo("package", crates, "--allow-dirty")
 
 
 def publish():
@@ -70,9 +70,8 @@ def publish():
     for name, version in crates:
         if (name, version) not in remaining:
             print(f"crates-io: {name} {version} is on crates.io already")
-    if remaining:
-        cargo("publish", remaining)
-    return 0
+    # A publish is of commits alone, so cargo refuses a working tree with changes.
+    return cargo("publish", remaining) if remaining else 0
 
 
 if __name__ == "__main__":
