@@ -4,7 +4,8 @@
 lockfile, `.config/mise/mise.lock`, which covers `linux-arm64`, `linux-x64` and
 `macos-arm64`: a platform missing from it is refused. Every download is verified
 by its checksum, and by the publisher's attestations where they exist. No
-release younger than three days is chosen.
+release younger than three days is chosen, and a download may take two minutes,
+not mise's default 30 seconds, as a release's can on a busy CI runner.
 
 Each profile owns its tools' entries in the lock, so the lock composes as the
 profiles do; tools the repository configures itself, in `mise.toml`, lock in
