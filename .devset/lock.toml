@@ -23,7 +23,7 @@ path = "profiles/gitignore"
 
 [[layers]]
 name = "mise"
-digest = "70eb4bc05d91fa440b28c498932ef7cd86da30210da0b899b1d40f8fe5e55ba4"
+digest = "13c084aca2613cc34874253cedc8a03877b04208f35ab92c8b867c47f6e1d72a"
 
 [layers.source]
 path = "profiles/mise"
@@ -51,7 +51,7 @@ path = "profiles/setup"
 
 [[layers]]
 name = "github-ci"
-digest = "61f30be43be5c17490e884572884792fe0759f5c75d5bd611a49f5218d40be9e"
+digest = "ed1e4ef215337757e6e34f4965d1e1efe3d6c4f27e68bad1ed2078148dbcd71b"
 
 [layers.source]
 path = "profiles/github-ci"
@@ -121,7 +121,7 @@ path = "profiles/dprint"
 
 [[layers]]
 name = "rumdl"
-digest = "050ac27a338c3eccfe6c32ea2f785f4aa22ca0f948e62594d769bacc01d6d921"
+digest = "50022eedffc612f4e0bc888b90f4544a53dc4797f4a82ca10a8294d36cbcc703"
 
 [layers.source]
 path = "profiles/rumdl"
