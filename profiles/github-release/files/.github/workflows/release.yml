@@ -113,6 +113,9 @@ jobs:
     permissions:
       contents: read
       id-token: write # a registry's short-lived token for this workflow, by trusted publishing
+    # The recipes run on what the job installs: `mise exec` would install every locked tool first.
+    env:
+      MISE_EXEC_AUTO_INSTALL: "false"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
