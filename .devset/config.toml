@@ -75,3 +75,6 @@ path = "profiles/policies"
 
 [[layers]]
 path = "profiles/suppressions"
+
+[[layers]]
+path = "profiles/github-release"

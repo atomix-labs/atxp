@@ -1,0 +1,7 @@
+[profile]
+name        = "github-release"
+description = "A release from its tag: every package-* recipe on each platform, then the GitHub Release with git-cliff's notes"
+devset      = ">=0.1"
+requires    = ["../just", "../git-cliff"]
+
+[files.".github/workflows/release.yml"]

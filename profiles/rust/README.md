@@ -4,14 +4,17 @@ A Rust repository, whole: EditorConfig, Git attributes and ignores; the `just`
 spine, setup and the pinned nightly; CI, with its watch, its nightly run and its
 weekly bump; formatting for Rust, TOML, Markdown, YAML, JSON and Python; the
 lint wall and the build profiles; dependency policy, and dependencies bumped one
-at a time; tests; commits and the changelog; workflow policies; spelling; editor
-settings; and Claude Code's skills.
+at a time; tests; commits, the changelog and the release; workflow policies;
+spelling; editor settings; and Claude Code's skills.
 
 A bundle owns nothing itself: each profile it requires is a layer of its own. To
 leave one out, require the profiles wanted from a profile of the repository's
 own. [`ansible-lint`](../ansible-lint/README.md),
 [`lychee`](../lychee/README.md) and [`mdbook`](../mdbook/README.md) are outside
-it, for a repository with playbooks, links to check, or a book.
+it, for a repository with playbooks, links to check, or a book; so are
+[`msrv`](../msrv/README.md), for crates that build on stable, and
+[`cargo-binaries`](../cargo-binaries/README.md), for a repository whose release
+ships binaries.
 
 <!-- facts: written by scripts/catalog.py -->
 
@@ -30,6 +33,7 @@ it, for a repository with playbooks, links to check, or a book.
 - [`github-watch`](../github-watch/README.md)
 - [`github-nightly`](../github-nightly/README.md)
 - [`github-bump`](../github-bump/README.md)
+- [`github-release`](../github-release/README.md)
 - [`dependabot`](../dependabot/README.md)
 - [`automation`](../automation/README.md)
 - [`committed`](../committed/README.md)
@@ -39,6 +43,7 @@ it, for a repository with playbooks, links to check, or a book.
 - [`rustdoc`](../rustdoc/README.md)
 - [`rustfmt`](../rustfmt/README.md)
 - [`lints`](../lints/README.md)
+- [`lints-nightly`](../lints-nightly/README.md)
 - [`cargo-profiles`](../cargo-profiles/README.md)
 - [`cargo-deny`](../cargo-deny/README.md)
 - [`cargo-machete`](../cargo-machete/README.md)

@@ -57,6 +57,7 @@ test-profiles:
 # Each atom's recipes, where the atom is applied.
 import? '.just/actionlint.just'
 import? '.just/ansible-lint.just'
+import? '.just/cargo-binaries.just'
 import? '.just/cargo-bump.just'
 import? '.just/cargo-deny.just'
 import? '.just/cargo-hack.just'
@@ -68,10 +69,12 @@ import? '.just/committed.just'
 import? '.just/conftest.just'
 import? '.just/dprint.just'
 import? '.just/git-cliff.just'
+import? '.just/lints-nightly.just'
 import? '.just/lychee.just'
 import? '.just/manifest-lint.just'
 import? '.just/mdbook.just'
 import? '.just/mise.just'
+import? '.just/msrv.just'
 import? '.just/nextest.just'
 import? '.just/profile-pins.just'
 import? '.just/ruff.just'
@@ -107,6 +110,9 @@ host: (_each "host")
 
 # Runs every `release-*` recipe for $RELEASE_VERSION: each writes what a release needs.
 release: (_each "release")
+
+# Runs every `package-*` recipe: what a release ships, built for this machine into dist/.
+package: (_each "package")
 
 # Runs every recipe named `<verb>-*`, and names each that fails.
 _each verb:

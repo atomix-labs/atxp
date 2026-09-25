@@ -16,6 +16,7 @@ requires = [
     "../github-watch",
     "../github-nightly",
     "../github-bump",
+    "../github-release",
     "../dependabot",
     "../automation",
     "../committed",

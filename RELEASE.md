@@ -15,23 +15,23 @@ counts as breaking.
 1. Check that every breaking commit since the last tag has its entry in
    [BREAKING-CHANGES.md](BREAKING-CHANGES.md), under the version about to be
    tagged.
-2. Write the changelog's section for the release:
+2. Write what the release changes:
 
    ```sh
    RELEASE_VERSION=x.y.z just release
    ```
 
-   `release-git-cliff` writes `CHANGELOG.md` from the commits since the last
-   tag.
+   Every `release-*` recipe runs: `release-git-cliff` writes `CHANGELOG.md` from
+   the commits since the last tag, and in a Rust repository `release-cargo-bump`
+   sets every crate's version.
 3. Read the new section; fix a commit's subject by rewording the commit, not the
    file.
-4. Commit it as `chore(release): vx.y.z`, which the changelog leaves out; tag
-   the commit `vx.y.z`; push the branch and the tag.
-5. Publish the GitHub Release for the tag, its notes the release's section:
-
-   ```sh
-   git cliff --latest --strip header
-   ```
+4. Commit it as `chore(release): vx.y.z`, which the changelog leaves out; sign
+   the tag, `git tag -s vx.y.z`; push the branch and the tag.
+5. The tag starts `release.yml`: it builds what every `package-*` recipe
+   packages on linux-x64, linux-arm64 and macos-arm64, then publishes the GitHub
+   Release with the release's section as its notes and every archive attached.
+   atxp packages nothing, so its Release has notes alone.
 
 A repository takes the release with `devset update`, or pins it with `devset
 init --tag vx.y.z`.
