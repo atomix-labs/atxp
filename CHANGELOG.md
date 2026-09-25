@@ -3,6 +3,27 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits. A tag
 versions every profile; [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to migrate.
 
+## [0.2.0](https://github.com/atomix-labs/atxp/releases/tag/v0.2.0) - 2026-09-25
+
+### Features
+
+- [d07019e](https://github.com/atomix-labs/atxp/commit/d07019ec8f866ae53d25699abf3ecea828420871) *(github-release)* Publish a release from its tag
+- [27ee6f2](https://github.com/atomix-labs/atxp/commit/27ee6f2338af6b007d8fa35f747a36297c80a949) *(just)* Add the package verb
+- [38e6d7f](https://github.com/atomix-labs/atxp/commit/38e6d7f6dc01ef555022bfe3199041d251746d3b) *(cargo-bump)* Set every crate's version at a release
+- [0aa4081](https://github.com/atomix-labs/atxp/commit/0aa40818d20a94f22bb8bcc29ef606035bcff50b) *(cargo-binaries)* Package a release's binaries for each platform
+- [e4fa9ef](https://github.com/atomix-labs/atxp/commit/e4fa9efdf99580e92e6eb84df4e96783bf9cba74) *(msrv)* Build every crate on the rust-version it declares
+- [e8af99b](https://github.com/atomix-labs/atxp/commit/e8af99bd1f9bbdacf5032188d9a416c9e3205ece) *(lints-nightly)* Check the nightly-only lints without a #![feature]
+
+### Refactor
+
+- [36596ee](https://github.com/atomix-labs/atxp/commit/36596ee05aba0948455daacd80a9a0e1e1fdf755) *(lints)* Leave the nightly-only lints to lints-nightly **breaking**
+
+### Documentation
+
+- [0bd432d](https://github.com/atomix-labs/atxp/commit/0bd432d49553a391dba7c6df25d2037a40666289) Describe the release flow and the new profiles
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.1.0...v0.2.0>
+
 ## [0.1.0](https://github.com/atomix-labs/atxp/releases/tag/v0.1.0) - 2026-09-25
 
 ### Features
