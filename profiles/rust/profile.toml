@@ -25,6 +25,7 @@ requires = [
     "../rustdoc",
     "../rustfmt",
     "../lints",
+    "../lints-nightly",
     "../cargo-profiles",
     "../cargo-deny",
     "../cargo-machete",

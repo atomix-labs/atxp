@@ -1,7 +1,5 @@
 //! The library of a workspace the profiles are applied to.
 
-#![feature(non_exhaustive_omitted_patterns_lint, strict_provenance_lints)]
-
 /// The sum of `a` and `b`, or `None` where it overflows.
 ///
 /// ```
