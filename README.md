@@ -10,7 +10,7 @@ atxp holds profiles for [devset]: bundles of configuration, recipes and pinned
 tools that devset applies to a repository, and keeps up to date without losing
 the repository's own edits. They are one set of choices for a Rust repository,
 to apply as they are or to build on: each profile owns one concern, and the
-`rust` bundle takes them all.
+`rust` bundle takes the ones a Rust repository needs.
 
 <details>
 <summary>Table of Contents</summary>
@@ -56,6 +56,7 @@ owns, its recipes, its variables and what it requires.
 | [`actionlint`](profiles/actionlint/README.md)                       | actionlint checks every GitHub Actions workflow: syntax, expressions, and the shell in each step                                                | `.github/actionlint.yaml`, `.config/mise/mise.lock` (keys)                |
 | [`ansible-lint`](profiles/ansible-lint/README.md)                   | ansible-lint holds every playbook and role in .ansible/ to its production profile, on the pinned ansible-core                                   | `.ansible-lint`, `.config/mise/mise.lock` (keys)                          |
 | [`automation`](profiles/automation/README.md)                       | The automation's settings: issue labels and types, who is assigned, how far the weekly bump goes                                                | `.github/automation.json` (keys, merge)                                   |
+| [`cargo-binaries`](profiles/cargo-binaries/README.md)               | A release's binaries: the workspace's, built for this machine, static on Linux, archived with a sha256                                          |                                                                           |
 | [`cargo-bump`](profiles/cargo-bump/README.md)                       | The weekly bump of Cargo requirements and git revisions: one at a time, past the cooldown, kept if it resolves                                  | `.config/mise/mise.lock`, `.cargo/config.toml` (keys)                     |
 | [`cargo-deny`](profiles/cargo-deny/README.md)                       | cargo-deny: yanked and unmaintained crates, one version each, the bans, permissive licences, crates.io only                                     | `deny.toml`, `.config/mise/mise.lock` (keys)                              |
 | [`cargo-hack`](profiles/cargo-hack/README.md)                       | cargo-hack lints every crate with each of its features alone, nightly, where a feature can break                                                | `.config/mise/mise.lock` (keys)                                           |
@@ -75,15 +76,18 @@ owns, its recipes, its variables and what it requires.
 | [`github-bump`](profiles/github-bump/README.md)                     | A weekly bump: every `bump-*` recipe, gated by `just check`, to a signed commit, a PR or a merge                                                | `.github/workflows/bump.yml`, `.github/scripts/bump.js`                   |
 | [`github-ci`](profiles/github-ci/README.md)                         | GitHub Actions: every `check-*` recipe a job of its own, read from the justfile, tools from the mise lock; a Pages site built once and deployed | `.github/workflows/check.yml`                                             |
 | [`github-nightly`](profiles/github-nightly/README.md)               | A nightly run of every `nightly-*` recipe, each a job of its own, watched                                                                       | `.github/workflows/nightly.yml`                                           |
+| [`github-release`](profiles/github-release/README.md)               | A release from its tag: every package-* recipe on each platform, then the GitHub Release with git-cliff's notes                                 | `.github/workflows/release.yml`                                           |
 | [`github-watch`](profiles/github-watch/README.md)                   | Every scheduled workflow watched: one that fails, stops running or is disabled gets an issue                                                    | `.github/` (3 files)                                                      |
 | [`gitignore`](profiles/gitignore/README.md)                         | Git ignores what tools keep locally, editors' files, and anything that looks like a secret                                                      | `.gitignore` (block)                                                      |
 | [`gitignore-rust`](profiles/gitignore-rust/README.md)               | Git ignores Cargo's build output, rustfmt's backups and MSVC debug files                                                                        | `.gitignore` (block)                                                      |
 | [`just`](profiles/just/README.md)                                   | The recipe spine: imports each atom's recipes, and `check` and `fix` run them all                                                               | `justfile` (block), `.config/mise/mise.lock` (keys)                       |
 | [`lints`](profiles/lints/README.md)                                 | The lint wall, as keys of the workspace Cargo.toml: rustc, rustdoc, clippy and cargo                                                            | `Cargo.toml` (keys)                                                       |
+| [`lints-nightly`](profiles/lints-nightly/README.md)                 | The lints only nightly has, run on the pinned nightly without a #![feature] in any source                                                       |                                                                           |
 | [`lychee`](profiles/lychee/README.md)                               | lychee checks every Markdown link: the repository's own on every change, the web's nightly                                                      | `.config/mise/mise.lock` (keys)                                           |
 | [`manifest-lint`](profiles/manifest-lint/README.md)                 | Every crate manifest in one shape: key order, inherited fields, grouped dependencies                                                            |                                                                           |
 | [`mdbook`](profiles/mdbook/README.md)                               | mdBook builds the book and runs its Rust examples as tests                                                                                      | `.config/mise/mise.lock` (keys)                                           |
 | [`mise`](profiles/mise/README.md)                                   | mise installs every tool from its lock, verified on every platform, none under three days old                                                   | `.config/mise/mise.lock` (keys)                                           |
+| [`msrv`](profiles/msrv/README.md)                                   | Every crate builds on the rust-version it declares: the oldest toolchain it says it supports                                                    |                                                                           |
 | [`nextest`](profiles/nextest/README.md)                             | cargo-nextest for every test, and cargo for the doctests; in CI, a `ci` profile that runs them all                                              | `.config/nextest.toml`, `.config/mise/mise.lock` (keys)                   |
 | [`policies`](profiles/policies/README.md)                           | Policies for GitHub Actions workflows, held by conftest: timeouts, stated permissions, no shadowed results                                      | `policy/workflows/workflows.rego`, `policy/workflows/workflows_test.rego` |
 | [`profile-pins`](profiles/profile-pins/README.md)                   | For a repository of profiles: every pin locked for every platform, and bumped past the cooldown                                                 |                                                                           |
@@ -108,13 +112,13 @@ The bundle:
   wall, dependency policy, tests, commits, the changelog, editor and CI.
   Requires `editorconfig`, `gitattributes`, `gitignore`, `gitignore-rust`,
   `mise`, `just`, `setup`, `rustup`, `rust-toolchain`, `github-ci`,
-  `github-watch`, `github-nightly`, `github-bump`, `dependabot`, `automation`,
-  `committed`, `git-cliff`, `typos`, `clippy`, `rustdoc`, `rustfmt`, `lints`,
-  `cargo-profiles`, `cargo-deny`, `cargo-machete`, `cargo-shear`,
-  `cargo-workspace-lints`, `cargo-hack`, `cargo-bump`, `manifest-lint`,
-  `nextest`, `taplo`, `dprint`, `rumdl`, `ruff`, `yamllint`, `shellcheck`,
-  `actionlint`, `zizmor`, `conftest`, `policies`, `suppressions`, `vscode-rust`,
-  `claude-skills`.
+  `github-watch`, `github-nightly`, `github-bump`, `github-release`,
+  `dependabot`, `automation`, `committed`, `git-cliff`, `typos`, `clippy`,
+  `rustdoc`, `rustfmt`, `lints`, `lints-nightly`, `cargo-profiles`,
+  `cargo-deny`, `cargo-machete`, `cargo-shear`, `cargo-workspace-lints`,
+  `cargo-hack`, `cargo-bump`, `manifest-lint`, `nextest`, `taplo`, `dprint`,
+  `rumdl`, `ruff`, `yamllint`, `shellcheck`, `actionlint`, `zizmor`, `conftest`,
+  `policies`, `suppressions`, `vscode-rust`, `claude-skills`.
 
 <!-- /catalog -->
 

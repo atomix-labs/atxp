@@ -70,6 +70,7 @@ and one recipe for each verb, which runs every recipe named for it:
 | `setup-<id>`   | `just setup`   | what a checkout needs before it builds                       |
 | `host-<id>`    | `just host`    | the machine's own setup, whose steps may ask for sudo        |
 | `release-<id>` | `just release` | what a release needs, for `$RELEASE_VERSION`                 |
+| `package-<id>` | `just package` | what a release ships, built for this machine into `dist/`    |
 
 A profile adds a recipe by naming it for a verb, and a repository adds one the
 same way, outside the block. Nothing lists the recipes twice: the spine finds
@@ -101,6 +102,9 @@ tools.
   commit, then as far as a pull request or a merge.
 - `github-watch` opens an issue for any scheduled workflow that fails, stalls or
   is disabled.
+- `github-release` publishes a release from its tag: every `package-*` recipe on
+  each platform, then the GitHub Release with git-cliff's notes and the
+  archives.
 
 Commits follow Conventional Commits, which `committed` checks; at a release,
 `git-cliff` writes the changelog from them.
@@ -138,4 +142,4 @@ CONTRIBUTING.md.
 - **Every download verified.** Tools come from the lock with their checksums,
   plugins with theirs, and nothing younger than the cooldown.
 - **A small, uniform surface.** Every profile has the same shape, its recipes
-  the same seven verbs, and its README the same two parts.
+  the same eight verbs, and its README the same two parts.
