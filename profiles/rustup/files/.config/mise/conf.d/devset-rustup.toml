@@ -2,3 +2,8 @@
 # `mise exec`, and in every shell mise activates.
 [env]
 _.path = ["{{ env.CARGO_HOME | default(value=env.HOME ~ '/.cargo') }}/bin"]
+
+# rustup and the toolchain first: the tools mise builds with cargo need it, and several builds at
+# once would each start to install it, over one another.
+[hooks]
+preinstall = "bash .just/rustup.sh"

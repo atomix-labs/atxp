@@ -1,9 +1,12 @@
 [profile]
 name        = "rustup"
-description = "rustup where it is missing, and the toolchain rust-toolchain.toml names, on every setup"
+description = "rustup where it is missing, and the toolchain rust-toolchain.toml names, before mise installs any tool"
 devset      = ">=0.1"
 requires    = ["../just", "../mise"]
 
 [files.".just/rustup.just"]
+
+[files.".just/rustup.sh"]
+executable = true
 
 [files.".config/mise/conf.d/devset-rustup.toml"]
