@@ -26,7 +26,8 @@ counts as breaking.
    sets every crate's version, and atxp's own `release-readme` points the
    README's quick start at the new tag.
 3. Read the new section; fix a commit's subject by rewording the commit, not the
-   file.
+   file. Run `just check`: the release commit lands on the default branch as any
+   commit does.
 4. Commit it as `chore(release): vx.y.z`, which the changelog leaves out; sign
    the tag, `git tag -s vx.y.z`; push the branch and the tag.
 5. The tag starts `release.yml`: it builds what every `package-*` recipe
