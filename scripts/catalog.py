@@ -33,7 +33,7 @@ PINS = ".config/mise/conf.d/"
 # A pin file's name carries this prefix, so no tool reads it as its own configuration.
 PIN_PREFIX = "devset-"
 # What a recipe does, each run together by the spine: `just check`, `just fix`, and so on.
-VERBS = ("check", "fix", "bump", "nightly", "setup", "host", "release", "package")
+VERBS = ("check", "fix", "bump", "nightly", "setup", "host", "release", "package", "publish")
 # A recipe's first line: its name, then any parameters; an assignment, `x := y`, is not one.
 RECIPE = re.compile(r"^([a-z][a-z0-9-]*)(?:\s+[^:=]*)?:(?!=)")
 PARTS = {"file": "whole", "keys": "keys", "block": "block"}
