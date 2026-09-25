@@ -3,6 +3,24 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.3.0](https://github.com/atomix-labs/atxp/releases/tag/v0.3.0) - 2026-09-25
+
+### Features
+
+- [8df82fa](https://github.com/atomix-labs/atxp/commit/8df82fa69b2a1703694e2bb5c921229b0a3ae61c) *(github-release)* Run every publish recipe once the release is out
+- [a284e60](https://github.com/atomix-labs/atxp/commit/a284e600a4bbb74bc0f1a1f8631248c4f6697893) *(crates-io)* Publish the workspace's crates at a release
+- [9362981](https://github.com/atomix-labs/atxp/commit/93629814e71ec382029955788588341f5e6acc4d) *(just)* Add the publish verb
+
+### Documentation
+
+- [48c6076](https://github.com/atomix-labs/atxp/commit/48c6076c09e9244a348599a2c60a3f274f969b94) Describe the publish verb
+
+### Miscellaneous
+
+- [27ddad7](https://github.com/atomix-labs/atxp/commit/27ddad7f83c8dd873212d85984f420ffc2ec4dd5) Apply the changed profiles to atxp
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.2.2...v0.3.0>
+
 ## [0.2.2](https://github.com/atomix-labs/atxp/releases/tag/v0.2.2) - 2026-09-25
 
 ### Features
