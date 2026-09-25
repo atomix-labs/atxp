@@ -83,6 +83,25 @@ checksum = "sha256:a0be97e237d440d34c5e508ec21d070b2c85cbb8be48a46a56f9a4e8bd247
 url = "https://github.com/orhun/git-cliff/releases/download/v2.14.2/git-cliff-2.14.2-aarch64-apple-darwin.tar.gz"
 url_api = "https://api.github.com/repos/orhun/git-cliff/releases/assets/573487203"
 
+[[tools."github:atomix-labs/devset"]]
+version = "0.1.1"
+backend = "github:atomix-labs/devset"
+
+[tools."github:atomix-labs/devset"."platforms.linux-arm64"]
+checksum = "sha256:f8d9ebfa1f869abe193f2609629157fba9bcc13e79e2d7d765ba69d059fa1869"
+url = "https://github.com/atomix-labs/devset/releases/download/v0.1.1/devset-0.1.1-aarch64-unknown-linux-musl.tar.xz"
+url_api = "https://api.github.com/repos/atomix-labs/devset/releases/assets/588770651"
+
+[tools."github:atomix-labs/devset"."platforms.linux-x64"]
+checksum = "sha256:7ea4ae5e87bc21022562742f64f19756b62d0db2fd69ae2e33813731a4e6091e"
+url = "https://github.com/atomix-labs/devset/releases/download/v0.1.1/devset-0.1.1-x86_64-unknown-linux-musl.tar.xz"
+url_api = "https://api.github.com/repos/atomix-labs/devset/releases/assets/588770653"
+
+[tools."github:atomix-labs/devset"."platforms.macos-arm64"]
+checksum = "sha256:eab8f503339c66bf03dbb17c6731fd6373649cf92675dc2a1e4bb179d5330655"
+url = "https://github.com/atomix-labs/devset/releases/download/v0.1.1/devset-0.1.1-aarch64-apple-darwin.tar.xz"
+url_api = "https://api.github.com/repos/atomix-labs/devset/releases/assets/588770650"
+
 [[tools.just]]
 version = "1.58.0"
 backend = "aqua:casey/just"

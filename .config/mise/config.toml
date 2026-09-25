@@ -1,0 +1,4 @@
+# atxp's own tools, beside the ones its atoms pin in conf.d/: devset, which applies the profiles to
+# the fixtures and to atxp itself. `just bump-mise` moves it.
+[tools]
+"github:atomix-labs/devset" = "0.1.1"

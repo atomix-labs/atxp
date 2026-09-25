@@ -29,16 +29,10 @@ bump-rust-toolchain:
 check-policies:
     mise exec -- conftest verify --policy profiles/policies/files/policy
 
-# After a bump moves the profiles' pins, applies the profiles to this repository again; installs
-# devset where it is missing.
+# After a bump moves the profiles' pins, applies the profiles to this repository again, with the
+# devset mise pins.
 bump-self:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    if ! command -v devset > /dev/null; then
-        rustup toolchain install stable --profile minimal
-        cargo +stable install --locked --git https://github.com/atomix-labs/devset devset-cli
-    fi
-    devset apply
+    mise exec -- devset apply
 
 # Builds the site Pages serves, the setup stub at /setup.sh, and checks that the stub parses.
 check-site:

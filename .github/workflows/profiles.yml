@@ -1,5 +1,5 @@
 # Applies the bundle to every fixture and runs its checks, then every profile alone and all at once,
-# with devset built from its main branch.
+# with the devset release atxp pins.
 name: profiles
 
 on:
@@ -21,7 +21,5 @@ jobs:
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
           version: 2026.9.12
-      - run: rustup toolchain install stable --profile minimal
-      - run: cargo +stable install --locked --git https://github.com/atomix-labs/devset devset-cli
       - run: devset status --exit-code
       - run: just test-profiles

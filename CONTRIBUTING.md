@@ -101,5 +101,6 @@ just fix-catalog        # after changing a profile: the tables, every profile's 
 just bump-profile-pins  # after changing a pin: its lock entries, for every platform
 ```
 
-`just test-profiles` needs devset, or its path in `$DEVSET`, and the tools mise
-pins.
+`just test-profiles` runs the devset release atxp pins in
+`.config/mise/config.toml`, and the tools the atoms pin; to test the profiles
+against another build of devset, set `$DEVSET` to its path.

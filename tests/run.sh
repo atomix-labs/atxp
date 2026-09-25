@@ -3,7 +3,8 @@
 # applies every atom alone, then all at once; and runs the setup stub against a repository served
 # locally.
 #
-# Needs devset, or its path in $DEVSET, git, cargo, mise and python3 of 3.11 or later.
+# Needs git, cargo, mise and python3 of 3.11 or later, and the devset mise pins; $DEVSET, a path,
+# runs another build instead.
 set -euo pipefail
 
 root=$(cd "$(dirname "$0")/.." && pwd)
