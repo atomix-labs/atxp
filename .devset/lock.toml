@@ -37,7 +37,7 @@ path = "profiles/profile-pins"
 
 [[layers]]
 name = "just"
-digest = "cce47ee24cb83e8c3871de77f77bebf8bd2f04c606bcb5ebefe44b36e2d4b5bb"
+digest = "e35d02ea9d361f175a2119ea46a491fa7d4656c4a8685060d9d04d288540bc48"
 
 [layers.source]
 path = "profiles/just"
@@ -184,7 +184,7 @@ path = "profiles/suppressions"
 
 [[layers]]
 name = "github-release"
-digest = "c77c9d8bb92fb4bf2a57073994200318e7c760df752101bf3984d38057eb0b66"
+digest = "4a72c1d9314491ed7f52566135f8ba5b593848808c6943ed0b859165c22b396f"
 
 [layers.source]
 path = "profiles/github-release"
