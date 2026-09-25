@@ -8,7 +8,10 @@ and put back otherwise, with the reason reported. A git dependency pinned by
 every lockfile is settled, taking the newest release each crate's `rust-version`
 allows, as the resolver key in `.cargo/config.toml` says.
 
-Crates a root names in `[workspace.metadata.bump] exclude` stay put.
+Crates a root names in `[workspace.metadata.bump] exclude` stay put. At a
+release, `just release` runs `release-cargo-bump`, which sets every crate's
+version to `RELEASE_VERSION` with cargo-edit's `set-version`, and the lock with
+them.
 
 <!-- facts: written by scripts/catalog.py -->
 
@@ -26,5 +29,7 @@ Crates a root names in `[workspace.metadata.bump] exclude` stay put.
 
 - `bump-cargo-bump`: Moves every Cargo requirement and git revision past the
   cooldown, one at a time, and settles the locks.
+- `release-cargo-bump`: Sets every crate's version to $RELEASE_VERSION, and the
+  lock with them.
 
 <!-- /facts -->
