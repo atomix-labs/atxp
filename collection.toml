@@ -1,0 +1,3 @@
+[collection]
+name        = "atxp"
+description = "Profiles for Rust repositories, one concern each, grouped by umbrella, and a bundle that takes them"

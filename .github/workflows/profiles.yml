@@ -1,5 +1,5 @@
-# Applies the bundle to every fixture and runs its checks, then every profile alone and all at once,
-# with the devset release atxp pins.
+# Runs every `test-*` recipe, with the devset release atxp pins: the collection's suite, every profile
+# alone, then the bundle and every profile at once on each fixture; and the setup stub's test.
 name: profiles
 
 on:
@@ -22,4 +22,4 @@ jobs:
         with:
           version: 2026.9.12
       - run: devset status --exit-code
-      - run: just test-profiles
+      - run: just test

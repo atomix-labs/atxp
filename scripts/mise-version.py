@@ -14,9 +14,9 @@ import sys
 import urllib.request
 from pathlib import Path
 
-STUB = Path("profiles/setup/files/setup.sh")
-MINIMUM = Path("profiles/mise/files/.config/mise/conf.d/devset-mise.toml")
-WORKFLOWS = ("profiles/*/files/.github/workflows/*.yml", ".github/workflows/*.yml")
+STUB = Path("profiles/tooling/setup/files/setup.sh")
+MINIMUM = Path("profiles/tooling/mise/files/.config/mise/conf.d/devset-mise.toml")
+WORKFLOWS = ("profiles/**/files/.github/workflows/*.yml", ".github/workflows/*.yml")
 # The stub's checksum names, and the release asset each is the sha256 of.
 ASSETS = {
     "LINUX_X64": "linux-x64-musl",

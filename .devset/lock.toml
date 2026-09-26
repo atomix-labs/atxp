@@ -1,190 +1,184 @@
-version = 1
+version = 2
 
-[[layers]]
+[[profiles]]
 name = "editorconfig"
-digest = "3053772865162fecf372b01c23669cd4f211743fd3feb2ef09f5871eff4cab84"
+digest = "6de5cf950e33927b5de1b08c0e551f9955a006bb24ef9349cdfec18c7daf371b"
 
-[layers.source]
-path = "profiles/editorconfig"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "gitattributes"
-digest = "769b4c0321a9448e0a11daf7f00593c8ea97d77a6e0a8a260d131fd325748533"
+[[profiles]]
+name = "git-attributes"
+digest = "82323adbf852bff4b2b21cea09eb78af858ce87e4906ba962f52a26749ebcd5f"
 
-[layers.source]
-path = "profiles/gitattributes"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "gitignore"
-digest = "650cd60c9627814b58733a87fa25d21b6380530db2be97f2add0667055d2540f"
+[[profiles]]
+name = "git-ignore"
+digest = "6f2c8e151a6f41196d2ce25460580783357b2973f912175ceb554e5bc032d1a0"
 
-[layers.source]
-path = "profiles/gitignore"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
+[[profiles]]
 name = "mise"
-digest = "13c084aca2613cc34874253cedc8a03877b04208f35ab92c8b867c47f6e1d72a"
+digest = "f15a6974f613f10ea3e678c757728c6208c4ba0bb709900c5608ea75b8c2d228"
 
-[layers.source]
-path = "profiles/mise"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "profile-pins"
-digest = "ffb788c1e5b4c4355ae9ad9f69ab3124692e5cfe58d7efe771159206f574ff76"
-
-[layers.source]
-path = "profiles/profile-pins"
-
-[[layers]]
+[[profiles]]
 name = "just"
-digest = "e35d02ea9d361f175a2119ea46a491fa7d4656c4a8685060d9d04d288540bc48"
+digest = "7f19dc0df79d686603001cb32b4638ef4f22c765621b226b23b7c58f4f9bd59e"
 
-[layers.source]
-path = "profiles/just"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
+[[profiles]]
 name = "setup"
-digest = "e99f3713ca6e07fb620e523910198953912b7c0e619207a081c4ec8d28546976"
+digest = "14e2dca31390e0bc694b9639983f6f5ecf275fed8ef20462a9445643c64ecff5"
 
-[layers.source]
-path = "profiles/setup"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
+[[profiles]]
+name = "github-automation"
+digest = "0eb19dbc185b3a022696bb3ad8ac51861cb2342e7386b35e049cdecad0724769"
+
+[profiles.source]
+path = "profiles"
+
+[[profiles]]
 name = "github-ci"
-digest = "ed1e4ef215337757e6e34f4965d1e1efe3d6c4f27e68bad1ed2078148dbcd71b"
+digest = "69be3e06121e48386487ec6c348a350138f959f558b1839e9208d74eae0dc724"
 
-[layers.source]
-path = "profiles/github-ci"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
+[[profiles]]
 name = "github-watch"
-digest = "d45ab8f560d8da3cf8a60fab4140b6b3d9b784a8cd33469f9995916f431a6df5"
+digest = "0014622e56d5732ba1400b788733659cbf1ec824607e57dee2b59b2a82eb31fd"
 
-[layers.source]
-path = "profiles/github-watch"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
+[[profiles]]
 name = "github-bump"
-digest = "df9c1b609c848d10b60ea33b76edca333bfe150fd328447b61b99012abc716c2"
+digest = "c56f86d74375f960b6c35e423df4b54fe30fe4d1c1bbfcb3c1a3635bd87042da"
 
-[layers.source]
-path = "profiles/github-bump"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "dependabot"
-digest = "6eeeb83927f9077afec663512c13572e7eb6829ba5bcbabda7d63e3f9a944dd8"
+[[profiles]]
+name = "github-dependabot"
+digest = "9b23a76bc16e148b4940231eb7f3dc8602d8dcf76565e6ddf8ef89a7f747f3ae"
 
-[layers.source]
-path = "profiles/dependabot"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "automation"
-digest = "9f29b4ad6a11a241f177742e7e6b6bfc28893aad392bf065cc543aab6fee19ff"
+[[profiles]]
+name = "git-commits"
+digest = "f7b3fb50bf3e8a9005ea53933575e8742494441c72c40e1f6f53ed24b2ee8a48"
 
-[layers.source]
-path = "profiles/automation"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "committed"
-digest = "6f4ef91ab827cb6fa20d8cb725c0a1ef795127d1c34399e40ff45aa674b9f565"
+[[profiles]]
+name = "git-changelog"
+digest = "0f866a5177982983e33c58bdf002d9e6d0e89c349274cdadc7c80f36b39fa4d4"
 
-[layers.source]
-path = "profiles/committed"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "git-cliff"
-digest = "97d7ac459418b59c5ff75ca353f4dfcf8126e3c4d4588c29dac4c58ce5952fb7"
+[[profiles]]
+name = "spelling"
+digest = "da4529da583d1616e7c60f3d51539b16bd7a812f5dd43d5aeeaa10e847a036da"
 
-[layers.source]
-path = "profiles/git-cliff"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "typos"
-digest = "4a845713ce85af4c9718d0cadb470f1bea46c84095344e0ff8b37164014c942c"
+[[profiles]]
+name = "toml"
+digest = "69abc55f1a6d516d31ff999f4791bae04b21da7d318486cdb1df4b744a09c338"
 
-[layers.source]
-path = "profiles/typos"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "taplo"
-digest = "0a4baa89971ebd2e9c90cb0ebf1c0c55ab2a9e1a9149029fa2a27cd278c87e97"
-
-[layers.source]
-path = "profiles/taplo"
-
-[[layers]]
+[[profiles]]
 name = "dprint"
-digest = "63e461c2681418dc0d89853449bc6a33a87253857ae5e0a032b207ba8aced373"
+digest = "88ae76e4fb7d80c5fbc9e865415934d9bab7d10482afa66639fb6964dd16ddac"
 
-[layers.source]
-path = "profiles/dprint"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "rumdl"
-digest = "50022eedffc612f4e0bc888b90f4544a53dc4797f4a82ca10a8294d36cbcc703"
+[[profiles]]
+name = "markdown"
+digest = "a62b327a20d07f403cba65b7d1beb8112a409e09a7e27e5406d2f1235184127e"
 
-[layers.source]
-path = "profiles/rumdl"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "ruff"
-digest = "86e44aa99fc31e6b9e997ab55b0a3a8dc1bbdc3fb44471aa29a584a0f9eb0828"
+[[profiles]]
+name = "python"
+digest = "a4ac475ecb6d89fc713a1880ee842c51352c909fc3dd5554ce416c2ed47370ce"
 
-[layers.source]
-path = "profiles/ruff"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "yamllint"
-digest = "ec7619e9fdf19fb48ecb13450adf766882bdf52b53e8ac9b92274bf7bd77bec8"
+[[profiles]]
+name = "yaml"
+digest = "85f39d64421b9a53003482731de9271e3596e9cc7c218e72dce653a7bb3d55b9"
 
-[layers.source]
-path = "profiles/yamllint"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "shellcheck"
-digest = "2b7bb2311a37955cc4f0dd4a5dc6ffa057d567e2925fe44fe2dca98bcec674d6"
+[[profiles]]
+name = "shell"
+digest = "ed342788246219a7cecf7c33d350e54c1eff093b3bac0fc4f665ae0476375b36"
 
-[layers.source]
-path = "profiles/shellcheck"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "actionlint"
-digest = "b5d0ada4eef2552eb2597b409a40e55264c704d49f52fbc97e4524c7d6b7260d"
+[[profiles]]
+name = "github-workflow-lint"
+digest = "143530d2fcb84e46340e047eda20bf49e3cc0383f19b3eaf2796878305705718"
 
-[layers.source]
-path = "profiles/actionlint"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
-name = "zizmor"
-digest = "22646a76fc73ddec52f6093a6cad8c1949e740c0505c63ecb38476addf9c9545"
+[profiles.features]
+actionlint = ["default"]
+policies = ["default"]
+zizmor = ["default"]
 
-[layers.source]
-path = "profiles/zizmor"
-
-[[layers]]
-name = "conftest"
-digest = "f02c8bf6cbc33c2e84f9d5ab8751adcd93211bcf7b558f684b9189210cbff4ca"
-
-[layers.source]
-path = "profiles/conftest"
-
-[[layers]]
-name = "policies"
-digest = "6ff3bfd53b2b67fba37201a2fc694529428bed4575b31418c12f3c59fda72fb6"
-
-[layers.source]
-path = "profiles/policies"
-
-[[layers]]
+[[profiles]]
 name = "suppressions"
-digest = "6f73365a922de22b17431401ba6a44dcd2c4dc361e63ad99c3b1c6f89989bf2a"
+digest = "7c89ff3e0974124f9285ca59cbc03db293d5c41e32f12c4542eb16f93dd2642b"
 
-[layers.source]
-path = "profiles/suppressions"
+[profiles.source]
+path = "profiles"
 
-[[layers]]
+[[profiles]]
 name = "github-release"
-digest = "5b4912868f99ceedd949c813660996657053e488d9fc987589f40b6d4b0dd631"
+digest = "9cd550bab43604a0616e33d150e3720a9dc9091f65e4485fdd5108bb173881ef"
 
-[layers.source]
-path = "profiles/github-release"
+[profiles.source]
+path = "profiles"
+
+[[profiles]]
+name = "devset"
+digest = "05350ab084147cbc79baf319d5b69ab1b76ae4d16a9b483d4c94aa7f480a6fff"
+
+[profiles.source]
+path = "profiles"
+
+[[profiles]]
+name = "devset-collection"
+digest = "179ba7fea613b45074c2348925288b530ab3c56097407e717ffd09aec1a87a71"
+
+[profiles.source]
+path = "profiles"
+
+[profiles.features]
+pins = ["target"]

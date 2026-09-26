@@ -1,7 +1,5 @@
-# >>> devset: gitignore >>>
-# Local state: tools' caches, Claude Code's per-developer settings, notes.
-/.rumdl_cache/
-__pycache__/
+# >>> devset: git-ignore >>>
+# Local state: Claude Code's per-developer settings, notes.
 .claude/*
 !.claude/skills/
 !.claude/settings.local.json.example
@@ -25,6 +23,14 @@ Thumbs.db
 *.pem
 *.key
 /.secrets/
-# <<< devset: gitignore <<<
+# <<< devset: git-ignore <<<
 # The site check-site builds for Pages.
 /site/
+
+# >>> devset: markdown >>>
+/.rumdl_cache/
+# <<< devset: markdown <<<
+
+# >>> devset: python >>>
+__pycache__/
+# <<< devset: python <<<

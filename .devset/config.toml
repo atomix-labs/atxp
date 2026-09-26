@@ -1,80 +1,89 @@
-[[layers]]
-path = "profiles/editorconfig"
+# devset applies the profiles below to this directory, and keeps them up to date.
+# The manual: https://atomix-labs.github.io/devset/
+#
+# Where profiles come from, each named once: a git repository at a ref, or a directory.
+#
+#   [sources]
+#   atxp = { git = "https://github.com/atomix-labs/atxp", tag = "v0.4.0" }
+#
+# The profiles to apply, in order, by source and name, with the features to turn on.
+#
+#   [[layers]]
+#   profile  = "atxp/rust"
+#   features = ["docs"]
+
+[sources]
+atxp = { path = "profiles" }
 
 [[layers]]
-path = "profiles/gitattributes"
+profile = "atxp/editorconfig"
 
 [[layers]]
-path = "profiles/gitignore"
+profile = "atxp/git-attributes"
 
 [[layers]]
-path = "profiles/mise"
+profile = "atxp/git-ignore"
 
 [[layers]]
-path = "profiles/profile-pins"
+profile = "atxp/mise"
 
 [[layers]]
-path = "profiles/just"
+profile = "atxp/just"
 
 [[layers]]
-path = "profiles/setup"
+profile = "atxp/setup"
 
 [[layers]]
-path = "profiles/github-ci"
+profile = "atxp/github-ci"
 
 [[layers]]
-path = "profiles/github-watch"
+profile = "atxp/github-watch"
 
 [[layers]]
-path = "profiles/github-bump"
+profile = "atxp/github-bump"
 
 [[layers]]
-path = "profiles/dependabot"
+profile = "atxp/github-dependabot"
 
 [[layers]]
-path = "profiles/automation"
+profile = "atxp/git-commits"
 
 [[layers]]
-path = "profiles/committed"
+profile = "atxp/git-changelog"
 
 [[layers]]
-path = "profiles/git-cliff"
+profile = "atxp/spelling"
 
 [[layers]]
-path = "profiles/typos"
+profile = "atxp/toml"
 
 [[layers]]
-path = "profiles/taplo"
+profile = "atxp/dprint"
 
 [[layers]]
-path = "profiles/dprint"
+profile = "atxp/markdown"
 
 [[layers]]
-path = "profiles/rumdl"
+profile = "atxp/python"
 
 [[layers]]
-path = "profiles/ruff"
+profile = "atxp/yaml"
 
 [[layers]]
-path = "profiles/yamllint"
+profile = "atxp/shell"
 
 [[layers]]
-path = "profiles/shellcheck"
+profile = "atxp/github-workflow-lint"
 
 [[layers]]
-path = "profiles/actionlint"
+profile = "atxp/suppressions"
 
 [[layers]]
-path = "profiles/zizmor"
+profile = "atxp/github-release"
 
 [[layers]]
-path = "profiles/conftest"
+profile = "atxp/devset"
 
 [[layers]]
-path = "profiles/policies"
-
-[[layers]]
-path = "profiles/suppressions"
-
-[[layers]]
-path = "profiles/github-release"
+profile = "atxp/devset-collection"
+features = ["pins"]

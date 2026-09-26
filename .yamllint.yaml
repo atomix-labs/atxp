@@ -21,4 +21,4 @@ rules:
 
 # Payloads are templates until devset renders them; the suite checks them rendered.
 ignore: |
-  profiles/*/files/
+  profiles/**/files/
