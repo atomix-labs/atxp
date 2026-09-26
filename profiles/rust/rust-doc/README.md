@@ -6,10 +6,11 @@ block, a missing item it refers to.
 
 The `strict` feature, the house policy, adds the house's doc lint to
 `check-rust-doc`, over every crate of the workspace: summaries that open weakly,
-filler and marketing words, process notes left in comments, sections named other
-than `# Errors`, `# Panics`, `# Safety` and `# Examples`, and dependency tables
-without their `# internal` and `# external` groups. `.just/rust-doc.py` is the
-lint, which the skill runs too.
+filler and marketing words, a crate of the workspace named where it is neither
+the crate, its family nor a dependency, process notes left in comments, sections
+named other than `# Errors`, `# Panics`, `# Safety` and `# Examples`, and
+dependency tables without their `# internal` and `# external` groups.
+`.just/rust-doc.py` is the lint, which the skill runs too.
 
 The `agents` feature adds the `writing-rustdoc` skill in `.claude/skills/`: the
 house style for docs and comments, with its audit and inventory scripts, so an

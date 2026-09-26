@@ -45,14 +45,25 @@ RULE_ID = re.compile(r"\b(STR|STY|UNS|API|ERG|DOC|PTN|BLD|TST|BCH|PRF|GIT|CLD|MN
 BAD_HEADING = re.compile(r"^# (Example|Arguments?|Parameters?|Returns?|HOT|Overview|Introduction|Usage|Notes?|Getting started|Implementation details)\s*$")
 BAD_ERRORS_PROSE = re.compile(r"^(Returns?|Fails?|Errors?) |\bif\b")
 SAFETY_RESTATE = re.compile(r"SAFETY:\s*(this is safe|safe because|it is safe|trust)", re.I)
-WTX_NAME = re.compile(r"\bwtx[-_][a-z][a-z0-9_-]*")
+# A crate's name as prose writes it: two words or more, `-` or `_` between them. A one-word name
+# reads as a word, and is left alone.
+CRATE_NAME = re.compile(r"(?<![\w-])[a-z][a-z0-9]*(?:[-_][a-z0-9]+)+(?![\w-])")
 
 
-def crate_meta(crate: Path):
+def crate_meta(crate: Path, packages: list):
+    """The crate at `crate`: its name; each of the workspace's crates, by name, with whether its docs
+    may name it; and its manifest. It may name itself, a crate of its family (`<name>-derive`, or the
+    crate whose name its own extends), and a dependency of any kind."""
     manifest = (crate / "Cargo.toml").read_text()
-    name = re.search(r'^name\s*=\s*"([^"]+)"', manifest, re.M)
-    deps = set(re.findall(r"^(wtx-[a-z0-9-]+)\s*=", manifest, re.M))
-    return (name.group(1) if name else crate.name), deps, manifest
+    package = next((p for p in packages if Path(p["manifest_path"]).resolve().parent == crate), {})
+    me = package.get("name", crate.name)
+    deps = {(d.get("rename") or d["name"]).replace("_", "-") for d in package.get("dependencies", [])}
+    names = {}
+    for other in packages:
+        name = other["name"].replace("_", "-")
+        family = name.startswith(f"{me}-") or me.startswith(f"{name}-")
+        names[name] = name == me or family or name in deps
+    return me, names, manifest
 
 
 def paragraphs(block):
@@ -78,7 +89,7 @@ def paragraphs(block):
     return out
 
 
-def lint_file(path: Path, me: str, deps: set, findings):
+def lint_file(path: Path, me: str, names: dict, findings):
     lines = path.read_text().splitlines()
     in_src = "src" in path.parts
     if in_src and path.name != "lib.rs":
@@ -138,10 +149,10 @@ def lint_file(path: Path, me: str, deps: set, findings):
             block.append(mm.group(2))
             i += 1
         item = lines[i] if i < n else ""
-        check_block(path, start, block, item, me, deps, findings)
+        check_block(path, start, block, item, me, names, findings)
 
 
-def check_block(path, start, block, item, me, deps, findings):
+def check_block(path, start, block, item, me, names, findings):
     fence = False
     for k, text in enumerate(block):
         ln = start + k + 1
@@ -202,15 +213,14 @@ def check_block(path, start, block, item, me, deps, findings):
             findings.append((path, ln, "error", "dev-process marker in a doc"))
         if RULE_ID.search(text):
             findings.append((path, ln, "error", "convention rule ID in a doc"))
-        for name in WTX_NAME.findall(text):
-            norm = name.replace("_", "-")
-            if norm != me and norm not in deps and not norm.startswith(me):
+        for token in CRATE_NAME.findall(text):
+            if names.get(token.replace("_", "-")) is False:
                 findings.append(
                     (
                         path,
                         ln,
                         "error",
-                        f"names `{name}`, neither this crate nor a dependency: a crate speaks only for itself",
+                        f"names `{token}`, neither this crate nor a dependency: a crate speaks only for itself",
                     )
                 )
     # summary shape
@@ -259,8 +269,9 @@ def main(argv):
         print(__doc__.strip())
         return 0
     crates = [arg for arg in argv[1:] if not arg.startswith("-")]
+    found = workspace()
     if "--workspace" in argv:
-        crates += workspace()
+        crates += [str(Path(package["manifest_path"]).parent) for package in found]
     if not crates:
         print(__doc__.strip().splitlines()[2], file=sys.stderr)
         return 2
@@ -268,27 +279,27 @@ def main(argv):
     quiet = "--quiet" in argv
     failed = 0
     for crate in crates:
-        failed |= lint_crate(Path(crate).resolve(), advisory, quiet)
+        failed |= lint_crate(Path(crate).resolve(), found, advisory, quiet)
     return failed
 
 
 def workspace():
-    """The directory of every package of the workspace, as cargo lists them."""
+    """Every package of the workspace, as cargo lists them."""
     out = subprocess.run(
         ["cargo", "metadata", "--no-deps", "--format-version", "1"],
         capture_output=True,
         text=True,
         check=True,
     ).stdout
-    return [str(Path(package["manifest_path"]).parent) for package in json.loads(out)["packages"]]
+    return json.loads(out)["packages"]
 
 
-def lint_crate(crate, advisory, quiet):
+def lint_crate(crate, packages, advisory, quiet):
     """Lints one crate's docs and comments, printing each finding; 1 on an error, 2 on no crate."""
     if not (crate / "Cargo.toml").exists():
         print(f"rust-doc: {crate} has no Cargo.toml", file=sys.stderr)
         return 2
-    me, deps, manifest = crate_meta(crate)
+    me, names, manifest = crate_meta(crate, packages)
     findings = []
     desc = re.search(r'^description\s*=\s*"([^"]*)"', manifest, re.M)
     if desc:
@@ -315,7 +326,7 @@ def lint_crate(crate, advisory, quiet):
         d = crate / sub
         if d.is_dir():
             for f in sorted(d.rglob("*.rs")):
-                lint_file(f, me, deps, findings)
+                lint_file(f, me, names, findings)
     errors = 0
     for path, ln, kind, msg in findings:
         if kind == "advisory" and not advisory:
