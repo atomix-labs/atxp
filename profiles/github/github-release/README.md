@@ -26,14 +26,25 @@ A release builds uncached, and one runs at a time, never cancelled halfway. The
 job that creates the GitHub Release holds the only write permissions, and signs
 the attestations; the jobs that build hold neither.
 
+The `agents` feature adds the `cutting-releases` skill in `.claude/skills/`:
+choosing the version, the release's pull request, and checking the published
+release. The tag stays the maintainer's to push.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                            | Part  | Policy | Notes                        |
-| ------------------------------- | ----- | ------ | ---------------------------- |
-| `RELEASE.md`                    | whole | once   | template, scaffold `release` |
-| `.github/workflows/release.yml` | whole | owned  | template                     |
+| File                                       | Part  | Policy | Notes                        |
+| ------------------------------------------ | ----- | ------ | ---------------------------- |
+| `RELEASE.md`                               | whole | once   | template, scaffold `release` |
+| `.github/workflows/release.yml`            | whole | owned  | template                     |
+| `.claude/skills/cutting-releases/SKILL.md` | whole | owned  | template, feature `agents`   |
+
+## Features
+
+| Feature  | Default | Enables |
+| -------- | ------- | ------- |
+| `agents` |         |         |
 
 ## Variables
 

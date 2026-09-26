@@ -7,6 +7,10 @@ devset      = ">=0.2.2"
 git-changelog = {}
 just          = {}
 
+[features]
+# The cutting-releases skill, in .claude/skills/.
+agents = []
+
 [vars.repository]
 prompt = "The GitHub repository, owner/name"
 
@@ -19,3 +23,7 @@ template = true
 
 [files.".github/workflows/release.yml"]
 template = true
+
+[files.".claude/skills/cutting-releases/SKILL.md"]
+template = true
+when     = { features = ["agents"] }
