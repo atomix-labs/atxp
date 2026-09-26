@@ -1,0 +1,32 @@
+[profile]
+name        = "agents"
+description = "What a coding agent reads to work in the repository: AGENTS.md, CLAUDE.md, and Claude Code's allow-list and Stop hook"
+devset      = ">=0.2.2"
+
+[features]
+default = ["hook"]
+# A Stop hook: the agent stops only once `just check` passes on what it changed.
+hook = []
+
+[requires]
+just = {}
+
+[scaffolds.claude]
+unless = "CLAUDE.md"
+
+[files."AGENTS.md"]
+scope    = "block"
+starter  = "AGENTS.starter.md"
+template = true
+
+[files."CLAUDE.md"]
+scaffold = "claude"
+
+[files.".claude/settings.json"]
+scope    = "keys"
+policy   = "merge"
+template = true
+
+[files.".claude/hooks/check.sh"]
+executable = true
+when       = { features = ["hook"] }

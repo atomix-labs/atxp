@@ -73,6 +73,12 @@ variables and what it requires.
 
 <!-- catalog: written by devset-collection -->
 
+### `agents`
+
+| Profile                                      | What                                                                                                                  | Owns                                                                                              |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [`agents`](profiles/agents/agents/README.md) | What a coding agent reads to work in the repository: AGENTS.md, CLAUDE.md, and Claude Code's allow-list and Stop hook | `AGENTS.md` (block), `CLAUDE.md`, `.claude/settings.json` (keys, merge), `.claude/hooks/check.sh` |
+
 ### `bundles`
 
 - [`rust`](profiles/bundles/rust/README.md): A Rust repository: toolchain,
