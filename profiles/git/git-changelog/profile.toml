@@ -4,7 +4,7 @@ description = "git-cliff writes the changelog from Conventional Commits at each 
 devset      = ">=0.2.1"
 
 [vars.repository]
-prompt = "The GitHub repository the changelog links into, owner/name"
+prompt = "The GitHub repository, owner/name"
 
 [files."cliff.toml"]
 template = true

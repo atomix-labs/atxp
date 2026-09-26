@@ -1,0 +1,21 @@
+{%- set crate = name or devset.target -%}
+[package]
+name                   = "{{ crate }}-cli"
+description.workspace  = true
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+authors.workspace      = true
+repository.workspace   = true
+
+[[bin]]
+name = "{{ crate }}"
+path = "src/main.rs"
+
+[dependencies]
+# internal
+{{ crate }} = { workspace = true }
+
+[lints]
+workspace = true

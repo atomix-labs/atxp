@@ -1,7 +1,59 @@
 [profile]
 name        = "cargo-workspace"
-description = "A Cargo workspace's own settings: its build output ignored, and requirements resolved within rust-version"
+description = "A Cargo workspace: scaffolded where there is none, its build output ignored, its builds portable, its requirements resolved within rust-version"
 devset      = ">=0.2.1"
+
+[vars.name]
+prompt  = "The first crate's name; empty takes the directory's"
+default = ""
+
+[vars.kind]
+prompt  = "What the first crate builds: lib, bin or both"
+default = "lib"
+
+[vars.description]
+prompt  = "One line: what the project is"
+default = ""
+
+[vars.authors]
+prompt  = "Authors, comma-separated"
+default = ""
+
+[vars.license]
+prompt  = "The licence, an SPDX expression"
+default = "MIT OR Apache-2.0"
+
+[vars.repository]
+prompt = "The GitHub repository, owner/name"
+
+[vars.rust_version]
+prompt  = "The oldest Rust the workspace builds with"
+default = "1.98"
+
+[scaffolds.workspace]
+unless = "Cargo.toml"
+
+[files."Cargo.toml"]
+scaffold = "workspace"
+template = true
+
+[files."crates/{{ name or devset.target }}/Cargo.toml"]
+scaffold = "workspace"
+template = true
+
+[files."crates/{{ name or devset.target }}/src/lib.rs"]
+scaffold = "workspace"
+template = true
+
+[files."crates/{{ name or devset.target }}-cli/Cargo.toml"]
+scaffold = "workspace"
+template = true
+when     = { vars = { kind = ["bin", "both"] } }
+
+[files."crates/{{ name or devset.target }}-cli/src/main.rs"]
+scaffold = "workspace"
+template = true
+when     = { vars = { kind = ["bin", "both"] } }
 
 [files.".gitignore"]
 scope = "block"

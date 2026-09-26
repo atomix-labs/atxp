@@ -1,0 +1,19 @@
+{%- set crate = name or devset.target -%}
+[workspace]
+members  = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+version      = "0.1.0"
+edition      = "2024"
+rust-version = "{{ rust_version }}"
+description  = "{{ description }}"
+license      = "{{ license }}"
+authors      = [{% for author in authors | split(",") | map("trim") | select %}"{{ author }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+repository   = "https://github.com/{{ repository }}"
+
+[workspace.lints]
+
+[workspace.dependencies]
+# internal
+{{ crate }} = { path = "crates/{{ crate }}", version = "0.1.0" }

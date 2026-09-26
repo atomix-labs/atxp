@@ -34,8 +34,8 @@ configuration is found before a release needs it.
 
 ## Variables
 
-| Variable     | Default | Asks                                                       |
-| ------------ | ------- | ---------------------------------------------------------- |
-| `repository` | none    | The GitHub repository the changelog links into, owner/name |
+| Variable     | Default | Asks                              |
+| ------------ | ------- | --------------------------------- |
+| `repository` | none    | The GitHub repository, owner/name |
 
 <!-- /facts -->
