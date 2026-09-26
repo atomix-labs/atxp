@@ -21,7 +21,8 @@ exposes its provenance. `check-rust-lints` runs them with `cargo check` on the
 nightly [`rust-toolchain`](../../rust/rust-toolchain/README.md) pins, their
 features switched on by `-Zcrate-attr`, so no source needs a `#![feature]` and
 [`rust-msrv`](../../rust/rust-msrv/README.md) can still prove a crate builds on
-stable.
+stable. A crate that enables them itself, as one built on nightly alone may, is
+no fault: the check allows the feature enabled twice.
 
 <!-- facts: written by devset-collection -->
 
@@ -43,7 +44,7 @@ stable.
 
 - `check-rust-lints`: Checks the lints only nightly has: their features come
   from -Zcrate-attr, so no source needs a #![feature], and every crate still
-  builds on stable.
+  builds on stable; a crate that enables them itself is no fault.
 
 ## Requires
 
