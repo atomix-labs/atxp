@@ -1,11 +1,14 @@
 # `rust-toolchain`
 
-The toolchain a checkout builds with: one pinned nightly, with `rust-src`,
-rustfmt, clippy, miri, `rustc-dev` and `llvm-tools`, on rustup's minimal
-profile, and rustup itself where it is missing. The nightly moves weekly with
-atxp's `bump-rust-toolchain`, to the newest nightly of the last fourteen days
-that has every component on every platform the locks cover, never backwards; a
-repository takes it with `devset update`.
+The toolchain a checkout builds with, on rustup's minimal profile, and rustup
+itself where it is missing. With `channel` `nightly`, the default, it is one
+pinned nightly, with `rust-src`, rustfmt, clippy, miri, `rustc-dev` and
+`llvm-tools`; the nightly moves weekly with atxp's `bump-rust-toolchain`, to the
+newest nightly of the last fourteen days that has every component on every
+platform the locks cover, never backwards, and a repository takes it with
+`devset update`. With `channel` `stable`, it is the current stable release, with
+`rust-src`, rustfmt, clippy and `llvm-tools`; `rust-lints`' `nightly` and
+`cargo-hack` need the nightly.
 
 `.just/rust-toolchain.sh` installs rustup with rustup's own installer where it
 is missing, with no default toolchain and without editing shell profiles, then
@@ -31,7 +34,7 @@ output must land in `target/doc` rather than `target/<triple>/doc` unsets it.
 
 | File                                             | Part  | Policy | Notes      |
 | ------------------------------------------------ | ----- | ------ | ---------- |
-| `rust-toolchain.toml`                            | keys  | owned  |            |
+| `rust-toolchain.toml`                            | keys  | owned  | template   |
 | `.just/rust-toolchain.just`                      | whole | owned  |            |
 | `.just/rust-toolchain.sh`                        | whole | owned  | executable |
 | `.config/mise/conf.d/devset-rust-toolchain.toml` | whole | owned  |            |
@@ -40,6 +43,12 @@ output must land in `target/doc` rather than `target/<triple>/doc` unsets it.
 
 - `setup-rust-toolchain`: Installs rustup where it is missing, with no toolchain
   of its own, then the toolchain rust-toolchain.toml names.
+
+## Variables
+
+| Variable  | Default   | Asks                                                        |
+| --------- | --------- | ----------------------------------------------------------- |
+| `channel` | `nightly` | The toolchain: nightly, the one the profiles pin, or stable |
 
 ## Requires
 

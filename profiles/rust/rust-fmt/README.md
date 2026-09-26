@@ -3,8 +3,9 @@
 rustfmt on nightly's options, at `line_width`: the 2024 style edition; imports
 grouped by module, then std, external crates and the crate's own; comments and
 doc examples wrapped; macros' matchers formatted; and hex literals in upper
-case. It needs the nightly
-[`rust-toolchain`](../../rust/rust-toolchain/README.md) pins.
+case. Those options are nightly's own: with
+[`rust-toolchain`](../../rust/rust-toolchain/README.md)'s `channel` `stable`,
+`rustfmt.toml` holds only the stable ones, so a stable rustfmt warns of nothing.
 
 It owns those keys of `rustfmt.toml`, under `merge`: an option the repository
 adds, or a value it changes, stays its own.
@@ -25,9 +26,10 @@ adds, or a value it changes, stays its own.
 
 ## Variables
 
-| Variable     | Default | Asks                                                  |
-| ------------ | ------- | ----------------------------------------------------- |
-| `line_width` | `100`   | Line width, shared by the formatters and EditorConfig |
+| Variable     | Default   | Asks                                                        |
+| ------------ | --------- | ----------------------------------------------------------- |
+| `channel`    | `nightly` | The toolchain: nightly, the one the profiles pin, or stable |
+| `line_width` | `100`     | Line width, shared by the formatters and EditorConfig       |
 
 ## Requires
 

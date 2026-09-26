@@ -6,6 +6,10 @@ devset      = ">=0.2.1"
 [requires]
 rust-toolchain = {}
 
+[vars.channel]
+prompt  = "The toolchain: nightly, the one the profiles pin, or stable"
+default = "nightly"
+
 [vars.line_width]
 prompt  = "Line width, shared by the formatters and EditorConfig"
 default = "100"
