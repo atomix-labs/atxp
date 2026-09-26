@@ -1,52 +1,52 @@
 [profile]
-name = "rust"
-description = "A Rust repository: formatting, the lint wall, dependency policy, tests, commits, the changelog, editor and CI"
-devset = ">=0.1"
-requires = [
-    "../editorconfig",
-    "../gitattributes",
-    "../gitignore",
-    "../gitignore-rust",
-    "../mise",
-    "../just",
-    "../setup",
-    "../rustup",
-    "../rust-toolchain",
-    "../github-ci",
-    "../github-watch",
-    "../github-nightly",
-    "../github-bump",
-    "../github-release",
-    "../dependabot",
-    "../automation",
-    "../committed",
-    "../git-cliff",
-    "../typos",
-    "../clippy",
-    "../rustdoc",
-    "../rustfmt",
-    "../lints",
-    "../lints-nightly",
-    "../cargo-profiles",
-    "../cargo-deny",
-    "../cargo-machete",
-    "../cargo-shear",
-    "../cargo-workspace-lints",
-    "../cargo-hack",
-    "../cargo-bump",
-    "../manifest-lint",
-    "../nextest",
-    "../taplo",
-    "../dprint",
-    "../rumdl",
-    "../ruff",
-    "../yamllint",
-    "../shellcheck",
-    "../actionlint",
-    "../zizmor",
-    "../conftest",
-    "../policies",
-    "../suppressions",
-    "../vscode-rust",
-    "../claude-skills",
-]
+name        = "rust"
+description = "A Rust repository: toolchain, formatting, lints, dependency policy, tests, commits, the changelog and CI"
+devset      = ">=0.2"
+
+[requires]
+rust-toolchain       = {}
+rust-fmt             = {}
+rust-clippy          = {}
+rust-lints           = {}
+rust-doc             = {}
+cargo-workspace      = {}
+cargo-deny           = {}
+cargo-unused         = {}
+cargo-nextest        = {}
+cargo-profiles       = {}
+cargo-manifest       = {}
+cargo-bump           = {}
+git-ignore           = {}
+git-attributes       = {}
+git-commits          = {}
+git-changelog        = {}
+github-ci            = {}
+github-bump          = {}
+github-watch         = {}
+github-dependabot    = {}
+github-workflow-lint = {}
+markdown             = {}
+toml                 = {}
+yaml                 = {}
+spelling             = {}
+shell                = {}
+mise                 = {}
+just                 = {}
+setup                = {}
+editorconfig         = {}
+devset               = {}
+mdbook               = { optional = true }
+cargo-publish        = { optional = true }
+github-release       = { optional = true }
+cargo-binaries       = { optional = true }
+cargo-hack           = { optional = true }
+github-nightly       = { optional = true }
+
+[features]
+default  = []
+docs     = ["dep:mdbook"]
+agents   = ["rust-doc/agents", "cargo-manifest/agents"]
+publish  = ["dep:cargo-publish", "dep:github-release"]
+binaries = ["dep:cargo-binaries", "dep:github-release"]
+nightly  = ["rust-lints/nightly", "dep:cargo-hack", "dep:github-nightly"]
+strict   = ["cargo-deny/strict", "rust-lints/strict", "cargo-profiles/strict"]

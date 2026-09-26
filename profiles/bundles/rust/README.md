@@ -1,20 +1,30 @@
 # `rust`
 
-A Rust repository, whole: EditorConfig, Git attributes and ignores; the `just`
-spine, setup and the pinned nightly; CI, with its watch, its nightly run and its
-weekly bump; formatting for Rust, TOML, Markdown, YAML, JSON and Python; the
-lint wall and the build profiles; dependency policy, and dependencies bumped one
-at a time; tests; commits, the changelog and the release; workflow policies;
-spelling; editor settings; and Claude Code's skills.
+A Rust repository, whole: the pinned toolchain, formatting and the lint wall,
+dependency policy and dependencies bumped one at a time, tests, the build
+profiles, manifests in one shape; EditorConfig, Git attributes and ignores,
+commits and the changelog; formatting and linting for Markdown, TOML, YAML and
+shell, and spelling; the `just` spine, setup, mise and devset; and CI, with its
+watch and its weekly bump.
 
-A bundle owns nothing itself: each profile it requires is a layer of its own. To
-leave one out, require the profiles wanted from a profile of the repository's
-own. [`ansible`](../../lang/ansible/README.md),
-[`lychee`](../../docs/lychee/README.md) and [`mdbook`](../../docs/mdbook/README.md) are outside
-it, for a repository with playbooks, links to check, or a book; so are
-[`rust-msrv`](../../rust/rust-msrv/README.md), for crates that build on stable, and
-[`cargo-binaries`](../../cargo/cargo-binaries/README.md), for a repository whose release
-ships binaries.
+A bundle owns nothing itself: each profile it requires is a layer of its own,
+and its features describe the kind of project:
+
+| Feature    | Adds                                                                         |
+| ---------- | ---------------------------------------------------------------------------- |
+| `docs`     | a book, with [`mdbook`](../../docs/mdbook/README.md)                          |
+| `agents`   | the skills for rustdoc and manifests                                         |
+| `publish`  | crates.io, with [`cargo-publish`](../../cargo/cargo-publish/README.md), and the release |
+| `binaries` | release archives, with [`cargo-binaries`](../../cargo/cargo-binaries/README.md) |
+| `nightly`  | nightly's own lints, cargo-hack's feature matrix, and the nightly run         |
+| `strict`   | the house policy: cargo-deny's bans, the full lint wall, `panic = "abort"`   |
+
+None is on by default. Outside it are
+[`rust-msrv`](../../rust/rust-msrv/README.md), for crates that build on stable;
+[`python`](../../lang/python/README.md), [`ansible`](../../lang/ansible/README.md)
+and [`lychee`](../../docs/lychee/README.md); and
+[`vscode`](../../tooling/vscode/README.md) and
+[`suppressions`](../../tooling/suppressions/README.md).
 
 <!-- facts: written by scripts/catalog.py -->
 
