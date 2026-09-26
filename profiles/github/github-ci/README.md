@@ -26,19 +26,24 @@ what is published is what was checked. Pages must be set to deploy from GitHub
 Actions; `deploy` holds the only write permissions, in the `github-pages`
 environment. A name that is no check recipe, or no path, fails the plan.
 
+The `agents` feature adds the `fixing-ci` skill in `.claude/skills/`: a failing
+job reproduced by its recipe, and fixed at its cause.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                          | Part  | Policy | Notes    |
-| ----------------------------- | ----- | ------ | -------- |
-| `.github/workflows/check.yml` | whole | owned  | template |
+| File                                | Part  | Policy | Notes            |
+| ----------------------------------- | ----- | ------ | ---------------- |
+| `.github/workflows/check.yml`       | whole | owned  | template         |
+| `.claude/skills/fixing-ci/SKILL.md` | whole | owned  | feature `agents` |
 
 ## Features
 
-| Feature | Default | Enables |
-| ------- | ------- | ------- |
-| `pages` |         |         |
+| Feature  | Default | Enables |
+| -------- | ------- | ------- |
+| `pages`  |         |         |
+| `agents` |         |         |
 
 ## Requires
 

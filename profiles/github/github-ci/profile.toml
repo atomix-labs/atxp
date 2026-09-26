@@ -12,6 +12,11 @@ default = []
 # The site one recipe builds, kept from each run and deployed to GitHub Pages from the default
 # branch.
 pages = []
+# The fixing-ci skill, in .claude/skills/.
+agents = []
 
 [files.".github/workflows/check.yml"]
 template = true
+
+[files.".claude/skills/fixing-ci/SKILL.md"]
+when = { features = ["agents"] }
