@@ -43,6 +43,12 @@ release-readme:
 test-setup-stub:
     mise exec -- bash tests/setup-stub.sh
 
+# Applies the rust bundle to an empty repository, with no features and with every feature, then sets
+# it up and checks it, as a new project is; the nightly takes each feature alone.
+test-bundle:
+    mise exec -- bash tests/bundle.sh
+    mise exec -- bash tests/bundle.sh docs,agents,publish,binaries,oss,nightly,strict
+
 # >>> devset: just >>>
 # Each active profile's recipes.
 import? '.just/devset.just'

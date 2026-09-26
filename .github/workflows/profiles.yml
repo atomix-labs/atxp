@@ -1,5 +1,6 @@
 # Runs every `test-*` recipe, with the devset release atxp pins: the collection's suite, every profile
-# alone, then the bundle and every profile at once on each fixture; and the setup stub's test.
+# alone, then the bundle and every profile at once on each fixture; the setup stub's test; and the
+# bundle from nothing, with no features and with every feature.
 name: profiles
 
 on:

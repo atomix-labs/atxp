@@ -1,0 +1,31 @@
+# The rust bundle from nothing, each feature alone: applied to an empty repository, set up and checked
+# as a new project is. Every pull request runs it with no features and with every feature, through
+# `just test`; each feature alone waits for the night.
+name: bundle
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        feature: [docs, agents, publish, binaries, oss, nightly, strict]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+        with:
+          version: 2026.9.12
+      - env:
+          FEATURE: ${{ matrix.feature }}
+        run: mise exec -- bash tests/bundle.sh "$FEATURE"
