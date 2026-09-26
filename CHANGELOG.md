@@ -3,6 +3,29 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.6.0](https://github.com/atomix-labs/atxp/releases/tag/v0.6.0) - 2026-09-26
+
+### Features
+
+- [3808a3a](https://github.com/atomix-labs/atxp/commit/3808a3ad7b169edf1b1cdf7cd0408ee8c4086f76) *(devset)* Teach turning features on and off, and placing a block
+- [0b1d8b1](https://github.com/atomix-labs/atxp/commit/0b1d8b1648ce3bbf72ba4a4ff91ddfeae20f44f0) *(mdbook)* Link the prose to the API by path, under a page grouping its crates **breaking**
+- [4b5f288](https://github.com/atomix-labs/atxp/commit/4b5f288b95f882f583027ed815cd5415bf9d7764) *(cargo-manifest)* Put each dependency under its group with fix-cargo-manifest
+
+### Bug Fixes
+
+- [40a4e33](https://github.com/atomix-labs/atxp/commit/40a4e33f27f94ed7e331ed24f0877c3de37ca2cb) *(cargo-unused)* Put back the group markers a removal takes
+
+### Documentation
+
+- [49e227e](https://github.com/atomix-labs/atxp/commit/49e227e27d3a5d22f79f69b45d4f16c02822bf17) Write the v0.6.0 migration
+
+### Miscellaneous
+
+- [3219030](https://github.com/atomix-labs/atxp/commit/3219030c3803a0439aa9906f67ae2d2d9b25b3cf) Apply the profiles' changes to atxp
+- [27db7da](https://github.com/atomix-labs/atxp/commit/27db7da5a3bd551cddce1bbcf89136ad4999ec18) Require and pin devset 0.3.0 **breaking**
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.5.0...v0.6.0>
+
 ## [0.5.0](https://github.com/atomix-labs/atxp/releases/tag/v0.5.0) - 2026-09-26
 
 ### Features
