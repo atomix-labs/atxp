@@ -4,22 +4,38 @@ description = "Markdown: formatted by dprint at 80, and linted by rumdl, heading
 devset      = ">=0.2.1"
 
 [requires]
-dprint = {}
+dprint = { optional = true }
+lychee = { optional = true }
+
+[features]
+default = ["format", "lint"]
+# dprint formats every Markdown file, at 80.
+format = ["dep:dprint"]
+# rumdl lints every Markdown file, headings in title case.
+lint = []
+# lychee checks every link into the repository on each change, and the web's nightly.
+links = ["dep:lychee"]
 
 [files.".rumdl.toml"]
 scope  = "keys"
 policy = "merge"
+when   = { features = ["lint"] }
 
 [files.".just/markdown.just"]
+when = { features = ["lint"] }
 
 [files.".config/mise/conf.d/devset-markdown.toml"]
+when = { features = ["lint"] }
 
 [files.".config/mise/mise.lock"]
 scope = "keys"
+when  = { features = ["lint"] }
 
 [files.".gitignore"]
 scope = "block"
+when  = { features = ["lint"] }
 
 [files."dprint.json"]
 scope  = "keys"
 policy = "merge"
+when   = { features = ["format"] }

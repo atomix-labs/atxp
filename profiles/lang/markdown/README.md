@@ -15,18 +15,31 @@ ignore-words`, the names heading case leaves as they are, stay the repository's.
 
 Git ignores rumdl's cache, in a block of `.gitignore`.
 
+Each half is a feature, both on by default: `format`, dprint's, and `lint`,
+rumdl's with its configuration, pin, recipes and cache. `links` adds
+[`lychee`](../../docs/lychee/README.md), which checks every link into the
+repository on each change, and the web's nightly.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                       | Part  | Policy | Notes |
-| ------------------------------------------ | ----- | ------ | ----- |
-| `.rumdl.toml`                              | keys  | merge  |       |
-| `.just/markdown.just`                      | whole | owned  |       |
-| `.config/mise/conf.d/devset-markdown.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`                   | keys  | owned  |       |
-| `.gitignore`                               | block | owned  |       |
-| `dprint.json`                              | keys  | merge  |       |
+| File                                       | Part  | Policy | Notes            |
+| ------------------------------------------ | ----- | ------ | ---------------- |
+| `.rumdl.toml`                              | keys  | merge  | feature `lint`   |
+| `.just/markdown.just`                      | whole | owned  | feature `lint`   |
+| `.config/mise/conf.d/devset-markdown.toml` | whole | owned  | feature `lint`   |
+| `.config/mise/mise.lock`                   | keys  | owned  | feature `lint`   |
+| `.gitignore`                               | block | owned  | feature `lint`   |
+| `dprint.json`                              | keys  | merge  | feature `format` |
+
+## Features
+
+| Feature  | Default | Enables      |
+| -------- | ------- | ------------ |
+| `format` | yes     | `dep:dprint` |
+| `lint`   | yes     |              |
+| `links`  |         | `dep:lychee` |
 
 ## Recipes
 
@@ -35,6 +48,7 @@ Git ignores rumdl's cache, in a block of `.gitignore`.
 
 ## Requires
 
-- [`dprint`](../dprint/README.md)
+- [`dprint`](../dprint/README.md): optional
+- [`lychee`](../../docs/lychee/README.md): optional
 
 <!-- /facts -->
