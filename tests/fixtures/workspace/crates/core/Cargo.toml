@@ -1,6 +1,6 @@
 [package]
 name                   = "fixture-core"
-description            = "the library of a workspace the profiles are applied to"
+description            = "the library of a workspace the profiles are applied to."
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true

@@ -245,5 +245,5 @@ heading over an empty paragraph, the crate page an introduction.
 | `references/tooling.md`    | the verify step: commands, the workspace's doc lints, cfg axes, links rustdoc cannot resolve, doctest attributes               |
 | `references/sources.md`    | an external claim needs a citation: the Rust API Guidelines, RFC 1574, the rustdoc book, clippy, and what each backs           |
 | `scripts/doc-audit.sh`     | the gate for one crate; `--lint-only --advisory` for the reread loop                                                           |
-| `scripts/doc-lint.py`      | the cut list by machine, standalone                                                                                            |
+| `.just/rust-doc.py`        | the cut list by machine, standalone                                                                                            |
 | `scripts/doc-inventory.py` | the surface item by item, with sections present and gaps flagged                                                               |

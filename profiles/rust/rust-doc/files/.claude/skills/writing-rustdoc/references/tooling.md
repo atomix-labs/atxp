@@ -16,7 +16,7 @@ host=$(rustc -vV | sed -n 's/^host: //p')                  # every `just` recipe
 RUSTDOCFLAGS="-D warnings" cargo doc -p <crate> --no-deps --target "$host" [--all-features] --document-private-items
 cargo test -p <crate> --doc --target "$host" [--all-features]
 cargo clippy -p <crate> --all-targets --target "$host"
-python3 scripts/doc-lint.py <crate-dir>                    # the cut list, mechanically
+python3 .just/rust-doc.py <crate-dir>                    # the cut list, mechanically
 ```
 
 `--all-features` where the manifest has a `[features]` table. The rustdoc lints

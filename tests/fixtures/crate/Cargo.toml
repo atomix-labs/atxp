@@ -11,7 +11,7 @@ publish      = false
 
 [package]
 name                   = "fixture"
-description            = "a crate the profiles are applied to"
+description            = "a crate the profiles are applied to."
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true

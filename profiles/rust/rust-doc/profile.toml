@@ -7,9 +7,14 @@ devset      = ">=0.2.1"
 rust-toolchain = {}
 
 [features]
+# The house's doc lint, in check-rust-doc.
+strict = []
 agents = []
 
 [files.".just/rust-doc.just"]
+template = true
+
+[files.".just/rust-doc.py"]
 
 [files.".claude/skills/writing-rustdoc/SKILL.md"]
 when = { features = ["agents"] }
@@ -36,7 +41,4 @@ when = { features = ["agents"] }
 when = { features = ["agents"] }
 
 [files.".claude/skills/writing-rustdoc/scripts/doc-inventory.py"]
-when = { features = ["agents"] }
-
-[files.".claude/skills/writing-rustdoc/scripts/doc-lint.py"]
 when = { features = ["agents"] }

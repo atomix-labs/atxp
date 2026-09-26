@@ -7,7 +7,6 @@
 #   --advisory    also print widows and wrapped summaries
 set -euo pipefail
 
-here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 usage() { sed -n '2,7p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
 case "${1:-}" in
     -h|--help) usage; exit 0 ;;
@@ -45,4 +44,4 @@ if ! $lint_only; then
     fi
 fi
 echo "== doc-lint"
-python3 "$here/doc-lint.py" "$crate" "${advisory[@]}"
+python3 "$(git rev-parse --show-toplevel)/.just/rust-doc.py" "$crate" "${advisory[@]}"

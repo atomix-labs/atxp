@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """Mechanical pass over a crate's docs and comments: the cut list, checked by machine.
 
-Usage: doc-lint.py <crate-dir> [--advisory] [--quiet]
+Usage: rust-doc.py (<crate-dir>... | --workspace) [--advisory] [--quiet]
 
-Reads every .rs file under src/, tests/, benches/, examples/ and the Cargo.toml. Prints one line per
-finding as `path:line: [tag] message`. Exit 1 if any error-class finding, else 0. Advisory findings
-(widows, wrapped summaries) print only with --advisory. A finding is a prompt to reread the line,
-not an order: the exemplar crates carry a handful.
+Reads, for each crate, every .rs file under src/, tests/, benches/, examples/ and the Cargo.toml.
+Prints one line per finding as `path:line: [tag] message`. Exit 1 if any error-class finding, else
+0. Advisory findings (widows, wrapped summaries) print only with --advisory. A finding is a prompt
+to reread the line, not an order: the exemplar crates carry a handful.
 """
 
+import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -250,14 +252,38 @@ def check_block(path, start, block, item, me, deps, findings):
 
 
 def main(argv):
-    if len(argv) < 2 or argv[1] in ("-h", "--help"):
+    if "-h" in argv or "--help" in argv:
         print(__doc__.strip())
         return 0
-    crate = Path(argv[1]).resolve()
+    crates = [arg for arg in argv[1:] if not arg.startswith("-")]
+    if "--workspace" in argv:
+        crates += workspace()
+    if not crates:
+        print(__doc__.strip().splitlines()[2], file=sys.stderr)
+        return 2
     advisory = "--advisory" in argv
     quiet = "--quiet" in argv
+    failed = 0
+    for crate in crates:
+        failed |= lint_crate(Path(crate).resolve(), advisory, quiet)
+    return failed
+
+
+def workspace():
+    """The directory of every package of the workspace, as cargo lists them."""
+    out = subprocess.run(
+        ["cargo", "metadata", "--no-deps", "--format-version", "1"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+    return [str(Path(package["manifest_path"]).parent) for package in json.loads(out)["packages"]]
+
+
+def lint_crate(crate, advisory, quiet):
+    """Lints one crate's docs and comments, printing each finding; 1 on an error, 2 on no crate."""
     if not (crate / "Cargo.toml").exists():
-        print(f"doc-lint: {crate} has no Cargo.toml", file=sys.stderr)
+        print(f"rust-doc: {crate} has no Cargo.toml", file=sys.stderr)
         return 2
     me, deps, manifest = crate_meta(crate)
     findings = []
@@ -300,8 +326,9 @@ def main(argv):
                 rel = path
             print(f"{rel}:{ln}: [{kind}] {msg}")
     adv = sum(1 for f in findings if f[2] == "advisory")
-    print(f"doc-lint {me}: {errors} error(s), {adv} advisory" + ("" if advisory else " (show with --advisory)"))
+    print(f"rust-doc {me}: {errors} error(s), {adv} advisory" + ("" if advisory else " (show with --advisory)"))
     return 1 if errors else 0
+
 
 
 if __name__ == "__main__":

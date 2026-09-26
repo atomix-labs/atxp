@@ -31,14 +31,14 @@ None is on by default. Outside it are
 
 ## Features
 
-| Feature    | Default | Enables                                                           |
-| ---------- | ------- | ----------------------------------------------------------------- |
-| `docs`     |         | `dep:mdbook`                                                      |
-| `agents`   |         | `rust-doc/agents`, `cargo-manifest/agents`                        |
-| `publish`  |         | `dep:cargo-publish`, `dep:github-release`                         |
-| `binaries` |         | `dep:cargo-binaries`, `dep:github-release`                        |
-| `nightly`  |         | `rust-lints/nightly`, `dep:cargo-hack`, `dep:github-nightly`      |
-| `strict`   |         | `cargo-deny/strict`, `rust-lints/strict`, `cargo-profiles/strict` |
+| Feature    | Default | Enables                                                                              |
+| ---------- | ------- | ------------------------------------------------------------------------------------ |
+| `docs`     |         | `dep:mdbook`                                                                         |
+| `agents`   |         | `rust-doc/agents`, `cargo-manifest/agents`                                           |
+| `publish`  |         | `dep:cargo-publish`, `dep:github-release`                                            |
+| `binaries` |         | `dep:cargo-binaries`, `dep:github-release`                                           |
+| `nightly`  |         | `rust-lints/nightly`, `dep:cargo-hack`, `dep:github-nightly`                         |
+| `strict`   |         | `cargo-deny/strict`, `rust-lints/strict`, `cargo-profiles/strict`, `rust-doc/strict` |
 
 ## Requires
 
