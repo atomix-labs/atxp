@@ -3,6 +3,9 @@ name        = "rust-fmt"
 description = "rustfmt on nightly options: imports by module, comments wrapped, doc examples formatted"
 devset      = ">=0.2"
 
+[requires]
+rust-toolchain = {}
+
 [vars.line_width]
 prompt  = "Line width, shared by the formatters and EditorConfig"
 default = "100"

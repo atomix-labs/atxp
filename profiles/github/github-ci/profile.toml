@@ -4,6 +4,7 @@ description = "GitHub Actions: every `check-*` recipe a job of its own, read fro
 devset      = ">=0.2"
 
 [requires]
-just = {}
+github-automation = {}
+just              = {}
 
 [files.".github/workflows/check.yml"]

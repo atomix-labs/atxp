@@ -3,6 +3,9 @@ name        = "cargo-deny"
 description = "cargo-deny: yanked and unmaintained crates, one version each, the bans, permissive licences, crates.io only"
 devset      = ">=0.2"
 
+[requires]
+rust-toolchain = {}
+
 [files."deny.toml"]
 scope = "keys"
 

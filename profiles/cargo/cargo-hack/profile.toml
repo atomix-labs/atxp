@@ -3,6 +3,9 @@ name        = "cargo-hack"
 description = "cargo-hack lints every crate with each of its features alone, nightly, where a feature can break"
 devset      = ">=0.2"
 
+[requires]
+rust-toolchain = {}
+
 [files.".just/cargo-hack.just"]
 
 [files.".config/mise/conf.d/devset-cargo-hack.toml"]

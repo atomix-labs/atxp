@@ -3,6 +3,9 @@ name        = "rust-doc"
 description = "rustdoc builds every crate's documentation, private items included, warnings denied"
 devset      = ">=0.2"
 
+[requires]
+rust-toolchain = {}
+
 [features]
 agents = []
 

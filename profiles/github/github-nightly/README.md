@@ -7,8 +7,8 @@ or links to the web with [`lychee`](../../docs/lychee/README.md). A night with n
 since the last green one is skipped, as [`github-automation`](../../github/github-automation/README.md)
 sets; a run by hand always runs.
 
-With [`github-watch`](../../github/github-watch/README.md), a failing or stalled night
-gets an issue. The jobs that build run on `ubuntu-latest`, or on the runner the
+A failing or stalled night gets an issue from
+[`github-watch`](../../github/github-watch/README.md). The jobs that build run on `ubuntu-latest`, or on the runner the
 repository variable `CI_RUNNER` names.
 
 <!-- facts: written by scripts/catalog.py -->

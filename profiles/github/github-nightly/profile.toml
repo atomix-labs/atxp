@@ -4,7 +4,8 @@ description = "A nightly run of every `nightly-*` recipe, each a job of its own,
 devset      = ">=0.2"
 
 [requires]
-github-watch = {}
-just = {}
+github-automation = {}
+github-watch      = {}
+just              = {}
 
 [files.".github/workflows/nightly.yml"]

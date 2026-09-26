@@ -4,8 +4,9 @@ description = "A weekly bump: every `bump-*` recipe, gated by `just check`, to a
 devset      = ">=0.2"
 
 [requires]
-github-watch = {}
-just = {}
+github-automation = {}
+github-watch      = {}
+just              = {}
 
 [files.".github/workflows/bump.yml"]
 

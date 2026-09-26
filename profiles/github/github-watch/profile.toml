@@ -3,6 +3,9 @@ name        = "github-watch"
 description = "Every scheduled workflow watched: one that fails, stops running or is disabled gets an issue"
 devset      = ">=0.2"
 
+[requires]
+github-automation = {}
+
 [files.".github/workflows/watch.yml"]
 
 [files.".github/scripts/watch.js"]

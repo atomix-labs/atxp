@@ -4,7 +4,7 @@ description = "crates.io: every crate a release publishes packaged on each chang
 devset      = ">=0.2"
 
 [requires]
-just = {}
+just           = {}
 rust-toolchain = {}
 
 [files.".just/cargo-publish.just"]
