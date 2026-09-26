@@ -19,7 +19,8 @@ agents = []
 scope = "keys"
 
 [files.".claude/skills/editing-cargo-manifests/SKILL.md"]
-when = { features = ["agents"] }
+template = true
+when     = { features = ["agents"] }
 
 [files.".claude/skills/editing-cargo-manifests/references/sources.md"]
 when = { features = ["agents"] }

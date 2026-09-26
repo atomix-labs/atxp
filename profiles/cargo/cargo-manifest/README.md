@@ -19,14 +19,14 @@ dependency or a feature within it.
 
 ## Owns
 
-| File                                                           | Part  | Policy | Notes            |
-| -------------------------------------------------------------- | ----- | ------ | ---------------- |
-| `.just/cargo-manifest.just`                                    | whole | owned  |                  |
-| `.just/cargo-manifest.py`                                      | whole | owned  |                  |
-| `.config/mise/conf.d/devset-cargo-manifest.toml`               | whole | owned  |                  |
-| `.config/mise/mise.lock`                                       | keys  | owned  |                  |
-| `.claude/skills/editing-cargo-manifests/SKILL.md`              | whole | owned  | feature `agents` |
-| `.claude/skills/editing-cargo-manifests/references/sources.md` | whole | owned  | feature `agents` |
+| File                                                           | Part  | Policy | Notes                      |
+| -------------------------------------------------------------- | ----- | ------ | -------------------------- |
+| `.just/cargo-manifest.just`                                    | whole | owned  |                            |
+| `.just/cargo-manifest.py`                                      | whole | owned  |                            |
+| `.config/mise/conf.d/devset-cargo-manifest.toml`               | whole | owned  |                            |
+| `.config/mise/mise.lock`                                       | keys  | owned  |                            |
+| `.claude/skills/editing-cargo-manifests/SKILL.md`              | whole | owned  | template, feature `agents` |
+| `.claude/skills/editing-cargo-manifests/references/sources.md` | whole | owned  | feature `agents`           |
 
 ## Features
 
