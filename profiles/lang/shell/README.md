@@ -7,15 +7,24 @@ else's and is left out.
 [`github-workflow-lint`](../../github/github-workflow-lint/README.md) runs it on
 workflow steps too, where both are applied.
 
+Its one feature, `lint`, on by default, is all of it: a repository that wants
+none of ShellCheck applies the profile without its default features.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                    | Part  | Policy | Notes |
-| --------------------------------------- | ----- | ------ | ----- |
-| `.just/shell.just`                      | whole | owned  |       |
-| `.config/mise/conf.d/devset-shell.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`                | keys  | owned  |       |
+| File                                    | Part  | Policy | Notes          |
+| --------------------------------------- | ----- | ------ | -------------- |
+| `.just/shell.just`                      | whole | owned  | feature `lint` |
+| `.config/mise/conf.d/devset-shell.toml` | whole | owned  | feature `lint` |
+| `.config/mise/mise.lock`                | keys  | owned  | feature `lint` |
+
+## Features
+
+| Feature | Default | Enables |
+| ------- | ------- | ------- |
+| `lint`  | yes     |         |
 
 ## Recipes
 

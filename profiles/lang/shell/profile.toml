@@ -3,9 +3,17 @@ name        = "shell"
 description = "ShellCheck lints every shell script the repository tracks, following what each sources"
 devset      = ">=0.2.1"
 
+[features]
+default = ["lint"]
+# shellcheck lints every shell script, following what each sources.
+lint = []
+
 [files.".just/shell.just"]
+when = { features = ["lint"] }
 
 [files.".config/mise/conf.d/devset-shell.toml"]
+when = { features = ["lint"] }
 
 [files.".config/mise/mise.lock"]
 scope = "keys"
+when  = { features = ["lint"] }
