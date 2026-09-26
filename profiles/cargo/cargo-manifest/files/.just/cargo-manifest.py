@@ -8,8 +8,9 @@ not in one. Those rules are checked here, on the lines rather than the values.
     cargo-manifest.py --fix [<path>...]   # each dependency under its group, the workspace's too
 
 `--fix` rewrites each dependency table as `# external` and its entries, then `# internal` and
-its, keeping their order: a tool that removes an entry, as `cargo shear --fix` does, takes the
-comment above it too. A table holding any other line is left as it is.
+its, keeping their order and a blank line between the groups: a tool that removes an entry, as
+`cargo shear --fix` does, takes the comment above it too. A table already in its groups, or
+holding any other line, is left as it is.
 """
 
 import re
@@ -223,22 +224,28 @@ def regroup(path: Path, internal: set) -> bool:
 
 
 def grouped(body: list, internal: set) -> list:
-    """A dependency table's lines, `# external` and its entries first, then `# internal` and its;
-    the blank lines that end it stay. Lines of any other kind leave the table as it was."""
-    end = len(body)
-    while end and not body[end - 1].strip():
+    """A dependency table's lines, `# external` and its entries first, then `# internal` and its,
+    a blank line between them where the table had one; the blank lines around it stay. A table
+    already in its groups, or holding a line of any other kind, is left as it was."""
+    start, end = 0, len(body)
+    while start < end and not body[start].strip():
+        start += 1
+    while end > start and not body[end - 1].strip():
         end -= 1
-    entries = [line for line in body[:end] if line.strip() and line.strip() not in GROUPS]
+    entries = [line for line in body[start:end] if line.strip() and line.strip() not in GROUPS]
     if not all(ENTRY.match(line) for line in entries):
         return body
     groups = {marker: [] for marker in GROUPS}
     for line in entries:
         groups["# internal" if ENTRY.match(line).group(1) in internal else "# external"].append(line)
+    gap = ["\n"] if any(not line.strip() for line in body[start:end]) else []
     out = []
     for marker in GROUPS:
         if groups[marker]:
-            out += [f"{marker}\n", *groups[marker]]
-    return out + body[end:]
+            out += [*(gap if out else []), f"{marker}\n", *groups[marker]]
+    if [line for line in out if line.strip()] == [line for line in body if line.strip()]:
+        return body
+    return body[:start] + out + body[end:]
 
 
 def main() -> int:

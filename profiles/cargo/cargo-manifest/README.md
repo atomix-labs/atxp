@@ -11,8 +11,10 @@ left alone. `check-cargo-manifest` also runs cargo-workspace-lints, which fails
 when a crate does not inherit the workspace's `[workspace.lints]`, which is how
 a crate leaves the shared lints without anyone deciding it should.
 `fix-cargo-manifest` puts each dependency under its group, `# external` or `#
-internal`, in every manifest the workspace's included, keeping their order; a
-table with any other line in it is left for the check to name.
+internal`, in every manifest the workspace's included, keeping their order and a
+blank line between the groups where the table has one; a table already in its
+groups keeps its layout, and one with any other line in it is left for the check
+to name.
 
 The `agents` feature adds the `editing-cargo-manifests` skill in
 `.claude/skills/`: the shape this profile checks, and how to add a crate, a
