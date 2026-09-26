@@ -11,17 +11,28 @@ YAML files the repository owns, tracked or new, less what `.gitattributes` marks
 It owns those keys of `.yamllint.yaml`, under `merge`, so rules the repository
 adds or changes, and its `ignore`, stay its own.
 
+Each half is a feature, both on by default: `format`, dprint's, and `lint`,
+yamllint's, which installs through pipx with the uv and Python
+[`mise`](../../tooling/mise/README.md) pins.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                   | Part  | Policy | Notes |
-| -------------------------------------- | ----- | ------ | ----- |
-| `.yamllint.yaml`                       | keys  | merge  |       |
-| `.just/yaml.just`                      | whole | owned  |       |
-| `.config/mise/conf.d/devset-yaml.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`               | keys  | owned  |       |
-| `dprint.json`                          | keys  | merge  |       |
+| File                                   | Part  | Policy | Notes            |
+| -------------------------------------- | ----- | ------ | ---------------- |
+| `.yamllint.yaml`                       | keys  | merge  | feature `lint`   |
+| `.just/yaml.just`                      | whole | owned  | feature `lint`   |
+| `.config/mise/conf.d/devset-yaml.toml` | whole | owned  | feature `lint`   |
+| `.config/mise/mise.lock`               | keys  | owned  | feature `lint`   |
+| `dprint.json`                          | keys  | merge  | feature `format` |
+
+## Features
+
+| Feature  | Default | Enables      |
+| -------- | ------- | ------------ |
+| `format` | yes     | `dep:dprint` |
+| `lint`   | yes     | `dep:mise`   |
 
 ## Recipes
 
@@ -31,7 +42,7 @@ adds or changes, and its `ignore`, stay its own.
 
 ## Requires
 
-- [`dprint`](../dprint/README.md)
-- [`mise`](../../tooling/mise/README.md)
+- [`dprint`](../dprint/README.md): optional
+- [`mise`](../../tooling/mise/README.md): optional
 
 <!-- /facts -->

@@ -4,20 +4,32 @@ description = "YAML: formatted by dprint with double quotes, and checked by yaml
 devset      = ">=0.2.1"
 
 [requires]
-dprint = {}
-mise   = {}
+dprint = { optional = true }
+mise   = { optional = true }
+
+[features]
+default = ["format", "lint"]
+# dprint formats every YAML file, with double quotes.
+format = ["dep:dprint"]
+# yamllint checks what no formatter fixes; its pipx install needs mise's uv and Python.
+lint = ["dep:mise"]
 
 [files.".yamllint.yaml"]
 scope  = "keys"
 policy = "merge"
+when   = { features = ["lint"] }
 
 [files.".just/yaml.just"]
+when = { features = ["lint"] }
 
 [files.".config/mise/conf.d/devset-yaml.toml"]
+when = { features = ["lint"] }
 
 [files.".config/mise/mise.lock"]
 scope = "keys"
+when  = { features = ["lint"] }
 
 [files."dprint.json"]
 scope  = "keys"
 policy = "merge"
+when   = { features = ["format"] }
