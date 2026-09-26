@@ -109,10 +109,10 @@ variables and what it requires.
 
 ### `devset`
 
-| Profile                                                            | What                                                                                                        | Owns                            |
-| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| [`devset`](profiles/devset/devset/README.md)                       | devset itself: pinned for every machine and job, and drift from the profiles failing the checks             | `.config/mise/mise.lock` (keys) |
-| [`devset-collection`](profiles/devset/devset-collection/README.md) | For a collection of profiles: its catalog, the rules its profiles keep, its test suite, and its pins locked | `collection.toml`               |
+| Profile                                                            | What                                                                                                        | Owns                                                                    |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [`devset`](profiles/devset/devset/README.md)                       | devset itself: pinned for every machine and job, and drift from the profiles failing the checks             | `.config/mise/mise.lock` (keys), `.claude/skills/using-devset/SKILL.md` |
+| [`devset-collection`](profiles/devset/devset-collection/README.md) | For a collection of profiles: its catalog, the rules its profiles keep, its test suite, and its pins locked | `collection.toml`                                                       |
 
 ### `docs`
 

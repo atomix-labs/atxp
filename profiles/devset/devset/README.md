@@ -12,16 +12,27 @@ backwards, then runs `devset update`, which merges what the release changed with
 the repository's own edits. An update that conflicts is taken back, with `devset
 update --abort`, and the bump says so; a source elsewhere is named as unchecked.
 
+The `agents` feature adds the `using-devset` skill in `.claude/skills/`: how an
+agent changes a file devset manages, turns on a feature, and resolves an update
+that conflicts.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                     | Part  | Policy | Notes |
-| ---------------------------------------- | ----- | ------ | ----- |
-| `.just/devset.just`                      | whole | owned  |       |
-| `.just/devset.py`                        | whole | owned  |       |
-| `.config/mise/conf.d/devset-devset.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`                 | keys  | owned  |       |
+| File                                     | Part  | Policy | Notes            |
+| ---------------------------------------- | ----- | ------ | ---------------- |
+| `.just/devset.just`                      | whole | owned  |                  |
+| `.just/devset.py`                        | whole | owned  |                  |
+| `.config/mise/conf.d/devset-devset.toml` | whole | owned  |                  |
+| `.config/mise/mise.lock`                 | keys  | owned  |                  |
+| `.claude/skills/using-devset/SKILL.md`   | whole | owned  | feature `agents` |
+
+## Features
+
+| Feature  | Default | Enables |
+| -------- | ------- | ------- |
+| `agents` |         |         |
 
 ## Recipes
 
