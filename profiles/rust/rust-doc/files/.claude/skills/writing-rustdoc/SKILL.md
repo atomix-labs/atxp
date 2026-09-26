@@ -63,11 +63,11 @@ step; `references/sources.md` when an external claim needs a citation.
    SAFETY:` / `// ORDERING:` → `#[expect]` reasons → tests, fixtures, benches,
    examples → `Cargo.toml`. Use `references/templates.md`; check each block
    against the voice table below.
-6. **Format, then tighten.** `just fix-rust-fmt fix-dprint fix-toml fix-markdown`,
-   then the widow pass: for every paragraph whose last line holds one to three
-   words, cut words until it fits the line above, or move words between lines
-   keeping each under 100 columns. `rustfmt` wraps an over-long line and never
-   joins a short one; rewrite, then format again.
+6. **Format, then tighten.** `just fix-rust-fmt fix-dprint fix-toml
+   fix-markdown`, then the widow pass: for every paragraph whose last line holds
+   one to three words, cut words until it fits the line above, or move words
+   between lines keeping each under 100 columns. `rustfmt` wraps an over-long
+   line and never joins a short one; rewrite, then format again.
 7. **Verify.** `scripts/doc-audit.sh <crate-dir>` (fmt check, rustdoc with
    private items, doctests, clippy, the mechanical cut list). Fix every finding;
    rerun until clean.
@@ -210,7 +210,7 @@ heading over an empty paragraph, the crate page an introduction.
 - `Cargo.toml`: `description` is the crate summary's pitch clause verbatim,
   first letter lowercased, trailing period, never naming itself a crate;
   dependencies under `# internal` / `# external`, which are the only comments
-  the manifest carries (`writing-cargo-manifest`).
+  the manifest carries (`editing-cargo-manifests`).
 - Nothing on the cut list survives; no widow survives; `scripts/doc-audit.sh` is
   clean with no `warning:` in its output; nothing was committed.
 

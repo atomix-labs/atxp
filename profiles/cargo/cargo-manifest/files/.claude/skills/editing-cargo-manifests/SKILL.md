@@ -1,13 +1,13 @@
 ---
-name: writing-cargo-manifest
-description: Use when creating a crate or writing, reviewing, cleaning or auditing any `Cargo.toml` in this workspace; when adding, removing, or re-pinning a dependency; when adding or reshaping a `[features]` table, or deciding whether something should be a feature, an optional dependency, or a separate crate; when splitting a proc-macro crate into its shim and impl halves; when declaring a `[[bench]]`, `[[bin]]`, `[[example]]` or `[lib]` target; when `just lint` reports a `manifest-lint.py` finding, or `just deps` reports an unused or misplaced dependency; when std leaks into a `no_std` crate. Not for the workspace root's profiles or lint wall, which change only on deliberate request.
+name: editing-cargo-manifests
+description: Use when creating a crate or writing, reviewing, cleaning or auditing any `Cargo.toml` in this workspace; when adding, removing, or re-pinning a dependency; when adding or reshaping a `[features]` table, or deciding whether something should be a feature, an optional dependency, or a separate crate; when splitting a proc-macro crate into its shim and impl halves; when declaring a `[[bench]]`, `[[bin]]`, `[[example]]` or `[lib]` target; when `just lint` reports a `cargo-manifest.py` finding, or `just deps` reports an unused or misplaced dependency; when std leaks into a `no_std` crate. Not for the workspace root's profiles or lint wall, which change only on deliberate request.
 ---
 
 # Writing Cargo Manifests
 
 House shape for every `Cargo.toml` under this workspace. `taplo` settles layout
 (alignment, and alphabetical order inside each dependency group) and
-`scripts/dev/manifest-lint.py` settles the text around the values. Neither can
+`scripts/dev/cargo-manifest.py` settles the text around the values. Neither can
 decide what belongs in the crate at all, which is most of this page.
 
 A manifest here is a *declaration*, not a document: it says what the crate is,
@@ -220,13 +220,13 @@ and `tests/*.rs` are found without help.
 
 ## Gates
 
-| command                                                                       | decides                                                                                                                                |
-| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `just fix-toml` / `just check-toml`                                         | `taplo` over every `Cargo.toml`: alignment, and alphabetical order within each group                                                   |
-| `just check-rust-clippy`, `just check-cargo-manifest`                               | clippy over every target and feature, then `.just/cargo-manifest.py`: the shape rules above                                             |
-| `just check-cargo-deny`, `just check-cargo-unused`, `just check-cargo-shear` | `cargo deny` (advisories, licenses, bans, sources) + `cargo machete` + `cargo shear`: **unused and misplaced dependencies**            |
-| `just nightly-cargo-hack`                                                     | `cargo hack --each-feature --workspace clippy`: every feature still compiles alone. Minutes, so nightly on main, not per-PR            |
-| `just check`                                                                  | the whole PR gate, every `check-*` recipe; `just nightly` adds the slow ones: the feature sweep, and the repository's own (loom, Miri) |
+| command                                               | decides                                                                                                                                |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `just fix-toml` / `just check-toml`                   | `taplo` over every `Cargo.toml`: alignment, and alphabetical order within each group                                                   |
+| `just check-rust-clippy`, `just check-cargo-manifest` | clippy over every target and feature, then `.just/cargo-manifest.py`: the shape rules above                                            |
+| `just check-cargo-deny`, `just check-cargo-unused`    | `cargo deny` (advisories, licenses, bans, sources) + `cargo machete` + `cargo shear`: **unused and misplaced dependencies**            |
+| `just nightly-cargo-hack`                             | `cargo hack --each-feature --workspace clippy`: every feature still compiles alone. Minutes, so nightly on main, not per-PR            |
+| `just check`                                          | the whole PR gate, every `check-*` recipe; `just nightly` adds the slow ones: the feature sweep, and the repository's own (loom, Miri) |
 
 `python3 .just/cargo-manifest.py [<path>...]` runs on one crate for the edit
 loop. To answer *why* a feature is on, `cargo tree -e features -i <crate>` names
@@ -252,7 +252,7 @@ and nothing else.
 | "It's an optional dep, the implicit feature is fine"                   | `dep:` always: the implicit one puts the crate's name in your public API.          |
 | "This new switch is small, one more feature won't hurt"                | It is permanent, it unifies across the graph, and it multiplies the feature sweep. |
 | "I'll pin the version here, it's only used by this crate"              | Until it is used by two. Versions live in `[workspace.dependencies]`.              |
-| "`taplo fmt` passed, the manifest is clean"                            | `taplo` never sees a comment. Run `just check-cargo-manifest`.                      |
+| "`taplo fmt` passed, the manifest is clean"                            | `taplo` never sees a comment. Run `just check-cargo-manifest`.                     |
 
 ## References
 

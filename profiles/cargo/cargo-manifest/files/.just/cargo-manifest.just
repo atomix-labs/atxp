@@ -1,3 +1,5 @@
-# Holds every crate manifest to one shape: what taplo, which reads values, cannot see.
+# Holds every crate manifest to one shape, which taplo, reading values, cannot see, and fails when a
+# crate does not inherit the workspace's lints.
 check-cargo-manifest:
     mise exec -- python3 .just/cargo-manifest.py
+    cargo workspace-lints

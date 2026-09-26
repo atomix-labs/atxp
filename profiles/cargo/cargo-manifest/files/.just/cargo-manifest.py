@@ -4,7 +4,7 @@ taplo settles layout: alignment, and alphabetical order inside each dependency g
 reach is the text around the values, because a JSON schema validates a parsed tree and a comment is
 not in one. Those rules are checked here, on the lines rather than the values.
 
-    manifest-lint.py [<path>...]   # default: every tracked Cargo.toml, vendored crates aside
+    cargo-manifest.py [<path>...]   # default: every tracked Cargo.toml, vendored crates aside
 """
 
 import re

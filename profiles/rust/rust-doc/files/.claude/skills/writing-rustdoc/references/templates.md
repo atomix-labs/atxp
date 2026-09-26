@@ -401,7 +401,7 @@ const CORE: u32 = 6;
 ## 6 Manifest
 
 Only the `description` is this skill's; the rest of the shape is
-`writing-cargo-manifest`.
+`editing-cargo-manifests`.
 
 ```toml
 [package]

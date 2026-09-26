@@ -48,8 +48,8 @@ cargo clippy -p <crate> --lib --tests --config 'target."cfg(all())".rustflags=["
 Snapshots a doc change can move: `TRYBUILD=overwrite cargo test -p <crate>
 --test trybuild` regenerates `tests/compile_fail/*.stderr`; never hand-edit one.
 
-`just check-rust-clippy` and `just check-rust-doc`, and `just check` over everything,
-are the whole-tree gates; run them before a PR, not per edit.
+`just check-rust-clippy` and `just check-rust-doc`, and `just check` over
+everything, are the whole-tree gates; run them before a PR, not per edit.
 
 ## 2 Workspace Lints That Shape Docs
 

@@ -1,8 +1,25 @@
 [profile]
 name        = "cargo-manifest"
-description = "Every crate manifest in one shape: key order, inherited fields, grouped dependencies"
+description = "Every crate manifest in one shape, the workspace's lints inherited, and the skill for editing them"
 devset      = ">=0.2"
+
+[requires]
+rust-toolchain = {}
+
+[features]
+agents = []
 
 [files.".just/cargo-manifest.just"]
 
 [files.".just/cargo-manifest.py"]
+
+[files.".config/mise/conf.d/devset-cargo-manifest.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"
+
+[files.".claude/skills/editing-cargo-manifests/SKILL.md"]
+when = { features = ["agents"] }
+
+[files.".claude/skills/editing-cargo-manifests/references/sources.md"]
+when = { features = ["agents"] }
