@@ -1,3 +1,10 @@
+{% if "machete" in devset.features %}
 [[tools."cargo:cargo-machete"]]
 version = "0.9.2"
 backend = "cargo:cargo-machete"
+{% endif %}
+{% if "shear" in devset.features %}
+[[tools."cargo:cargo-shear"]]
+version = "1.13.4"
+backend = "cargo:cargo-shear"
+{% endif %}

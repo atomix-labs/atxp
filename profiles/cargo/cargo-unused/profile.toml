@@ -1,11 +1,22 @@
 [profile]
 name        = "cargo-unused"
-description = "cargo-machete finds dependencies no crate uses, fast, from the sources alone"
+description = "Dependencies no crate uses, found by cargo-machete from the sources and cargo-shear from the compiled graph"
 devset      = ">=0.2"
 
+[requires]
+rust-toolchain = {}
+
+[features]
+default = ["machete", "shear"]
+machete = []
+shear   = []
+
 [files.".just/cargo-unused.just"]
+template = true
 
 [files.".config/mise/conf.d/devset-cargo-unused.toml"]
+template = true
 
 [files.".config/mise/mise.lock"]
-scope = "keys"
+scope    = "keys"
+template = true

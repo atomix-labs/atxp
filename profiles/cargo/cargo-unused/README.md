@@ -1,22 +1,11 @@
 # `cargo-unused`
 
-cargo-machete finds dependencies no crate uses. It reads the sources, so it is
-fast, and a macro can fool it; [`cargo-shear`](../../cargo/cargo-shear/README.md), which
-reads the compiled graph, complements it.
+Dependencies no crate uses. cargo-machete reads the sources, so it is fast, and
+a macro can fool it; cargo-shear reads the compiled graph, so it is thorough,
+and it catches workspace dependencies no member inherits too. Each is a feature,
+`machete` and `shear`, both on by default: `check-cargo-unused` runs the ones
+that are on, and `fix-cargo-unused` removes what they find. Both are built with
+cargo, so their pins lock no platform.
 
 <!-- facts: written by scripts/catalog.py -->
-
-## Owns
-
-| File                                            | Part  | Policy | Notes |
-| ----------------------------------------------- | ----- | ------ | ----- |
-| `.just/cargo-unused.just`                      | whole | owned  |       |
-| `.config/mise/conf.d/devset-cargo-unused.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`                        | keys  | owned  |       |
-
-## Recipes
-
-- `check-cargo-unused`: Fails on a dependency no crate uses.
-- `fix-cargo-unused`: Removes each dependency no crate uses.
-
 <!-- /facts -->
