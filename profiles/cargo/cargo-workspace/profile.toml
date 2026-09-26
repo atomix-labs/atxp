@@ -4,7 +4,7 @@ description = "A Cargo workspace: scaffolded where there is none, its build outp
 devset      = ">=0.2.1"
 
 [vars.name]
-prompt  = "The first crate's name; empty takes the directory's"
+prompt  = "The project's name, and its first crate's; empty takes the directory's"
 default = ""
 
 [vars.kind]

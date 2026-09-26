@@ -39,14 +39,14 @@ key of `.cargo/config.toml`, stay its own.
 
 ## Variables
 
-| Variable       | Default             | Asks                                                |
-| -------------- | ------------------- | --------------------------------------------------- |
-| `name`         | empty               | The first crate's name; empty takes the directory's |
-| `kind`         | `lib`               | What the first crate builds: lib, bin or both       |
-| `description`  | empty               | One line: what the project is                       |
-| `authors`      | empty               | Authors, comma-separated                            |
-| `license`      | `MIT OR Apache-2.0` | The licence, an SPDX expression                     |
-| `repository`   | none                | The GitHub repository, owner/name                   |
-| `rust_version` | `1.98`              | The oldest Rust the workspace builds with           |
+| Variable       | Default             | Asks                                                                   |
+| -------------- | ------------------- | ---------------------------------------------------------------------- |
+| `name`         | empty               | The project's name, and its first crate's; empty takes the directory's |
+| `kind`         | `lib`               | What the first crate builds: lib, bin or both                          |
+| `description`  | empty               | One line: what the project is                                          |
+| `authors`      | empty               | Authors, comma-separated                                               |
+| `license`      | `MIT OR Apache-2.0` | The licence, an SPDX expression                                        |
+| `repository`   | none                | The GitHub repository, owner/name                                      |
+| `rust_version` | `1.98`              | The oldest Rust the workspace builds with                              |
 
 <!-- /facts -->

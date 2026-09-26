@@ -1,0 +1,75 @@
+[profile]
+name        = "project"
+description = "The documents every project keeps: the README, the licence, how to contribute, security, breaking changes"
+devset      = ">=0.2.1"
+
+[features]
+default          = ["readme", "license", "contributing", "security", "breaking-changes"]
+readme           = []
+license          = []
+contributing     = []
+security         = []
+breaking-changes = ["git-changelog?/breaking-changes"]
+conduct          = []
+architecture     = []
+
+[requires]
+git-changelog = { optional = true }
+
+[vars.name]
+prompt  = "The project's name, and its first crate's; empty takes the directory's"
+default = ""
+
+[vars.authors]
+prompt  = "Authors, comma-separated"
+default = ""
+
+[vars.license]
+prompt  = "The licence, an SPDX expression"
+default = "MIT OR Apache-2.0"
+
+[vars.repository]
+prompt = "The GitHub repository, owner/name"
+
+[files."README.md"]
+scope    = "block"
+starter  = "README.starter.md"
+template = true
+when     = { features = ["readme"] }
+
+[files."CONTRIBUTING.md"]
+scope   = "block"
+starter = "CONTRIBUTING.starter.md"
+when    = { features = ["contributing"] }
+
+[files."LICENSE-MIT"]
+policy   = "once"
+template = true
+when     = { features = ["license"], vars = { license = ["MIT OR Apache-2.0"] } }
+
+[files."LICENSE-APACHE"]
+policy = "once"
+when   = { features = ["license"], vars = { license = ["MIT OR Apache-2.0"] } }
+
+[files."LICENSE"]
+policy   = "once"
+template = true
+when     = { features = ["license"], vars = { license = ["MIT", "Apache-2.0"] } }
+
+[files."SECURITY.md"]
+policy   = "once"
+template = true
+when     = { features = ["security"] }
+
+[files."BREAKING-CHANGES.md"]
+policy   = "once"
+template = true
+when     = { features = ["breaking-changes"] }
+
+[files."CODE_OF_CONDUCT.md"]
+policy = "once"
+when   = { features = ["conduct"] }
+
+[files."ARCHITECTURE.md"]
+policy = "once"
+when   = { features = ["architecture"] }
