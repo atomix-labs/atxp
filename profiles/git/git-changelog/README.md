@@ -10,7 +10,10 @@ conventional, are left out; [`git-commits`](../../git/git-commits/README.md)
 keeps the rest conventional.
 
 `repository`, the GitHub repository as `owner/name`, makes the links; it has no
-default, so every repository answers it. The changelog's opening paragraph links
+default, so every repository answers it. Where the repository has no
+`CHANGELOG.md`, it scaffolds one holding the opening paragraph, which each
+release writes again. With the feature `breaking-changes`, which
+[`project`](../../project/project/README.md)'s turns on, the paragraph links
 `BREAKING-CHANGES.md`, which the repository keeps beside it.
 `check-git-changelog` renders the unreleased notes on every change, so a broken
 configuration is found before a release needs it.
@@ -19,12 +22,19 @@ configuration is found before a release needs it.
 
 ## Owns
 
-| File                                            | Part  | Policy | Notes    |
-| ----------------------------------------------- | ----- | ------ | -------- |
-| `cliff.toml`                                    | whole | owned  | template |
-| `.just/git-changelog.just`                      | whole | owned  |          |
-| `.config/mise/conf.d/devset-git-changelog.toml` | whole | owned  |          |
-| `.config/mise/mise.lock`                        | keys  | owned  |          |
+| File                                            | Part  | Policy | Notes                          |
+| ----------------------------------------------- | ----- | ------ | ------------------------------ |
+| `CHANGELOG.md`                                  | whole | once   | template, scaffold `changelog` |
+| `cliff.toml`                                    | whole | owned  | template                       |
+| `.just/git-changelog.just`                      | whole | owned  |                                |
+| `.config/mise/conf.d/devset-git-changelog.toml` | whole | owned  |                                |
+| `.config/mise/mise.lock`                        | keys  | owned  |                                |
+
+## Features
+
+| Feature            | Default | Enables |
+| ------------------ | ------- | ------- |
+| `breaking-changes` |         |         |
 
 ## Recipes
 

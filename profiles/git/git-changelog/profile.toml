@@ -3,8 +3,20 @@ name        = "git-changelog"
 description = "git-cliff writes the changelog from Conventional Commits at each release, grouped, linked, breaking marked"
 devset      = ">=0.2.1"
 
+[features]
+default = []
+# The changelog's opening paragraph links BREAKING-CHANGES.md, which the repository keeps.
+breaking-changes = []
+
 [vars.repository]
 prompt = "The GitHub repository, owner/name"
+
+[scaffolds.changelog]
+unless = "CHANGELOG.md"
+
+[files."CHANGELOG.md"]
+scaffold = "changelog"
+template = true
 
 [files."cliff.toml"]
 template = true
