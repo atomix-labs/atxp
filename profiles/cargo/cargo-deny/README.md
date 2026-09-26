@@ -11,21 +11,31 @@ It owns those keys of `deny.toml`: `[graph]`, `skip`, `allow-git` and anything
 else the repository adds stay its own. `nightly-cargo-deny` checks the
 advisories each night, as they are published without any commit.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                         | Part  | Policy | Notes |
-| -------------------------------------------- | ----- | ------ | ----- |
-| `deny.toml`                                  | keys  | owned  |       |
-| `.just/cargo-deny.just`                      | whole | owned  |       |
-| `.config/mise/conf.d/devset-cargo-deny.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`                     | keys  | owned  |       |
+| File                                         | Part  | Policy | Notes    |
+| -------------------------------------------- | ----- | ------ | -------- |
+| `deny.toml`                                  | keys  | owned  | template |
+| `.just/cargo-deny.just`                      | whole | owned  |          |
+| `.config/mise/conf.d/devset-cargo-deny.toml` | whole | owned  |          |
+| `.config/mise/mise.lock`                     | keys  | owned  |          |
+
+## Features
+
+| Feature  | Default | Enables |
+| -------- | ------- | ------- |
+| `strict` |         |         |
 
 ## Recipes
 
 - `check-cargo-deny`: Checks advisories, licences, bans and sources.
 - `nightly-cargo-deny`: Checks for advisories published since the last change,
   which no commit brings.
+
+## Requires
+
+- [`rust-toolchain`](../../rust/rust-toolchain/README.md)
 
 <!-- /facts -->

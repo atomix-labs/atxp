@@ -19,24 +19,25 @@ read from devset's graph, so no list of profiles lives here, and ten recipes.
 - `just release` runs every `release-*` recipe, for the version
   `RELEASE_VERSION` names.
 - `just package` runs every `package-*` recipe: what a release ships, built for
-  this machine into `dist/`. [`github-release`](../../github/github-release/README.md)
-  runs it on each platform.
+  this machine into `dist/`.
+  [`github-release`](../../github/github-release/README.md) runs it on each
+  platform.
 - `just publish` runs every `publish-*` recipe: what a release puts in a
-  registry, as [`cargo-publish`](../../cargo/cargo-publish/README.md) does crates.
-  `github-release` runs it once the release is out.
+  registry, as [`cargo-publish`](../../cargo/cargo-publish/README.md) does
+  crates. `github-release` runs it once the release is out.
 
 The repository's own recipes live outside the block. Name one `check-<name>` and
 `just check` runs it too. A recipe of the repository's own named after one of
 the ten clashes with the spine's, and `just` refuses both: rename it.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                   | Part  | Policy | Notes |
-| -------------------------------------- | ----- | ------ | ----- |
-| `justfile`                             | block | owned  |       |
-| `.config/mise/conf.d/devset-just.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`               | keys  | owned  |       |
+| File                                   | Part  | Policy | Notes    |
+| -------------------------------------- | ----- | ------ | -------- |
+| `justfile`                             | block | owned  | template |
+| `.config/mise/conf.d/devset-just.toml` | whole | owned  |          |
+| `.config/mise/mise.lock`               | keys  | owned  |          |
 
 <!-- /facts -->

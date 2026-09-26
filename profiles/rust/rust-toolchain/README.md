@@ -25,5 +25,25 @@ so every cargo command names its target and keeps `RUSTFLAGS` off host build
 scripts, which a build under `target-cpu=native` can break; a recipe whose
 output must land in `target/doc` rather than `target/<triple>/doc` unsets it.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
+
+## Owns
+
+| File                                             | Part  | Policy | Notes      |
+| ------------------------------------------------ | ----- | ------ | ---------- |
+| `rust-toolchain.toml`                            | keys  | owned  |            |
+| `.just/rust-toolchain.just`                      | whole | owned  |            |
+| `.just/rust-toolchain.sh`                        | whole | owned  | executable |
+| `.config/mise/conf.d/devset-rust-toolchain.toml` | whole | owned  |            |
+
+## Recipes
+
+- `setup-rust-toolchain`: Installs rustup where it is missing, with no toolchain
+  of its own, then the toolchain rust-toolchain.toml names.
+
+## Requires
+
+- [`just`](../../tooling/just/README.md)
+- [`mise`](../../tooling/mise/README.md)
+
 <!-- /facts -->

@@ -11,18 +11,19 @@ a file in it too.
 
 It owns those keys of `taplo.toml`, under `merge`: `include`, other rules, and
 paths the repository adds to `exclude` stay its own.
-[`cargo-manifest`](../../cargo/cargo-manifest/README.md) holds what taplo cannot see.
+[`cargo-manifest`](../../cargo/cargo-manifest/README.md) holds what taplo cannot
+see.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                    | Part  | Policy | Notes    |
-| --------------------------------------- | ----- | ------ | -------- |
-| `taplo.toml`                            | keys  | merge  | template |
+| File                                   | Part  | Policy | Notes    |
+| -------------------------------------- | ----- | ------ | -------- |
+| `taplo.toml`                           | keys  | merge  | template |
 | `.just/toml.just`                      | whole | owned  |          |
 | `.config/mise/conf.d/devset-toml.toml` | whole | owned  |          |
-| `.config/mise/mise.lock`                | keys  | owned  |          |
+| `.config/mise/mise.lock`               | keys  | owned  |          |
 
 ## Recipes
 

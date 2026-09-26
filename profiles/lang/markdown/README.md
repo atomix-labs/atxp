@@ -1,33 +1,40 @@
 # `markdown`
 
-Every Markdown file, formatted by [`dprint`](../../lang/dprint/README.md)'s Markdown
-plugin, wrapped at 80 with asterisks for emphasis, settings this profile keeps
-as keys of `dprint.json`; and linted by rumdl, which fixes what it can. Line length is the
-formatter's; the rules rustdoc's intra-doc links and code spans trip are off;
-headings are in title case; a heading may repeat under different parents, as a
-changelog's sections do under each release; `<details>`, `<summary>`, `<code>`
-and `<span>` are the HTML a page may use; and GitHub's issue and pull request
-templates, each the body of a page with its own title, open without a heading.
+Every Markdown file, formatted by [`dprint`](../../lang/dprint/README.md)'s
+Markdown plugin, wrapped at 80 with asterisks for emphasis, settings this
+profile keeps as keys of `dprint.json`; and linted by rumdl, which fixes what it
+can. Line length is the formatter's; the rules rustdoc's intra-doc links and
+code spans trip are off; headings are in title case; a heading may repeat under
+different parents, as a changelog's sections do under each release; `<details>`,
+`<summary>`, `<code>` and `<span>` are the HTML a page may use; and GitHub's
+issue and pull request templates, each the body of a page with its own title,
+open without a heading.
 
 It owns those keys of `.rumdl.toml`, under `merge`: `exclude`, and `[MD063]
 ignore-words`, the names heading case leaves as they are, stay the repository's.
 
 Git ignores rumdl's cache, in a block of `.gitignore`.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                    | Part  | Policy | Notes |
-| --------------------------------------- | ----- | ------ | ----- |
-| `.rumdl.toml`                           | keys  | merge  |       |
+| File                                       | Part  | Policy | Notes |
+| ------------------------------------------ | ----- | ------ | ----- |
+| `.rumdl.toml`                              | keys  | merge  |       |
 | `.just/markdown.just`                      | whole | owned  |       |
 | `.config/mise/conf.d/devset-markdown.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`                | keys  | owned  |       |
+| `.config/mise/mise.lock`                   | keys  | owned  |       |
+| `.gitignore`                               | block | owned  |       |
+| `dprint.json`                              | keys  | merge  |       |
 
 ## Recipes
 
 - `check-markdown`: Lints every Markdown file.
 - `fix-markdown`: Fixes what rumdl can fix.
+
+## Requires
+
+- [`dprint`](../dprint/README.md)
 
 <!-- /facts -->

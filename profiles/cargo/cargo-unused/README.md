@@ -7,5 +7,31 @@ and it catches workspace dependencies no member inherits too. Each is a feature,
 that are on, and `fix-cargo-unused` removes what they find. Both are built with
 cargo, so their pins lock no platform.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
+
+## Owns
+
+| File                                           | Part  | Policy | Notes    |
+| ---------------------------------------------- | ----- | ------ | -------- |
+| `.just/cargo-unused.just`                      | whole | owned  | template |
+| `.config/mise/conf.d/devset-cargo-unused.toml` | whole | owned  | template |
+| `.config/mise/mise.lock`                       | keys  | owned  | template |
+
+## Features
+
+| Feature   | Default | Enables |
+| --------- | ------- | ------- |
+| `machete` | yes     |         |
+| `shear`   | yes     |         |
+
+## Recipes
+
+- `check-cargo-unused`: Fails on a dependency no crate uses, by each tool the
+  profile's features turn on.
+- `fix-cargo-unused`: Removes each dependency no crate uses.
+
+## Requires
+
+- [`rust-toolchain`](../../rust/rust-toolchain/README.md)
+
 <!-- /facts -->

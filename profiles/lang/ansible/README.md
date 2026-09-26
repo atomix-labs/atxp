@@ -8,16 +8,16 @@ with it by uv, so no rule judges a version the playbooks never meet.
 It is outside the [`rust`](../../bundles/rust/README.md) bundle: its check needs
 `.ansible/`, so a repository with playbooks adds it.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                           | Part  | Policy | Notes |
-| ---------------------------------------------- | ----- | ------ | ----- |
-| `.ansible-lint`                                | whole | owned  |       |
+| File                                      | Part  | Policy | Notes |
+| ----------------------------------------- | ----- | ------ | ----- |
+| `.ansible-lint`                           | whole | owned  |       |
 | `.just/ansible.just`                      | whole | owned  |       |
 | `.config/mise/conf.d/devset-ansible.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`                       | keys  | owned  |       |
+| `.config/mise/mise.lock`                  | keys  | owned  |       |
 
 ## Recipes
 

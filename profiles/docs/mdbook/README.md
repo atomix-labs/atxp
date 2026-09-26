@@ -6,7 +6,7 @@ example in it as a test. Git ignores what it builds, `book/` beside `book.toml`.
 Preprocessors a book uses are pinned beside it, by the repository or the profile
 that needs them.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 

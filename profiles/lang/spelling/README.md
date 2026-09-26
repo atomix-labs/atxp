@@ -11,16 +11,16 @@ does the weekly bump's `just fix`. The words a repository allows, in
 `[default.extend-words]`, and the paths it adds to leave out, stay its own: it
 owns those keys of `typos.toml` under `merge`.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                    | Part  | Policy | Notes |
-| --------------------------------------- | ----- | ------ | ----- |
-| `typos.toml`                            | keys  | merge  |       |
+| File                                       | Part  | Policy | Notes |
+| ------------------------------------------ | ----- | ------ | ----- |
+| `typos.toml`                               | keys  | merge  |       |
 | `.just/spelling.just`                      | whole | owned  |       |
 | `.config/mise/conf.d/devset-spelling.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`                | keys  | owned  |       |
+| `.config/mise/mise.lock`                   | keys  | owned  |       |
 
 ## Recipes
 

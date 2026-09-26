@@ -7,8 +7,8 @@ installed and `just setup` runs, then Cargo's build is cached per recipe. The
 tools come from one cache, which the job `plan` fills before any recipe runs, so
 a changed lock downloads and builds each tool once rather than once a job. What
 `just check` runs on a checkout, CI runs, and no list of jobs can fall behind
-the recipes. Each job checks out the whole history, which `check-git-commits` and
-`check-git-changelog` read.
+the recipes. Each job checks out the whole history, which `check-git-commits`
+and `check-git-changelog` read.
 
 Require the job `check` in branch protection: it passes when every recipe does.
 The jobs read the repository and nothing else. They run on `ubuntu-latest`, or
@@ -25,7 +25,7 @@ Pages must be set to deploy from GitHub Actions; `deploy` holds the only write
 permissions, in the `github-pages` environment. A name that is no check recipe
 fails the plan.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
@@ -35,6 +35,7 @@ fails the plan.
 
 ## Requires
 
+- [`github-automation`](../github-automation/README.md)
 - [`just`](../../tooling/just/README.md)
 
 <!-- /facts -->

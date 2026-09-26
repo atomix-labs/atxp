@@ -15,13 +15,13 @@ applied; rumdl fixes on save, and Markdown links are validated.
 It owns those keys of `.vscode/extensions.json` and `.vscode/settings.json`,
 under `merge`, so settings the repository changes are kept.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                      | Part | Policy | Notes |
-| ------------------------- | ---- | ------ | ----- |
-| `.vscode/extensions.json` | keys | merge  |       |
-| `.vscode/settings.json`   | keys | merge  |       |
+| File                      | Part | Policy | Notes    |
+| ------------------------- | ---- | ------ | -------- |
+| `.vscode/extensions.json` | keys | merge  | template |
+| `.vscode/settings.json`   | keys | merge  | template |
 
 <!-- /facts -->

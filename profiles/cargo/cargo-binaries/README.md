@@ -7,10 +7,10 @@ workspace in release mode for this machine, and archives each as
 names on their own. On Linux the target is musl, so the binary is static and
 runs on any distribution; a crate with C code needs a musl toolchain for it, or
 a pure-Rust build. `<version>` is `RELEASE_VERSION`, which
-[`github-release`](../../github/github-release/README.md) sets from the tag, or the
-workspace's.
+[`github-release`](../../github/github-release/README.md) sets from the tag, or
+the workspace's.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
@@ -26,7 +26,7 @@ workspace's.
 
 ## Requires
 
-- [`rustup`](../../rust/rustup/README.md)
 - [`just`](../../tooling/just/README.md)
+- [`rust-toolchain`](../../rust/rust-toolchain/README.md)
 
 <!-- /facts -->

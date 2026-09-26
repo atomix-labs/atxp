@@ -5,7 +5,7 @@ build output or installed packages. On every change it checks those into the
 repository, offline, fragments included; nightly it checks the web's too, which
 can fail for reasons no change caused.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 

@@ -5,8 +5,8 @@ Once a week, `bump` moves everything the repository pins. `just bump` runs every
 report; `just fix` settles the files they changed; `just check` is the gate. The
 result is one signed commit on `bot/bump`, rebuilt from the default branch each
 week, titled `chore(bump): move pinned tools and dependencies`, which
-[`git-changelog`](../../git/git-changelog/README.md) lists under Pins. It goes as far as
-`bump.mode` in `.github/automation.json`, which
+[`git-changelog`](../../git/git-changelog/README.md) lists under Pins. It goes
+as far as `bump.mode` in `.github/automation.json`, which
 [`github-automation`](../../github/github-automation/README.md) sets:
 
 | `bump.mode`    | Does                                                                        |
@@ -23,11 +23,11 @@ may change workflows. Without one, `merge` merges on this run's own gate, and
 changes to workflows are left out and named.
 
 A bump that cannot check something fails the run, and
-[`github-watch`](../../github/github-watch/README.md) opens an issue for it. The jobs that
-build run on `ubuntu-latest`, or on the runner the repository variable
+[`github-watch`](../../github/github-watch/README.md) opens an issue for it. The
+jobs that build run on `ubuntu-latest`, or on the runner the repository variable
 `CI_RUNNER` names, such as `ubuntu-24.04-arm`.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
@@ -38,7 +38,8 @@ build run on `ubuntu-latest`, or on the runner the repository variable
 
 ## Requires
 
+- [`github-automation`](../github-automation/README.md)
+- [`github-watch`](../github-watch/README.md)
 - [`just`](../../tooling/just/README.md)
-- [`github-watch`](../../github/github-watch/README.md)
 
 <!-- /facts -->

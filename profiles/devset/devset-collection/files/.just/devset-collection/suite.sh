@@ -1,131 +1,169 @@
 #!/usr/bin/env bash
-# Applies every bundle to every fixture and runs `just check` there with the tools the atoms pin;
-# applies every atom alone, then all at once; and runs the setup stub against a repository served
-# locally.
+# The collection's suite. Every profile alone, on an empty directory, with its default features and
+# with every feature: it applies, and nothing drifts. Then on each fixture in tests/fixtures/, or on
+# an empty directory where there is none: each bundle, a profile that owns no file, with no
+# features, and every profile at once, with every feature: each applies, nothing drifts, and
+# `just check` passes there with the tools the profiles pin.
 #
-# Needs git, cargo, mise and python3 of 3.11 or later, and the devset mise pins; $DEVSET, a path,
-# runs another build instead.
+# Run in the collection's root, with git, mise, Python and devset; $DEVSET, a path, runs another
+# build of devset.
 set -euo pipefail
 
-root=$(cd "$(dirname "$0")/.." && pwd)
+root=$PWD
 devset=${DEVSET:-devset}
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
-# Locked, as CI installs; cargo tools built by cargo, as the atoms that pin them say.
+# Locked, as CI installs; cargo tools built by cargo, as the profiles that pin them say.
 export MISE_TRUSTED_CONFIG_PATHS=$work MISE_YES=1 MISE_LOCKED=1 MISE_CARGO_BINSTALL=0
 
-# The flags answering every variable that a profile, or one it requires, declares without a
-# default: each gets the suite's own answer.
-answers() {
-    python3 - "$root/profiles/$1" << 'PY'
+# One line per profile, `|` between its fields: its name; `bundle` or `profile`; the flag turning
+# on its every feature, if it has any; then, for each way the suite applies it (with its default
+# features, with every feature, with none), the flags answering each variable a profile it makes
+# active declares without a default, with the suite's own answer.
+listing=$(python3 -B - "$(dirname "$0")" << 'PY'
 import sys
-import tomllib
-from pathlib import Path
+from collections import defaultdict
 
-seen, flags = set(), []
+sys.path.insert(0, sys.argv[1])
+from catalog import by_name, profiles
 
-
-def visit(directory):
-    directory = directory.resolve()
-    if directory in seen:
-        return
-    seen.add(directory)
-    manifest = tomllib.loads((directory / "profile.toml").read_text())
-    for name, spec in manifest.get("vars", {}).items():
-        if "default" not in spec:
-            flags.append(f"--var={name}=example/fixture")
-    for required in manifest["profile"].get("requires", []):
-        visit(directory / required)
+found = profiles()
+named = by_name(found)
 
 
-visit(Path(sys.argv[1]))
-print(" ".join(flags))
+def active(name, features, defaults):
+    """The profiles active when `name` is applied with `features`, and with its default features
+    where `defaults`: what each requires, and the optional requirements its features turn on."""
+    wanted = {name: (set(features), defaults)}
+    pending = [name]
+    while pending:
+        profile = named[pending.pop()][0]
+        on, defaults = wanted[profile.name]
+        declared = profile.manifest.get("features", {})
+        queue = list(on) + (declared.get("default", []) if defaults else [])
+        turned, deps, weak, forwarded = set(), set(), [], defaultdict(set)
+        while queue:
+            entry = queue.pop()
+            if entry.startswith("dep:"):
+                deps.add(entry.removeprefix("dep:"))
+            elif "?/" in entry:
+                weak.append(entry.split("?/", 1))
+            elif "/" in entry:
+                dep, feature = entry.split("/", 1)
+                deps.add(dep)
+                forwarded[dep].add(feature)
+            elif entry not in turned:
+                turned.add(entry)
+                queue += declared.get(entry, [])
+        required = {r for r, spec in profile.requires.items() if not spec.get("optional")}
+        required |= deps & profile.requires.keys()
+        for dep, feature in weak:
+            if dep in required:
+                forwarded[dep].add(feature)
+        for dep in required:
+            spec = profile.requires[dep]
+            # A profile of another source lends the suite no variables to answer.
+            if "git" in spec or dep not in named:
+                continue
+            features = set(spec.get("features", [])) | forwarded[dep]
+            defaults = spec.get("default-features", True)
+            had = wanted.get(dep)
+            now = (features | (had[0] if had else set()), defaults or bool(had and had[1]))
+            if now != had:
+                wanted[dep] = now
+                pending.append(dep)
+    return wanted
+
+
+def answers(name, features, defaults):
+    """The flags answering the variables the profiles active this way declare without a default."""
+    unanswered = sorted(
+        var
+        for active_name in active(name, features, defaults)
+        for var, spec in named[active_name][0].manifest.get("vars", {}).items()
+        if "default" not in spec
+    )
+    return " ".join(f"--var={var}=example/fixture" for var in dict.fromkeys(unanswered))
+
+
+for profile in found:
+    kind = "profile" if profile.files else "bundle"
+    every = f"--features={','.join(profile.features)}" if profile.features else ""
+    ways = [([], True), (list(profile.features), True), ([], False)]
+    print("|".join([profile.name, kind, every, *(answers(profile.name, *way) for way in ways)]))
 PY
-}
+)
 
-# Applies each profile named, in order, to the directory `$1`.
-apply() {
-    local dir=$1 flags
-    shift
-    for profile in "$@"; do
-        read -ra flags <<< "$(answers "$profile")"
-        (cd "$dir" && "$devset" -q --no-input init --path "$root/profiles/$profile" "${flags[@]}")
-    done
-}
-
-bundles=() atoms=()
-for manifest in "$root"/profiles/*/profile.toml; do
-    id=$(basename "$(dirname "$manifest")")
-    if grep -q '^\[files\.' "$manifest"; then atoms+=("$id"); else bundles+=("$id"); fi
-done
-
-for fixture in "$root"/tests/fixtures/*/; do
-    for bundle in "${bundles[@]}"; do
-        dir=$work/$bundle-$(basename "$fixture")
-        cp -R "$fixture" "$dir"
-        git -C "$dir" init -q
-        apply "$dir" "$bundle"
-        (cd "$dir" && "$devset" status --exit-code > /dev/null && mise install -q && mise exec -- just check)
-        echo "ok: $bundle on $(basename "$fixture")"
-    done
-done
-
-for atom in "${atoms[@]}"; do
-    mkdir "$work/$atom"
-    apply "$work/$atom" "$atom"
-    (cd "$work/$atom" && "$devset" status --exit-code > /dev/null)
-done
-echo "ok: every atom applies alone"
-
-# Every atom at once, on the workspace: every payload passes the checks every atom brings, and no
-# two atoms collide.
-dir=$work/every-atom
-cp -R "$root/tests/fixtures/workspace" "$dir"
-git -C "$dir" init -q
-apply "$dir" "${atoms[@]}"
-(cd "$dir" && "$devset" status --exit-code > /dev/null && mise install -q && mise exec -- just check)
-echo "ok: every atom at once"
-
-# The setup stub against a repository served from a local bare copy: from a machine without mise,
-# again over its clone, from inside with --host, over another repository's directory, as a dry
-# run, and with each form of clone URL.
-stub=$root/profiles/setup/files/setup.sh
-setup=$work/stub
-mkdir -p "$setup/home"
-cp -R "$root/tests/fixtures/crate" "$setup/src"
-git -C "$setup/src" init -q -b main
-apply "$setup/src" rust
-printf '\nhost-probe:\n    touch host-ran\n' >> "$setup/src/justfile"
-git -C "$setup/src" add -A
-git -C "$setup/src" -c user.name=suite -c user.email=suite@example.com commit -qm fixture
-git clone -q --bare "$setup/src" "$setup/repo.git"
-url=file://$setup/repo.git
-# A machine without mise: a clean HOME and a PATH without it. The tools and toolchains already
-# installed are shared, so nothing is built twice.
-data=${MISE_DATA_DIR:-$HOME/.local/share/mise}
-cargo=${CARGO_HOME:-$HOME/.cargo} rustup=${RUSTUP_HOME:-$HOME/.rustup}
-(cd "$setup" && env HOME="$setup/home" PATH=/usr/bin:/bin MISE_DATA_DIR="$data" \
-    CARGO_HOME="$cargo" RUSTUP_HOME="$rustup" bash "$stub" "$url" --yes)
-[[ -x $setup/home/.local/bin/mise && -f $setup/repo/rust-toolchain.toml ]]
-[[ -x $setup/repo/setup.sh ]]
-(cd "$setup" && bash "$stub" "$url" --yes)
-(cd "$setup/repo" && bash "$stub" --yes --host)
-[[ -f $setup/repo/host-ran ]]
-mkdir "$setup/other"
-git -C "$setup/other" init -q
-git -C "$setup/other" remote add origin https://example.com/other.git
-if (cd "$setup" && bash "$stub" "$url" --dir other --yes) > /dev/null 2>&1; then
-    echo "setup cloned over another repository's directory" >&2
-    exit 1
+names=() bundles=()
+declare -A every answers
+while IFS='|' read -r name kind features plain all bare; do
+    [[ -n $name ]] || continue
+    names+=("$name")
+    [[ $kind == bundle ]] && bundles+=("$name")
+    every[$name]=$features
+    answers[plain:$name]=$plain answers[every:$name]=$all answers[bare:$name]=$bare
+done <<< "$listing"
+if ((${#names[@]} == 0)); then
+    echo "ok: no profiles to test"
+    exit 0
 fi
-(cd "$setup" && bash "$stub" "$url" --dir dry --dry-run) > /dev/null 2>&1
-[[ ! -e $setup/dry ]]
-while read -r protocol repo want; do
-    got=$(cd "$setup" && SETUP_PROTOCOL=$protocol bash "$stub" "$repo" --dry-run 2>&1) || true
-    grep -qF "would clone $want" <<< "$got" || { echo "setup: $repo over $protocol is not $want" >&2; exit 1; }
-done << 'EOF'
-ssh github.com/owner/name git@github.com:owner/name.git
-ssh example.ghe.com/owner/name example@example.ghe.com:owner/name.git
-https example.ghe.com/owner/name https://example.ghe.com/owner/name.git
-EOF
-echo "ok: setup"
+
+# Adds the profile `$2` to the target in `$1`, starting the target where there is none, applied
+# the way `$3` names (`plain`, `every` or `bare`), with the flags after them.
+add() {
+    local dir=$1 name=$2 way=$3 flags
+    shift 3
+    read -ra flags <<< "${answers[$way:$name]}"
+    if [[ -f $dir/.devset/config.toml ]]; then
+        set -- add "suite/$name" "${flags[@]}" "$@"
+    else
+        set -- init "suite/$name" --path "$root/profiles" "${flags[@]}" "$@"
+    fi
+    (cd "$dir" && "$devset" -q --no-input "$@")
+}
+
+# Checks the target in `$1`: nothing drifts, and `just check` passes with the tools it pins.
+checked() (
+    cd "$1"
+    "$devset" status --exit-code > /dev/null
+    mise install -q
+    mise exec -- just check
+)
+
+for name in "${names[@]}"; do
+    mkdir "$work/$name"
+    add "$work/$name" "$name" plain
+    (cd "$work/$name" && "$devset" status --exit-code > /dev/null)
+    if [[ -n ${every[$name]} ]]; then
+        mkdir "$work/$name-every"
+        add "$work/$name-every" "$name" every "${every[$name]}"
+        (cd "$work/$name-every" && "$devset" status --exit-code > /dev/null)
+    fi
+done
+echo "ok: every profile alone, with its default features and with every feature"
+
+fixtures=("$root"/tests/fixtures/*/)
+if [[ ! -d ${fixtures[0]} ]]; then
+    mkdir "$work/empty"
+    fixtures=("$work/empty/")
+fi
+for path in "${fixtures[@]}"; do
+    fixture=$(basename "$path")
+    for bundle in "${bundles[@]}"; do
+        dir=$work/$bundle-on-$fixture
+        cp -R "$path" "$dir"
+        git -C "$dir" init -q
+        add "$dir" "$bundle" bare --no-default-features
+        checked "$dir"
+        echo "ok: $bundle on $fixture, with no features"
+    done
+    dir=$work/every-profile-on-$fixture
+    cp -R "$path" "$dir"
+    git -C "$dir" init -q
+    for name in "${names[@]}"; do
+        read -ra flags <<< "${every[$name]}"
+        add "$dir" "$name" every "${flags[@]}"
+    done
+    checked "$dir"
+    echo "ok: every profile on $fixture, with every feature"
+done

@@ -11,12 +11,19 @@ Git ignores what profiling leaves behind (`*.profraw`, `perf.data`, flame
 graphs), in a block of `.gitignore`. Every other key of `Cargo.toml` stays the
 repository's.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File         | Part | Policy | Notes |
-| ------------ | ---- | ------ | ----- |
-| `Cargo.toml` | keys | owned  |       |
+| File         | Part  | Policy | Notes    |
+| ------------ | ----- | ------ | -------- |
+| `Cargo.toml` | keys  | owned  | template |
+| `.gitignore` | block | owned  |          |
+
+## Features
+
+| Feature  | Default | Enables |
+| -------- | ------- | ------- |
+| `strict` |         |         |
 
 <!-- /facts -->

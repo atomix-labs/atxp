@@ -8,11 +8,12 @@ new commit is skipped.
 
 [`github-watch`](../../github/github-watch/README.md),
 [`github-bump`](../../github/github-bump/README.md) and
-[`github-nightly`](../../github/github-nightly/README.md) read these keys. The policy is
-`merge`, so a key the repository changes or adds stays its own, such as `pages`,
-which names the site [`github-ci`](../../github/github-ci/README.md) deploys.
+[`github-nightly`](../../github/github-nightly/README.md) read these keys. The
+policy is `merge`, so a key the repository changes or adds stays its own, such
+as `pages`, which names the site [`github-ci`](../../github/github-ci/README.md)
+deploys.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 

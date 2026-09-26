@@ -18,7 +18,7 @@ profiles do; tools the repository configures itself, in `mise.toml`, lock in
   digest, or failing that from the download. The profiles' pins move with atxp's
   releases.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 

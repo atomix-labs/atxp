@@ -7,7 +7,7 @@ no trailing whitespace, and four spaces, two for data and Markdown. Editors show
 The policy is `merge`, so sections the repository adds are kept, and merged with
 the profile's changes.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 

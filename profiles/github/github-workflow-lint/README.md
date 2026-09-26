@@ -26,21 +26,35 @@ as it goes.
 A file `.gitattributes` marks `linguist-vendored` or `linguist-generated` is
 someone else's and is left out.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                         | Part  | Policy | Notes    |
-| -------------------------------------------- | ----- | ------ | -------- |
-| `.github/actionlint.yaml`                    | whole | owned  | template |
-| `.just/github-workflow-lint.just`                      | whole | owned  |          |
-| `.config/mise/conf.d/devset-github-workflow-lint.toml` | whole | owned  |          |
-| `.config/mise/mise.lock`                     | keys  | owned  |          |
+| File                                                   | Part  | Policy | Notes                          |
+| ------------------------------------------------------ | ----- | ------ | ------------------------------ |
+| `.just/github-workflow-lint.just`                      | whole | owned  | template                       |
+| `.github/actionlint.yaml`                              | whole | owned  | template, feature `actionlint` |
+| `.github/zizmor.yml`                                   | whole | owned  | feature `zizmor`               |
+| `policy/workflows/workflows.rego`                      | whole | owned  | feature `policies`             |
+| `policy/workflows/workflows_test.rego`                 | whole | owned  | feature `policies`             |
+| `.config/mise/conf.d/devset-github-workflow-lint.toml` | whole | owned  | template                       |
+| `.config/mise/mise.lock`                               | keys  | owned  | template                       |
+
+## Features
+
+| Feature      | Default | Enables |
+| ------------ | ------- | ------- |
+| `actionlint` | yes     |         |
+| `zizmor`     | yes     |         |
+| `policies`   | yes     |         |
 
 ## Recipes
 
-- `check-github-workflow-lint`: Checks every workflow: syntax, expressions, and the shell
-  in each step.
+- `check-github-workflow-lint`: Checks every workflow by each tool the profile's
+  features turn on: actionlint, for syntax, expressions and the shell in each
+  step; zizmor's audit, offline, needing no token; conftest, holding workflows
+  and actions to the policies in policy/. A file .gitattributes marks
+  `linguist-vendored` or `linguist-generated` is someone else's.
 
 ## Variables
 

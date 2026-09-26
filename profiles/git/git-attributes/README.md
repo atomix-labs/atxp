@@ -7,7 +7,7 @@ Markdown, HTML and CSS.
 It owns a block of `.gitattributes`. A line the repository adds after the block
 overrides it, as later lines do in Git.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 

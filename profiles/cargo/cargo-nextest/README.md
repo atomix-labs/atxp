@@ -6,20 +6,24 @@ writes a JUnit report.
 
 It owns the `ci` profile's keys of `.config/nextest.toml`.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                      | Part  | Policy | Notes |
-| ----------------------------------------- | ----- | ------ | ----- |
-| `.config/nextest.toml`                    | keys  | owned  |       |
+| File                                            | Part  | Policy | Notes |
+| ----------------------------------------------- | ----- | ------ | ----- |
+| `.config/nextest.toml`                          | keys  | owned  |       |
 | `.just/cargo-nextest.just`                      | whole | owned  |       |
 | `.config/mise/conf.d/devset-cargo-nextest.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`                  | keys  | owned  |       |
+| `.config/mise/mise.lock`                        | keys  | owned  |       |
 
 ## Recipes
 
-- `check-cargo-nextest`: Runs every test, then the doctests nextest leaves to cargo;
-  under CI, with nextest's `ci` profile.
+- `check-cargo-nextest`: Runs every test, then the doctests nextest leaves to
+  cargo; under CI, with nextest's `ci` profile.
+
+## Requires
+
+- [`rust-toolchain`](../../rust/rust-toolchain/README.md)
 
 <!-- /facts -->

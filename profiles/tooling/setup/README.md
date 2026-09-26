@@ -22,7 +22,7 @@ nothing. A devcontainer runs `./setup.sh --yes` as its `postCreateCommand`.
 A pinned stub is the file at a release tag:
 `https://raw.githubusercontent.com/atomix-labs/atxp/<tag>/profiles/setup/files/setup.sh`.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
@@ -33,7 +33,7 @@ A pinned stub is the file at a release tag:
 
 ## Requires
 
-- [`just`](../../tooling/just/README.md)
-- [`mise`](../../tooling/mise/README.md)
+- [`just`](../just/README.md)
+- [`mise`](../mise/README.md)
 
 <!-- /facts -->

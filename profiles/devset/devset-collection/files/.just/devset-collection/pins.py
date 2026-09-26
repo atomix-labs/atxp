@@ -1,13 +1,17 @@
-"""A repository of profiles' pins: each tool's version, its lock entry for every platform, and the
-dprint plugins its payloads name.
+"""A collection's pins: each profile's tools, their lock entries for every platform, and the dprint
+plugins its payloads name.
 
-Usage: profile-pins.py check | lock [<profile>...] | bump [<report>]
+Usage: pins.py check | lock [<profile>...] | bump [<report>]
 
-Run in the repository's root, which holds `profiles/<id>/` and applies the `mise` profile. `check`,
-offline, fails when a profile's lock entry does not match its pin, lacks a platform or a checksum, or
-holds another profile's tool, or when a dprint plugin carries no checksum. `lock` rewrites the named
+Run in the collection's root, which applies the `mise` profile. `check`, offline, fails when a
+profile's lock entry does not match its pin, lacks a platform or a checksum, or holds a tool the
+profile does not pin, or when a dprint plugin carries no checksum. `lock` rewrites the named
 profiles' lock entries, or every one's. `bump` moves every pin and dprint plugin to its newest
 release past the cooldown, relocks what moved, and writes a Markdown report.
+
+A pin file may be a template whose tools are each gated by a feature of its profile, between lines
+of `{% if "<feature>" in devset.features %}` and `{% endif %}`: the tool's lock entries carry the
+same gate, and both files are templates.
 """
 
 import datetime
@@ -20,24 +24,29 @@ import re
 import subprocess
 import sys
 import tempfile
-import urllib.request
-from pathlib import Path
-
 import tomllib
+import urllib.request
+from collections import defaultdict
+from pathlib import Path
+from typing import NamedTuple
 
-PROFILES = Path("profiles")
+from catalog import Profile, profiles
+
 PIN = Path(".config/mise/conf.d")
 LOCK = Path(".config/mise/mise.lock")
 COOLDOWN = "3d"
 COOLDOWN_DAYS = 3
 PLUGIN = re.compile(
-    r'"(https://plugins\.dprint\.dev/(?:([\w-]+)/)?([\w-]+)-(v?)([\d.]+)\.wasm)(?:@([0-9a-f]{64}))?"'
+    r'"(https://plugins\.dprint\.dev/(?:([\w-]+)/)?([\w-]+)-(v?)([\d.]+)\.wasm)'
+    r'(?:@([0-9a-f]{64}))?"'
 )
 BLOCK = re.compile(r'^\[\[?tools\.("[^"]+"|[^."\]]+)', re.MULTILINE)
+GATE = re.compile(r'\{%-?\s*if\s+"([\w-]+)"\s+in\s+devset\.features\s*-?%\}')
+END = re.compile(r"\{%-?\s*endif\s*-?%\}")
 
 
 def helper():
-    """The mise profile's helper, applied to this repository, whose checks every entry is held to."""
+    """The mise profile's helper, applied here, whose checks every entry is held to."""
     path = Path(".just/mise.py")
     spec = importlib.util.spec_from_file_location("mise_helper", path)
     module = importlib.util.module_from_spec(spec)
@@ -48,18 +57,67 @@ def helper():
 MISE = helper()
 
 
+class Pinned(NamedTuple):
+    """A profile that pins tools: its pin file, each tool's version, each gated tool's feature."""
+
+    profile: Profile
+    pin: Path
+    versions: dict
+    gates: dict
+
+    @property
+    def lock(self):
+        """Its lock payload."""
+        return self.profile.path / "files" / LOCK
+
+
+def untemplated(path):
+    """A pin or lock file as TOML, its gates dropped, and the feature that gates each gated tool."""
+    plain, gated, feature = [], defaultdict(list), None
+    for line in path.read_text().splitlines(keepends=True):
+        directive = line.strip()
+        if gate := GATE.fullmatch(directive):
+            feature = gate.group(1)
+        elif END.fullmatch(directive):
+            feature = None
+        elif directive.startswith(("{%", "{{", "{#")):
+            sys.exit(f"{path}: its tools are gated by features alone, each in `{{% if %}}` lines")
+        else:
+            plain.append(line)
+            if feature:
+                gated[feature].append(line)
+    gates = {
+        tool: feature
+        for feature, lines in gated.items()
+        for tool in tomllib.loads("[tools]\n" + "".join(lines))["tools"]
+    }
+    return "".join(plain), gates
+
+
 def pins():
-    """Each atom that pins tools: its pin file, and each tool's version."""
+    """Each profile that pins tools, by name."""
     found = {}
-    for pin in sorted(PROFILES.glob(f"*/files/{PIN}/*.toml")):
-        with pin.open("rb") as file:
-            tools = tomllib.load(file).get("tools", {})
-        versions = {
-            name: spec if isinstance(spec, str) else spec["version"] for name, spec in tools.items()
-        }
-        if versions:
-            found[pin.parts[len(PROFILES.parts)]] = (pin, versions)
+    for profile in profiles():
+        for path in profile.files:
+            if Path(path).parent == PIN and path.endswith(".toml"):
+                pin = profile.path / "files" / path
+                text, gates = untemplated(pin)
+                tools = tomllib.loads(text).get("tools", {})
+                versions = {
+                    name: spec if isinstance(spec, str) else spec["version"]
+                    for name, spec in tools.items()
+                }
+                if versions:
+                    found[profile.name] = Pinned(profile, pin, versions, gates)
     return found
+
+
+def locked(pinned):
+    """Its lock payload's entries, by tool, and the feature that gates each gated tool."""
+    if not pinned.lock.is_file():
+        return {}, {}
+    text, gates = untemplated(pinned.lock)
+    return tomllib.loads(text).get("tools", {}), gates
 
 
 def blocks(text):
@@ -74,25 +132,32 @@ def blocks(text):
 
 
 def check():
-    """Prints every problem with the atoms' pins, and fails if there is one."""
+    """Prints every problem with the profiles' pins, and fails if there is one."""
     problems = []
-    for atom, (_, versions) in pins().items():
-        manifest = tomllib.loads((PROFILES / atom / "profile.toml").read_text())
-        spec = manifest.get("files", {}).get(str(LOCK))
-        where = f"profiles/{atom}"
+    for name, pinned in pins().items():
+        profile, where = pinned.profile, pinned.profile.path
+        spec = profile.files.get(str(LOCK))
         if spec is None or spec.get("scope") != "keys":
             problems.append(
                 f'{where}: owns its lock entries as keys: [files."{LOCK}"] scope = "keys"'
             )
-        lock = PROFILES / atom / "files" / LOCK
-        locked = MISE.entries(lock)
-        for name, version in versions.items():
+        if pinned.gates:
+            for path in (pinned.pin.relative_to(where / "files"), LOCK):
+                if not profile.files.get(str(path), {}).get("template"):
+                    problems.append(f'{where}: gates tools, so [files."{path}"] is a template')
+        entries, gates = locked(pinned)
+        for tool, version in pinned.versions.items():
             problems += MISE.entry_problems(
-                name, version, locked.get(name, []), f"{where}/files/{LOCK}"
+                tool, version, entries.get(tool, []), f"{where}/files/{LOCK}"
             )
-        if strays := sorted(set(locked) - set(versions)):
+            if gates.get(tool) != pinned.gates.get(tool):
+                problems.append(
+                    f"{where}/files/{LOCK}: `{tool}` is not gated as its pin is: "
+                    f"`pins.py lock {name}` writes it"
+                )
+        if strays := sorted(set(entries) - set(pinned.versions)):
             problems.append(f"{where}: its lock holds tools it does not pin: {', '.join(strays)}")
-    for dprint in sorted(PROFILES.glob("*/files/dprint.json")):
+    for dprint in dprint_files():
         for match in PLUGIN.finditer(dprint.read_text()):
             if not match.group(6):
                 problems.append(f"{dprint}: plugin {match.group(1)} has no @sha256")
@@ -101,16 +166,26 @@ def check():
     return 1 if problems else 0
 
 
-def lock(atoms):
-    """Rewrites each atom's lock entries, for every platform, their checksums filled."""
+def dprint_files():
+    """Every `dprint.json` a profile ships."""
+    return [
+        profile.path / "files" / "dprint.json"
+        for profile in profiles()
+        if "dprint.json" in profile.files
+    ]
+
+
+def lock(names):
+    """Rewrites each named profile's lock entries, or every one's, for every platform, their
+    checksums filled, each gated as its pin gates it."""
     notes = []
-    for atom, (pin, versions) in pins().items():
-        if atoms and atom not in atoms:
+    for name, pinned in pins().items():
+        if names and name not in names:
             continue
         with tempfile.TemporaryDirectory() as scratch:
             scratch = Path(scratch)
             (scratch / PIN).mkdir(parents=True)
-            (scratch / PIN / pin.name).write_text(pin.read_text())
+            (scratch / PIN / pinned.pin.name).write_text(untemplated(pinned.pin)[0])
             settings = f'[settings]\nlockfile = true\nminimum_release_age = "{COOLDOWN}"\n'
             (scratch / "mise.toml").write_text(settings)
             env = os.environ | {"MISE_TRUSTED_CONFIG_PATHS": str(scratch)}
@@ -121,15 +196,22 @@ def lock(atoms):
                 check=True,
                 capture_output=True,
             )
-            notes += [f"`{atom}`: {note}" for note in MISE.fill(scratch / LOCK)]
+            notes += [f"`{name}`: {note}" for note in MISE.fill(scratch / LOCK)]
             found = blocks((scratch / LOCK).read_text())
-        text = "\n".join(block for name in versions for block in found.get(name, []))
+        text = ""
+        for tool in pinned.versions:
+            entries = "\n".join(found.get(tool, []))
+            if gate := pinned.gates.get(tool):
+                entries = f'{{% if "{gate}" in devset.features %}}\n{entries}{{% endif %}}\n'
+            # A blank line between tools, but after a gate's `endif`, which sets its tool apart.
+            if text and not text.endswith("{% endif %}\n"):
+                text += "\n"
+            text += entries
         # Under a cooldown, `mise lock` records the version asked for as `specifiers`, which
         # `mise install` drops again: left out, the entry is what a repository's install writes.
         text = re.sub(r"^specifiers = .*\n", "", text, flags=re.MULTILINE)
-        target = PROFILES / atom / "files" / LOCK
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(text)
+        pinned.lock.parent.mkdir(parents=True, exist_ok=True)
+        pinned.lock.write_text(text)
     return notes
 
 
@@ -151,7 +233,7 @@ def newer(want, have):
 
 def github(url):
     """A GitHub API response, authenticated when a token is at hand."""
-    headers = {"Accept": "application/vnd.github+json", "User-Agent": "atxp"}
+    headers = {"Accept": "application/vnd.github+json", "User-Agent": "devset-collection"}
     if token := os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN"):
         headers["Authorization"] = f"Bearer {token}"
     with urllib.request.urlopen(urllib.request.Request(url, headers=headers)) as response:
@@ -160,12 +242,12 @@ def github(url):
 
 def plugins(moved, held):
     """Moves every dprint plugin in every payload to its newest release past the cooldown."""
-    for path in sorted(PROFILES.glob("*/files/dprint.json")):
+    for path in dprint_files():
         plugin_file(path, moved, held)
 
 
 def plugin_file(path, moved, held):
-    """Moves every dprint plugin `path` names to its newest release past the cooldown, checksummed."""
+    """Moves each dprint plugin in `path` to its newest release past the cooldown, checksummed."""
     text = path.read_text()
     cutoff = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=COOLDOWN_DAYS)
     for match in list(PLUGIN.finditer(text)):
@@ -194,11 +276,12 @@ def plugin_file(path, moved, held):
             if moves
             else None
         )
-        new = f"https://plugins.dprint.dev/{owner + '/' if owner else ''}{name}-{prefix}{version}.wasm"
+        scope = f"{owner}/" if owner else ""
+        new = f"https://plugins.dprint.dev/{scope}{name}-{prefix}{version}.wasm"
         if wasm and (wasm.get("digest") or "").startswith("sha256:"):
             digest = wasm["digest"].removeprefix("sha256:")
         else:
-            request = urllib.request.Request(new, headers={"User-Agent": "atxp"})
+            request = urllib.request.Request(new, headers={"User-Agent": "devset-collection"})
             with urllib.request.urlopen(request) as response:
                 digest = hashlib.sha256(response.read()).hexdigest()
         text = text.replace(match.group(0), f'"{new}@{digest}"')
@@ -225,34 +308,34 @@ def report_text(title, sections):
 def bump(report):
     """Moves every pin and plugin past the cooldown, relocks, and reports."""
     moved, held, failed, changed = [], [], [], set()
-    for atom, (pin, versions) in pins().items():
-        text = pin.read_text()
-        locked = MISE.entries(PROFILES / atom / "files" / LOCK)
-        for name, pinned in versions.items():
+    for name, pinned in pins().items():
+        text = pinned.pin.read_text()
+        entries, _ = locked(pinned)
+        for tool, pin in pinned.versions.items():
             # A track keeps its pin, and moves by its lock.
-            wanted = f"{name}@{pinned}" if MISE.track(pinned) else name
+            wanted = f"{tool}@{pin}" if MISE.track(pin) else tool
             have = next(
                 (
                     e["version"]
-                    for e in locked.get(name, [])
-                    if MISE.pinned(e.get("version", ""), pinned)
+                    for e in entries.get(tool, [])
+                    if MISE.pinned(e.get("version", ""), pin)
                 ),
-                pinned,
+                pin,
             )
             try:
                 want = MISE.latest(wanted, COOLDOWN)
                 newest = MISE.latest(wanted, "0s")
             except subprocess.CalledProcessError as error:
-                failed.append(f"`{name}`: {(error.stderr or '').strip() or error}")
+                failed.append(f"`{tool}`: {(error.stderr or '').strip() or error}")
                 continue
             if newest != want and newer(newest, want):
-                held.append(f"`{name}` {newest}")
+                held.append(f"`{tool}` {newest}")
             if newer(want, have):
-                if not MISE.track(pinned):
-                    text = repin(text, name, pinned, want)
-                moved.append(f"`{name}` {have} -> {want}")
-                changed.add(atom)
-        pin.write_text(text)
+                if not MISE.track(pin):
+                    text = repin(text, tool, pin, want)
+                moved.append(f"`{tool}` {have} -> {want}")
+                changed.add(name)
+        pinned.pin.write_text(text)
     try:
         plugins(moved, held)
     except OSError as error:
@@ -276,13 +359,13 @@ def main(args):
     match args:
         case ["check"]:
             return check()
-        case ["lock", *atoms]:
-            for note in lock(set(atoms)):
+        case ["lock", *names]:
+            for note in lock(set(names)):
                 print(note)
             return 0
         case ["bump", *report] if len(report) <= 1:
             return bump(report[0] if report else None)
-    print(__doc__.strip().splitlines()[2], file=sys.stderr)
+    print(next(line for line in __doc__.splitlines() if line.startswith("Usage:")), file=sys.stderr)
     return 2
 
 

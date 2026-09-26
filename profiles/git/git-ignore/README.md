@@ -9,7 +9,7 @@ tool, in a block of its own.
 Lines of `.gitignore` are read in order: a repository's exception, such as a
 throwaway key it does commit, goes after the block.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 

@@ -11,10 +11,10 @@ listing:
 - the issue is commented on while that lasts, and closed when it recovers.
 
 Issues carry the labels, issue type and assignees that
-[`github-automation`](../../github/github-automation/README.md) sets in `.github/automation.json`;
-without that file, the label `bug`.
+[`github-automation`](../../github/github-automation/README.md) sets in
+`.github/automation.json`; without that file, the label `bug`.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
@@ -23,5 +23,9 @@ without that file, the label `bug`.
 | `.github/workflows/watch.yml` | whole | owned  |       |
 | `.github/scripts/watch.js`    | whole | owned  |       |
 | `.github/scripts/issue.js`    | whole | owned  |       |
+
+## Requires
+
+- [`github-automation`](../github-automation/README.md)
 
 <!-- /facts -->

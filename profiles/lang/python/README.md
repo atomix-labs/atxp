@@ -2,25 +2,28 @@
 
 Ruff lints Python at `line_width`: import sorting, bugbear, pyupgrade, simplify
 and Ruff's own rules, beside its defaults; imports at the top of a module; and
-every public method documented. Formatting is [`dprint`](../../lang/dprint/README.md)'s,
-through its Ruff plugin, whose settings this profile keeps as keys of
-`dprint.json`, so one tool formats every file.
+every public method documented. Formatting is
+[`dprint`](../../lang/dprint/README.md)'s, through its Ruff plugin, whose
+settings this profile keeps as keys of `dprint.json`, so one tool formats every
+file.
 
 It owns those keys of `ruff.toml`, under `merge`: `target-version`, and rules
 the repository adds, stay its own.
 
 Git ignores Python's bytecode, in a block of `.gitignore`.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                   | Part  | Policy | Notes    |
-| -------------------------------------- | ----- | ------ | -------- |
-| `ruff.toml`                            | keys  | merge  | template |
+| File                                     | Part  | Policy | Notes    |
+| ---------------------------------------- | ----- | ------ | -------- |
+| `ruff.toml`                              | keys  | merge  | template |
 | `.just/python.just`                      | whole | owned  |          |
 | `.config/mise/conf.d/devset-python.toml` | whole | owned  |          |
-| `.config/mise/mise.lock`               | keys  | owned  |          |
+| `.config/mise/mise.lock`                 | keys  | owned  |          |
+| `.gitignore`                             | block | owned  |          |
+| `dprint.json`                            | keys  | merge  |          |
 
 ## Recipes
 
@@ -32,5 +35,9 @@ Git ignores Python's bytecode, in a block of `.gitignore`.
 | Variable     | Default | Asks                                                  |
 | ------------ | ------- | ----------------------------------------------------- |
 | `line_width` | `100`   | Line width, shared by the formatters and EditorConfig |
+
+## Requires
+
+- [`dprint`](../dprint/README.md)
 
 <!-- /facts -->

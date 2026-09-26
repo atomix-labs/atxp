@@ -1,11 +1,25 @@
 [profile]
 name        = "devset-collection"
-description = "For a repository of profiles: every pin locked for every platform, and bumped past the cooldown"
+description = "For a collection of profiles: its catalog, the rules its profiles keep, its test suite, and its pins locked"
 devset      = ">=0.2"
 
 [requires]
-mise = {}
+devset = {}
+just   = {}
+mise   = {}
+
+[features]
+default = []
+# Every pin locked for every platform, and moved past the cooldown weekly: for a collection whose
+# profiles pin tools with mise.
+pins = []
 
 [files.".just/devset-collection.just"]
+template = true
 
-[files.".just/devset-collection.py"]
+[files.".just/devset-collection/catalog.py"]
+
+[files.".just/devset-collection/suite.sh"]
+
+[files.".just/devset-collection/pins.py"]
+when = { features = ["pins"] }

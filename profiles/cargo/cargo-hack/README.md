@@ -4,7 +4,7 @@ cargo-hack runs clippy on every crate with each feature on its own, which is how
 a feature that compiles only beside another is found. It builds once a feature,
 so it runs nightly.
 
-<!-- facts: written by scripts/catalog.py -->
+<!-- facts: written by devset-collection -->
 
 ## Owns
 
@@ -18,5 +18,9 @@ so it runs nightly.
 
 - `nightly-cargo-hack`: Lints every crate with each feature alone; a warning
   fails.
+
+## Requires
+
+- [`rust-toolchain`](../../rust/rust-toolchain/README.md)
 
 <!-- /facts -->
