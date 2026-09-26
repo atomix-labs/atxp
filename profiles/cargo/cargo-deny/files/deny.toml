@@ -6,8 +6,9 @@ unmaintained = "all"
 multiple-versions    = "deny"
 wildcards            = "deny"
 allow-wildcard-paths = true
+{%- if "strict" in devset.features %}
 
-# Crates with a better choice, each naming it.
+# Crates with a better choice, each naming it: the house policy, `strict`.
 deny = [
     { name = "typed-builder", reason = "use bon (typestate + fn / method / impl builders)" },
     { name = "derive_builder", reason = "use bon (compile-time typestate, not runtime check)" },
@@ -28,6 +29,7 @@ deny = [
     { name = "async-trait", reason = "no async on the trade path" },
     { name = "nix", reason = "use rustix (I/O-safe types, raw Linux syscalls); libc covers the rustix gap" },
 ]
+{%- endif %}
 
 [licenses]
 allow = [

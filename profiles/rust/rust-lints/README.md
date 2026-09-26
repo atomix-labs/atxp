@@ -1,8 +1,13 @@
 # `rust-lints`
 
 The lint wall, as keys of the workspace `Cargo.toml`: `[workspace.lints]` for
-rustc, rustdoc, clippy and cargo. Clippy's `all`, `pedantic` and `nursery`
-groups are denied, with the restriction lints on top.
+rustc, rustdoc, clippy and cargo. The keys any open-source project can take
+deny rustdoc's and cargo's lints, clippy's `all` and `pedantic` groups, and
+rustc's lints for correctness: `unsafe_op_in_unsafe_fn`, `unused_must_use`,
+the 2018 idioms. The `strict` feature, the house policy, adds the wall on top:
+clippy's `nursery` and the restriction lints (no `unwrap`, no `panic`, no
+indexing, no `as`, no printing, and more), and rustc's `unsafe_code`,
+`missing_docs`, `unreachable_pub`, `unused` and the lifetime lints.
 
 Every lint in the keys is one stable rustc knows, so a crate under the wall
 builds on stable too. Every other key of `Cargo.toml` is the repository's, and

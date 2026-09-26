@@ -1,13 +1,17 @@
 [profile]
 name        = "cargo-deny"
-description = "cargo-deny: yanked and unmaintained crates, one version each, the bans, permissive licences, crates.io only"
+description = "cargo-deny: yanked and unmaintained crates, one version each, permissive licences, crates.io only, and the house bans"
 devset      = ">=0.2"
 
 [requires]
 rust-toolchain = {}
 
+[features]
+strict = []
+
 [files."deny.toml"]
-scope = "keys"
+scope    = "keys"
+template = true
 
 [files.".just/cargo-deny.just"]
 

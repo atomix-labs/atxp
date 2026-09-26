@@ -5,7 +5,9 @@ codegen-units    = 1
 debug            = false
 debug-assertions = false
 overflow-checks  = false
+{%- if "strict" in devset.features %}
 panic            = "abort"
+{%- endif %}
 strip            = false
 incremental      = false
 rpath            = false
@@ -22,7 +24,9 @@ codegen-units    = 256
 debug            = true
 debug-assertions = true
 overflow-checks  = true
+{%- if "strict" in devset.features %}
 panic            = "abort"
+{%- endif %}
 strip            = false
 incremental      = true
 rpath            = false
