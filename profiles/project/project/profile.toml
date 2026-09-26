@@ -20,6 +20,10 @@ git-changelog = { optional = true }
 prompt  = "The project's name, and its first crate's; empty takes the directory's"
 default = ""
 
+[vars.crate]
+prompt  = "The crate the crates.io and docs.rs badges show; empty takes the project's name"
+default = ""
+
 [vars.authors]
 prompt  = "Authors, comma-separated"
 default = ""
