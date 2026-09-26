@@ -3,6 +3,70 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.5.0](https://github.com/atomix-labs/atxp/releases/tag/v0.5.0) - 2026-09-26
+
+### Features
+
+- [5722710](https://github.com/atomix-labs/atxp/commit/5722710a06ff4feabf409940aa92168cb65fc2e0) *(rust)* Turn on the agent layer and every skill with agents
+- [c95db73](https://github.com/atomix-labs/atxp/commit/c95db73bb3eb22692cf5ee2bfb003087d286f916) *(rust-doc)* Write the rustdoc skill for any repository
+- [b1918c6](https://github.com/atomix-labs/atxp/commit/b1918c6a80b12e697fd375923e406c758f13617b) *(cargo-manifest)* Write the manifest skill for any repository
+- [8fed4d5](https://github.com/atomix-labs/atxp/commit/8fed4d542470169b2c8832ce740a5fd1159bf013) *(cargo-deny)* Say in AGENTS.md what a failure asks of the maintainer
+- [5352fc5](https://github.com/atomix-labs/atxp/commit/5352fc5a8b89d543aa10ceb71d39b13936031a38) *(git-commits)* Say the commit rules in AGENTS.md
+- [c7650f5](https://github.com/atomix-labs/atxp/commit/c7650f5453aacea46932677ba1eab8c073386086) *(mdbook)* Teach writing the book, and say in AGENTS.md how to check it
+- [90e3f5c](https://github.com/atomix-labs/atxp/commit/90e3f5c2cb16e0cc6bb4dc7df7ca85c507aff92f) *(github-ci)* Teach fixing CI
+- [4954bd8](https://github.com/atomix-labs/atxp/commit/4954bd892532ef2a90866097fd7b41d2ec5ef3fd) *(github-release)* Teach cutting a release
+- [2014694](https://github.com/atomix-labs/atxp/commit/20146947f6118b94005344d1c07c2078cdee7b7c) *(devset-collection)* Teach authoring profiles
+- [313d44a](https://github.com/atomix-labs/atxp/commit/313d44ac03709eb184d85a8ab99a803ab0b05411) *(devset)* Teach using devset
+- [deca639](https://github.com/atomix-labs/atxp/commit/deca639e1b14f525e76337c62cc9eb151472ee8f) *(agents)* AGENTS.md, CLAUDE.md, the allow-list and the Stop hook
+- [62e3988](https://github.com/atomix-labs/atxp/commit/62e3988d0e14309396f79ca79acfe21aecbb93ac) *(devset-collection)* Hold skills to the house form
+- [16602d7](https://github.com/atomix-labs/atxp/commit/16602d7815158e3d42cab8c4db0beeca778dc403) *(rust)* Take project and the templates with publish and oss
+- [36befcd](https://github.com/atomix-labs/atxp/commit/36befcd78759ae21c751d1c73425cdb4e5a8db83) *(github-templates)* Scaffold issue templates and the pull request checklist
+- [c5fcde0](https://github.com/atomix-labs/atxp/commit/c5fcde0e98c6290b0351c40c7d1f69e4c1f83afa) *(devset)* Move each source's tag past the cooldown in the weekly bump
+- [fb1c701](https://github.com/atomix-labs/atxp/commit/fb1c7017b7a234ae1da673f90d75165c094f360d) *(mdbook)* Scaffold the book, and give it math, diagrams and the API **breaking**
+- [b46acfb](https://github.com/atomix-labs/atxp/commit/b46acfbdfe0fc4ecf1381dbcdb4d15d02fa78923) *(github-ci)* Publish a site only under the pages feature **breaking**
+- [26216f3](https://github.com/atomix-labs/atxp/commit/26216f356cb11809dde6f219c5851bf174ea36dd) *(devset-collection)* Hold manifests to devset's schemas
+- [2613638](https://github.com/atomix-labs/atxp/commit/2613638bf591f606837bdf84d9b5615bfa10f612) *(vscode)* Follow the language profiles' features
+- [ee4bf61](https://github.com/atomix-labs/atxp/commit/ee4bf612f25ab04c3188d16f627dbaa03a261e90) *(dprint)* Load a language's plugin only where its profile formats
+- [3233906](https://github.com/atomix-labs/atxp/commit/323390693a9d19e4ac0f203aa60e33dabea3a3b0) *(python)* Lint and format as features
+- [26214a2](https://github.com/atomix-labs/atxp/commit/26214a2bac49ed1df9e89dee98a21cbf0cf49af3) *(shell)* Lint as a feature
+- [a414122](https://github.com/atomix-labs/atxp/commit/a414122a367cff945074964dc41418b2974a461f) *(yaml)* Format and lint as features
+- [21c625a](https://github.com/atomix-labs/atxp/commit/21c625ad33d6a541ea9fc1a610ba2c3a361db162) *(toml)* Format, lint and devset's schemas as features
+- [eedb8bf](https://github.com/atomix-labs/atxp/commit/eedb8bf605cdf764167b34019be639fdeb459f5e) *(markdown)* Format, lint and links as features
+- [760c140](https://github.com/atomix-labs/atxp/commit/760c1409e1c021bf3e0317b88bb1ac79d7672db5) *(rust-doc)* Run the house's doc lint under strict **breaking**
+- [06060fb](https://github.com/atomix-labs/atxp/commit/06060fb8e53356ea7d874209ab1af1d50d59437e) *(rust-toolchain)* Offer the stable channel
+- [babde0c](https://github.com/atomix-labs/atxp/commit/babde0cff549495e554ff7b238cadf7bfc08f384) *(project)* Scaffold the documents a project keeps
+- [716572a](https://github.com/atomix-labs/atxp/commit/716572a3a38e0e34b3b6d26f7d5d9989a648a3be) *(git-commits)* Say the commit rules in CONTRIBUTING.md
+- [92d9d6f](https://github.com/atomix-labs/atxp/commit/92d9d6fd983182ec5aad206158fa6b94ed9542a7) *(rust-fmt)* Own rustfmt.toml's keys, not the whole file **breaking**
+- [b8f41da](https://github.com/atomix-labs/atxp/commit/b8f41daa000c688996224cc797dadecf8e9d0673) *(setup)* Offer a devcontainer that runs the setup script
+- [e3cd349](https://github.com/atomix-labs/atxp/commit/e3cd3492bc0e99d918bb0bda5ca6803bbd549cf7) *(devset-collection)* Scaffold collection.toml
+- [907a8f4](https://github.com/atomix-labs/atxp/commit/907a8f4f669068f039ff964e90f1b70784f96b15) *(github-release)* Scaffold RELEASE.md
+- [585af14](https://github.com/atomix-labs/atxp/commit/585af14b65f1819353c1877752ca4b517c6e5d78) *(lychee)* Scaffold lychee.toml
+- [e423011](https://github.com/atomix-labs/atxp/commit/e423011dc097592848f50cd1bb1575e864fa49b6) *(just)* Start a justfile where there is none
+- [b12d599](https://github.com/atomix-labs/atxp/commit/b12d5999a134ef94841c78722466634ec908df94) *(git-changelog)* Scaffold CHANGELOG.md
+- [4a80fcc](https://github.com/atomix-labs/atxp/commit/4a80fcca4ed991184dd73bfdbf490d99fbd8d0a8) *(git-ignore)* Start a .gitignore where there is none
+- [f8ca54e](https://github.com/atomix-labs/atxp/commit/f8ca54ea6eb54d9bbedf6f949cd7cfdadc9313d7) *(cargo-workspace)* Scaffold a workspace where there is none **breaking**
+
+### Bug Fixes
+
+- [b704df7](https://github.com/atomix-labs/atxp/commit/b704df70fff1de253adb15058d0419f89790139f) *(git-ignore)* Ignore only Claude Code's local settings, so its shared ones are committed
+- [73a38a6](https://github.com/atomix-labs/atxp/commit/73a38a601e68bfba34837a0af64eb0655c3fb95b) *(cargo-workspace)* List the first crate in the workspace's dependencies only for the -cli crate
+- [ed9cc2d](https://github.com/atomix-labs/atxp/commit/ed9cc2d090af3be09d192c0b026423e96dd5a544) Run only the recipes the profiles define in the skills
+
+### Documentation
+
+- [3b3c929](https://github.com/atomix-labs/atxp/commit/3b3c929194e0cd25378021fb4d2743138f1d0108) Write the scaffolds, the agent layer and the v0.5.0 migration
+- [9949d4a](https://github.com/atomix-labs/atxp/commit/9949d4a9447b6b96f785828095d8e6e05ac62e46) Give atxp an AGENTS.md, and apply the agent layer to it
+- [970416e](https://github.com/atomix-labs/atxp/commit/970416ec39dddcacb16c55182a33ee34558c0c9d) *(cargo-publish)* Say what crates.io asks, and that publish brings it
+
+### Miscellaneous
+
+- [29b6219](https://github.com/atomix-labs/atxp/commit/29b6219f8d80d92853b04400a290386d345bbeb6) Apply the profiles' changes to atxp
+- [5096541](https://github.com/atomix-labs/atxp/commit/50965419f7eaac397cfdd34aa329af8fcb439eff) Apply the rich profiles to atxp
+- [a11cdb9](https://github.com/atomix-labs/atxp/commit/a11cdb9fa8658bc3687dde9d79002b824d2eb147) Require and pin devset 0.2.2 **breaking**
+- [a70d58c](https://github.com/atomix-labs/atxp/commit/a70d58c7f7ee4c6ce98ff1aaf3a00cbc8fbf2921) Apply the bundle to nothing, with each feature, and check it
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.4.0...v0.5.0>
+
 ## [0.4.0](https://github.com/atomix-labs/atxp/releases/tag/v0.4.0) - 2026-09-26
 
 ### Features
