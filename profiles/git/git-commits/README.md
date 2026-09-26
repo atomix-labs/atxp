@@ -3,7 +3,7 @@
 committed checks every commit a branch adds to the default branch against
 Conventional Commits, `type(scope): subject`: an allowed type, an imperative
 subject with no closing period, and no merge commit. The scope names the part
-the commit changes, a profile or a crate. [`git-cliff`](../../git/git-changelog/README.md)
+the commit changes, a profile or a crate. [`git-changelog`](../../git/git-changelog/README.md)
 writes the changelog from these subjects, so each says what changed for someone
 who reads it there.
 

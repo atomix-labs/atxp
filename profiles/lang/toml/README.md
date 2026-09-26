@@ -11,7 +11,7 @@ a file in it too.
 
 It owns those keys of `taplo.toml`, under `merge`: `include`, other rules, and
 paths the repository adds to `exclude` stay its own.
-[`manifest-lint`](../../cargo/cargo-manifest/README.md) holds what taplo cannot see.
+[`cargo-manifest`](../../cargo/cargo-manifest/README.md) holds what taplo cannot see.
 
 <!-- facts: written by scripts/catalog.py -->
 

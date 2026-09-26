@@ -5,7 +5,7 @@ Clippy over every crate, target and feature, with warnings denied; in tests,
 
 It owns those keys of `clippy.toml`; the repository's own, such as a
 `disallowed-methods` list, stay its own. Which lints are denied is the
-workspace's `[lints]` table, which [`lints`](../../rust/rust-lints/README.md) owns.
+workspace's `[lints]` table, which [`rust-lints`](../../rust/rust-lints/README.md) owns.
 
 <!-- facts: written by scripts/catalog.py -->
 

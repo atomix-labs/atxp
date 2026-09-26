@@ -11,7 +11,7 @@ listing:
 - the issue is commented on while that lasts, and closed when it recovers.
 
 Issues carry the labels, issue type and assignees that
-[`automation`](../../github/github-automation/README.md) sets in `.github/automation.json`;
+[`github-automation`](../../github/github-automation/README.md) sets in `.github/automation.json`;
 without that file, the label `bug`.
 
 <!-- facts: written by scripts/catalog.py -->

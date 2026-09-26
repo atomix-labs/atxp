@@ -20,7 +20,7 @@ profile is not applied, and nine recipes.
   this machine into `dist/`. [`github-release`](../../github/github-release/README.md)
   runs it on each platform.
 - `just publish` runs every `publish-*` recipe: what a release puts in a
-  registry, as [`crates-io`](../../cargo/cargo-publish/README.md) does crates.
+  registry, as [`cargo-publish`](../../cargo/cargo-publish/README.md) does crates.
   `github-release` runs it once the release is out.
 
 The repository's own recipes live outside the block. Name one `check-<name>` and

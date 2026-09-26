@@ -6,7 +6,7 @@ release its section. A release lists Features, Bug Fixes, Pins (the weekly
 bumps), Refactor, Documentation, CI and Miscellaneous; each entry links its
 commit, names its scope, and is marked **breaking** where it is; and the release
 ends with its compare link. Release commits, and history that is not
-conventional, are left out; [`committed`](../../git/git-commits/README.md) keeps the rest
+conventional, are left out; [`git-commits`](../../git/git-commits/README.md) keeps the rest
 conventional.
 
 `repository`, the GitHub repository as `owner/name`, makes the links; it has no

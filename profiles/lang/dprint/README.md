@@ -7,7 +7,7 @@ at `line_width`. Every plugin is pinned by its checksum.
 It owns those keys of `dprint.json`, under `merge`. `excludes` leaves out build
 output, minified and vendored files, the book's theme, `.just/`, whose recipes
 are formatted where they come from, and `CHANGELOG.md`, which
-[`git-cliff`](../../git/git-changelog/README.md) lays out; a repository adds its own.
+[`git-changelog`](../../git/git-changelog/README.md) lays out; a repository adds its own.
 
 <!-- facts: written by scripts/catalog.py -->
 

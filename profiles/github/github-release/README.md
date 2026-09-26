@@ -12,7 +12,7 @@ verify <archive> --repo <owner>/<repository>`.
 
 Where the repository has a `publish-*` recipe, the job `publish` then runs `just
 publish`, which puts the release in a registry. For
-[`crates-io`](../../cargo/cargo-publish/README.md) it first takes a crates.io token by
+[`cargo-publish`](../../cargo/cargo-publish/README.md) it first takes a crates.io token by
 trusted publishing, good for 30 minutes and revoked when the job ends, so the
 repository stores none. That job runs in the environment `release`, which the
 trusted publisher names, and holds the only `id-token` permission.
@@ -32,6 +32,6 @@ the attestations; the jobs that build hold neither.
 ## Requires
 
 - [`just`](../../tooling/just/README.md)
-- [`git-cliff`](../../git/git-changelog/README.md)
+- [`git-changelog`](../../git/git-changelog/README.md)
 
 <!-- /facts -->

@@ -1,7 +1,7 @@
 # `ansible`
 
 ansible-lint holds every playbook and role in `.ansible/` to its `production`
-profile, less the `yaml` rules, which [`yamllint`](../../lang/yaml/README.md) holds.
+profile, less the `yaml` rules, which [`yaml`](../../lang/yaml/README.md) holds.
 It runs on the ansible-core the playbooks run on, pinned beside it and installed
 with it by uv, so no rule judges a version the playbooks never meet.
 

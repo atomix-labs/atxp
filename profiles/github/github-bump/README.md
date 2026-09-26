@@ -5,9 +5,9 @@ Once a week, `bump` moves everything the repository pins. `just bump` runs every
 report; `just fix` settles the files they changed; `just check` is the gate. The
 result is one signed commit on `bot/bump`, rebuilt from the default branch each
 week, titled `chore(bump): move pinned tools and dependencies`, which
-[`git-cliff`](../../git/git-changelog/README.md) lists under Pins. It goes as far as
+[`git-changelog`](../../git/git-changelog/README.md) lists under Pins. It goes as far as
 `bump.mode` in `.github/automation.json`, which
-[`automation`](../../github/github-automation/README.md) sets:
+[`github-automation`](../../github/github-automation/README.md) sets:
 
 | `bump.mode`    | Does                                                                        |
 | -------------- | --------------------------------------------------------------------------- |
