@@ -1,7 +1,7 @@
 [profile]
 name        = "github-workflow-lint"
 description = "Every GitHub workflow checked: actionlint, zizmor's audit, and conftest against the repository's policies"
-devset      = ">=0.2"
+devset      = ">=0.2.1"
 
 [features]
 default    = ["actionlint", "zizmor", "policies"]

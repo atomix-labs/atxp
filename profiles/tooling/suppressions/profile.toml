@@ -1,7 +1,7 @@
 [profile]
 name        = "suppressions"
 description = "Every lint suppression proves it still suppresses something, for the tools that do not report it themselves"
-devset      = ">=0.2"
+devset      = ">=0.2.1"
 
 [files.".just/suppressions.just"]
 

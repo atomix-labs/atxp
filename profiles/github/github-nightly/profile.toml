@@ -1,7 +1,7 @@
 [profile]
 name        = "github-nightly"
 description = "A nightly run of every `nightly-*` recipe, each a job of its own, watched"
-devset      = ">=0.2"
+devset      = ">=0.2.1"
 
 [requires]
 github-automation = {}

@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-binaries"
 description = "A release's binaries: the workspace's, built for this machine, static on Linux, archived with a sha256"
-devset      = ">=0.2"
+devset      = ">=0.2.1"
 
 [requires]
 just           = {}

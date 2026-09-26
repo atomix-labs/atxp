@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-nextest"
 description = "cargo-nextest for every test, and cargo for the doctests; in CI, a `ci` profile that runs them all"
-devset      = ">=0.2"
+devset      = ">=0.2.1"
 
 [requires]
 rust-toolchain = {}

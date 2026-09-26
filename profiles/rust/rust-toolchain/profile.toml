@@ -1,7 +1,7 @@
 [profile]
 name        = "rust-toolchain"
 description = "The toolchain a checkout builds with: rustup where missing, then one pinned nightly with miri, rustc-dev, llvm-tools and the sources"
-devset      = ">=0.2"
+devset      = ">=0.2.1"
 
 [requires]
 just = {}

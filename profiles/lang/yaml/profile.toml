@@ -1,7 +1,7 @@
 [profile]
 name        = "yaml"
 description = "YAML: formatted by dprint with double quotes, and checked by yamllint for what no formatter fixes"
-devset      = ">=0.2"
+devset      = ">=0.2.1"
 
 [requires]
 dprint = {}
