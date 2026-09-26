@@ -16,14 +16,14 @@ on the runner the repository variable `CI_RUNNER` names, such as
 `ubuntu-24.04-arm`.
 
 A repository that publishes a site with GitHub Pages names the recipe that
-builds it in `.github/automation.json`: `"pages": { "recipe": "check-docs",
-"path": "docs/book" }` (`path` defaults to `docs/book`). That job keeps the site
-it checked: on a pull request as a preview, kept seven days, and on the default
-branch as the deploy, which the job `deploy` publishes once `check` passes. So
-the site is built once a change, and what is published is what was checked.
-Pages must be set to deploy from GitHub Actions; `deploy` holds the only write
-permissions, in the `github-pages` environment. A name that is no check recipe
-fails the plan.
+builds it, and the directory it builds the site in, in
+`.github/automation.json`: `"pages": { "recipe": "check-docs", "path":
+"docs/book" }`. That job keeps the site it checked: on a pull request as a
+preview, kept seven days, and on the default branch as the deploy, which the job
+`deploy` publishes once `check` passes. So the site is built once a change, and
+what is published is what was checked. Pages must be set to deploy from GitHub
+Actions; `deploy` holds the only write permissions, in the `github-pages`
+environment. A name that is no check recipe, or no path, fails the plan.
 
 <!-- facts: written by devset-collection -->
 

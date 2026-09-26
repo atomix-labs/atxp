@@ -53,8 +53,13 @@ jobs:
             echo "::error file=$settings::pages.recipe names $recipe, which is no check recipe"
             exit 1
           fi
+          path=$(jq -r '.pages.path // empty' "$settings")
+          if [[ -z $path ]]; then
+            echo "::error file=$settings::pages.path names the directory $recipe builds the site in"
+            exit 1
+          fi
           echo "pages-recipe=$recipe" >> "$GITHUB_OUTPUT"
-          echo "pages-path=$(jq -r '.pages.path // "docs/book"' "$settings")" >> "$GITHUB_OUTPUT"
+          echo "pages-path=$path" >> "$GITHUB_OUTPUT"
 
   run:
     needs: plan
