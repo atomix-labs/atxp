@@ -1,3 +1,2 @@
-# Built with cargo: its releases have no Linux arm64 build.
 [tools]
-"cargo:committed" = "1.1.11"
+"github:crate-ci/committed" = "1.1.11"

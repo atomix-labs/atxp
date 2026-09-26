@@ -9,8 +9,8 @@ these subjects, so each says what changed for someone who reads it there.
 
 A pull request is checked out as a merge commit; the check reads the pull
 request's own commits, its second parent's. Where there is no default branch to
-compare with, there is nothing to check. committed builds with cargo: its
-releases have no Linux arm64 build.
+compare with, there is nothing to check. committed comes from its release, one
+static build for each platform the locks cover.
 
 <!-- facts: written by devset-collection -->
 
