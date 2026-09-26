@@ -62,9 +62,10 @@ yet; the API documentation holds the item-by-item detail.
   one the justfile lacks.
 {%- if "api" in devset.features %}
 
-- **The API documentation is at `api/`** in the built book. Link an item by its
-  rustdoc page, relative to the page that links it, as
-  `api/tiles/grid/struct.Grid.html` from a page at the top of `src/`.
+- **An item of the API is linked by its path**, as in rustdoc: ``[`Grid`]`` for
+  an item in scope, ``[`Grid`][tiles::grid::Grid]`` for any other. The book's
+  build resolves it to the API at `api/`, and fails on a path that does not
+  resolve, or that the name alone would reach.
 {%- endif %}
 
 ## Steps

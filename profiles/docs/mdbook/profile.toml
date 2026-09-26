@@ -14,7 +14,8 @@ default = ["katex", "api", "pages", "links"]
 katex = []
 # Diagrams, drawn by mermaid, vendored.
 mermaid = []
-# The workspace's rustdoc at /api, with rustdoc's index page, linked from the menu bar.
+# The workspace's API at /api, which the prose links to by path, its crates grouped, linked from the
+# menu bar.
 api = []
 # The book on GitHub Pages: github-ci's pages jobs, and the pages keys of .github/automation.json.
 pages = ["github-ci?/pages"]

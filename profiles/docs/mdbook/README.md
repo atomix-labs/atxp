@@ -20,8 +20,11 @@ The features, all but `mermaid` on by default:
   fonts are vendored, at the version mdbook-katex renders with, so the site
   makes no third-party request.
 - `mermaid`: diagrams, drawn by the mermaid mdbook-mermaid ships.
-- `api`: the workspace's rustdoc at `/api`, with rustdoc's index page, which
-  needs the nightly toolchain, and a link to it in the menu bar.
+- `api`: the workspace's API at `/api`, built by mdbook-rustdoc-links as the
+  book builds. A page links an item by its path, as rustdoc does, and a path
+  that does not resolve fails the build. A landing page groups the crates by the
+  directory they are in, each with the first sentence of its docs, and the menu
+  bar links to it. It needs the nightly toolchain, for rustdoc's index page.
 - `pages`: the book on GitHub Pages, through
   [`github-ci`](../../github/github-ci/README.md)'s `pages`, and the keys of
   `.github/automation.json` that name the recipe and the site.
@@ -98,8 +101,8 @@ previewing the book.
 - `check-mdbook`: Lints the book (every page in SUMMARY.md, every include and
   anchor there, every recipe the prose names), builds it, and runs its Rust
   examples.{% if "api" in devset.features %} The workspace's API lands at /api,
-  with rustdoc's index page.{% endif %}{% if "links" in devset.features %} Then
-  lychee checks every link of the built book, offline.{% endif %}
+  under a page grouping its crates.{% endif %}{% if "links" in devset.features
+  %} Then lychee checks every link of the built book, offline.{% endif %}
 
 ## Variables
 

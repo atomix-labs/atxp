@@ -7,3 +7,7 @@
 {%- if "mermaid" in devset.features %}
 "github:badboy/mdbook-mermaid" = "0.17.1"
 {%- endif %}
+{%- if "api" in devset.features %}
+# Built with cargo: its Linux releases need a newer glibc than many distributions carry.
+"cargo:mdbook-rustdoc-links" = "3.0.2"
+{%- endif %}

@@ -1,1 +1,5 @@
 /{{ book_dir }}/book/
+{%- if "api" in devset.features %}
+# Where the API preprocessor links the API into the book's source as it builds.
+/{{ book_dir }}/src/api
+{%- endif %}

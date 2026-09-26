@@ -42,3 +42,8 @@ checksum = "sha256:5be76bfffefd36efe5abf876c52530ba03c16df5f44c94164cc9ca88d16df
 url = "https://github.com/badboy/mdbook-mermaid/releases/download/v0.17.1/mdbook-mermaid-v0.17.1-aarch64-apple-darwin.tar.gz"
 url_api = "https://api.github.com/repos/badboy/mdbook-mermaid/releases/assets/514372901"
 {% endif %}
+{% if "api" in devset.features %}
+[[tools."cargo:mdbook-rustdoc-links"]]
+version = "3.0.2"
+backend = "cargo:mdbook-rustdoc-links"
+{% endif %}

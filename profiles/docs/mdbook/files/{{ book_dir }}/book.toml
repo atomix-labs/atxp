@@ -41,3 +41,12 @@ no-css = true
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
 {%- endif %}
+{%- if "api" in on %}
+
+# A Rust path in prose links to the API at /api, resolved by building it; a path that does not
+# resolve fails the build.
+[preprocessor.rustdoc-links]
+unstable-features = true
+base-url          = "/api"
+fail-on-warnings  = "always"
+{%- endif %}
