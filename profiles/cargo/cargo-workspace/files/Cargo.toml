@@ -13,7 +13,9 @@ authors      = [{% for author in authors | split(",") | map("trim") | select %}"
 repository   = "https://github.com/{{ repository }}"
 
 [workspace.lints]
+{%- if kind != "lib" %}
 
 [workspace.dependencies]
 # internal
 {{ crate }} = { path = "crates/{{ crate }}", version = "0.1.0" }
+{%- endif %}
