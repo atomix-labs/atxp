@@ -8,6 +8,8 @@ rust-toolchain = {}
 
 [features]
 strict = []
+# What a failure asks of the maintainer, in a block of AGENTS.md where the repository has one.
+agents = []
 
 [files."deny.toml"]
 scope    = "keys"
@@ -19,3 +21,7 @@ template = true
 
 [files.".config/mise/mise.lock"]
 scope = "keys"
+
+[files."AGENTS.md"]
+scope = "block"
+when  = { features = ["agents"], exists = ["AGENTS.md"] }

@@ -11,22 +11,27 @@ It owns those keys of `deny.toml`: `[graph]`, `skip`, `allow-git` and anything
 else the repository adds stay its own. `nightly-cargo-deny` checks the
 advisories each night, as they are published without any commit.
 
+With `agents`, a block of the repository's `AGENTS.md`, where it has one, tells
+an agent that a failure is the maintainer's choice to make.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                         | Part  | Policy | Notes    |
-| -------------------------------------------- | ----- | ------ | -------- |
-| `deny.toml`                                  | keys  | owned  | template |
-| `.just/cargo-deny.just`                      | whole | owned  |          |
-| `.config/mise/conf.d/devset-cargo-deny.toml` | whole | owned  |          |
-| `.config/mise/mise.lock`                     | keys  | owned  |          |
+| File                                         | Part  | Policy | Notes                                |
+| -------------------------------------------- | ----- | ------ | ------------------------------------ |
+| `deny.toml`                                  | keys  | owned  | template                             |
+| `.just/cargo-deny.just`                      | whole | owned  |                                      |
+| `.config/mise/conf.d/devset-cargo-deny.toml` | whole | owned  |                                      |
+| `.config/mise/mise.lock`                     | keys  | owned  |                                      |
+| `AGENTS.md`                                  | block | owned  | feature `agents`, `AGENTS.md` exists |
 
 ## Features
 
 | Feature  | Default | Enables |
 | -------- | ------- | ------- |
 | `strict` |         |         |
+| `agents` |         |         |
 
 ## Recipes
 
