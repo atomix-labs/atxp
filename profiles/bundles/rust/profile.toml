@@ -41,12 +41,15 @@ github-release       = { optional = true }
 cargo-binaries       = { optional = true }
 cargo-hack           = { optional = true }
 github-nightly       = { optional = true }
+project              = { optional = true }
+github-templates     = { optional = true }
 
 [features]
 default  = []
 docs     = ["dep:mdbook"]
 agents   = ["rust-doc/agents", "cargo-manifest/agents"]
-publish  = ["dep:cargo-publish", "dep:github-release"]
+publish  = ["dep:cargo-publish", "dep:github-release", "dep:project"]
 binaries = ["dep:cargo-binaries", "dep:github-release"]
+oss      = ["dep:project", "project/conduct", "dep:github-templates"]
 nightly  = ["rust-lints/nightly", "dep:cargo-hack", "dep:github-nightly"]
 strict   = ["cargo-deny/strict", "rust-lints/strict", "cargo-profiles/strict", "rust-doc/strict"]

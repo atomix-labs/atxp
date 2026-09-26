@@ -1,23 +1,25 @@
 # `rust`
 
-A Rust repository, whole: the pinned toolchain, formatting and the lint wall,
-dependency policy and dependencies bumped one at a time, tests, the build
-profiles, manifests in one shape; EditorConfig, Git attributes and ignores,
-commits and the changelog; formatting and linting for Markdown, TOML, YAML and
-shell, and spelling; the `just` spine, setup, mise and devset; and CI, with its
-watch and its weekly bump.
+A Rust repository, whole, from nothing: a workspace where there is none, the
+pinned toolchain, formatting and the lint wall, dependency policy and
+dependencies bumped one at a time, tests, the build profiles, manifests in one
+shape; EditorConfig, Git attributes and ignores, commits and the changelog;
+formatting and linting for Markdown, TOML, YAML and shell, and spelling; the
+`just` spine, setup, mise and devset; and CI, with its watch and its weekly
+bump.
 
 A bundle owns nothing itself: each profile it requires is a layer of its own,
 and its features describe the kind of project:
 
-| Feature    | Adds                                                                                    |
-| ---------- | --------------------------------------------------------------------------------------- |
-| `docs`     | a book, with [`mdbook`](../../docs/mdbook/README.md)                                    |
-| `agents`   | the skills for rustdoc and manifests                                                    |
-| `publish`  | crates.io, with [`cargo-publish`](../../cargo/cargo-publish/README.md), and the release |
-| `binaries` | release archives, with [`cargo-binaries`](../../cargo/cargo-binaries/README.md)         |
-| `nightly`  | nightly's own lints, cargo-hack's feature matrix, and the nightly run                   |
-| `strict`   | the house policy: cargo-deny's bans, the full lint wall, `panic = "abort"`              |
+| Feature    | Adds                                                                                                             |
+| ---------- | ---------------------------------------------------------------------------------------------------------------- |
+| `docs`     | a book, with [`mdbook`](../../docs/mdbook/README.md)                                                             |
+| `agents`   | the skills for rustdoc and manifests                                                                             |
+| `publish`  | crates.io, with [`cargo-publish`](../../cargo/cargo-publish/README.md), the release, and the project's documents |
+| `binaries` | release archives, with [`cargo-binaries`](../../cargo/cargo-binaries/README.md)                                  |
+| `oss`      | an open-source project's documents with its code of conduct, and the issue and pull request templates            |
+| `nightly`  | nightly's own lints, cargo-hack's feature matrix, and the nightly run                                            |
+| `strict`   | the house policy: cargo-deny's bans, the full lint wall, the doc lint, `panic = "abort"`                         |
 
 None is on by default. Outside it are
 [`rust-msrv`](../../rust/rust-msrv/README.md), for crates that build on stable;
@@ -35,8 +37,9 @@ None is on by default. Outside it are
 | ---------- | ------- | ------------------------------------------------------------------------------------ |
 | `docs`     |         | `dep:mdbook`                                                                         |
 | `agents`   |         | `rust-doc/agents`, `cargo-manifest/agents`                                           |
-| `publish`  |         | `dep:cargo-publish`, `dep:github-release`                                            |
+| `publish`  |         | `dep:cargo-publish`, `dep:github-release`, `dep:project`                             |
 | `binaries` |         | `dep:cargo-binaries`, `dep:github-release`                                           |
+| `oss`      |         | `dep:project`, `project/conduct`, `dep:github-templates`                             |
 | `nightly`  |         | `rust-lints/nightly`, `dep:cargo-hack`, `dep:github-nightly`                         |
 | `strict`   |         | `cargo-deny/strict`, `rust-lints/strict`, `cargo-profiles/strict`, `rust-doc/strict` |
 
@@ -79,5 +82,7 @@ None is on by default. Outside it are
 - [`cargo-binaries`](../../cargo/cargo-binaries/README.md): optional
 - [`cargo-hack`](../../cargo/cargo-hack/README.md): optional
 - [`github-nightly`](../../github/github-nightly/README.md): optional
+- [`project`](../../project/project/README.md): optional
+- [`github-templates`](../../github/github-templates/README.md): optional
 
 <!-- /facts -->
