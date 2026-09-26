@@ -1,0 +1,13 @@
+[profile]
+name        = "git-commits"
+description = "committed holds every commit a branch adds to Conventional Commits, the scope the part it changes"
+devset      = ">=0.1"
+
+[files."committed.toml"]
+
+[files.".just/git-commits.just"]
+
+[files.".config/mise/conf.d/devset-git-commits.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

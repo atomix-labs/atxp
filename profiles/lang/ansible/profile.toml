@@ -1,0 +1,13 @@
+[profile]
+name        = "ansible"
+description = "ansible-lint holds every playbook and role in .ansible/ to its production profile, on the pinned ansible-core"
+devset      = ">=0.1"
+
+[files.".ansible-lint"]
+
+[files.".just/ansible.just"]
+
+[files.".config/mise/conf.d/devset-ansible.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

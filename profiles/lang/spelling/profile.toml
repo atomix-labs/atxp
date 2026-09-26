@@ -1,0 +1,15 @@
+[profile]
+name        = "spelling"
+description = "typos checks the spelling of code, documents and configuration; a repository adds its own words"
+devset      = ">=0.1"
+
+[files."typos.toml"]
+scope  = "keys"
+policy = "merge"
+
+[files.".just/spelling.just"]
+
+[files.".config/mise/conf.d/devset-spelling.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

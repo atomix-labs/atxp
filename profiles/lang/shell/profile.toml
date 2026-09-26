@@ -1,0 +1,11 @@
+[profile]
+name        = "shell"
+description = "ShellCheck lints every shell script the repository tracks, following what each sources"
+devset      = ">=0.1"
+
+[files.".just/shell.just"]
+
+[files.".config/mise/conf.d/devset-shell.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

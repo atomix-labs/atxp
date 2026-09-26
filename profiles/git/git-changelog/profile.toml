@@ -1,0 +1,17 @@
+[profile]
+name        = "git-changelog"
+description = "git-cliff writes the changelog from Conventional Commits at each release, grouped, linked, breaking marked"
+devset      = ">=0.1"
+
+[vars.repository]
+prompt = "The GitHub repository the changelog links into, owner/name"
+
+[files."cliff.toml"]
+template = true
+
+[files.".just/git-changelog.just"]
+
+[files.".config/mise/conf.d/devset-git-changelog.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

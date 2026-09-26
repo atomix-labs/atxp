@@ -1,0 +1,15 @@
+[profile]
+name        = "markdown"
+description = "rumdl lints Markdown: line length left to the formatter, headings in title case"
+devset      = ">=0.1"
+
+[files.".rumdl.toml"]
+scope  = "keys"
+policy = "merge"
+
+[files.".just/markdown.just"]
+
+[files.".config/mise/conf.d/devset-markdown.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

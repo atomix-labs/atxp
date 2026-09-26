@@ -21,7 +21,7 @@ counts as breaking.
    RELEASE_VERSION=x.y.z just release
    ```
 
-   Every `release-*` recipe runs: `release-git-cliff` writes `CHANGELOG.md` from
+   Every `release-*` recipe runs: `release-git-changelog` writes `CHANGELOG.md` from
    the commits since the last tag, in a Rust repository `release-cargo-bump`
    sets every crate's version, and atxp's own `release-readme` points the
    README's quick start at the new tag.

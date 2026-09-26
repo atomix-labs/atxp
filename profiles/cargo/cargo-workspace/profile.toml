@@ -1,0 +1,7 @@
+[profile]
+name        = "cargo-workspace"
+description = "Git ignores Cargo's build output, rustfmt's backups and MSVC debug files"
+devset      = ">=0.1"
+
+[files.".gitignore"]
+scope = "block"

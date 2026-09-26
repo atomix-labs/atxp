@@ -1,0 +1,14 @@
+[profile]
+name        = "cargo-nextest"
+description = "cargo-nextest for every test, and cargo for the doctests; in CI, a `ci` profile that runs them all"
+devset      = ">=0.1"
+
+[files.".config/nextest.toml"]
+scope = "keys"
+
+[files.".just/cargo-nextest.just"]
+
+[files.".config/mise/conf.d/devset-cargo-nextest.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

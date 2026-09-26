@@ -1,0 +1,8 @@
+[profile]
+name        = "cargo-manifest"
+description = "Every crate manifest in one shape: key order, inherited fields, grouped dependencies"
+devset      = ">=0.1"
+
+[files.".just/cargo-manifest.just"]
+
+[files.".just/cargo-manifest.py"]

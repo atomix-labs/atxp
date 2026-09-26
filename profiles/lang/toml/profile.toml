@@ -1,0 +1,20 @@
+[profile]
+name        = "toml"
+description = "taplo formats every TOML file in one layout: aligned, four spaces, dependencies in order"
+devset      = ">=0.1"
+
+[vars.line_width]
+prompt  = "Line width, shared by the formatters and EditorConfig"
+default = "100"
+
+[files."taplo.toml"]
+scope    = "keys"
+policy   = "merge"
+template = true
+
+[files.".just/toml.just"]
+
+[files.".config/mise/conf.d/devset-toml.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

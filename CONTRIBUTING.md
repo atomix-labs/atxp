@@ -18,7 +18,7 @@ Keep each pull request to one change: a profile, a fix, or a refactor, not a mix
 of them.
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org),
-which `check-committed` holds every commit of a branch to:
+which `check-git-commits` holds every commit of a branch to:
 
 ```text
 type(scope): subject
@@ -62,7 +62,7 @@ An atom owns one tool:
 - its pin, in `.config/mise/conf.d/devset-<id>.toml`, named so that no tool
   reads it as its own configuration, with its entries in
   `.config/mise/mise.lock` owned as keys, and locked for `linux-arm64`,
-  `linux-x64` and `macos-arm64` by `just bump-profile-pins`, a static build on
+  `linux-x64` and `macos-arm64` by `just bump-devset-collection`, a static build on
   Linux where the release has one;
 - its recipes, in `.just/<id>.just`, each named for a verb, `check-<id>` and the
   like, with any helper beside them as `.just/<id>.<ext>`.
@@ -98,7 +98,7 @@ Every document here keeps these rules.
 just check              # atxp's own checks, as CI runs them
 just test-profiles      # the bundle on each fixture, every profile alone and all at once
 just fix-catalog        # after changing a profile: the tables, every profile's facts, the spine's imports
-just bump-profile-pins  # after changing a pin: its lock entries, for every platform
+just bump-devset-collection  # after changing a pin: its lock entries, for every platform
 ```
 
 `just test-profiles` runs the devset release atxp pins in

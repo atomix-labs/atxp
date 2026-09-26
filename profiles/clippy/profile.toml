@@ -1,9 +1,0 @@
-[profile]
-name        = "clippy"
-description = "Clippy over every crate, target and feature, warnings denied; tests may unwrap, panic and print"
-devset      = ">=0.1"
-
-[files."clippy.toml"]
-scope = "keys"
-
-[files.".just/clippy.just"]

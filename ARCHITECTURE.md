@@ -85,7 +85,7 @@ its publisher's provenance. mise installs from the lock, verified, and refuses a
 platform the lock lacks. No release younger than three days is chosen.
 
 Pins move weekly. In atxp, `just bump` moves every profile's pins and relocks
-them (`bump-profile-pins`), the pinned nightly (`bump-rust-toolchain`), and the
+them (`bump-devset-collection`), the pinned nightly (`bump-rust-toolchain`), and the
 one mise version the setup script, the `mise` profile and every workflow share
 (`bump-mise-version`). A release carries them to repositories, which take it
 with `devset update`. In a repository, `just bump` moves what the repository

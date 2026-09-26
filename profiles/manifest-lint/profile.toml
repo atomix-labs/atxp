@@ -1,8 +1,0 @@
-[profile]
-name        = "manifest-lint"
-description = "Every crate manifest in one shape: key order, inherited fields, grouped dependencies"
-devset      = ">=0.1"
-
-[files.".just/manifest-lint.just"]
-
-[files.".just/manifest-lint.py"]

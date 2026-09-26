@@ -1,9 +1,0 @@
-[profile]
-name        = "crates-io"
-description = "crates.io: every crate a release publishes packaged on each change, and published at the release by trusted publishing"
-devset      = ">=0.1"
-requires    = ["../rustup", "../just"]
-
-[files.".just/crates-io.just"]
-
-[files.".just/crates-io.py"]

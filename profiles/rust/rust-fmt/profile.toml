@@ -1,0 +1,13 @@
+[profile]
+name        = "rust-fmt"
+description = "rustfmt on nightly options: imports by module, comments wrapped, doc examples formatted"
+devset      = ">=0.1"
+
+[vars.line_width]
+prompt  = "Line width, shared by the formatters and EditorConfig"
+default = "100"
+
+[files."rustfmt.toml"]
+template = true
+
+[files.".just/rust-fmt.just"]

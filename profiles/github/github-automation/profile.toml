@@ -1,0 +1,17 @@
+[profile]
+name        = "github-automation"
+description = "The automation's settings: issue labels and types, who is assigned, how far the weekly bump goes"
+devset      = ">=0.1"
+
+[vars.assignees]
+prompt  = "GitHub logins assigned the automation's issues, comma-separated"
+default = ""
+
+[vars.bump_mode]
+prompt  = "How far the weekly bump goes: branch, pr or merge"
+default = "pr"
+
+[files.".github/automation.json"]
+scope    = "keys"
+policy   = "merge"
+template = true

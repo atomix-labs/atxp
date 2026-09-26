@@ -1,0 +1,15 @@
+[profile]
+name        = "yaml"
+description = "yamllint checks YAML for what a formatter cannot fix: duplicate keys, octal values, truthy words"
+devset      = ">=0.1"
+
+[files.".yamllint.yaml"]
+scope  = "keys"
+policy = "merge"
+
+[files.".just/yaml.just"]
+
+[files.".config/mise/conf.d/devset-yaml.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

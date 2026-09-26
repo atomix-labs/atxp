@@ -1,0 +1,11 @@
+[profile]
+name        = "cargo-unused"
+description = "cargo-machete finds dependencies no crate uses, fast, from the sources alone"
+devset      = ">=0.1"
+
+[files.".just/cargo-unused.just"]
+
+[files.".config/mise/conf.d/devset-cargo-unused.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"

@@ -1,7 +1,0 @@
-[profile]
-name        = "lints"
-description = "The lint wall, as keys of the workspace Cargo.toml: rustc, rustdoc, clippy and cargo"
-devset      = ">=0.1"
-
-[files."Cargo.toml"]
-scope = "keys"

@@ -1,0 +1,7 @@
+[profile]
+name        = "git-ignore"
+description = "Git ignores what tools keep locally, editors' files, and anything that looks like a secret"
+devset      = ">=0.1"
+
+[files.".gitignore"]
+scope = "block"
