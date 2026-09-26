@@ -1,7 +1,7 @@
 [profile]
 name        = "python"
 description = "Python: linted by Ruff at the shared line width, and formatted by dprint through its Ruff plugin"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [requires]
 dprint = { optional = true }

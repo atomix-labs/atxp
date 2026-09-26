@@ -1,7 +1,7 @@
 [profile]
 name        = "dprint"
 description = "dprint, the formatter: JSON, CSS and JavaScript, and each language profile's plugin; every plugin checksummed"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [vars.line_width]
 prompt  = "Line width, shared by the formatters and EditorConfig"

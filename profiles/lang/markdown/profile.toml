@@ -1,7 +1,7 @@
 [profile]
 name        = "markdown"
 description = "Markdown: formatted by dprint at 80, and linted by rumdl, headings in title case"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [requires]
 dprint = { optional = true }

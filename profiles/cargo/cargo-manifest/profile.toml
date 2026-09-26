@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-manifest"
 description = "Every crate manifest in one shape, the workspace's lints inherited, and the skill for editing them"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [requires]
 rust-toolchain = {}

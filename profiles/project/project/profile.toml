@@ -1,7 +1,7 @@
 [profile]
 name        = "project"
 description = "The documents every project keeps: the README, the licence, how to contribute, security, breaking changes"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [features]
 default          = ["readme", "license", "contributing", "security", "breaking-changes"]

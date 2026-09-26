@@ -1,7 +1,7 @@
 [profile]
 name        = "github-watch"
 description = "Every scheduled workflow watched: one that fails, stops running or is disabled gets an issue"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [requires]
 github-automation = {}

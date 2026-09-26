@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-workspace"
 description = "A Cargo workspace: scaffolded where there is none, its build output ignored, its builds portable, its requirements resolved within rust-version"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [vars.name]
 prompt  = "The project's name, and its first crate's; empty takes the directory's"

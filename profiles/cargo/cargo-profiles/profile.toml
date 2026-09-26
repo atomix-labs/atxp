@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-profiles"
 description = "Build profiles as keys of the workspace Cargo.toml: release, bench, dev, test, profiling and release-fast"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [features]
 strict = []

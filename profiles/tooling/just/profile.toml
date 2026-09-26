@@ -1,7 +1,7 @@
 [profile]
 name        = "just"
 description = "The recipe spine: imports every active profile's recipes, and `check`, `fix` and the other verbs run them all"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [files."justfile"]
 scope    = "block"

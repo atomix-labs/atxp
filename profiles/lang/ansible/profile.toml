@@ -1,7 +1,7 @@
 [profile]
 name        = "ansible"
 description = "ansible-lint holds every playbook and role in .ansible/ to its production profile, on the pinned ansible-core"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [requires]
 mise = {}

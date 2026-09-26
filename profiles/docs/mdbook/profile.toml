@@ -1,7 +1,7 @@
 [profile]
 name        = "mdbook"
 description = "mdBook: the book scaffolded, built, tested and linted, with math, diagrams and the API"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [requires]
 github-ci      = { optional = true }

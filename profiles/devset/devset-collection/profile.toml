@@ -1,7 +1,7 @@
 [profile]
 name        = "devset-collection"
 description = "For a collection of profiles: its catalog, the rules its profiles keep, its test suite, and its pins locked"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [requires]
 devset = {}

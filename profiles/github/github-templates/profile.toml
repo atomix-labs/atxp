@@ -1,7 +1,7 @@
 [profile]
 name        = "github-templates"
 description = "GitHub's issue templates and pull request checklist, the repository's once written"
-devset      = ">=0.2.2"
+devset      = ">=0.3.0"
 
 [vars.repository]
 prompt = "The GitHub repository, owner/name"
