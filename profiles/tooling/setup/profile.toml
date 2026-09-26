@@ -7,7 +7,16 @@ devset      = ">=0.2.1"
 just = {}
 mise = {}
 
+[features]
+default      = []
+devcontainer = []
+
 [files."setup.sh"]
 executable = true
 
 [files.".config/mise/conf.d/devset-setup.toml"]
+
+[files.".devcontainer/devcontainer.json"]
+policy   = "once"
+template = true
+when     = { features = ["devcontainer"] }

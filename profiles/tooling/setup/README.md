@@ -17,7 +17,9 @@ over HTTPS after `gh auth login` otherwise; `SETUP_PROTOCOL=ssh` or `https`
 decides instead, and any git URL works too. It clones to `./<name>` unless
 `--dir` says where. `--activate` adds mise's activation to the shell's rc,
 through mise; without it, the line to add is printed. `--yes`, or `CI`, asks
-nothing. A devcontainer runs `./setup.sh --yes` as its `postCreateCommand`.
+nothing. A devcontainer runs `./setup.sh --yes` as its `postCreateCommand`; the
+feature `devcontainer` writes one, Ubuntu's base image, which is the
+repository's once written.
 
 A pinned stub is the file at a release tag:
 `https://raw.githubusercontent.com/atomix-labs/atxp/<tag>/profiles/tooling/setup/files/setup.sh`.
@@ -26,10 +28,17 @@ A pinned stub is the file at a release tag:
 
 ## Owns
 
-| File                                    | Part  | Policy | Notes      |
-| --------------------------------------- | ----- | ------ | ---------- |
-| `setup.sh`                              | whole | owned  | executable |
-| `.config/mise/conf.d/devset-setup.toml` | whole | owned  |            |
+| File                                    | Part  | Policy | Notes                            |
+| --------------------------------------- | ----- | ------ | -------------------------------- |
+| `setup.sh`                              | whole | owned  | executable                       |
+| `.config/mise/conf.d/devset-setup.toml` | whole | owned  |                                  |
+| `.devcontainer/devcontainer.json`       | whole | once   | template, feature `devcontainer` |
+
+## Features
+
+| Feature        | Default | Enables |
+| -------------- | ------- | ------- |
+| `devcontainer` |         |         |
 
 ## Requires
 

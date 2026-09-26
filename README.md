@@ -168,7 +168,7 @@ variables and what it requires.
 | [`editorconfig`](profiles/tooling/editorconfig/README.md) | EditorConfig: UTF-8, LF, a final newline, spaces, and the shared line width                                   | `.editorconfig` (merge)                                          |
 | [`just`](profiles/tooling/just/README.md)                 | The recipe spine: imports every active profile's recipes, and `check`, `fix` and the other verbs run them all | `justfile` (block), `.config/mise/mise.lock` (keys)              |
 | [`mise`](profiles/tooling/mise/README.md)                 | mise installs every tool from its lock, verified on every platform, none under three days old                 | `.config/mise/mise.lock` (keys)                                  |
-| [`setup`](profiles/tooling/setup/README.md)               | One command readies a machine for a checkout: mise, pinned and verified, then mise bootstrap and just setup   | `setup.sh`                                                       |
+| [`setup`](profiles/tooling/setup/README.md)               | One command readies a machine for a checkout: mise, pinned and verified, then mise bootstrap and just setup   | `setup.sh`, `.devcontainer/devcontainer.json` (once)             |
 | [`suppressions`](profiles/tooling/suppressions/README.md) | Every lint suppression proves it still suppresses something, for the tools that do not report it themselves   |                                                                  |
 | [`vscode`](profiles/tooling/vscode/README.md)             | VS Code, set up for the tools the target's profiles bring: their extensions and settings                      | `.vscode/extensions.json`, `.vscode/settings.json` (keys, merge) |
 
