@@ -1,16 +1,20 @@
+{#- Each language profile's features, empty where it is not applied: dprint formats a language where its profile's `format` is on. -#}
+{%- set md = devset.layers | selectattr("profile", "equalto", "markdown") | map(attribute="features") | first | default([]) -%}
+{%- set yml = devset.layers | selectattr("profile", "equalto", "yaml") | map(attribute="features") | first | default([]) -%}
+{%- set py = devset.layers | selectattr("profile", "equalto", "python") | map(attribute="features") | first | default([]) -%}
 {
   "lineWidth": {{ line_width }},
   "excludes": [".just/**", "CHANGELOG.md", "**/*.min.css", "**/*.min.js"],
   "json": { "lineWidth": 160, "trailingCommas": "never", "object.preferSingleLine": true, "array.preferSingleLine": true },
-  "includes": ["**/*.{json,jsonc,css,js{% if "markdown" in devset.profiles %},md{% endif %}{% if "yaml" in devset.profiles %},yml,yaml{% endif %}{% if "python" in devset.profiles %},py{% endif %}}"],
+  "includes": ["**/*.{json,jsonc,css,js{% if "format" in md %},md{% endif %}{% if "format" in yml %},yml,yaml{% endif %}{% if "format" in py %},py{% endif %}}"],
   "plugins": [
-{%- if "markdown" in devset.profiles %}
+{%- if "format" in md %}
     "https://plugins.dprint.dev/markdown-0.24.0.wasm@cf7e65674b7eb5d91f85152ae9020dc8b3e73bd7944efcbfb05df71081217764",
 {%- endif %}
-{%- if "yaml" in devset.profiles %}
+{%- if "format" in yml %}
     "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.6.0.wasm@40a2fdda7040317eb1b23520f3a00769a5571eedb049c4ca9175c1b9eeba01ae",
 {%- endif %}
-{%- if "python" in devset.profiles %}
+{%- if "format" in py %}
     "https://plugins.dprint.dev/ruff-0.8.8.wasm@ce4f881eef34163371b54ad502df86ebadcf2d2de34ad40d2e72ad86096a3a73",
 {%- endif %}
     "https://plugins.dprint.dev/json-0.24.0.wasm@07316f98ceda3761d31569795d82b8a104cb078e54e46fb542c2a81728bc48f1",
