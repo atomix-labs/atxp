@@ -3,6 +3,18 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.3.3](https://github.com/atomix-labs/atxp/releases/tag/v0.3.3) - 2026-09-26
+
+### Features
+
+- [2ba71e3](https://github.com/atomix-labs/atxp/commit/2ba71e3bd59560e3f93753c6d2792073fcdbb1fb) *(github-release)* Attest every archive a release attaches
+
+### Bug Fixes
+
+- [366e517](https://github.com/atomix-labs/atxp/commit/366e517101ce082601f1dfd091cbf869aaff8cff) *(crates-io)* Package without the build while crates.io has the versions
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.3.2...v0.3.3>
+
 ## [0.3.2](https://github.com/atomix-labs/atxp/releases/tag/v0.3.2) - 2026-09-25
 
 ### Bug Fixes
