@@ -200,5 +200,5 @@ paragraph and one example only for a module that is itself a surface.
   where its guarantee is used, not beside the entry.
 - A feature that is not self-explanatory is explained once, in the crate docs'
   `# Crate features` table, never in the manifest.
-- Everything else about a manifest — shape, inheritance, features, targets, the
-  gates — is `editing-cargo-manifests`.
+- Everything else about a manifest (shape, inheritance, features, targets, the
+  gates) is `editing-cargo-manifests`.

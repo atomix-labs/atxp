@@ -1,7 +1,7 @@
 # Style: Voice, Compaction, and What to Cut
 
-Derived from `wtx-init`, `wtx-region` and `wtx-allocators` (`exemplars.md`).
-Where the
+Derived from the crates `exemplars.md` quotes: `mem-init`, `mem-region` and
+`mem-allocators`. Where the
 [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/documentation.html)
 or the
 [Pragmatic Rust Guidelines](https://microsoft.github.io/rust-guidelines/guidelines/docs/index.html)
@@ -36,7 +36,7 @@ does not. Then a blank `///` line, then the body.
 | `PhantomData`   | what it fixes and how                                                                  | Fixes the element and error types by owning them.                                     | Marker.                                        |
 | error enum      | `Why …` (what could not happen)                                                        | Why an allocator could not make room.                                                 | Errors returned by the allocator.              |
 | error variant   | the condition, as a fact                                                               | The region is shorter than the layout.                                                | Returned when too small.                       |
-| other variant   | when it is produced, or what it carries                                                | The close frame is out; inbound drains until the venue acknowledges.                  | Variant `Closing`.                             |
+| other variant   | when it is produced, or what it carries                                                | The close frame is out; inbound drains until the peer acknowledges.                   | Variant `Closing`.                             |
 | const / static  | what it fixes, and why that value                                                      | The smallest region an arena fits in, and the alignment every arena region must meet. | Minimum region size.                           |
 | macro           | verb first, like a fn                                                                  | Builds a record straight into its destination.                                        | Macro for in-place init.                       |
 | test helper     | its role in the proof                                                                  | Runs `source` over `N` fresh slots and hands back what it built.                      | Helper function.                               |
@@ -68,7 +68,7 @@ Enumerated properties of a type go in bullets with a bold lead: `-
 **Move-only.** Laying a structure into a region consumes it, so …`. Three
 bullets is the norm; two is a sentence.
 
-Speak the crate's own domain and keep its nouns fixed: in `wtx-init` a *slot* is
+Speak the crate's own domain and keep its nouns fixed: in `mem-init` a *slot* is
 the destination, a *run* is `n` slots, a *source* is a `RunInit`, an initializer
 *refuses* rather than fails. Define a coined noun once, where the type is, and
 link every later use. A term that only makes sense to someone who already knows
@@ -112,7 +112,7 @@ Apply in order until the sentence fits.
 | `can be used to`, `allows you to`, `provides`                  | indirection                              | the verb                                            |
 | `for more information see …`, `See also`                       | link ceremony                            | link the noun inline                                |
 | `powerful`, `simple`, `easy`, `efficient`, `zero-cost`         | unverifiable                             | the measured fact, or nothing                       |
-| `generic`, `venue-neutral`, `reusable`                         | editorializing; being in a lib proves it | what it does                                        |
+| `generic`, `reusable`                                          | editorializing; being in a lib proves it | what it does                                        |
 | `etc.`, `and so on`, `various`                                 | vague                                    | the full list, or the rule that generates it        |
 | `# Example` (singular)                                         | nonstandard                              | `# Examples`                                        |
 | blank line after `# Heading`                                   | house style                              | content on the next line                            |
@@ -131,7 +131,7 @@ Apply in order until the sentence fits.
 ## 5 Examples
 
 - The shape: `#![feature(…)]` first if the crate needs it, then `use core::…;`
-  lines, a blank line, `use wtx_…::{…};` lines, a blank line, the code.
+  lines, a blank line, `use mem_…::{…};` lines, a blank line, the code.
   `rustfmt` orders them; write them that way.
 - Show *why* the item is used, not that it can be called. A small domain type
   (`Leg`, `Order`, `Tag`) beats `Foo`; a real quantity (`4096`, `64 * 1024`)
@@ -177,7 +177,7 @@ Apply in order until the sentence fits.
   with short stable labels: `[rust#125632]`, `[goal]`, `[pin-init]`, `[loom]`.
 - A crate that is not a dependency cannot be intra-linked
   (`private_intra_doc_links`, broken links are denied): reach it by relative
-  HTML path, `[`SeqLock`]: ../wtx_sync/seqlock/struct.SeqLock.html`.
+  HTML path, `[`SeqLock`]: ../mem_sync/seqlock/struct.SeqLock.html`.
 - An unstable, cfg-gated, or foreign item rustdoc cannot resolve is linked by
   URL reference definition, never demoted to a bare code span:
   `[`AtomicPrimitive`]:

@@ -37,9 +37,8 @@ from; it never joins a short line to the next, so a paragraph rebalanced by hand
 stays as written while every line is under 100; and it reformats the Rust inside
 a doc fence, so write examples as `rustfmt` would.
 
-For a crate named in the justfile's `loom_pkgs` or `miri_pkgs`, its docs must
-also compile on that axis, since a `cfg`-gated item a doc links may vanish
-there:
+For a crate the repository also builds under loom or Miri, its docs must also
+compile on that axis, since a `cfg`-gated item a doc links may vanish there:
 
 ```sh
 cargo clippy -p <crate> --lib --tests --config 'target."cfg(all())".rustflags=["--cfg","loom"]'
@@ -102,7 +101,7 @@ surfaces; an intra-doc link to it breaks on the other target. An item behind
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | an item of this crate or a dependency      | ``[`Name`]``, ``[`m`](Self::m)``, ``[`Layout`](core::alloc::Layout)``                                               |
 | a path used several times in one block     | a reference definition: `[`Shared`]: crate::Shared`                                                                 |
-| a workspace crate that is not a dependency | relative HTML path: `[`SeqLock`]: ../wtx_sync/seqlock/struct.SeqLock.html`                                          |
+| a workspace crate that is not a dependency | relative HTML path: `[`SeqLock`]: ../mem_sync/seqlock/struct.SeqLock.html`                                          |
 | an unstable / impl-restricted std item     | URL: `[`AtomicPrimitive`]: https://doc.rust-lang.org/std/sync/atomic/trait.AtomicPrimitive.html`                    |
 | a third-party crate or one of its items    | URL: `[loom]: https://docs.rs/loom`, `[`UnsafeCell`]: https://docs.rs/loom/latest/loom/cell/struct.UnsafeCell.html` |
 | an issue, RFC, paper                       | URL with a stable short label: `[rust#125632]: https://github.com/rust-lang/rust/issues/125632`                     |

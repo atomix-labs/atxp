@@ -1,10 +1,9 @@
-# Exemplars: `wtx-init`, `wtx-region`, `wtx-allocators`, Annotated
+# Exemplars: `mem-init`, `mem-region`, `mem-allocators`, Annotated
 
-Excerpts from the three reference crates (`lib/memory/`), each with the rule it
-shows. A new crate's docs must sit comfortably next to these; when they would
-not, the new docs are wrong. Open the crates themselves for the whole picture:
-`lib/memory/wtx-init/src/lib.rs` is the problem-first crate page,
-`lib/memory/wtx-allocators/src/lib.rs` the shape-first one.
+Excerpts from three memory crates, each with the rule it shows. A new crate's
+docs must sit comfortably next to these; when they would not, the new docs are
+wrong. `mem-init`'s crate page is the problem-first form, `mem-allocators`' the
+shape-first one.
 
 Contents: 1 Crate pages · 2 Modules · 3 Types and fields · 4 Traits · 5
 Functions · 6 Errors · 7 Private items · 8 `// SAFETY:` and `// ORDERING:` · 9
@@ -44,7 +43,7 @@ Re-exports and omissions
 ````rust
 //! Allocators over a byte range you own.
 //!
-//! A [`Region`](wtx_region::Region) is a span of bytes to build inside; an allocator carves blocks
+//! A [`Region`](mem_region::Region) is a span of bytes to build inside; an allocator carves blocks
 //! from one and, where it can, takes them back:
 //!
 //! ```text
@@ -258,8 +257,8 @@ pub unsafe trait RunInit<T, E = Infallible>: Sized {
 /// context, where `Heap::open(region)` over two inherent impls is **E0034**, resolvable only by
 /// spelling `<Heap<Shared>>::open`.
 pub trait Root: Rooted + Sized {
-    /// Itself, branded with the borrow taken while opening: a [`Local`](wtx_region::Local) region
-    /// lends its bytes for `'a`, a [`Shared`](wtx_region::Shared) one has none to lend.
+    /// Itself, branded with the borrow taken while opening: a [`Local`](mem_region::Local) region
+    /// lends its bytes for `'a`, a [`Shared`](mem_region::Shared) one has none to lend.
     type Bound<'a>: Root where Self: 'a;
 
     /// Lays one into `region`, spending the right to write it.
@@ -303,7 +302,7 @@ pub unsafe trait Reclaiming: Allocator {}
 /// ```
 /// use core::mem::MaybeUninit;
 ///
-/// use wtx_init::{init, raw_try_init};
+/// use mem_init::{init, raw_try_init};
 ///
 /// #[derive(Debug, PartialEq)]
 /// struct Leg {
@@ -607,7 +606,7 @@ fn only_a_free_chunk_opens_its_links() { … }
 
 ```rust
 //! UI tests pinning the properties the type system carries. Regenerate snapshots with
-//! `TRYBUILD=overwrite cargo test -p wtx-region --test trybuild`.
+//! `TRYBUILD=overwrite cargo test -p mem-region --test trybuild`.
 
 #![feature(non_exhaustive_omitted_patterns_lint, strict_provenance_lints)]
 // Neither a loom model nor miri drives a compiler or spawns a process.
@@ -626,7 +625,7 @@ mod tests {
 //! What the arena's cursor costs: the exchange a shared handle pays, against the register bump an
 //! exclusive one could.
 //!
-//! [`Arena::carve`](wtx_allocators::Arena::carve) takes `&self`, so every range costs a
+//! [`Arena::carve`](mem_allocators::Arena::carve) takes `&self`, so every range costs a
 //! `compare_exchange_weak`. … Both arms below run the same [`Span::cut`] arithmetic over a range
 //! wide enough never to exhaust, so the gap between them is the exchange and nothing else.
 
@@ -637,7 +636,7 @@ const CORE: u32 = 6;
 ```rust
 //! What the vocabulary is for: one buffer becomes a partition, and the type system holds the line.
 //!
-//! Run with `cargo run -p wtx-region --example region-tour`.
+//! Run with `cargo run -p mem-region --example region-tour`.
 
 #![expect(clippy::print_stdout, reason = "a demo binary reports its result on stdout")]
 ```
@@ -661,8 +660,8 @@ description = "place structures in raw bytes and address them by location, not b
 
 [dependencies]
 # internal
-wtx-assert     = { workspace = true }
-wtx-region     = { workspace = true }
+mem-assert     = { workspace = true }
+mem-region     = { workspace = true }
 # external
 pin-init     = { workspace = true } # `init!` expands to its paths; not named in source.
 zerocopy     = { workspace = true } # `FromZeros`, the one marker for "a zeroed place is a value".

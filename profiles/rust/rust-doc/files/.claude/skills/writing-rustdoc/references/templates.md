@@ -405,12 +405,12 @@ Only the `description` is this skill's; the rest of the shape is
 
 ```toml
 [package]
-name        = "wtx-foo"
+name        = "mem-foo"
 description = "<the crate summary's pitch clause verbatim, first letter lowercased, trailing period; never `the crate that …`>."
 
 [dependencies]
 # internal
-wtx-assert = { workspace = true }
+mem-assert = { workspace = true }
 # external
 zerocopy = { workspace = true }
 
