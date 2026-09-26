@@ -1,0 +1,1 @@
+{ "pages": { "recipe": "check-mdbook", "path": "{{ book_dir }}/book" } }

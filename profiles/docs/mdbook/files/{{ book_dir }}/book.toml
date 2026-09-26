@@ -1,0 +1,43 @@
+{%- set on = devset.features -%}
+[output.html]
+default-theme        = "rust"
+preferred-dark-theme = "ayu"
+git-repository-url   = "https://github.com/{{ repository }}"
+edit-url-template    = "https://github.com/{{ repository }}/edit/main/{{ book_dir }}/{path}"
+site-url             = "/{{ repository | split("/") | last }}/"
+
+# What the book loads: its look, and what each feature brings.
+{%- set js %}[{% if "mermaid" in on %}"mermaid.min.js", "mermaid-init.js"{% if "api" in on %}, {% endif %}{% endif %}{% if "api" in on %}"api-link.js"{% endif %}]{% endset %}
+{%- if "katex" in on %}
+additional-css = [
+    "vendor/katex/katex.min.css",
+    "theme/prompt.css",
+    "theme/width.css",
+    "theme/details.css",
+]
+additional-js = {{ js }}
+{%- else %}
+additional-css = ["theme/prompt.css", "theme/width.css", "theme/details.css"]
+additional-js  = {{ js }}
+{%- endif %}
+
+[output.html.fold]
+enable = true
+level  = 1
+
+[output.html.search]
+enable          = true
+limit-results   = 30
+use-boolean-and = true
+{%- if "katex" in on %}
+
+# Math, rendered at build time; the stylesheet is vendored, so the site makes no third-party request.
+[preprocessor.katex]
+after  = ["links"]
+no-css = true
+{%- endif %}
+{%- if "mermaid" in on %}
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+{%- endif %}

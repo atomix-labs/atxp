@@ -1,2 +1,9 @@
 [tools]
 "github:rust-lang/mdBook" = "0.5.4"
+{%- if "katex" in devset.features %}
+# Built with cargo: its releases carry no binaries.
+"cargo:mdbook-katex" = "0.10.0"
+{%- endif %}
+{%- if "mermaid" in devset.features %}
+"github:badboy/mdbook-mermaid" = "0.17.1"
+{%- endif %}

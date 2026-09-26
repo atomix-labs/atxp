@@ -1,0 +1,11 @@
+[book]
+title    = "{{ devset.target }}"
+language = "en"
+src      = "src"
+
+# A SUMMARY.md entry pointing at a missing file is an error, not a cue to create one.
+[build]
+create-missing = false
+
+[rust]
+edition = "2024"

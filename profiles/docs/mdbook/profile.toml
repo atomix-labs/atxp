@@ -1,22 +1,154 @@
 [profile]
 name        = "mdbook"
-description = "mdBook builds the book and runs its Rust examples as tests"
+description = "mdBook: the book scaffolded, built, tested and linted, with math, diagrams and the API"
 devset      = ">=0.2.1"
 
 [requires]
+github-ci      = { optional = true }
+lychee         = { optional = true }
 rust-toolchain = {}
+
+[features]
+default = ["katex", "api", "pages", "links"]
+# Math, rendered at build time by mdbook-katex, its stylesheet and fonts vendored.
+katex = []
+# Diagrams, drawn by mermaid, vendored.
+mermaid = []
+# The workspace's rustdoc at /api, with rustdoc's index page, linked from the menu bar.
+api = []
+# The book on GitHub Pages: github-ci's pages jobs, and the pages keys of .github/automation.json.
+pages = ["github-ci?/pages"]
+# lychee over the built book.
+links = ["dep:lychee"]
 
 [vars.book_dir]
 prompt  = "Directory of the mdBook, its book.toml"
 default = "docs"
 
+[vars.repository]
+prompt = "The GitHub repository, owner/name"
+
+[scaffolds.book]
+unless = "{{ book_dir }}/book.toml"
+
+[files."{{ book_dir }}/book.toml"]
+scope    = "keys"
+policy   = "merge"
+starter  = "book.starter.toml"
+template = true
+
+[files."{{ book_dir }}/src/SUMMARY.md"]
+scaffold = "book"
+
+[files."{{ book_dir }}/src/introduction.md"]
+scaffold = "book"
+
+[files."{{ book_dir }}/src/getting-started.md"]
+scaffold = "book"
+
+[files."{{ book_dir }}/theme/width.css"]
+policy = "merge"
+
+[files."{{ book_dir }}/theme/details.css"]
+policy = "merge"
+
+[files."{{ book_dir }}/theme/prompt.css"]
+policy = "merge"
+
+[files."{{ book_dir }}/README.md"]
+scaffold = "book"
+
+[files."{{ book_dir }}/vendor/katex/katex.min.css"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/vendor/katex/README.md"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_AMS-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Caligraphic-Bold.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Caligraphic-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Fraktur-Bold.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Fraktur-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Main-Bold.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Main-BoldItalic.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Main-Italic.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Main-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Math-BoldItalic.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Math-Italic.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_SansSerif-Bold.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_SansSerif-Italic.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_SansSerif-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Script-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Size1-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Size2-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Size3-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Size4-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/src/vendor/katex/fonts/KaTeX_Typewriter-Regular.woff2"]
+when = { features = ["katex"] }
+
+[files."{{ book_dir }}/mermaid.min.js"]
+when = { features = ["mermaid"] }
+
+[files."{{ book_dir }}/mermaid-init.js"]
+when = { features = ["mermaid"] }
+
+[files."{{ book_dir }}/api-link.js"]
+when = { features = ["api"] }
+
+[files.".github/automation.json"]
+scope    = "keys"
+template = true
+when     = { features = ["pages"], profiles = ["github-ci"] }
+
 [files.".just/mdbook.just"]
 template = true
 
+[files.".just/mdbook.py"]
+
 [files.".config/mise/conf.d/devset-mdbook.toml"]
+template = true
 
 [files.".config/mise/mise.lock"]
-scope = "keys"
+scope    = "keys"
+template = true
 
 [files.".gitignore"]
 scope    = "block"
