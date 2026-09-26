@@ -26,7 +26,8 @@ read from devset's graph, so no list of profiles lives here, and ten recipes.
   registry, as [`cargo-publish`](../../cargo/cargo-publish/README.md) does
   crates. `github-release` runs it once the release is out.
 
-The repository's own recipes live outside the block. Name one `check-<name>` and
+The repository's own recipes live outside the block; where there is no
+`justfile`, it starts one with a line saying so. Name one `check-<name>` and
 `just check` runs it too. A recipe of the repository's own named after one of
 the ten clashes with the spine's, and `just` refuses both: rename it.
 

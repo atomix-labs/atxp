@@ -7,7 +7,7 @@ check: (_each "check")
 # Runs every `fix-*` recipe.
 fix: (_each "fix")
 
-# Runs every `bump-*` recipe: each moves what its atom pins, and reports to $BUMP_REPORT_DIR.
+# Runs every `bump-*` recipe: each moves what its profile pins, and reports to $BUMP_REPORT_DIR.
 bump: (_each "bump")
 
 # Runs every `nightly-*` recipe: the checks too slow for every change.

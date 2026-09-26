@@ -5,6 +5,7 @@ devset      = ">=0.2.1"
 
 [files."justfile"]
 scope    = "block"
+starter  = "justfile.starter"
 template = true
 
 [files.".config/mise/conf.d/devset-just.toml"]
