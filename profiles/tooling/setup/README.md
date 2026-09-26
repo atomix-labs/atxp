@@ -20,7 +20,7 @@ through mise; without it, the line to add is printed. `--yes`, or `CI`, asks
 nothing. A devcontainer runs `./setup.sh --yes` as its `postCreateCommand`.
 
 A pinned stub is the file at a release tag:
-`https://raw.githubusercontent.com/atomix-labs/atxp/<tag>/profiles/setup/files/setup.sh`.
+`https://raw.githubusercontent.com/atomix-labs/atxp/<tag>/profiles/tooling/setup/files/setup.sh`.
 
 <!-- facts: written by devset-collection -->
 

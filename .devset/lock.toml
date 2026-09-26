@@ -23,7 +23,7 @@ path = "profiles"
 
 [[profiles]]
 name = "mise"
-digest = "f15a6974f613f10ea3e678c757728c6208c4ba0bb709900c5608ea75b8c2d228"
+digest = "47d1bba1c8d07fc5c1fe42d81c33389f40df422ad8f93d4d0b323a8c1d8fd2e5"
 
 [profiles.source]
 path = "profiles"
@@ -51,7 +51,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-ci"
-digest = "69be3e06121e48386487ec6c348a350138f959f558b1839e9208d74eae0dc724"
+digest = "41eba504f528eddddb3b6ad0941a977cc6ad41e3b7c8deccb5d6cd86b61d709e"
 
 [profiles.source]
 path = "profiles"
@@ -65,7 +65,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-bump"
-digest = "c56f86d74375f960b6c35e423df4b54fe30fe4d1c1bbfcb3c1a3635bd87042da"
+digest = "5f2c1ca9644af46af36678e1cf1e146fb0b9f588131d555e700c724daf8efc09"
 
 [profiles.source]
 path = "profiles"
@@ -161,7 +161,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "9cd550bab43604a0616e33d150e3720a9dc9091f65e4485fdd5108bb173881ef"
+digest = "93d476b4f03447a454fb2cbacaed215ee5171838490c83b4310d924f98c84f13"
 
 [profiles.source]
 path = "profiles"

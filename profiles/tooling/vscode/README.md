@@ -13,7 +13,10 @@ clippy as its check where [`rust-clippy`](../../rust/rust-clippy/README.md) is
 applied; rumdl fixes on save, and Markdown links are validated.
 
 It owns those keys of `.vscode/extensions.json` and `.vscode/settings.json`,
-under `merge`, so settings the repository changes are kept.
+under `merge`, so settings the repository changes are kept. `recommendations`
+follows the profiles applied, so it is the profile's own: a list is one value,
+and an extension the repository adds to it conflicts with the next change of the
+graph.
 
 <!-- facts: written by devset-collection -->
 

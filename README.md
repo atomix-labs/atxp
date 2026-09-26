@@ -9,13 +9,15 @@
 atxp holds profiles for [devset]: bundles of configuration, recipes and pinned
 tools that devset applies to a repository, and keeps up to date without losing
 the repository's own edits. They are one set of choices for a Rust repository,
-to apply as they are or to build on: each profile owns one concern, and the
-`rust` bundle takes the ones a Rust repository needs.
+to apply as they are or to build on: each profile owns one concern, grouped by
+umbrella, and the `rust` bundle takes the ones every Rust repository needs, with
+features for the rest.
 
 <details>
 <summary>Table of Contents</summary>
 
 - [Quick Start](#quick-start)
+- [The Bundle](#the-bundle)
 - [Profiles](#profiles)
 - [Variables](#variables)
 - [Documentation](#documentation)
@@ -29,10 +31,13 @@ to apply as they are or to build on: each profile owns one concern, and the
 In a repository, apply the bundle, set the machine up, and run every check:
 
 ```sh
-devset init --git https://github.com/atomix-labs/atxp --tag v0.3.3 --path profiles/rust --var repository=<owner>/<name>
+devset init atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.3.3 --var repository=<owner>/<name>
 ./setup.sh
 just check
 ```
+
+Features add to the bundle, `devset add atxp/rust --features docs,publish`, and
+any profile is a layer of its own: `devset add atxp/lychee`.
 
 A machine with nothing on it starts from the published setup script, which
 clones the repository first:
@@ -44,10 +49,27 @@ curl -fsSL https://atomix-labs.github.io/atxp/setup.sh | bash -s -- github.com/<
 `devset update` takes a newer release; `devset status` shows where every file
 stands.
 
+## The Bundle
+
+`rust` requires the core every Rust repository has: the toolchain, formatting,
+the lint wall, rustdoc, the dependency policy, tests, build profiles, commits,
+the changelog, CI, the weekly bump, and the tools that check every other file.
+Its features add the rest, none on by default:
+
+| Feature    | Adds                                                                             |
+| ---------- | -------------------------------------------------------------------------------- |
+| `docs`     | the book, built and tested with mdBook                                           |
+| `agents`   | the skills for writing rustdoc and editing Cargo manifests                       |
+| `publish`  | crates.io, by trusted publishing, and the GitHub Release                         |
+| `binaries` | the workspace's binaries, built for each platform, on the GitHub Release         |
+| `nightly`  | the nightly run: every feature alone with cargo-hack, and nightly rustc's lints  |
+| `strict`   | the house policy: the trading path's bans, the full lint wall, `panic = "abort"` |
+
 ## Profiles
 
-Each profile's README says what it does and why, then its facts: the files it
-owns, its recipes, its variables and what it requires.
+The profiles, grouped by umbrella. Each profile's README says what it does and
+why, then its facts: the files it owns and when, its features, its recipes, its
+variables and what it requires.
 
 <!-- catalog: written by devset-collection -->
 
@@ -174,7 +196,7 @@ line, `--var line_width=120`, or when devset asks.
 ## Documentation
 
 - [ARCHITECTURE.md][Architecture]: how the profiles compose, from parts of a
-  file to the recipe spine, pins and CI.
+  file to features, the recipe spine, pins and CI.
 - [CONTRIBUTING.md][Contributing]: how to change a profile, the commit
   convention, and the checks.
 - [RELEASE.md][Release]: how a release is cut.

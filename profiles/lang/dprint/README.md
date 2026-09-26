@@ -8,12 +8,14 @@ language profile the repository applies, read from devset's graph:
 [`python`](../../lang/python/README.md)'s, whose settings are their own keys of
 `dprint.json`. Every plugin is pinned by its checksum.
 
-It owns those keys of `dprint.json`, under `merge`. dprint leaves out what git
-ignores, so each profile's build output stays out on its own; `excludes` adds
-minified files, `.just/` while [`just`](../../tooling/just/README.md) is
-applied, whose recipes are formatted where they come from, and `CHANGELOG.md`
-while [`git-changelog`](../../git/git-changelog/README.md) lays it out. A
-repository adds its own.
+It owns those keys of `dprint.json`, under `merge`. `plugins` and `includes`
+follow the profiles applied, so they are its own: a list is one value, which a
+repository's edit and a change of the graph would both change. dprint leaves out
+what git ignores, so each profile's build output stays out on its own;
+`excludes` adds minified files, `.just/`, whose recipes are formatted where they
+come from, and `CHANGELOG.md`, which
+[`git-changelog`](../../git/git-changelog/README.md) lays out. A repository adds
+its own to `excludes`.
 
 <!-- facts: written by devset-collection -->
 

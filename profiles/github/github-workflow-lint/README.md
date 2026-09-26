@@ -54,7 +54,8 @@ someone else's and is left out.
   features turn on: actionlint, for syntax, expressions and the shell in each
   step; zizmor's audit, offline, needing no token; conftest, holding workflows
   and actions to the policies in policy/. A file .gitattributes marks
-  `linguist-vendored` or `linguist-generated` is someone else's.
+  `linguist-vendored` or `linguist-generated` is someone else's. Every tool
+  runs, and each that fails is named.
 
 ## Variables
 

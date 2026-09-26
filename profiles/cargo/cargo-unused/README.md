@@ -27,8 +27,9 @@ cargo, so their pins lock no platform.
 ## Recipes
 
 - `check-cargo-unused`: Fails on a dependency no crate uses, by each tool the
+  profile's features turn on, and names each tool that found one.
+- `fix-cargo-unused`: Removes each dependency no crate uses, by each tool the
   profile's features turn on.
-- `fix-cargo-unused`: Removes each dependency no crate uses.
 
 ## Requires
 

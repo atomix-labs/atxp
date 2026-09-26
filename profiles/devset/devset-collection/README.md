@@ -39,6 +39,13 @@ held to what [`mise`](../../tooling/mise/README.md) holds a repository's own to:
   platform, each checksum filled from the publisher's digest or else the
   download.
 
+A collection's payloads are templates until devset renders them, and the suite
+checks them rendered, so its own formatters and linters leave them alone: the
+recipes export `DPRINT_CONFIG_DISCOVERY=ignore-descendants`, so dprint reads no
+payload's `dprint.json` as configuration, and a collection adds
+`profiles/**/files/**` to what dprint, taplo, ruff and yamllint leave out, as
+atxp does.
+
 A profile pins its tools in `.config/mise/conf.d/devset-<name>.toml`, and owns
 their entries in `.config/mise/mise.lock` as keys. A pin may gate each tool by a
 feature, between lines of `{% if "<feature>" in devset.features %}` and `{%

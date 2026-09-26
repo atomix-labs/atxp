@@ -23,7 +23,7 @@ import tomllib
 # Every lock covers these; `mise install --locked` refuses a platform missing from it.
 PLATFORMS = ("linux-arm64", "linux-x64", "macos-arm64")
 
-# Where the atoms pin their tools; the repository's own tools are configured anywhere else.
+# Where the profiles pin their tools; the repository's own tools are configured anywhere else.
 CONF_D = Path(".config/mise/conf.d")
 
 # Backends that build or fetch from a registry, so a lock entry holds a version and no download.

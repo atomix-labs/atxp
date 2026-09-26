@@ -21,10 +21,10 @@ counts as breaking.
    RELEASE_VERSION=x.y.z just release
    ```
 
-   Every `release-*` recipe runs: `release-git-changelog` writes `CHANGELOG.md` from
-   the commits since the last tag, in a Rust repository `release-cargo-bump`
-   sets every crate's version, and atxp's own `release-readme` points the
-   README's quick start at the new tag.
+   Every `release-*` recipe runs: `release-git-changelog` writes `CHANGELOG.md`
+   from the commits since the last tag, in a Rust repository
+   `release-cargo-bump` sets every crate's version, and atxp's own
+   `release-readme` points the README's quick start at the new tag.
 3. Read the new section; fix a commit's subject by rewording the commit, not the
    file. Run `just check`: the release commit lands on the default branch as any
    commit does.
@@ -36,5 +36,5 @@ counts as breaking.
    attached, then runs every `publish-*` recipe. atxp packages and publishes
    nothing, so its Release has notes alone.
 
-A repository takes the release with `devset update`, or pins it with `devset
-init --tag vx.y.z`.
+A repository takes the release by naming its tag on atxp in `[sources]`, `tag =
+"vx.y.z"`, and running `devset update`.
