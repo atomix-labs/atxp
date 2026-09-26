@@ -1,8 +1,9 @@
+{%- set md = devset.layers | selectattr("profile", "equalto", "markdown") | map(attribute="features") | first | default([]) -%}
 {%- set extensions = [
-  ["rust-toolchain", "rust-lang.rust-analyzer"],
-  ["toml", "tamasfe.even-better-toml"],
-  ["dprint", "dprint.dprint"],
-  ["markdown", "rvben.rumdl"],
-  ["just", "nefrob.vscode-just-syntax"]
+  ["rust-toolchain" in devset.profiles, "rust-lang.rust-analyzer"],
+  ["toml" in devset.profiles, "tamasfe.even-better-toml"],
+  ["dprint" in devset.profiles, "dprint.dprint"],
+  ["lint" in md, "rvben.rumdl"],
+  ["just" in devset.profiles, "nefrob.vscode-just-syntax"]
 ] -%}
-{ "recommendations": [{% for profile, extension in extensions if profile in devset.profiles %}"{{ extension }}"{% if not loop.last %}, {% endif %}{% endfor %}] }
+{ "recommendations": [{% for on, extension in extensions if on %}"{{ extension }}"{% if not loop.last %}, {% endif %}{% endfor %}] }

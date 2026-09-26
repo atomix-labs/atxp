@@ -1,3 +1,7 @@
+{%- set md = devset.layers | selectattr("profile", "equalto", "markdown") | map(attribute="features") | first | default([]) -%}
+{%- set yml = devset.layers | selectattr("profile", "equalto", "yaml") | map(attribute="features") | first | default([]) -%}
+{%- set py = devset.layers | selectattr("profile", "equalto", "python") | map(attribute="features") | first | default([]) -%}
+{%- set tml = devset.layers | selectattr("profile", "equalto", "toml") | map(attribute="features") | first | default([]) -%}
 {
 {%- if "rust-toolchain" in devset.profiles %}
   "rust-analyzer.cargo.features": "all",
@@ -8,17 +12,19 @@
 {%- if "rust-clippy" in devset.profiles %}
   "rust-analyzer.check.command": "clippy",
 {%- endif %}
-{%- if "toml" in devset.profiles %}
+{%- if "format" in tml %}
   "[toml]": { "editor.defaultFormatter": "tamasfe.even-better-toml" },
 {%- endif %}
-{%- if "markdown" in devset.profiles %}
+{%- if "lint" in md %}
   "rumdl.fixOnSave": true,
+{%- endif %}
+{%- if "markdown" in devset.profiles %}
   "markdown.validate.enabled": true,
   "markdown.validate.fileLinks.markdownFragmentLinks": "ignore",
 {%- endif %}
 {%- if "dprint" in devset.profiles %}
   "json.schemaDownload.trustedDomains": { "https://plugins.dprint.dev/": true, "https://dprint.dev/": true },
-  "[json][jsonc]{% if "markdown" in devset.profiles %}[markdown]{% endif %}{% if "yaml" in devset.profiles %}[yaml]{% endif %}{% if "python" in devset.profiles %}[python]{% endif %}[javascript][css]": { "editor.defaultFormatter": "dprint.dprint" },
+  "[json][jsonc]{% if "format" in md %}[markdown]{% endif %}{% if "format" in yml %}[yaml]{% endif %}{% if "format" in py %}[python]{% endif %}[javascript][css]": { "editor.defaultFormatter": "dprint.dprint" },
 {%- endif %}
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true
