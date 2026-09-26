@@ -100,9 +100,9 @@ previewing the book.
 
 - `check-mdbook`: Lints the book (every page in SUMMARY.md, every include and
   anchor there, every recipe the prose names), builds it, and runs its Rust
-  examples.{% if "api" in devset.features %} The workspace's API lands at /api,
-  under a page grouping its crates.{% endif %}{% if "links" in devset.features
-  %} Then lychee checks every link of the built book, offline.{% endif %}
+  examples. The workspace's API lands at /api, under a page grouping its crates
+  (with `api`). Then lychee checks every link of the built book, offline (with
+  `links`).
 
 ## Variables
 

@@ -75,6 +75,13 @@ JUST = re.compile(
 )
 # A template's line that is only a tag or a comment, which renders to nothing.
 TAG = re.compile(r"^\s*\{[%#].*[%#]\}\s*$")
+# What a recipe's comment says only with a feature on, which its facts mark with the feature.
+WITH = re.compile(
+    r'\{%-?\s*if\s+"([a-z0-9-]+)"\s+in\s+devset\.features\s*-?%\}(.*?)\{%-?\s*endif\s*-?%\}',
+    re.DOTALL,
+)
+# What a template renders: a tag, a comment or an expression.
+TEMPLATED = re.compile(r"\{[%#{]")
 
 
 @dataclass(frozen=True)
@@ -157,6 +164,18 @@ def recipes(profile):
     return found
 
 
+def described(comment):
+    """A recipe's comment as its facts show it: each sentence it says only with a feature on,
+    closed by that feature, as `(with `api`)`."""
+
+    def marked(match):
+        text = match.group(2).rstrip()
+        stop = len(text) - len(text.rstrip(".!?"))
+        return f"{text[: len(text) - stop]} (with `{match.group(1)}`){text[len(text) - stop :]}"
+
+    return WITH.sub(marked, comment)
+
+
 def by_name(found):
     """The profiles, by name: more than one where a name is shared."""
     named = defaultdict(list)
@@ -200,10 +219,15 @@ def profile_problems(profile, named):
             )
         if path.startswith(PINS) and path != f"{PINS}{PIN_PREFIX}{name}.toml":
             out.append(f"{where}: {path} is not its pin file, {PINS}{PIN_PREFIX}{name}.toml")
-    for recipe, _ in recipes(profile):
+    for recipe, comment in recipes(profile):
         if not re.fullmatch(rf"(?:{'|'.join(VERBS)})-{re.escape(name)}", recipe):
             out.append(
                 f"{where}: recipe `{recipe}` is not `<verb>-{name}`, a verb of {code(VERBS)}"
+            )
+        if TEMPLATED.search(described(comment)):
+            out.append(
+                f"{where}: recipe `{recipe}`'s comment templates more than a feature's"
+                ' `{% if "<feature>" in devset.features %}`, which its facts cannot show'
             )
     for required, spec in profile.requires.items():
         if "git" not in spec and required not in named:
@@ -409,7 +433,7 @@ def facts(profile, named):
     listed = recipes(profile)
     if listed:
         out += ["## Recipes", ""]
-        out += [f"- `{name}`: {doc}" if doc else f"- `{name}`" for name, doc in listed]
+        out += [f"- `{name}`: {described(doc)}" if doc else f"- `{name}`" for name, doc in listed]
         out.append("")
     declared = profile.manifest.get("vars", {})
     if declared:
