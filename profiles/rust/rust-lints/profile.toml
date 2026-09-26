@@ -1,7 +1,16 @@
 [profile]
 name        = "rust-lints"
-description = "The lint wall, as keys of the workspace Cargo.toml: rustc, rustdoc, clippy and cargo"
+description = "The lint wall, as keys of the workspace Cargo.toml: rustc, rustdoc, clippy and cargo, and nightly's own lints"
 devset      = ">=0.2"
+
+[requires]
+rust-toolchain = {}
+
+[features]
+nightly = []
 
 [files."Cargo.toml"]
 scope = "keys"
+
+[files.".just/rust-lints.just"]
+when = { features = ["nightly"] }

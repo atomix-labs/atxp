@@ -1,9 +1,0 @@
-[profile]
-name        = "lints-nightly"
-description = "The lints only nightly has, run on the pinned nightly without a #![feature] in any source"
-devset      = ">=0.2"
-
-[requires]
-rust-toolchain = {}
-
-[files.".just/lints-nightly.just"]
