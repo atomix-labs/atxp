@@ -6,13 +6,16 @@ doc examples wrapped; macros' matchers formatted; and hex literals in upper
 case. It needs the nightly
 [`rust-toolchain`](../../rust/rust-toolchain/README.md) pins.
 
+It owns those keys of `rustfmt.toml`, under `merge`: an option the repository
+adds, or a value it changes, stays its own.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
 | File                  | Part  | Policy | Notes    |
 | --------------------- | ----- | ------ | -------- |
-| `rustfmt.toml`        | whole | owned  | template |
+| `rustfmt.toml`        | keys  | merge  | template |
 | `.just/rust-fmt.just` | whole | owned  |          |
 
 ## Recipes

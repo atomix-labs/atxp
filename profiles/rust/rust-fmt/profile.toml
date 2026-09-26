@@ -11,6 +11,8 @@ prompt  = "Line width, shared by the formatters and EditorConfig"
 default = "100"
 
 [files."rustfmt.toml"]
+scope    = "keys"
+policy   = "merge"
 template = true
 
 [files.".just/rust-fmt.just"]
