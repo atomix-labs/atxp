@@ -1,6 +1,8 @@
 # `markdown`
 
-rumdl lints every Markdown file, and fixes what it can. Line length is the
+Every Markdown file, formatted by [`dprint`](../../lang/dprint/README.md)'s Markdown
+plugin, wrapped at 80 with asterisks for emphasis, settings this profile keeps
+as keys of `dprint.json`; and linted by rumdl, which fixes what it can. Line length is the
 formatter's; the rules rustdoc's intra-doc links and code spans trip are off;
 headings are in title case; a heading may repeat under different parents, as a
 changelog's sections do under each release; `<details>`, `<summary>`, `<code>`

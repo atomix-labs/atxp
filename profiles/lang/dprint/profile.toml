@@ -1,6 +1,6 @@
 [profile]
 name        = "dprint"
-description = "dprint formats Markdown at 80, and YAML, JSON, Python, CSS and JavaScript; every plugin checksummed"
+description = "dprint, the formatter: JSON, CSS and JavaScript, and each language profile's plugin; every plugin checksummed"
 devset      = ">=0.2"
 
 [vars.line_width]

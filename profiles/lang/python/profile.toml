@@ -1,7 +1,10 @@
 [profile]
 name        = "python"
-description = "Ruff lints Python at the shared line width; formatting is dprint's, through its Ruff plugin"
+description = "Python: linted by Ruff at the shared line width, and formatted by dprint through its Ruff plugin"
 devset      = ">=0.2"
+
+[requires]
+dprint = {}
 
 [vars.line_width]
 prompt  = "Line width, shared by the formatters and EditorConfig"
@@ -21,3 +24,7 @@ scope = "keys"
 
 [files.".gitignore"]
 scope = "block"
+
+[files."dprint.json"]
+scope  = "keys"
+policy = "merge"

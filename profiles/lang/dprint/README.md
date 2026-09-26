@@ -1,13 +1,18 @@
 # `dprint`
 
-dprint formats Markdown, wrapped at 80 with asterisks for emphasis; YAML, with
-double quotes; JSON, on one line where it fits; and Python, CSS and JavaScript,
-at `line_width`. Every plugin is pinned by its checksum.
+dprint, the formatter the language profiles share. It formats JSON, on one line
+where it fits, CSS and JavaScript, at `line_width`, and loads the plugin of each
+language profile the repository applies, read from devset's graph:
+[`markdown`](../../lang/markdown/README.md)'s, [`yaml`](../../lang/yaml/README.md)'s
+and [`python`](../../lang/python/README.md)'s, whose settings are their own keys
+of `dprint.json`. Every plugin is pinned by its checksum.
 
-It owns those keys of `dprint.json`, under `merge`. `excludes` leaves out build
-output, minified and vendored files, the book's theme, `.just/`, whose recipes
-are formatted where they come from, and `CHANGELOG.md`, which
-[`git-changelog`](../../git/git-changelog/README.md) lays out; a repository adds its own.
+It owns those keys of `dprint.json`, under `merge`. dprint leaves out what git
+ignores, so each profile's build output stays out on its own; `excludes` adds
+minified files, `.just/` while [`just`](../../tooling/just/README.md) is applied,
+whose recipes are formatted where they come from, and `CHANGELOG.md` while
+[`git-changelog`](../../git/git-changelog/README.md) lays it out. A repository
+adds its own.
 
 <!-- facts: written by scripts/catalog.py -->
 

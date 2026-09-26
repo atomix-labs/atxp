@@ -3,7 +3,8 @@
 Ruff lints Python at `line_width`: import sorting, bugbear, pyupgrade, simplify
 and Ruff's own rules, beside its defaults; imports at the top of a module; and
 every public method documented. Formatting is [`dprint`](../../lang/dprint/README.md)'s,
-through its Ruff plugin, so one tool formats every file.
+through its Ruff plugin, whose settings this profile keeps as keys of
+`dprint.json`, so one tool formats every file.
 
 It owns those keys of `ruff.toml`, under `merge`: `target-version`, and rules
 the repository adds, stay its own.

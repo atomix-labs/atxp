@@ -1,7 +1,10 @@
 [profile]
 name        = "markdown"
-description = "rumdl lints Markdown: line length left to the formatter, headings in title case"
+description = "Markdown: formatted by dprint at 80, and linted by rumdl, headings in title case"
 devset      = ">=0.2"
+
+[requires]
+dprint = {}
 
 [files.".rumdl.toml"]
 scope  = "keys"
@@ -16,3 +19,7 @@ scope = "keys"
 
 [files.".gitignore"]
 scope = "block"
+
+[files."dprint.json"]
+scope  = "keys"
+policy = "merge"
