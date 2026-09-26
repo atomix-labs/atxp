@@ -19,7 +19,9 @@ which before changing a file, and change each side the way devset expects.
   - `merge`: kept, and merged with the profile's changes on `devset update`.
   - `once`: the repository's, from the first write on.
 - **What a profile does not own is the repository's.** A key its payload does
-  not name, and every line outside its block, is yours to edit freely.
+  not name, and every line outside its block, is yours to edit freely. To place
+  a block devset has yet to write, write its two markers with nothing between
+  them: devset fills them where they are.
 - **Take over an owned file by its policy, not by copying it.** Set it in
   `.devset/config.toml`, then edit the file; `devset status` keeps the edit, and
   an update merges the profile's changes into it:
@@ -50,11 +52,13 @@ which before changing a file, and change each side the way devset expects.
 `devset features` shows each layer's features, which are on, and what turned
 each on.
 
-- A feature of a layer in `.devset/config.toml`: add it to that layer's
-  `features`, then `devset apply`.
-- A feature of a profile that is active only because another requires it:
-  `devset add <source>/<profile> --features <feature>` makes it a layer of its
-  own, and features add up across every layer that turns them on.
+- Turn a feature on: `devset add <source>/<profile> --features <feature>`. On a
+  layer the target applies, it adds to the layer's features; on a profile active
+  only because another requires it, it makes the profile a layer of its own.
+  Features add up across every layer that turns them on.
+- Turn one off: `devset remove <profile> --features <feature>`, which keeps the
+  layer. A feature a requirer or the defaults turn on stays on, and devset says
+  so; `--no-default-features` on `devset add` turns the defaults off.
 - A variable: `devset apply --var <name>=<value>`. Every file that uses it is
   written again, and an edited `merge` file is merged.
 
