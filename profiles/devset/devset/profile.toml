@@ -8,6 +8,8 @@ mise = {}
 
 [files.".just/devset.just"]
 
+[files.".just/devset.py"]
+
 [files.".config/mise/conf.d/devset-devset.toml"]
 
 [files.".config/mise/mise.lock"]
