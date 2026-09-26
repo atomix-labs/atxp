@@ -24,7 +24,11 @@ workflow only for a crate that exists. Then, in the crate's settings on
 crates.io, add the GitHub trusted publisher: the repository, the workflow
 `release.yml`, and the environment `release`.
 
-It is not in the `rust` bundle: a repository opts in to publishing.
+crates.io asks each crate for a description, a licence and a repository, which
+[`cargo-workspace`](../../cargo/cargo-workspace/README.md)'s crates inherit from
+`[workspace.package]`, and shows the `readme`, `keywords` and `categories` each
+crate sets. The `rust` bundle brings this profile with its `publish` feature: a
+repository opts in to publishing.
 
 <!-- facts: written by devset-collection -->
 
