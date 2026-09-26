@@ -11,10 +11,10 @@ alone. Anyone can check an archive's build provenance with `gh attestation
 verify <archive> --repo <owner>/<repository>`.
 
 Where the repository has a `publish-*` recipe, the job `publish` then runs `just
-publish`, which puts the release in a registry. For
-[`cargo-publish`](../../cargo/cargo-publish/README.md) it first takes a crates.io token by
-trusted publishing, good for 30 minutes and revoked when the job ends, so the
-repository stores none. That job runs in the environment `release`, which the
+publish`, which puts the release in a registry. Where
+[`cargo-publish`](../../cargo/cargo-publish/README.md) is applied too, the job
+first takes a crates.io token by trusted publishing, good for 30 minutes and
+revoked when the job ends, so the repository stores none. That job runs in the environment `release`, which the
 trusted publisher names, and holds the only `id-token` permission.
 
 A release builds uncached, and one runs at a time, never cancelled halfway. The

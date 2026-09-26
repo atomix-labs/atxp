@@ -1,4 +1,4 @@
-# Publishes a release from its tag, `v<version>`: builds what every `package-*` recipe packages on
+{% raw %}# Publishes a release from its tag, `v<version>`: builds what every `package-*` recipe packages on
 # each platform the locks cover, attests it, publishes the GitHub Release, git-cliff's notes for the
 # tag and every archive with its sha256, then runs every `publish-*` recipe, which puts the release
 # in a registry. `just release` wrote the changelog and the versions before the tag; RELEASE.md says how.
@@ -26,7 +26,6 @@ jobs:
     outputs:
       package: ${{ steps.plan.outputs.package }}
       publish: ${{ steps.plan.outputs.publish }}
-      crates-io: ${{ steps.plan.outputs.crates-io }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -43,7 +42,6 @@ jobs:
           {
             echo "package=$(has '^package-')"
             echo "publish=$(has '^publish-')"
-            echo "crates-io=$(has '^publish-cargo-publish$')"
           } >> "$GITHUB_OUTPUT"
 
   package:
@@ -134,10 +132,15 @@ jobs:
           version: 2026.9.12
           install_args: just python
           cache: false
+{%- endraw %}
+{%- if "cargo-publish" in devset.profiles %}{% raw %}
       # A crates.io token for 30 minutes, revoked when the job ends.
       - id: crates-io
-        if: needs.plan.outputs.crates-io == 'true'
         uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.5
       - env:
           CARGO_REGISTRY_TOKEN: ${{ steps.crates-io.outputs.token }}
         run: just publish
+{%- endraw %}
+{%- else %}
+      - run: just publish
+{%- endif %}
