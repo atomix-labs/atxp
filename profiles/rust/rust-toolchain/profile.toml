@@ -1,9 +1,18 @@
 [profile]
 name        = "rust-toolchain"
-description = "The toolchain a checkout builds with: one pinned nightly, with miri, rustc-dev, llvm-tools and the sources"
+description = "The toolchain a checkout builds with: rustup where missing, then one pinned nightly with miri, rustc-dev, llvm-tools and the sources"
 devset      = ">=0.2"
+
+[requires]
+just = {}
+mise = {}
 
 [files."rust-toolchain.toml"]
 scope = "keys"
 
 [files.".just/rust-toolchain.just"]
+
+[files.".just/rust-toolchain.sh"]
+executable = true
+
+[files.".config/mise/conf.d/devset-rust-toolchain.toml"]
