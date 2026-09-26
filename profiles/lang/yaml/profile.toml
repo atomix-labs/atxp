@@ -5,6 +5,7 @@ devset      = ">=0.2"
 
 [requires]
 dprint = {}
+mise   = {}
 
 [files.".yamllint.yaml"]
 scope  = "keys"

@@ -27,4 +27,8 @@ that needs them.
 | ---------- | ------- | -------------------------------------- |
 | `book_dir` | `docs`  | Directory of the mdBook, its book.toml |
 
+## Requires
+
+- [`rust-toolchain`](../../rust/rust-toolchain/README.md)
+
 <!-- /facts -->

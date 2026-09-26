@@ -4,7 +4,8 @@ description = "The weekly bump of Cargo requirements and git revisions: one at a
 devset      = ">=0.2"
 
 [requires]
-rust-toolchain = {}
+cargo-workspace = {}
+rust-toolchain  = {}
 
 [files.".just/cargo-bump.just"]
 

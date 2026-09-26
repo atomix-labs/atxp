@@ -12,7 +12,7 @@ listing:
 
 Issues carry the labels, issue type and assignees that
 [`github-automation`](../../github/github-automation/README.md) sets in
-`.github/automation.json`; without that file, the label `bug`.
+`.github/automation.json`.
 
 <!-- facts: written by devset-collection -->
 

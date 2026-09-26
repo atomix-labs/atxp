@@ -3,6 +3,9 @@ name        = "ansible"
 description = "ansible-lint holds every playbook and role in .ansible/ to its production profile, on the pinned ansible-core"
 devset      = ">=0.2"
 
+[requires]
+mise = {}
+
 [files.".ansible-lint"]
 
 [files.".just/ansible.just"]

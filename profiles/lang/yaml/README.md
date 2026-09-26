@@ -32,5 +32,6 @@ adds or changes, and its `ignore`, stay its own.
 ## Requires
 
 - [`dprint`](../dprint/README.md)
+- [`mise`](../../tooling/mise/README.md)
 
 <!-- /facts -->

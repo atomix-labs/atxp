@@ -34,6 +34,7 @@ them.
 
 ## Requires
 
+- [`cargo-workspace`](../cargo-workspace/README.md)
 - [`rust-toolchain`](../../rust/rust-toolchain/README.md)
 
 <!-- /facts -->

@@ -23,4 +23,8 @@ It is outside the [`rust`](../../bundles/rust/README.md) bundle: its check needs
 
 - `check-ansible`: Lints every playbook and role in .ansible/.
 
+## Requires
+
+- [`mise`](../../tooling/mise/README.md)
+
 <!-- /facts -->
