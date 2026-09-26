@@ -16,7 +16,7 @@ path = "profiles"
 
 [[profiles]]
 name = "git-ignore"
-digest = "10bbb8a7db708d4c24e8de6d55805ec92af009a585726cdf31e1bb49703246dd"
+digest = "24878da583d08cca4be70ca91349da70c537b5d77f9c67f530b732c193f536bc"
 
 [profiles.source]
 path = "profiles"
@@ -51,7 +51,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-ci"
-digest = "52854dbe81ae4826f5172790d919eac9367ee9c14d219767c92ab0fd7763575e"
+digest = "1237c5baacf5b5a42d6d36f94c082d12db97f148783526d8fcefd954e78e25aa"
 
 [profiles.source]
 path = "profiles"
@@ -82,7 +82,7 @@ path = "profiles"
 
 [[profiles]]
 name = "git-commits"
-digest = "1c8b75170fbe1458c525278c86f832a38ee136ed23c8e8582c0f8389da442755"
+digest = "011428542107720f2710065cd31fcc144f200d96bd4faaf9797e65c2ae108309"
 
 [profiles.source]
 path = "profiles"
@@ -187,21 +187,21 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "3a8e8c7086208dff43da44471ef08315baa742c18ac63cd999acea9fec41d456"
+digest = "df6f3cf4c53f183f9932c62ec707cf1bbf390cea0095489c24cb960d967898af"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "devset"
-digest = "bea3bff6b19c73a4127730f184963e3f610cc558378595bce6a088b8d0e0dc13"
+digest = "a4ed055e93be7350444de262f8527576e2060e11ca225bfd6ccd36a829a19f9d"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "devset-collection"
-digest = "5bf5c9c963fc18619b5c9a034ae0afae5ba8ba5fb5ed11fe99113ee7754cb062"
+digest = "db8dae325a0b2774ccf72d47b205c5bd66110f1727a50c129de1c9c2291edd78"
 
 [profiles.source]
 path = "profiles"

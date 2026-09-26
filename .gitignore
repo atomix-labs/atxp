@@ -1,8 +1,7 @@
 # >>> devset: git-ignore >>>
-# Local state: Claude Code's per-developer settings, notes.
-.claude/*
-!.claude/skills/
-!.claude/settings.local.json.example
+# Local state: Claude Code's per-developer settings, notes. Its shared settings, hooks and skills
+# are committed.
+.claude/settings.local.json
 /.mcp.json
 /.annotations.json
 .notes/

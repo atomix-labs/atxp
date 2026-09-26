@@ -289,8 +289,8 @@ policy = "merge"
 
 [parts.".gitignore".git-ignore]
 scope = "block"
-exact = "935fcbc2a92fafc65d4b7f21c01135739a8ad7bdca2a253856092a012854abfe"
-canonical = "935fcbc2a92fafc65d4b7f21c01135739a8ad7bdca2a253856092a012854abfe"
+exact = "36f9fb5a7fbffe747290eb4391e91ed8aa483e86a8fadddfcb492b92772f06bc"
+canonical = "36f9fb5a7fbffe747290eb4391e91ed8aa483e86a8fadddfcb492b92772f06bc"
 
 [parts.".gitignore".markdown]
 scope = "block"
