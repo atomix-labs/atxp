@@ -116,10 +116,10 @@ variables and what it requires.
 
 ### `docs`
 
-| Profile                                    | What                                                                                       | Owns                                                                                                                                |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| [`lychee`](profiles/docs/lychee/README.md) | lychee checks every Markdown link: the repository's own on every change, the web's nightly | `lychee.toml`, `.config/mise/mise.lock` (keys)                                                                                      |
-| [`mdbook`](profiles/docs/mdbook/README.md) | mdBook: the book scaffolded, built, tested and linted, with math, diagrams and the API     | `{{ book_dir }}/` (33 files) (keys, merge), `.github/automation.json` (keys), `.config/mise/mise.lock` (keys), `.gitignore` (block) |
+| Profile                                    | What                                                                                       | Owns                                                                                                                                                                                                 |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`lychee`](profiles/docs/lychee/README.md) | lychee checks every Markdown link: the repository's own on every change, the web's nightly | `lychee.toml`, `.config/mise/mise.lock` (keys)                                                                                                                                                       |
+| [`mdbook`](profiles/docs/mdbook/README.md) | mdBook: the book scaffolded, built, tested and linted, with math, diagrams and the API     | `{{ book_dir }}/` (33 files) (keys, merge), `.github/automation.json` (keys), `.config/mise/mise.lock` (keys), `.gitignore` (block), `.claude/skills/writing-the-book/SKILL.md`, `AGENTS.md` (block) |
 
 ### `git`
 

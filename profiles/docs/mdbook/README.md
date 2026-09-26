@@ -30,6 +30,10 @@ The features, all but `mermaid` on by default:
 
 Git ignores the built book, `book_dir/book/`, in a block of `.gitignore`.
 
+The `agents` feature adds the `writing-the-book` skill in `.claude/skills/`,
+and, where the repository has an `AGENTS.md`, a block of it on checking and
+previewing the book.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
@@ -75,6 +79,8 @@ Git ignores the built book, `book_dir/book/`, in a block of `.gitignore`.
 | `.config/mise/conf.d/devset-mdbook.toml`                                | whole | owned  | template                                       |
 | `.config/mise/mise.lock`                                                | keys  | owned  | template                                       |
 | `.gitignore`                                                            | block | owned  | template                                       |
+| `.claude/skills/writing-the-book/SKILL.md`                              | whole | owned  | template, feature `agents`                     |
+| `AGENTS.md`                                                             | block | owned  | template, feature `agents`, `AGENTS.md` exists |
 
 ## Features
 
@@ -85,6 +91,7 @@ Git ignores the built book, `book_dir/book/`, in a block of `.gitignore`.
 | `api`     | yes     |                    |
 | `pages`   | yes     | `github-ci?/pages` |
 | `links`   | yes     | `dep:lychee`       |
+| `agents`  |         |                    |
 
 ## Recipes
 

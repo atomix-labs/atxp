@@ -20,6 +20,9 @@ api = []
 pages = ["github-ci?/pages"]
 # lychee over the built book.
 links = ["dep:lychee"]
+# The writing-the-book skill, in .claude/skills/, and a block of AGENTS.md where the repository has
+# one.
+agents = []
 
 [vars.book_dir]
 prompt  = "Directory of the mdBook, its book.toml"
@@ -153,3 +156,12 @@ template = true
 [files.".gitignore"]
 scope    = "block"
 template = true
+
+[files.".claude/skills/writing-the-book/SKILL.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files."AGENTS.md"]
+scope    = "block"
+template = true
+when     = { features = ["agents"], exists = ["AGENTS.md"] }
