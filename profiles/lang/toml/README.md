@@ -14,6 +14,11 @@ paths the repository adds to `exclude` stay its own.
 [`cargo-manifest`](../../cargo/cargo-manifest/README.md) holds what taplo cannot
 see.
 
+Each half is a feature: `format`, taplo's layout, and `lint`, which checks every
+TOML file parses and holds it to the schemas `taplo.toml` names; both are on by
+default. `schemas` adds devset's own, for every `profile.toml` and
+`collection.toml`, which `lint` fetches online; `devset-collection` turns it on.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
@@ -21,13 +26,22 @@ see.
 | File                                   | Part  | Policy | Notes    |
 | -------------------------------------- | ----- | ------ | -------- |
 | `taplo.toml`                           | keys  | merge  | template |
-| `.just/toml.just`                      | whole | owned  |          |
+| `.just/toml.just`                      | whole | owned  | template |
 | `.config/mise/conf.d/devset-toml.toml` | whole | owned  |          |
 | `.config/mise/mise.lock`               | keys  | owned  |          |
 
+## Features
+
+| Feature   | Default | Enables |
+| --------- | ------- | ------- |
+| `format`  | yes     |         |
+| `lint`    | yes     |         |
+| `schemas` |         |         |
+
 ## Recipes
 
-- `check-toml`: Checks that every TOML file is formatted.
+- `check-toml`: Checks every TOML file: in its layout, with `format`; valid, and
+  true to its schema where taplo.toml names one, with `lint`.
 - `fix-toml`: Formats every TOML file.
 
 ## Variables

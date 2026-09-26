@@ -3,6 +3,15 @@ name        = "toml"
 description = "taplo formats every TOML file in one layout: aligned, four spaces, dependencies in order"
 devset      = ">=0.2.1"
 
+[features]
+default = ["format", "lint"]
+# taplo formats every TOML file.
+format = []
+# taplo checks every TOML file parses, and holds it to the schemas taplo.toml names.
+lint = []
+# devset's schemas for profile.toml and collection.toml, which lint checks online.
+schemas = []
+
 [vars.line_width]
 prompt  = "Line width, shared by the formatters and EditorConfig"
 default = "100"
@@ -13,6 +22,7 @@ policy   = "merge"
 template = true
 
 [files.".just/toml.just"]
+template = true
 
 [files.".config/mise/conf.d/devset-toml.toml"]
 
