@@ -3,6 +3,32 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.6.1](https://github.com/atomix-labs/atxp/releases/tag/v0.6.1) - 2026-09-26
+
+### Features
+
+- [750b212](https://github.com/atomix-labs/atxp/commit/750b212b8ff883f35504b792140d3ad4a3a3e79f) *(project)* Name the crate the crates.io and docs.rs badges show
+
+### Bug Fixes
+
+- [0276122](https://github.com/atomix-labs/atxp/commit/02761224d0649ef74b41695b5abb925fedb959e2) *(rust-doc)* Hold a crate to naming the workspace's crates it depends on, whatever their prefix
+- [463faf3](https://github.com/atomix-labs/atxp/commit/463faf38b2034780288ebc643e086fafaddb7900) *(cargo-manifest)* Keep a table's layout when putting its dependencies in their groups
+- [4e99684](https://github.com/atomix-labs/atxp/commit/4e996847f4e011c86a2d930d69893ee5fc7ccf0a) *(devset-collection)* Show what a recipe does with a feature on as the feature, not the template
+- [06bdb8f](https://github.com/atomix-labs/atxp/commit/06bdb8f71fa21adad5bc0efaf49f2f4a64236623) Leave what is vendored to upstream in the shell and spelling checks
+- [e09c85f](https://github.com/atomix-labs/atxp/commit/e09c85fb88349589ce6b677aaa0245a9e0378cd2) *(rust-doc)* Read no word in a code span as filler
+- [191e223](https://github.com/atomix-labs/atxp/commit/191e22330a8b7975bcb77f2a3028ffd20138b674) *(lychee)* Leave the book's pages to mdbook's check of the built book
+- [e7fbb6d](https://github.com/atomix-labs/atxp/commit/e7fbb6d4dcd454301a79b288398d3c9ef89f4f0a) *(rust-lints)* Allow a crate that enables the nightly lints' features itself
+
+### Documentation
+
+- [3bf165e](https://github.com/atomix-labs/atxp/commit/3bf165e6a11248bf6f75288d9bb7947a6a279302) Say how a repository adopting the profiles keeps its recipes and excludes
+
+### Miscellaneous
+
+- [abd0893](https://github.com/atomix-labs/atxp/commit/abd089344836b2cbf60866593ce42a76fa41d51b) Apply the profiles' changes to atxp
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.6.0...v0.6.1>
+
 ## [0.6.0](https://github.com/atomix-labs/atxp/releases/tag/v0.6.0) - 2026-09-26
 
 ### Features

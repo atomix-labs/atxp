@@ -32,7 +32,7 @@ In a repository, even an empty one, apply the bundle, set the machine up, and
 run every check:
 
 ```sh
-devset init atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.6.0 --var repository=<owner>/<name>
+devset init atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.6.1 --var repository=<owner>/<name>
 ./setup.sh
 just check
 ```
