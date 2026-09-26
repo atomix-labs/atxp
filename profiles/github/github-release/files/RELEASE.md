@@ -1,0 +1,66 @@
+{%- set on = devset.profiles -%}
+# Releasing
+
+How a release is cut: what its version says, what it ships, and the steps from
+the default branch to a published release. [CHANGELOG.md](CHANGELOG.md) is its
+record.
+
+## Versions
+
+A tag, `vX.Y.Z`, versions the release under semantic versioning. While the major
+version is 0, a minor release may break a user who takes it, and a patch release
+never does.
+{%- for layer in devset.layers if layer.profile == "project" and "breaking-changes" in layer.features %}
+
+[BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking
+change.
+{%- endfor %}
+
+## What a Release Ships
+
+- The GitHub Release, with the release's section of the changelog as its notes.
+{%- if "cargo-binaries" in on %}
+- The binaries every `package-*` recipe builds, for each platform, archived with
+  a `.sha256` beside each; every file is attested.
+{%- endif %}
+{%- if "cargo-publish" in on %}
+- Every crate, published to crates.io by trusted publishing, the library first.
+{%- endif %}
+
+Turn on Immutable Releases in the repository's settings, so a published
+release's files and tag never change.
+
+## Steps
+
+1. Write what the release changes:
+
+   ```sh
+   RELEASE_VERSION=x.y.z just release
+   ```
+
+   Every `release-*` recipe runs: `release-git-changelog` writes the release's
+   section of `CHANGELOG.md`.
+{%- if "cargo-bump" in on %}
+
+   `release-cargo-bump` sets every crate's version, and the lock's.
+{%- endif %}
+2. Read the new section; fix a commit's subject by rewording the commit, not the
+   file. Run `just check`.
+3. Commit it as `chore(release): vx.y.z`, which the changelog leaves out; sign
+   the tag, `git tag -s vx.y.z`; push the branch and the tag.
+4. The tag starts `release.yml`: it builds what every `package-*` recipe
+   packages on each platform, attests it, publishes the GitHub Release with the
+   notes and every file attached, then runs every `publish-*` recipe.
+5. Read the Release's page and its notes.
+{%- if "cargo-binaries" in on %}
+
+   An archive's build provenance checks with:
+
+   ```sh
+   gh attestation verify <archive> --repo {{ repository }}
+   ```
+{%- endif %}
+{%- if "cargo-publish" in on %}
+
+   `cargo install --locked <crate>` installs the new version from crates.io.
+{%- endif %}

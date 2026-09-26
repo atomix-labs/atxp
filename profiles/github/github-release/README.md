@@ -18,6 +18,10 @@ revoked when the job ends, so the repository stores none. That job runs in the
 environment `release`, which the trusted publisher names, and holds the only
 `id-token` permission.
 
+Where the repository has no `RELEASE.md`, it scaffolds one, written for the
+profiles applied: the versions, what a release ships, and the steps from `just
+release` to a published, verified release. It is the repository's from then on.
+
 A release builds uncached, and one runs at a time, never cancelled halfway. The
 job that creates the GitHub Release holds the only write permissions, and signs
 the attestations; the jobs that build hold neither.
@@ -26,9 +30,16 @@ the attestations; the jobs that build hold neither.
 
 ## Owns
 
-| File                            | Part  | Policy | Notes    |
-| ------------------------------- | ----- | ------ | -------- |
-| `.github/workflows/release.yml` | whole | owned  | template |
+| File                            | Part  | Policy | Notes                        |
+| ------------------------------- | ----- | ------ | ---------------------------- |
+| `RELEASE.md`                    | whole | once   | template, scaffold `release` |
+| `.github/workflows/release.yml` | whole | owned  | template                     |
+
+## Variables
+
+| Variable     | Default | Asks                              |
+| ------------ | ------- | --------------------------------- |
+| `repository` | none    | The GitHub repository, owner/name |
 
 ## Requires
 
