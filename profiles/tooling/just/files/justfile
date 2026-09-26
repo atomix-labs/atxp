@@ -1,40 +1,6 @@
-# Each atom's recipes, where the atom is applied.
-import? '.just/github-workflow-lint.just'
-import? '.just/ansible.just'
-import? '.just/cargo-binaries.just'
-import? '.just/cargo-bump.just'
-import? '.just/cargo-deny.just'
-import? '.just/cargo-hack.just'
-import? '.just/cargo-unused.just'
-import? '.just/cargo-shear.just'
-import? '.just/cargo-workspace-lints.just'
-import? '.just/rust-clippy.just'
-import? '.just/git-commits.just'
-import? '.just/conftest.just'
-import? '.just/cargo-publish.just'
-import? '.just/dprint.just'
-import? '.just/git-changelog.just'
-import? '.just/lints-nightly.just'
-import? '.just/lychee.just'
-import? '.just/cargo-manifest.just'
-import? '.just/mdbook.just'
-import? '.just/mise.just'
-import? '.just/rust-msrv.just'
-import? '.just/cargo-nextest.just'
-import? '.just/devset-collection.just'
-import? '.just/python.just'
-import? '.just/markdown.just'
-import? '.just/rust-toolchain.just'
-import? '.just/rust-doc.just'
-import? '.just/rust-fmt.just'
-import? '.just/rustup.just'
-import? '.just/shell.just'
-import? '.just/suppressions.just'
-import? '.just/toml.just'
-import? '.just/spelling.just'
-import? '.just/yaml.just'
-import? '.just/zizmor.just'
-
+# Each active profile's recipes.
+{% for profile in devset.profiles | sort %}import? '.just/{{ profile }}.just'
+{% endfor %}
 # Runs every `check-*` recipe, as CI does, and names each that fails.
 check: (_each "check")
 
@@ -46,6 +12,9 @@ bump: (_each "bump")
 
 # Runs every `nightly-*` recipe: the checks too slow for every change.
 nightly: (_each "nightly")
+
+# Runs every `test-*` recipe: the suites too slow for `just check`, which CI runs beside it.
+test: (_each "test")
 
 # Runs every `setup-*` recipe: what a checkout needs before it builds. `mise bootstrap` runs it.
 setup: (_each "setup")
@@ -63,7 +32,7 @@ package: (_each "package")
 publish: (_each "publish")
 
 # Runs every recipe named `<verb>-*`, and names each that fails.
-_each verb:
+{% raw %}_each verb:
     #!/usr/bin/env bash
     set -uo pipefail
     failed=()
@@ -75,3 +44,4 @@ _each verb:
         echo "failed: ${failed[*]}" >&2
         exit 1
     fi
+{% endraw %}
