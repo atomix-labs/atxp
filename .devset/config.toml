@@ -35,7 +35,7 @@ profile = "atxp/setup"
 
 [[layers]]
 profile  = "atxp/github-ci"
-features = ["pages"]
+features = ["pages", "agents"]
 
 [[layers]]
 profile = "atxp/github-watch"
@@ -47,7 +47,8 @@ profile = "atxp/github-bump"
 profile = "atxp/github-dependabot"
 
 [[layers]]
-profile = "atxp/git-commits"
+profile  = "atxp/git-commits"
+features = ["agents"]
 
 [[layers]]
 profile  = "atxp/git-changelog"
@@ -81,11 +82,16 @@ profile = "atxp/github-workflow-lint"
 profile = "atxp/suppressions"
 
 [[layers]]
-profile = "atxp/github-release"
+profile  = "atxp/github-release"
+features = ["agents"]
 
 [[layers]]
-profile = "atxp/devset"
+profile  = "atxp/devset"
+features = ["agents"]
 
 [[layers]]
-profile = "atxp/devset-collection"
-features = ["pins"]
+profile  = "atxp/devset-collection"
+features = ["pins", "agents"]
+
+[[layers]]
+profile = "atxp/agents"

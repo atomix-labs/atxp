@@ -51,6 +51,7 @@ test-bundle:
 
 # >>> devset: just >>>
 # Each active profile's recipes.
+import? '.just/agents.just'
 import? '.just/devset.just'
 import? '.just/devset-collection.just'
 import? '.just/dprint.just'

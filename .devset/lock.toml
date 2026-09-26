@@ -30,7 +30,7 @@ path = "profiles"
 
 [[profiles]]
 name = "just"
-digest = "a92beab1abda3bfdf3d40d39e394a644d565af9cd09aaf50d0da82906f928b44"
+digest = "9780c608bf40c7d924f55110091946199b671351e88bd31818cd946e9676f7d1"
 
 [profiles.source]
 path = "profiles"
@@ -51,12 +51,13 @@ path = "profiles"
 
 [[profiles]]
 name = "github-ci"
-digest = "1237c5baacf5b5a42d6d36f94c082d12db97f148783526d8fcefd954e78e25aa"
+digest = "7381a9c35627ff6f0e6036675b233de3522dd3f08386a028b0bff4458d7a52bc"
 
 [profiles.source]
 path = "profiles"
 
 [profiles.features]
+agents = ["target"]
 pages = ["target"]
 
 [[profiles]]
@@ -82,10 +83,13 @@ path = "profiles"
 
 [[profiles]]
 name = "git-commits"
-digest = "011428542107720f2710065cd31fcc144f200d96bd4faaf9797e65c2ae108309"
+digest = "2045687c6fe61d46330a3ef1d8e2f542e1e9d3698bbbd2f57f30165fab958796"
 
 [profiles.source]
 path = "profiles"
+
+[profiles.features]
+agents = ["target"]
 
 [[profiles]]
 name = "git-changelog"
@@ -187,25 +191,42 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "df6f3cf4c53f183f9932c62ec707cf1bbf390cea0095489c24cb960d967898af"
-
-[profiles.source]
-path = "profiles"
-
-[[profiles]]
-name = "devset"
-digest = "a4ed055e93be7350444de262f8527576e2060e11ca225bfd6ccd36a829a19f9d"
-
-[profiles.source]
-path = "profiles"
-
-[[profiles]]
-name = "devset-collection"
-digest = "db8dae325a0b2774ccf72d47b205c5bd66110f1727a50c129de1c9c2291edd78"
+digest = "13210b837e78ab40edf20696db9ea8cd03ca0dc8d5b71bec007ed2f3919b0856"
 
 [profiles.source]
 path = "profiles"
 
 [profiles.features]
+agents = ["target"]
+
+[[profiles]]
+name = "devset"
+digest = "c4863d75e2744d279c7a8001db49e06550f13370196379120f346aa47e39c663"
+
+[profiles.source]
+path = "profiles"
+
+[profiles.features]
+agents = ["target"]
+
+[[profiles]]
+name = "devset-collection"
+digest = "b97f75f9bb57273b07f08b9ad78a155fcda1805a64510a177fe6cdd060d50d01"
+
+[profiles.source]
+path = "profiles"
+
+[profiles.features]
+agents = ["target"]
 pins = ["target"]
 schemas = ["default"]
+
+[[profiles]]
+name = "agents"
+digest = "1498f86db3e5911d5d96865a398b24b1648d8880460138d268b5976ff0c28fc5"
+
+[profiles.source]
+path = "profiles"
+
+[profiles.features]
+hook = ["default"]

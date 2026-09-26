@@ -1,5 +1,11 @@
 version = 2
 
+[scaffolds."agents/claude"]
+decision = "written"
+
+[scaffolds."agents/claude".files]
+"CLAUDE.md" = "CLAUDE.md"
+
 [scaffolds."devset-collection/collection"]
 decision = "found"
 
@@ -8,6 +14,26 @@ decision = "found"
 
 [scaffolds."github-release/release"]
 decision = "found"
+
+[files.".claude/hooks/check.sh"]
+exact = "0ba38df078e228a747756fedf082e3d06aea9555e08a1b47f73a34095212ee07"
+canonical = "0ba38df078e228a747756fedf082e3d06aea9555e08a1b47f73a34095212ee07"
+
+[files.".claude/skills/authoring-devset-profiles/SKILL.md"]
+exact = "a11b6cfc4b862fa1a56d1f5705251faed6d248276861e7e0389ee90bd8a042dd"
+canonical = "a11b6cfc4b862fa1a56d1f5705251faed6d248276861e7e0389ee90bd8a042dd"
+
+[files.".claude/skills/cutting-releases/SKILL.md"]
+exact = "b0a1b90b3b64e6b2bb6a930d9011c4c078567175b8b79e8cfa2162ea43f8d063"
+canonical = "b0a1b90b3b64e6b2bb6a930d9011c4c078567175b8b79e8cfa2162ea43f8d063"
+
+[files.".claude/skills/fixing-ci/SKILL.md"]
+exact = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
+canonical = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
+
+[files.".claude/skills/using-devset/SKILL.md"]
+exact = "54636738591a6adbbdfd9a8f7b156aba04a6c25da0a09b1e6e1806983dda734b"
+canonical = "54636738591a6adbbdfd9a8f7b156aba04a6c25da0a09b1e6e1806983dda734b"
 
 [files.".config/mise/conf.d/devset-devset.toml"]
 exact = "84af8c1bcc6237c301441d911b0599e7874507c7b94d2c4f87c705689731d14b"
@@ -191,6 +217,11 @@ canonical = "222699e64e3adc08fe529af4cf3cba5f833daf8ef438a239f6652bfc24a3b625"
 exact = "65a987478f32d326e1b3ef04ff1b145861fa0d150f22b7017dba58430ceb0293"
 canonical = "65a987478f32d326e1b3ef04ff1b145861fa0d150f22b7017dba58430ceb0293"
 
+[files."CLAUDE.md"]
+exact = "d2333294b52059b6353e1c57c7695fff8833504c99c6257bd2adc8549db9c9e9"
+canonical = "d2333294b52059b6353e1c57c7695fff8833504c99c6257bd2adc8549db9c9e9"
+policy = "once"
+
 [files."cliff.toml"]
 exact = "a416710049a94392bb577508af87b3945a2b66d56d7cb3be3450b2173c05d8e1"
 canonical = "a416710049a94392bb577508af87b3945a2b66d56d7cb3be3450b2173c05d8e1"
@@ -210,6 +241,12 @@ canonical = "b9c2ef79bb07b4ba38066606d09c4e43ca7f13cf25d3e6e0bd262df7ffaec4e2"
 [files."setup.sh"]
 exact = "eea0bb338ff16a8512bf88acf2b4feda8496312e42054cc0b959ece6ee75da09"
 canonical = "eea0bb338ff16a8512bf88acf2b4feda8496312e42054cc0b959ece6ee75da09"
+
+[parts.".claude/settings.json".agents]
+scope = "keys"
+exact = "af323cf2a38eb2a7682751baa5b2526840ecac1b227819280aa9cb13173bf69e"
+canonical = "af323cf2a38eb2a7682751baa5b2526840ecac1b227819280aa9cb13173bf69e"
+policy = "merge"
 
 [parts.".config/mise/mise.lock".devset]
 scope = "keys"
@@ -314,6 +351,16 @@ exact = "295f9b25709e659bef8279b4fc26505b0ffc119578062b3dc336b335fce73ea7"
 canonical = "295f9b25709e659bef8279b4fc26505b0ffc119578062b3dc336b335fce73ea7"
 policy = "merge"
 
+[parts."AGENTS.md".agents]
+scope = "block"
+exact = "1fcad9e05558e426c48c1efc0118e842cb3e3443396effb8b44d2992300dee89"
+canonical = "cf8ac9a823c3b6311ca300eb7802a4d06546d23fa9b01559d1ef8acacda1545f"
+
+[parts."AGENTS.md".git-commits]
+scope = "block"
+exact = "45cc77ee89e84124fdad1b4cd10b96168665b04909972c94f5aba8a98b08c961"
+canonical = "399b6bdfaa1dca07e9e64c4074bc16a6ee64593b7e1c74a751dc3b99f42ce46d"
+
 [parts."CONTRIBUTING.md".git-commits]
 scope = "block"
 exact = "f33bd71d99ca44c40904cf9e2a1942d33258da6653ca263f70b5e2c03d9a9d59"
@@ -345,8 +392,8 @@ policy = "merge"
 
 [parts.justfile.just]
 scope = "block"
-exact = "7e138ae31df7b90f89fd19b028fed6ac2b625d282707397752a99eaab0069080"
-canonical = "a51672d7d61284aaa0cfa19656840b3dc46ce73b6cf578cbf54de7150e610f9a"
+exact = "55043bc00278d50e96f90169f6fb2abc974bcfd8026eda7b6fa467a4123182b5"
+canonical = "656e6461e814e94bd99a5d3e95d8096026a1f68502b9d8ddccf0af9a88d1d06a"
 
 [parts."ruff.toml".python]
 scope = "keys"
