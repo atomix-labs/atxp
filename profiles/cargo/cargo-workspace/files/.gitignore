@@ -1,6 +1,3 @@
 target/
 **/*.rs.bk
 *.pdb
-*.profraw
-perf.data*
-flamegraph.svg

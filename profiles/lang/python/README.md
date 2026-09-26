@@ -8,6 +8,8 @@ through its Ruff plugin, so one tool formats every file.
 It owns those keys of `ruff.toml`, under `merge`: `target-version`, and rules
 the repository adds, stay its own.
 
+Git ignores Python's bytecode, in a block of `.gitignore`.
+
 <!-- facts: written by scripts/catalog.py -->
 
 ## Owns

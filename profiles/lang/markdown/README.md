@@ -10,6 +10,8 @@ templates, each the body of a page with its own title, open without a heading.
 It owns those keys of `.rumdl.toml`, under `merge`: `exclude`, and `[MD063]
 ignore-words`, the names heading case leaves as they are, stay the repository's.
 
+Git ignores rumdl's cache, in a block of `.gitignore`.
+
 <!-- facts: written by scripts/catalog.py -->
 
 ## Owns

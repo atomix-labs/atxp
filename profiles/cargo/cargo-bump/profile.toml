@@ -11,6 +11,3 @@ devset      = ">=0.2"
 
 [files.".config/mise/mise.lock"]
 scope = "keys"
-
-[files.".cargo/config.toml"]
-scope = "keys"

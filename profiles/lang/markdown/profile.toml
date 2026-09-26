@@ -13,3 +13,6 @@ policy = "merge"
 
 [files.".config/mise/mise.lock"]
 scope = "keys"
+
+[files.".gitignore"]
+scope = "block"

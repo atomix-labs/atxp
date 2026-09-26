@@ -1,6 +1,4 @@
-# Local state: tools' caches, Claude Code's per-developer settings, notes.
-/.rumdl_cache/
-__pycache__/
+# Local state: Claude Code's per-developer settings, notes.
 .claude/*
 !.claude/skills/
 !.claude/settings.local.json.example

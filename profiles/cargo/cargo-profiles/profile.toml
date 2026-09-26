@@ -5,3 +5,6 @@ devset      = ">=0.2"
 
 [files."Cargo.toml"]
 scope = "keys"
+
+[files.".gitignore"]
+scope = "block"
