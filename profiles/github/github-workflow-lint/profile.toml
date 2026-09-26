@@ -1,18 +1,37 @@
 [profile]
 name        = "github-workflow-lint"
-description = "actionlint checks every GitHub Actions workflow: syntax, expressions, and the shell in each step"
+description = "Every GitHub workflow checked: actionlint, zizmor's audit, and conftest against the repository's policies"
 devset      = ">=0.2"
+
+[features]
+default    = ["actionlint", "zizmor", "policies"]
+actionlint = []
+zizmor     = []
+policies   = []
 
 [vars.runner_labels]
 prompt  = "Self-hosted runner labels actionlint accepts, comma-separated"
 default = ""
 
-[files.".github/actionlint.yaml"]
+[files.".just/github-workflow-lint.just"]
 template = true
 
-[files.".just/github-workflow-lint.just"]
+[files.".github/actionlint.yaml"]
+template = true
+when     = { features = ["actionlint"] }
+
+[files.".github/zizmor.yml"]
+when = { features = ["zizmor"] }
+
+[files."policy/workflows/workflows.rego"]
+when = { features = ["policies"] }
+
+[files."policy/workflows/workflows_test.rego"]
+when = { features = ["policies"] }
 
 [files.".config/mise/conf.d/devset-github-workflow-lint.toml"]
+template = true
 
 [files.".config/mise/mise.lock"]
-scope = "keys"
+scope    = "keys"
+template = true
