@@ -1,1 +1,8 @@
-{ "recommendations": ["rust-lang.rust-analyzer", "tamasfe.even-better-toml", "dprint.dprint", "rvben.rumdl", "nefrob.vscode-just-syntax"] }
+{%- set extensions = [
+  ["rust-toolchain", "rust-lang.rust-analyzer"],
+  ["toml", "tamasfe.even-better-toml"],
+  ["dprint", "dprint.dprint"],
+  ["markdown", "rvben.rumdl"],
+  ["just", "nefrob.vscode-just-syntax"]
+] -%}
+{ "recommendations": [{% for profile, extension in extensions if profile in devset.profiles %}"{{ extension }}"{% if not loop.last %}, {% endif %}{% endfor %}] }

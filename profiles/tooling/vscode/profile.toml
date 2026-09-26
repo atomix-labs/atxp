@@ -1,12 +1,14 @@
 [profile]
 name        = "vscode"
-description = "VS Code: the extensions recommended, clippy as the check, dprint and rumdl on save"
+description = "VS Code, set up for the tools the target's profiles bring: their extensions and settings"
 devset      = ">=0.2"
 
 [files.".vscode/extensions.json"]
-scope  = "keys"
-policy = "merge"
+scope    = "keys"
+policy   = "merge"
+template = true
 
 [files.".vscode/settings.json"]
-scope  = "keys"
-policy = "merge"
+scope    = "keys"
+policy   = "merge"
+template = true
