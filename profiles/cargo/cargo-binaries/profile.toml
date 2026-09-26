@@ -11,3 +11,6 @@ rust-toolchain = {}
 
 [files.".just/cargo-binaries.sh"]
 executable = true
+
+[files.".gitignore"]
+scope = "block"

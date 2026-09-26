@@ -8,7 +8,7 @@ names on their own. On Linux the target is musl, so the binary is static and
 runs on any distribution; a crate with C code needs a musl toolchain for it, or
 a pure-Rust build. `<version>` is `RELEASE_VERSION`, which
 [`github-release`](../../github/github-release/README.md) sets from the tag, or
-the workspace's.
+the workspace's. git ignores `dist/`, in a block of `.gitignore`.
 
 <!-- facts: written by devset-collection -->
 
@@ -18,6 +18,7 @@ the workspace's.
 | --------------------------- | ----- | ------ | ---------- |
 | `.just/cargo-binaries.just` | whole | owned  |            |
 | `.just/cargo-binaries.sh`   | whole | owned  | executable |
+| `.gitignore`                | block | owned  |            |
 
 ## Recipes
 
