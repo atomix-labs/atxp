@@ -184,7 +184,7 @@ path = "profiles/suppressions"
 
 [[layers]]
 name = "github-release"
-digest = "af0d799598d347b6436e867eba298cc92f5a7c1049d3ef0e7fe51b0ef1abfb89"
+digest = "5b4912868f99ceedd949c813660996657053e488d9fc987589f40b6d4b0dd631"
 
 [layers.source]
 path = "profiles/github-release"

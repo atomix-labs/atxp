@@ -31,10 +31,10 @@ counts as breaking.
 4. Commit it as `chore(release): vx.y.z`, which the changelog leaves out; sign
    the tag, `git tag -s vx.y.z`; push the branch and the tag.
 5. The tag starts `release.yml`: it builds what every `package-*` recipe
-   packages on linux-x64, linux-arm64 and macos-arm64, publishes the GitHub
-   Release with the release's section as its notes and every archive attached,
-   then runs every `publish-*` recipe. atxp packages and publishes nothing, so
-   its Release has notes alone.
+   packages on linux-x64, linux-arm64 and macos-arm64, attests it, publishes the
+   GitHub Release with the release's section as its notes and every archive
+   attached, then runs every `publish-*` recipe. atxp packages and publishes
+   nothing, so its Release has notes alone.
 
 A repository takes the release with `devset update`, or pins it with `devset
 init --tag vx.y.z`.

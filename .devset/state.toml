@@ -95,8 +95,8 @@ exact = "c1c1e2a479b9082434eaee949e38a943a448dcc7c36f8a93a82788bca876a32e"
 canonical = "c1c1e2a479b9082434eaee949e38a943a448dcc7c36f8a93a82788bca876a32e"
 
 [files.".github/workflows/release.yml"]
-exact = "af7a1aa376624c1cd14e12a5c4d5cdaa8c9ac2091f1e8759a3d550d76818e4da"
-canonical = "af7a1aa376624c1cd14e12a5c4d5cdaa8c9ac2091f1e8759a3d550d76818e4da"
+exact = "aa9890d1d861614a5698c84769bbfb0c2e5062196a8395e5a665b226811da1c9"
+canonical = "aa9890d1d861614a5698c84769bbfb0c2e5062196a8395e5a665b226811da1c9"
 
 [files.".github/workflows/watch.yml"]
 exact = "51beac8abe7056cba86bd93d9dde1993c4ea9854ea820dc3f6c2e8a659ea51e0"
