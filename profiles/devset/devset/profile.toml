@@ -1,0 +1,14 @@
+[profile]
+name        = "devset"
+description = "devset itself: pinned for every machine and job, and drift from the profiles failing the checks"
+devset      = ">=0.2"
+
+[requires]
+mise = {}
+
+[files.".just/devset.just"]
+
+[files.".config/mise/conf.d/devset-devset.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"
