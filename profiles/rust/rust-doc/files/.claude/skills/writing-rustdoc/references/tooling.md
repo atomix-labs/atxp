@@ -137,17 +137,18 @@ check-rust-doc` and the audit both do: write the disambiguator from the start,
 
 ## 6 Rendered Check
 
-The per-crate build lands at `target/<host>/doc/<crate_snake>/index.html`; `just
-docs api` builds the merged workspace API into `target/doc/`. Read the crate
-page top to bottom in the HTML (no browser on the box: `sed 's/<[^>]*>//g'` over
-the file, or the `.md` a `--output-format markdown` build would give) and check:
+The per-crate build lands at `target/<host>/doc/<crate_snake>/index.html`;
+`cargo doc --workspace --no-deps` builds the merged workspace API into
+`target/doc/`. Read the crate page top to bottom in the HTML (no browser on the
+box: `sed 's/<[^>]*>//g'` over the file, or the `.md` a `--output-format
+markdown` build would give) and check:
 
 1. The crate page reads as an introduction; the sidebar shows the task headings.
 2. Every ``[`Name`]`` became a link; no literal `` [` `` survives (``grep -c
-   '\[``' index.html``). A link into a sibling workspace crate renders as plain
-   code, not a link, until that crate is documented into the
-   same ``target/doc`` (``just docs api` does all of them); that is not a defect
-   of the doc, and no lint fires for it.
+   '\[`' index.html``). A link into a sibling workspace crate renders as plain
+   code, not a link, until that crate is documented into the same `target/doc`
+   (`cargo doc --workspace` documents them all); that is not a defect of the
+   doc, and no lint fires for it.
 3. Diagrams and listings sit in `text` fences, aligned; table pipes align in the
    source.
 4. Each summary is complete in the module listing: one sentence, no trailing

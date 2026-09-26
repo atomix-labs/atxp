@@ -1,6 +1,6 @@
 ---
 name: editing-cargo-manifests
-description: Use when creating a crate or writing, reviewing, cleaning or auditing any `Cargo.toml` in this workspace; when adding, removing, or re-pinning a dependency; when adding or reshaping a `[features]` table, or deciding whether something should be a feature, an optional dependency, or a separate crate; when splitting a proc-macro crate into its shim and impl halves; when declaring a `[[bench]]`, `[[bin]]`, `[[example]]` or `[lib]` target; when `just lint` reports a `cargo-manifest.py` finding, or `just deps` reports an unused or misplaced dependency; when std leaks into a `no_std` crate. Not for the workspace root's profiles or lint wall, which change only on deliberate request.
+description: Use when creating a crate or writing, reviewing, cleaning or auditing any `Cargo.toml` in this workspace; when adding, removing, or re-pinning a dependency; when adding or reshaping a `[features]` table, or deciding whether something should be a feature, an optional dependency, or a separate crate; when splitting a proc-macro crate into its shim and impl halves; when declaring a `[[bench]]`, `[[bin]]`, `[[example]]` or `[lib]` target; when `just check-cargo-manifest` reports a finding, or `just check-cargo-unused` an unused dependency; when std leaks into a `no_std` crate. Not for the workspace root's profiles or lint wall, which change only on deliberate request.
 ---
 
 # Writing Cargo Manifests
