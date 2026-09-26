@@ -31,7 +31,7 @@ features for the rest.
 In a repository, apply the bundle, set the machine up, and run every check:
 
 ```sh
-devset init atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.3.3 --var repository=<owner>/<name>
+devset init atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.4.0 --var repository=<owner>/<name>
 ./setup.sh
 just check
 ```
