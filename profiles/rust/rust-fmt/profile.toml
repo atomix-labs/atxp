@@ -1,7 +1,7 @@
 [profile]
 name        = "rust-fmt"
 description = "rustfmt on nightly options: imports by module, comments wrapped, doc examples formatted"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [vars.line_width]
 prompt  = "Line width, shared by the formatters and EditorConfig"

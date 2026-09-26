@@ -1,8 +1,11 @@
 [profile]
 name        = "rustup"
 description = "rustup where it is missing, and the toolchain rust-toolchain.toml names, before mise installs any tool"
-devset      = ">=0.1"
-requires    = ["../just", "../mise"]
+devset      = ">=0.2"
+
+[requires]
+just = {}
+mise = {}
 
 [files.".just/rustup.just"]
 

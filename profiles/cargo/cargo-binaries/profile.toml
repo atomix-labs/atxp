@@ -1,8 +1,11 @@
 [profile]
 name        = "cargo-binaries"
 description = "A release's binaries: the workspace's, built for this machine, static on Linux, archived with a sha256"
-devset      = ">=0.1"
-requires    = ["../rustup", "../just"]
+devset      = ">=0.2"
+
+[requires]
+just = {}
+rust-toolchain = {}
 
 [files.".just/cargo-binaries.just"]
 

@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-deny"
 description = "cargo-deny: yanked and unmaintained crates, one version each, the bans, permissive licences, crates.io only"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files."deny.toml"]
 scope = "keys"

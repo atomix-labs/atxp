@@ -1,7 +1,7 @@
 [profile]
 name        = "git-changelog"
 description = "git-cliff writes the changelog from Conventional Commits at each release, grouped, linked, breaking marked"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [vars.repository]
 prompt = "The GitHub repository the changelog links into, owner/name"

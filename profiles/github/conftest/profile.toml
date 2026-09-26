@@ -1,7 +1,7 @@
 [profile]
 name        = "conftest"
 description = "conftest holds the repository's configuration to its own policies, written and tested in Rego"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".just/conftest.just"]
 

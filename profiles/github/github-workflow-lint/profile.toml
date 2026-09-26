@@ -1,7 +1,7 @@
 [profile]
 name        = "github-workflow-lint"
 description = "actionlint checks every GitHub Actions workflow: syntax, expressions, and the shell in each step"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [vars.runner_labels]
 prompt  = "Self-hosted runner labels actionlint accepts, comma-separated"

@@ -1,7 +1,7 @@
 [profile]
 name        = "git-commits"
 description = "committed holds every commit a branch adds to Conventional Commits, the scope the part it changes"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files."committed.toml"]
 

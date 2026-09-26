@@ -1,7 +1,7 @@
 [profile]
 name        = "mdbook"
 description = "mdBook builds the book and runs its Rust examples as tests"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [vars.book_dir]
 prompt  = "Directory of the mdBook, its book.toml"

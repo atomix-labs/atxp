@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-shear"
 description = "cargo-shear finds dependencies no crate uses, and workspace dependencies no member inherits"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".just/cargo-shear.just"]
 

@@ -1,7 +1,7 @@
 [profile]
 name        = "markdown"
 description = "rumdl lints Markdown: line length left to the formatter, headings in title case"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".rumdl.toml"]
 scope  = "keys"

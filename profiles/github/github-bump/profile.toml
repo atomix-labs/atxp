@@ -1,8 +1,11 @@
 [profile]
 name        = "github-bump"
 description = "A weekly bump: every `bump-*` recipe, gated by `just check`, to a signed commit, a PR or a merge"
-devset      = ">=0.1"
-requires    = ["../just", "../github-watch"]
+devset      = ">=0.2"
+
+[requires]
+github-watch = {}
+just = {}
 
 [files.".github/workflows/bump.yml"]
 

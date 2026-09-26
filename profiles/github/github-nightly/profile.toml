@@ -1,7 +1,10 @@
 [profile]
 name        = "github-nightly"
 description = "A nightly run of every `nightly-*` recipe, each a job of its own, watched"
-devset      = ">=0.1"
-requires    = ["../just", "../github-watch"]
+devset      = ">=0.2"
+
+[requires]
+github-watch = {}
+just = {}
 
 [files.".github/workflows/nightly.yml"]

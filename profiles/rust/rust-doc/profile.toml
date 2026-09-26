@@ -1,6 +1,6 @@
 [profile]
 name        = "rust-doc"
 description = "rustdoc builds every crate's documentation, private items included, warnings denied"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".just/rust-doc.just"]

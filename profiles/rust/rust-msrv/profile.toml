@@ -1,8 +1,10 @@
 [profile]
 name        = "rust-msrv"
 description = "Every crate builds on the rust-version it declares: the oldest toolchain it says it supports"
-devset      = ">=0.1"
-requires    = ["../rustup"]
+devset      = ">=0.2"
+
+[requires]
+rust-toolchain = {}
 
 [files.".just/rust-msrv.just"]
 

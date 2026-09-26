@@ -1,7 +1,7 @@
 [profile]
 name        = "lychee"
 description = "lychee checks every Markdown link: the repository's own on every change, the web's nightly"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".just/lychee.just"]
 

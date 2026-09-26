@@ -1,7 +1,7 @@
 [profile]
 name        = "claude-skills"
 description = "Claude Code skills: writing rustdoc and writing Cargo manifests, with their linters"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".claude/skills/writing-cargo-manifest/SKILL.md"]
 

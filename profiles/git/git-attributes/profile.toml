@@ -1,7 +1,7 @@
 [profile]
 name        = "git-attributes"
 description = "Git attributes: LF in the repository, CRLF for Windows scripts, and language-aware diffs"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".gitattributes"]
 scope = "block"

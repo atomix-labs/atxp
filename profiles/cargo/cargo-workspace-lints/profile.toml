@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-workspace-lints"
 description = "Every crate in the workspace inherits its lints: `[lints] workspace = true`"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".just/cargo-workspace-lints.just"]
 

@@ -1,7 +1,7 @@
 [profile]
 name        = "spelling"
 description = "typos checks the spelling of code, documents and configuration; a repository adds its own words"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files."typos.toml"]
 scope  = "keys"

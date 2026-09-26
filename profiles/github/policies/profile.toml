@@ -1,7 +1,7 @@
 [profile]
 name        = "policies"
 description = "Policies for GitHub Actions workflows, held by conftest: timeouts, stated permissions, no shadowed results"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files."policy/workflows/workflows.rego"]
 

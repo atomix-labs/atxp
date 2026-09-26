@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-bump"
 description = "The weekly bump of Cargo requirements and git revisions: one at a time, past the cooldown, kept if it resolves"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".just/cargo-bump.just"]
 

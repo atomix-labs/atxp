@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-unused"
 description = "cargo-machete finds dependencies no crate uses, fast, from the sources alone"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".just/cargo-unused.just"]
 

@@ -1,7 +1,7 @@
 [profile]
 name        = "yaml"
 description = "yamllint checks YAML for what a formatter cannot fix: duplicate keys, octal values, truthy words"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [files.".yamllint.yaml"]
 scope  = "keys"

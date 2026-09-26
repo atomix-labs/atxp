@@ -1,7 +1,7 @@
 [profile]
 name        = "dprint"
 description = "dprint formats Markdown at 80, and YAML, JSON, Python, CSS and JavaScript; every plugin checksummed"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [vars.line_width]
 prompt  = "Line width, shared by the formatters and EditorConfig"

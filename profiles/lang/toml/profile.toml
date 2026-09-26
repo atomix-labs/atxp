@@ -1,7 +1,7 @@
 [profile]
 name        = "toml"
 description = "taplo formats every TOML file in one layout: aligned, four spaces, dependencies in order"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [vars.line_width]
 prompt  = "Line width, shared by the formatters and EditorConfig"

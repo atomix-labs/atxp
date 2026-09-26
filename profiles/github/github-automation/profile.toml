@@ -1,7 +1,7 @@
 [profile]
 name        = "github-automation"
 description = "The automation's settings: issue labels and types, who is assigned, how far the weekly bump goes"
-devset      = ">=0.1"
+devset      = ">=0.2"
 
 [vars.assignees]
 prompt  = "GitHub logins assigned the automation's issues, comma-separated"
