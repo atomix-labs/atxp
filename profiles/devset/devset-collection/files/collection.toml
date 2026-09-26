@@ -1,0 +1,3 @@
+[collection]
+name        = "{{ devset.target }}"
+description = "{{ collection_description }}"

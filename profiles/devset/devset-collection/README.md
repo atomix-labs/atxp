@@ -3,7 +3,9 @@
 For a collection of profiles, such as this one: a repository whose profiles
 devset applies elsewhere. Its profiles are every `profile.toml` under
 `profiles/`, each grouped by the directory it is in, as
-`profiles/<group>/<name>/`.
+`profiles/<group>/<name>/`. Where the repository has no `collection.toml`, it
+scaffolds one, which names the collection after the directory and describes it
+with `collection_description`.
 
 - `just fix-devset-collection` writes the catalog: the README's tables of the
   profiles, under each group's heading, and of the variables; and each profile
@@ -55,12 +57,13 @@ endif %}`: its lock entries carry the same gate, and both files are templates.
 
 ## Owns
 
-| File                                 | Part  | Policy | Notes          |
-| ------------------------------------ | ----- | ------ | -------------- |
-| `.just/devset-collection.just`       | whole | owned  | template       |
-| `.just/devset-collection/catalog.py` | whole | owned  |                |
-| `.just/devset-collection/suite.sh`   | whole | owned  |                |
-| `.just/devset-collection/pins.py`    | whole | owned  | feature `pins` |
+| File                                 | Part  | Policy | Notes                           |
+| ------------------------------------ | ----- | ------ | ------------------------------- |
+| `collection.toml`                    | whole | once   | template, scaffold `collection` |
+| `.just/devset-collection.just`       | whole | owned  | template                        |
+| `.just/devset-collection/catalog.py` | whole | owned  |                                 |
+| `.just/devset-collection/suite.sh`   | whole | owned  |                                 |
+| `.just/devset-collection/pins.py`    | whole | owned  | feature `pins`                  |
 
 ## Features
 
@@ -78,6 +81,12 @@ endif %}`: its lock entries carry the same gate, and both files are templates.
   and relocks what moved for every platform.
 - `test-devset-collection`: Tests every profile: alone, then each bundle and all
   at once on each fixture, with `just check`.
+
+## Variables
+
+| Variable                 | Default | Asks                                             |
+| ------------------------ | ------- | ------------------------------------------------ |
+| `collection_description` | empty   | One line: what the collection's profiles are for |
 
 ## Requires
 

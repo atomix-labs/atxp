@@ -14,6 +14,17 @@ default = []
 # profiles pin tools with mise.
 pins = []
 
+[vars.collection_description]
+prompt  = "One line: what the collection's profiles are for"
+default = ""
+
+[scaffolds.collection]
+unless = "collection.toml"
+
+[files."collection.toml"]
+scaffold = "collection"
+template = true
+
 [files.".just/devset-collection.just"]
 template = true
 
