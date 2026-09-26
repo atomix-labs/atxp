@@ -12,18 +12,29 @@ the repository adds, stay its own.
 
 Git ignores Python's bytecode, in a block of `.gitignore`.
 
+Each half is a feature, both on by default: `lint`, Ruff's configuration, pin
+and recipes, and `format`, dprint's Ruff settings. Git ignores the bytecode
+either way.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                     | Part  | Policy | Notes    |
-| ---------------------------------------- | ----- | ------ | -------- |
-| `ruff.toml`                              | keys  | merge  | template |
-| `.just/python.just`                      | whole | owned  |          |
-| `.config/mise/conf.d/devset-python.toml` | whole | owned  |          |
-| `.config/mise/mise.lock`                 | keys  | owned  |          |
-| `.gitignore`                             | block | owned  |          |
-| `dprint.json`                            | keys  | merge  |          |
+| File                                     | Part  | Policy | Notes                    |
+| ---------------------------------------- | ----- | ------ | ------------------------ |
+| `ruff.toml`                              | keys  | merge  | template, feature `lint` |
+| `.just/python.just`                      | whole | owned  | feature `lint`           |
+| `.config/mise/conf.d/devset-python.toml` | whole | owned  | feature `lint`           |
+| `.config/mise/mise.lock`                 | keys  | owned  | feature `lint`           |
+| `.gitignore`                             | block | owned  |                          |
+| `dprint.json`                            | keys  | merge  | feature `format`         |
+
+## Features
+
+| Feature  | Default | Enables      |
+| -------- | ------- | ------------ |
+| `lint`   | yes     |              |
+| `format` | yes     | `dep:dprint` |
 
 ## Recipes
 
@@ -38,6 +49,6 @@ Git ignores Python's bytecode, in a block of `.gitignore`.
 
 ## Requires
 
-- [`dprint`](../dprint/README.md)
+- [`dprint`](../dprint/README.md): optional
 
 <!-- /facts -->

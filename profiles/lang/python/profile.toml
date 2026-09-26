@@ -4,7 +4,14 @@ description = "Python: linted by Ruff at the shared line width, and formatted by
 devset      = ">=0.2.1"
 
 [requires]
-dprint = {}
+dprint = { optional = true }
+
+[features]
+default = ["lint", "format"]
+# Ruff lints every Python file.
+lint = []
+# dprint formats every Python file, through its Ruff plugin.
+format = ["dep:dprint"]
 
 [vars.line_width]
 prompt  = "Line width, shared by the formatters and EditorConfig"
@@ -14,13 +21,17 @@ default = "100"
 scope    = "keys"
 policy   = "merge"
 template = true
+when     = { features = ["lint"] }
 
 [files.".just/python.just"]
+when = { features = ["lint"] }
 
 [files.".config/mise/conf.d/devset-python.toml"]
+when = { features = ["lint"] }
 
 [files.".config/mise/mise.lock"]
 scope = "keys"
+when  = { features = ["lint"] }
 
 [files.".gitignore"]
 scope = "block"
@@ -28,3 +39,4 @@ scope = "block"
 [files."dprint.json"]
 scope  = "keys"
 policy = "merge"
+when   = { features = ["format"] }
