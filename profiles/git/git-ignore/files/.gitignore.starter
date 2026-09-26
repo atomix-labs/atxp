@@ -1,0 +1,2 @@
+# What git leaves out. Each profile ignores its own output in a block of its own; the
+# repository adds its own lines outside them.

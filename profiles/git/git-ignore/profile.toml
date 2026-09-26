@@ -4,4 +4,5 @@ description = "Git ignores what tools keep locally, editors' files, and anything
 devset      = ">=0.2.1"
 
 [files.".gitignore"]
-scope = "block"
+scope   = "block"
+starter = ".gitignore.starter"
