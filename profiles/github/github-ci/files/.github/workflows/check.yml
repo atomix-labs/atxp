@@ -1,7 +1,11 @@
-# Runs every `check-*` recipe on every change, each a job of its own, with the tools mise locks. The
+{% raw %}# Runs every `check-*` recipe on every change, each a job of its own, with the tools mise locks. The
 # jobs are read from the justfile, so every check a checkout runs with `just check` runs here too;
+{%- endraw %}{% if "pages" in devset.features %}{% raw %}
 # `check` is the one job to require. The site one recipe builds, named by `pages` in
 # .github/automation.json, is kept from each run and deployed to Pages from the default branch.
+{%- endraw %}{% else %}
+# `check` is the one job to require.
+{%- endif %}{% raw %}
 name: check
 
 on:
@@ -30,8 +34,10 @@ jobs:
     timeout-minutes: 30
     outputs:
       recipes: ${{ steps.plan.outputs.recipes }}
+{%- endraw %}{% if "pages" in devset.features %}{% raw %}
       pages-recipe: ${{ steps.plan.outputs.pages-recipe }}
       pages-path: ${{ steps.plan.outputs.pages-path }}
+{%- endraw %}{% endif %}{% raw %}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -45,6 +51,7 @@ jobs:
         run: |
           recipes=$(just --summary | tr ' ' '\n' | jq -Rnc '[inputs | select(startswith("check-"))]')
           echo "recipes=$recipes" >> "$GITHUB_OUTPUT"
+{%- endraw %}{% if "pages" in devset.features %}{% raw %}
           settings=.github/automation.json
           [[ -f $settings ]] || exit 0
           recipe=$(jq -r '.pages.recipe // empty' "$settings")
@@ -60,6 +67,7 @@ jobs:
           fi
           echo "pages-recipe=$recipe" >> "$GITHUB_OUTPUT"
           echo "pages-path=$path" >> "$GITHUB_OUTPUT"
+{%- endraw %}{% endif %}{% raw %}
 
   run:
     needs: plan
@@ -91,12 +99,14 @@ jobs:
       - env:
           RECIPE: ${{ matrix.recipe }}
         run: just "$RECIPE"
+{%- endraw %}{% if "pages" in devset.features %}{% raw %}
       # The site as checked: a pull request's is its preview, the default branch's is deployed.
       - if: matrix.recipe == needs.plan.outputs.pages-recipe
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: ${{ needs.plan.outputs.pages-path }}
           retention-days: ${{ github.event_name == 'pull_request' && 7 || 1 }}
+{%- endraw %}{% endif %}{% raw %}
 
   check:
     needs: [plan, run]
@@ -108,6 +118,7 @@ jobs:
           PLAN: ${{ needs.plan.result }}
           RUN: ${{ needs.run.result }}
         run: "[[ $PLAN == success && ($RUN == success || $RUN == skipped) ]]"
+{%- endraw %}{% if "pages" in devset.features %}{% raw %}
 
   deploy:
     needs: [plan, check]
@@ -129,3 +140,4 @@ jobs:
     steps:
       - id: deploy
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+{%- endraw %}{% endif %}

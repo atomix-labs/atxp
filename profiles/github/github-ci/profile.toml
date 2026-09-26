@@ -1,10 +1,17 @@
 [profile]
 name        = "github-ci"
-description = "GitHub Actions: every `check-*` recipe a job of its own, read from the justfile, tools from the mise lock; a Pages site built once and deployed"
+description = "GitHub Actions: every `check-*` recipe a job of its own, read from the justfile, tools from the mise lock; with pages, a site built once and deployed"
 devset      = ">=0.2.1"
 
 [requires]
 github-automation = {}
 just              = {}
 
+[features]
+default = []
+# The site one recipe builds, kept from each run and deployed to GitHub Pages from the default
+# branch.
+pages = []
+
 [files.".github/workflows/check.yml"]
+template = true

@@ -15,8 +15,9 @@ The jobs read the repository and nothing else. They run on `ubuntu-latest`, or
 on the runner the repository variable `CI_RUNNER` names, such as
 `ubuntu-24.04-arm`.
 
-A repository that publishes a site with GitHub Pages names the recipe that
-builds it, and the directory it builds the site in, in
+With the feature `pages`, which [`mdbook`](../../docs/mdbook/README.md)'s
+`pages` turns on, a repository that publishes a site with GitHub Pages names the
+recipe that builds it, and the directory it builds the site in, in
 `.github/automation.json`: `"pages": { "recipe": "check-docs", "path":
 "docs/book" }`. That job keeps the site it checked: on a pull request as a
 preview, kept seven days, and on the default branch as the deploy, which the job
@@ -29,9 +30,15 @@ environment. A name that is no check recipe, or no path, fails the plan.
 
 ## Owns
 
-| File                          | Part  | Policy | Notes |
-| ----------------------------- | ----- | ------ | ----- |
-| `.github/workflows/check.yml` | whole | owned  |       |
+| File                          | Part  | Policy | Notes    |
+| ----------------------------- | ----- | ------ | -------- |
+| `.github/workflows/check.yml` | whole | owned  | template |
+
+## Features
+
+| Feature | Default | Enables |
+| ------- | ------- | ------- |
+| `pages` |         |         |
 
 ## Requires
 
