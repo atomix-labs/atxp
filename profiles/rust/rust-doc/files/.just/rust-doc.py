@@ -33,6 +33,8 @@ FILLER = re.compile(
     r"and so on|various|for more (information|details)|see also|make sure|should probably)\b",
     re.I,
 )
+# A code span, whose words name code, not prose: `just bench` runs a recipe.
+CODE_SPAN = re.compile(r"`[^`]*`")
 MARKETING = re.compile(
     r"\b(powerful|easy to use|user[- ]friendly|efficient|flexible|robust|convenient|zero[- ]cost|"
     r"venue[- ]neutral|blazingly|seamless(ly)?|elegant(ly)?|leverag(e|es|ing))\b",
@@ -191,10 +193,11 @@ def check_block(path, start, block, item, me, deps, findings):
                         "`# Errors` as prose: `[`Variant`], <condition>.` (a `- ` list when several)",
                     )
                 )
-        if FILLER.search(text):
-            findings.append((path, ln, "error", f"filler: `{FILLER.search(text).group(0)}`"))
-        if MARKETING.search(text):
-            findings.append((path, ln, "error", f"unverifiable adjective: `{MARKETING.search(text).group(0)}`"))
+        prose = CODE_SPAN.sub("``", text)
+        if FILLER.search(prose):
+            findings.append((path, ln, "error", f"filler: `{FILLER.search(prose).group(0)}`"))
+        if MARKETING.search(prose):
+            findings.append((path, ln, "error", f"unverifiable adjective: `{MARKETING.search(prose).group(0)}`"))
         if PROCESS.search(text):
             findings.append((path, ln, "error", "dev-process marker in a doc"))
         if RULE_ID.search(text):
