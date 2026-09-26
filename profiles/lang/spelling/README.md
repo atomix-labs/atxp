@@ -1,9 +1,9 @@
 # `spelling`
 
 typos checks the spelling of every file the repository owns: code, documents and
-configuration. It leaves out what a tool writes (devset's records, the locks
-with their checksums, the book mdBook builds, vendored or minified code) and
-commit ids, which are no words.
+configuration. It leaves out what git ignores, what a tool writes (devset's
+records, the locks with their checksums, minified code) and commit ids, which
+are no words.
 
 A finding is fixed, or allowed, by hand: `typos --write-changes` would also
 correct a misspelling a test means, so no `fix-*` recipe runs it, and neither
