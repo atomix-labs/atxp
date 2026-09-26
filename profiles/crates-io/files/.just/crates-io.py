@@ -3,9 +3,11 @@ crates.io.
 
 Usage: crates-io.py check | publish
 
-`check` packages each, and builds it from its package, as crates.io will. `publish` publishes each
-that crates.io does not have at its version, dependencies first, so a release that stopped halfway
-publishes the rest when it runs again.
+`check` packages each, and builds it from its package, as crates.io will. Between releases, while
+crates.io has a crate at its version already, cargo would build its dependents against crates.io's
+copy, not the working tree's, so each is packaged without the build; a release's check, its versions
+new, builds them all. `publish` publishes each that crates.io does not have at its version,
+dependencies first, so a release that stopped halfway publishes the rest when it runs again.
 """
 
 import json
@@ -60,7 +62,11 @@ def check():
         print("crates-io: the workspace publishes no crate")
         return 0
     # The working tree as it is: a check runs before its changes are committed.
-    return cargo("package", crates, "--allow-dirty")
+    flags = ["--allow-dirty"]
+    if any(published(name, version) for name, version in crates):
+        print("crates-io: crates.io has these versions already; packaging without the build")
+        flags.append("--no-verify")
+    return cargo("package", crates, *flags)
 
 
 def publish():
