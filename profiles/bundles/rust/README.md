@@ -14,7 +14,7 @@ and its features describe the kind of project:
 | Feature    | Adds                                                                                                             |
 | ---------- | ---------------------------------------------------------------------------------------------------------------- |
 | `docs`     | a book, with [`mdbook`](../../docs/mdbook/README.md)                                                             |
-| `agents`   | the skills for rustdoc and manifests                                                                             |
+| `agents`   | the agent layer, with [`agents`](../../agents/agents/README.md), and the skill of every profile applied          |
 | `publish`  | crates.io, with [`cargo-publish`](../../cargo/cargo-publish/README.md), the release, and the project's documents |
 | `binaries` | release archives, with [`cargo-binaries`](../../cargo/cargo-binaries/README.md)                                  |
 | `oss`      | an open-source project's documents with its code of conduct, and the issue and pull request templates            |
@@ -33,15 +33,15 @@ None is on by default. Outside it are
 
 ## Features
 
-| Feature    | Default | Enables                                                                              |
-| ---------- | ------- | ------------------------------------------------------------------------------------ |
-| `docs`     |         | `dep:mdbook`                                                                         |
-| `agents`   |         | `rust-doc/agents`, `cargo-manifest/agents`                                           |
-| `publish`  |         | `dep:cargo-publish`, `dep:github-release`, `dep:project`                             |
-| `binaries` |         | `dep:cargo-binaries`, `dep:github-release`                                           |
-| `oss`      |         | `dep:project`, `project/conduct`, `dep:github-templates`                             |
-| `nightly`  |         | `rust-lints/nightly`, `dep:cargo-hack`, `dep:github-nightly`                         |
-| `strict`   |         | `cargo-deny/strict`, `rust-lints/strict`, `cargo-profiles/strict`, `rust-doc/strict` |
+| Feature    | Default | Enables                                                                                                                                                                              |
+| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `docs`     |         | `dep:mdbook`                                                                                                                                                                         |
+| `publish`  |         | `dep:cargo-publish`, `dep:github-release`, `dep:project`                                                                                                                             |
+| `binaries` |         | `dep:cargo-binaries`, `dep:github-release`                                                                                                                                           |
+| `oss`      |         | `dep:project`, `project/conduct`, `dep:github-templates`                                                                                                                             |
+| `nightly`  |         | `rust-lints/nightly`, `dep:cargo-hack`, `dep:github-nightly`                                                                                                                         |
+| `strict`   |         | `cargo-deny/strict`, `rust-lints/strict`, `cargo-profiles/strict`, `rust-doc/strict`                                                                                                 |
+| `agents`   |         | `dep:agents`, `cargo-deny/agents`, `cargo-manifest/agents`, `devset/agents`, `git-commits/agents`, `github-ci/agents`, `rust-doc/agents`, `github-release?/agents`, `mdbook?/agents` |
 
 ## Requires
 
@@ -84,5 +84,6 @@ None is on by default. Outside it are
 - [`github-nightly`](../../github/github-nightly/README.md): optional
 - [`project`](../../project/project/README.md): optional
 - [`github-templates`](../../github/github-templates/README.md): optional
+- [`agents`](../../agents/agents/README.md): optional
 
 <!-- /facts -->

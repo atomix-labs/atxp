@@ -89,8 +89,8 @@ variables and what it requires.
   `git-attributes`, `git-commits`, `git-changelog`, `github-ci`, `github-bump`,
   `github-watch`, `github-dependabot`, `github-workflow-lint`, `markdown`,
   `toml`, `yaml`, `spelling`, `shell`, `mise`, `just`, `setup`, `editorconfig`,
-  `devset`. Features: `docs`, `agents`, `publish`, `binaries`, `oss`, `nightly`,
-  `strict`.
+  `devset`. Features: `docs`, `publish`, `binaries`, `oss`, `nightly`, `strict`,
+  `agents`.
 
 ### `cargo`
 
