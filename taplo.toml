@@ -1,6 +1,12 @@
 # Every TOML file, in one layout. Left out: build output, and what devset owns whole: its records,
-# and the profiles' pins. taplo reads no .gitignore, so Cargo's output is named where Cargo is.
-exclude = ["**/node_modules/**", ".devset/**", ".config/mise/conf.d/**", "profiles/**/files/**"]
+# and the profiles' pins.
+exclude = [
+    "**/node_modules/**",
+    "**/target/**",
+    ".devset/**",
+    ".config/mise/conf.d/**",
+    "profiles/**/files/**",
+]
 
 [formatting]
 column_width          = 100

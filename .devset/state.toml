@@ -13,8 +13,8 @@ exact = "393377cdcbf869f184e985329669fec02943f8742427a0e8c4a9758dda06bdcb"
 canonical = "393377cdcbf869f184e985329669fec02943f8742427a0e8c4a9758dda06bdcb"
 
 [files.".config/mise/conf.d/devset-git-commits.toml"]
-exact = "1491da174a0061610351f8a51424d6a736e587425afa7a1586486fefdd702072"
-canonical = "1491da174a0061610351f8a51424d6a736e587425afa7a1586486fefdd702072"
+exact = "273196c2efef32d9fa65e2404673099c13894ee51e27ce6b3233200e1ec4b8dc"
+canonical = "273196c2efef32d9fa65e2404673099c13894ee51e27ce6b3233200e1ec4b8dc"
 
 [files.".config/mise/conf.d/devset-github-workflow-lint.toml"]
 exact = "026901f5632cfa778b73b9c9716c6a42c28be7b3878a0e2b51a4c9efbbbb28fb"
@@ -87,8 +87,8 @@ exact = "821240a57368f0108720f1e6bd885a6d6cb69d2407acd4888df7b080dc3e2868"
 canonical = "821240a57368f0108720f1e6bd885a6d6cb69d2407acd4888df7b080dc3e2868"
 
 [files.".github/workflows/check.yml"]
-exact = "e7fac4552b69a1a10fa8a98ef4f7392660ff452e79d7146cf564f1872569b162"
-canonical = "e7fac4552b69a1a10fa8a98ef4f7392660ff452e79d7146cf564f1872569b162"
+exact = "ffec8c8d6fc3c5b062767248ae72a1f1961a0deed410f6c26c3b852e7cddc6b1"
+canonical = "ffec8c8d6fc3c5b062767248ae72a1f1961a0deed410f6c26c3b852e7cddc6b1"
 
 [files.".github/workflows/release.yml"]
 exact = "8fc58d9bd056dd1fede0c58c6726be3b0b02d8c92fef9f7db54868458e8bbdcf"
@@ -103,20 +103,20 @@ exact = "16253fa2b0144339f427808d4070502b7dc50f1155ecde41f4789957e1ee9e24"
 canonical = "16253fa2b0144339f427808d4070502b7dc50f1155ecde41f4789957e1ee9e24"
 
 [files.".just/devset-collection.just"]
-exact = "9831d36ca487342d9b0fb0c31281fcead94505ebce27555e691cff6399f1780b"
-canonical = "9831d36ca487342d9b0fb0c31281fcead94505ebce27555e691cff6399f1780b"
+exact = "c74241f559c3e81c0dbc6effdbd7a287c190b2f5f9ae12a018e7e4d9404b8459"
+canonical = "c74241f559c3e81c0dbc6effdbd7a287c190b2f5f9ae12a018e7e4d9404b8459"
 
 [files.".just/devset-collection/catalog.py"]
-exact = "b867bf78414f092a97f7583758573e9bb8dbb71feb3e054e1403a3b961f6ebc0"
-canonical = "b867bf78414f092a97f7583758573e9bb8dbb71feb3e054e1403a3b961f6ebc0"
+exact = "46772612c8ffd69510ae14988c36bdb7a8b37b41ee873dbebe284a2885959eec"
+canonical = "46772612c8ffd69510ae14988c36bdb7a8b37b41ee873dbebe284a2885959eec"
 
 [files.".just/devset-collection/pins.py"]
 exact = "307f70a3a5ef59c4e5721714228b26268ec9f0aaf2245984eb1f59e20b770df8"
 canonical = "307f70a3a5ef59c4e5721714228b26268ec9f0aaf2245984eb1f59e20b770df8"
 
 [files.".just/devset-collection/suite.sh"]
-exact = "acf6a8a17f19ef2c58c7507c1153c749abc05f1d1f7d9afaf15c23f912bdbc35"
-canonical = "acf6a8a17f19ef2c58c7507c1153c749abc05f1d1f7d9afaf15c23f912bdbc35"
+exact = "189851d6fbf77682ef979efefe55ceee4822cd3487f719bac8c9794892a6cd65"
+canonical = "189851d6fbf77682ef979efefe55ceee4822cd3487f719bac8c9794892a6cd65"
 
 [files.".just/devset.just"]
 exact = "f5d11b5c7a807803e37128615769c7a3a7b1aeea96a4055c299ce4e75d54d094"
@@ -135,8 +135,8 @@ exact = "9fca67db8ccd75372f5b50876e7066b6f6b25d3dfe834a7cbc8e6661a3e9d70f"
 canonical = "9fca67db8ccd75372f5b50876e7066b6f6b25d3dfe834a7cbc8e6661a3e9d70f"
 
 [files.".just/github-workflow-lint.just"]
-exact = "7826bf00e3dd003ef59d1765c4d5f0d509a0d557d7dac30d47ce0a5c1a7f95ce"
-canonical = "7826bf00e3dd003ef59d1765c4d5f0d509a0d557d7dac30d47ce0a5c1a7f95ce"
+exact = "c81abe4813aa996be50e4faa056f51b26d75e3f49699a56461855108c6948eee"
+canonical = "c81abe4813aa996be50e4faa056f51b26d75e3f49699a56461855108c6948eee"
 
 [files.".just/markdown.just"]
 exact = "9da33503e1cf3d55ad71a994b25cb661d2a53b05498e9a05c9177a669c6581ea"
@@ -215,8 +215,8 @@ canonical = "930883d65d152a0a30bf4feac2a94425747dd22b08e506c886cb80ff36ecf57c"
 
 [parts.".config/mise/mise.lock".git-commits]
 scope = "keys"
-exact = "376d0f12cc89231a311a317b5222d08b1f6c688c31fd1da40f6b7fd207350df0"
-canonical = "376d0f12cc89231a311a317b5222d08b1f6c688c31fd1da40f6b7fd207350df0"
+exact = "7991ee6bc1c1d4a99f03644a44cc5b6b9cc26e1d818f7ad740fc5da9e3e3f70f"
+canonical = "7991ee6bc1c1d4a99f03644a44cc5b6b9cc26e1d818f7ad740fc5da9e3e3f70f"
 
 [parts.".config/mise/mise.lock".github-workflow-lint]
 scope = "keys"
@@ -338,8 +338,8 @@ policy = "merge"
 
 [parts."taplo.toml".toml]
 scope = "keys"
-exact = "22b8305ab12732dd6f738e86b9615ef5e75982da2650fde1c7569d949e28321c"
-canonical = "22b8305ab12732dd6f738e86b9615ef5e75982da2650fde1c7569d949e28321c"
+exact = "4f804dd1722e005f52c4ca606fb47cd0c4b2c2659b482ac8d1a5b45a046946d6"
+canonical = "4f804dd1722e005f52c4ca606fb47cd0c4b2c2659b482ac8d1a5b45a046946d6"
 policy = "merge"
 
 [parts."typos.toml".spelling]
