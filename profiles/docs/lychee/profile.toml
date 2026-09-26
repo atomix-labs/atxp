@@ -3,6 +3,10 @@ name        = "lychee"
 description = "lychee checks every Markdown link: the repository's own on every change, the web's nightly"
 devset      = ">=0.3.0"
 
+[vars.book_dir]
+prompt  = "Directory of the mdBook, its book.toml"
+default = "docs"
+
 [scaffolds.lychee]
 unless = "lychee.toml"
 
@@ -10,6 +14,7 @@ unless = "lychee.toml"
 scaffold = "lychee"
 
 [files.".just/lychee.just"]
+template = true
 
 [files.".config/mise/conf.d/devset-lychee.toml"]
 
