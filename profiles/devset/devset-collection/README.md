@@ -48,6 +48,10 @@ payload's `dprint.json` as configuration, and a collection adds
 `profiles/**/files/**` to what dprint, taplo, ruff and yamllint leave out, as
 atxp does.
 
+Its default feature, `schemas`, turns on [`toml`](../../lang/toml/README.md)'s,
+so where toml is applied, `check-toml` holds every `profile.toml` and
+`collection.toml` to devset's schemas.
+
 A profile pins its tools in `.config/mise/conf.d/devset-<name>.toml`, and owns
 their entries in `.config/mise/mise.lock` as keys. A pin may gate each tool by a
 feature, between lines of `{% if "<feature>" in devset.features %}` and `{%
@@ -67,9 +71,10 @@ endif %}`: its lock entries carry the same gate, and both files are templates.
 
 ## Features
 
-| Feature | Default | Enables |
-| ------- | ------- | ------- |
-| `pins`  |         |         |
+| Feature   | Default | Enables         |
+| --------- | ------- | --------------- |
+| `pins`    |         |                 |
+| `schemas` | yes     | `toml?/schemas` |
 
 ## Recipes
 
@@ -93,5 +98,6 @@ endif %}`: its lock entries carry the same gate, and both files are templates.
 - [`devset`](../devset/README.md)
 - [`just`](../../tooling/just/README.md)
 - [`mise`](../../tooling/mise/README.md)
+- [`toml`](../../lang/toml/README.md): optional
 
 <!-- /facts -->

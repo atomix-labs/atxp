@@ -7,12 +7,15 @@ devset      = ">=0.2.1"
 devset = {}
 just   = {}
 mise   = {}
+toml   = { optional = true }
 
 [features]
-default = []
+default = ["schemas"]
 # Every pin locked for every platform, and moved past the cooldown weekly: for a collection whose
 # profiles pin tools with mise.
 pins = []
+# Every profile.toml and collection.toml held to devset's schemas, where toml is applied.
+schemas = ["toml?/schemas"]
 
 [vars.collection_description]
 prompt  = "One line: what the collection's profiles are for"
