@@ -3,6 +3,12 @@ name        = "lychee"
 description = "lychee checks every Markdown link: the repository's own on every change, the web's nightly"
 devset      = ">=0.2.1"
 
+[scaffolds.lychee]
+unless = "lychee.toml"
+
+[files."lychee.toml"]
+scaffold = "lychee"
+
 [files.".just/lychee.just"]
 
 [files.".config/mise/conf.d/devset-lychee.toml"]

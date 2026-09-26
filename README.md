@@ -112,7 +112,7 @@ variables and what it requires.
 
 | Profile                                    | What                                                                                       | Owns                                                  |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
-| [`lychee`](profiles/docs/lychee/README.md) | lychee checks every Markdown link: the repository's own on every change, the web's nightly | `.config/mise/mise.lock` (keys)                       |
+| [`lychee`](profiles/docs/lychee/README.md) | lychee checks every Markdown link: the repository's own on every change, the web's nightly | `lychee.toml`, `.config/mise/mise.lock` (keys)        |
 | [`mdbook`](profiles/docs/mdbook/README.md) | mdBook builds the book and runs its Rust examples as tests                                 | `.config/mise/mise.lock` (keys), `.gitignore` (block) |
 
 ### `git`
