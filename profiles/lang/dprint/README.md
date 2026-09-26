@@ -15,7 +15,9 @@ what git ignores, so each profile's build output stays out on its own;
 `excludes` adds minified files, `.just/`, whose recipes are formatted where they
 come from, and `CHANGELOG.md`, which
 [`git-changelog`](../../git/git-changelog/README.md) lays out. A repository adds
-its own to `excludes`.
+its own to `excludes`. A `dprint.json` a repository already has keeps its own
+`excludes` when the profile adopts it, so add `.just/**` and `CHANGELOG.md` to
+them.
 
 <!-- facts: written by devset-collection -->
 

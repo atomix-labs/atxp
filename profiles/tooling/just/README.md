@@ -29,7 +29,9 @@ read from devset's graph, so no list of profiles lives here, and ten recipes.
 The repository's own recipes live outside the block; where there is no
 `justfile`, it starts one with a line saying so. Name one `check-<name>` and
 `just check` runs it too. A recipe of the repository's own named after one of
-the ten clashes with the spine's, and `just` refuses both: rename it.
+the ten clashes with the spine's, and `just` refuses both: name it
+`<verb>-<name>`, as `test-house`, and the verb runs it with the rest; one the
+verb should not run, as one taking arguments, takes a name of its own.
 
 <!-- facts: written by devset-collection -->
 
