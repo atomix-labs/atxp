@@ -6,6 +6,9 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.6.0](#v060)
+  - [atxp needs devset 0.3.0](#atxp-needs-devset-030)
+  - [The book's prose links to the API](#the-books-prose-links-to-the-api)
 - [v0.5.0](#v050)
   - [atxp needs devset 0.2.2](#atxp-needs-devset-022)
   - [`check-mdbook` lints the book, and builds the API](#check-mdbook-lints-the-book-and-builds-the-api)
@@ -22,6 +25,33 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.6.0
+
+### atxp Needs devset 0.3.0
+
+**What changed.** Every profile requires devset 0.3.0, which turns a layer's
+features on and off from the command line, aligns a TOML key with the table it
+joins, and fills a block's markers written empty; it also refuses a
+`.devset/config.toml` that lists one profile as two layers. The `devset` profile
+pins 0.3.0.
+
+**What to do.** Keep one `[[layers]]` entry for each profile, with the features
+of any second one, then take the update with devset 0.3.0:
+
+```sh
+mise exec github:atomix-labs/devset@0.3.0 -- devset update
+```
+
+### The Book's Prose Links to the API
+
+**What changed.** Under `mdbook`'s `api`, a default feature,
+mdbook-rustdoc-links reads a link such as ``[`Entry`]`` in the book as a Rust
+path, and links it to the API at `/api`; `check-mdbook` fails on one that does
+not resolve, or that names a path the name alone would reach.
+
+**What to do.** Fix what `check-mdbook` names: write the path an item needs,
+``[`Entry`][ledger::Entry]``, or only its name where the name resolves.
 
 ## V0.5.0
 
