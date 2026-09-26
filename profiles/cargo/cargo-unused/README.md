@@ -7,6 +7,12 @@ and it catches workspace dependencies no member inherits too. Each is a feature,
 that are on, and `fix-cargo-unused` removes what they find. Both are built with
 cargo, so their pins lock no platform.
 
+Either tool, removing the first dependency under a group marker, takes the
+marker with it, as the comment above the line it removes. Where
+[`cargo-manifest`](../cargo-manifest/README.md) is applied, `fix-cargo-unused`
+then runs `fix-cargo-manifest`, which puts every dependency back under its
+group.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
@@ -29,7 +35,8 @@ cargo, so their pins lock no platform.
 - `check-cargo-unused`: Fails on a dependency no crate uses, by each tool the
   profile's features turn on, and names each tool that found one.
 - `fix-cargo-unused`: Removes each dependency no crate uses, by each tool the
-  profile's features turn on.
+  profile's features turn on, and puts back the group markers a removal takes
+  with it, where cargo-manifest is applied.
 
 ## Requires
 
