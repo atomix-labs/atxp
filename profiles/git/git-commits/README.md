@@ -12,16 +12,20 @@ request's own commits, its second parent's. Where there is no default branch to
 compare with, there is nothing to check. committed comes from its release, one
 static build for each platform the locks cover.
 
+Where the repository has a `CONTRIBUTING.md`, a block of it says these rules to
+those who contribute.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                          | Part  | Policy | Notes |
-| --------------------------------------------- | ----- | ------ | ----- |
-| `committed.toml`                              | whole | owned  |       |
-| `.just/git-commits.just`                      | whole | owned  |       |
-| `.config/mise/conf.d/devset-git-commits.toml` | whole | owned  |       |
-| `.config/mise/mise.lock`                      | keys  | owned  |       |
+| File                                          | Part  | Policy | Notes                    |
+| --------------------------------------------- | ----- | ------ | ------------------------ |
+| `committed.toml`                              | whole | owned  |                          |
+| `.just/git-commits.just`                      | whole | owned  |                          |
+| `.config/mise/conf.d/devset-git-commits.toml` | whole | owned  |                          |
+| `.config/mise/mise.lock`                      | keys  | owned  |                          |
+| `CONTRIBUTING.md`                             | block | owned  | `CONTRIBUTING.md` exists |
 
 ## Recipes
 

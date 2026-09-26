@@ -11,3 +11,7 @@ devset      = ">=0.2.1"
 
 [files.".config/mise/mise.lock"]
 scope = "keys"
+
+[files."CONTRIBUTING.md"]
+scope = "block"
+when  = { exists = ["CONTRIBUTING.md"] }

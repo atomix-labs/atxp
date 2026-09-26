@@ -117,12 +117,12 @@ variables and what it requires.
 
 ### `git`
 
-| Profile                                                   | What                                                                                                       | Owns                                                          |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| [`git-attributes`](profiles/git/git-attributes/README.md) | Git attributes: LF in the repository, CRLF for Windows scripts, and language-aware diffs                   | `.gitattributes` (block)                                      |
-| [`git-changelog`](profiles/git/git-changelog/README.md)   | git-cliff writes the changelog from Conventional Commits at each release, grouped, linked, breaking marked | `CHANGELOG.md`, `cliff.toml`, `.config/mise/mise.lock` (keys) |
-| [`git-commits`](profiles/git/git-commits/README.md)       | committed holds every commit a branch adds to Conventional Commits, the scope the part it changes          | `committed.toml`, `.config/mise/mise.lock` (keys)             |
-| [`git-ignore`](profiles/git/git-ignore/README.md)         | Git ignores what tools keep locally, editors' files, and anything that looks like a secret                 | `.gitignore` (block)                                          |
+| Profile                                                   | What                                                                                                       | Owns                                                                         |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [`git-attributes`](profiles/git/git-attributes/README.md) | Git attributes: LF in the repository, CRLF for Windows scripts, and language-aware diffs                   | `.gitattributes` (block)                                                     |
+| [`git-changelog`](profiles/git/git-changelog/README.md)   | git-cliff writes the changelog from Conventional Commits at each release, grouped, linked, breaking marked | `CHANGELOG.md`, `cliff.toml`, `.config/mise/mise.lock` (keys)                |
+| [`git-commits`](profiles/git/git-commits/README.md)       | committed holds every commit a branch adds to Conventional Commits, the scope the part it changes          | `committed.toml`, `.config/mise/mise.lock` (keys), `CONTRIBUTING.md` (block) |
+| [`git-ignore`](profiles/git/git-ignore/README.md)         | Git ignores what tools keep locally, editors' files, and anything that looks like a secret                 | `.gitignore` (block)                                                         |
 
 ### `github`
 
