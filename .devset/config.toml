@@ -34,7 +34,8 @@ profile = "atxp/just"
 profile = "atxp/setup"
 
 [[layers]]
-profile = "atxp/github-ci"
+profile  = "atxp/github-ci"
+features = ["pages"]
 
 [[layers]]
 profile = "atxp/github-watch"
@@ -49,7 +50,8 @@ profile = "atxp/github-dependabot"
 profile = "atxp/git-commits"
 
 [[layers]]
-profile = "atxp/git-changelog"
+profile  = "atxp/git-changelog"
+features = ["breaking-changes"]
 
 [[layers]]
 profile = "atxp/spelling"

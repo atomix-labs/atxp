@@ -4,6 +4,8 @@
 disable = ["MD013", "MD038", "MD049", "MD050", "MD052"]
 # Additive. `enable` is exclusive: it would switch every other rule off.
 extend-enable = ["MD063"]
+# Payloads are templates until devset renders them, and the suite lints each one rendered.
+exclude = ["profiles/**/files/**"]
 
 # Collapsible definitions are a `<details>`/`<summary>` pair, which Markdown has no form of. Narrowed
 # rather than disabling MD033, so every other tag still reports.

@@ -35,3 +35,16 @@ keys    = ["dependencies", "dev-dependencies", "build-dependencies", "workspace.
 
 [rule.formatting]
 reorder_keys = true
+
+# devset's files, held to the schemas its manual publishes.
+[[rule]]
+include = ["**/profile.toml"]
+
+[rule.schema]
+url = "https://atomix-labs.github.io/devset/schema/profile.json"
+
+[[rule]]
+include = ["collection.toml"]
+
+[rule.schema]
+url = "https://atomix-labs.github.io/devset/schema/collection.json"

@@ -1,5 +1,6 @@
 assignees = ""
 bump_mode = "pr"
+collection_description = ""
 line_width = "100"
 repository = "atomix-labs/atxp"
 runner_labels = ""

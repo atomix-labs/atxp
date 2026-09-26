@@ -17,8 +17,14 @@ belongs in [devset's repository](https://github.com/atomix-labs/devset/issues).
 Keep each pull request to one change: a profile, a fix, or a refactor, not a mix
 of them.
 
+Run `just check` and `just test` before pushing: CI runs the same.
+
+<!-- >>> devset: git-commits >>> -->
+
+## Commits
+
 Commits follow [Conventional Commits](https://www.conventionalcommits.org),
-which `check-git-commits` holds every commit of a branch to:
+which `just check-git-commits` holds every commit of a branch to:
 
 ```text
 type(scope): subject
@@ -26,22 +32,22 @@ type(scope): subject
 
 - The **type** is `feat`, `fix`, `refactor`, `docs`, `perf`, `test`, `build`,
   `ci`, `chore`, `style` or `revert`.
-- The **scope** is the profile the commit changes, `feat(toml): …`, or the part
-  of the repository that is not a profile: `docs`, `ci`, `tests` or `release`. A
-  change across several profiles has no scope.
 - The **subject** is imperative, lower case, with no closing period: it is the
-  line the changelog shows, so it says what changed for someone reading it
-  there.
+  line the changelog shows.
 - A breaking change adds `!` after the scope, and a `BREAKING CHANGE:` footer
   saying what to do.
+
+<!-- <<< devset: git-commits <<< -->
+
+A commit's scope is the profile it changes, `feat(toml): …`, or the part of the
+repository that is not a profile: `docs`, `ci`, `tests` or `release`. A change
+across several profiles has no scope.
 
 A change is **breaking** when a repository that takes it must act: a profile, a
 file or a variable removed or renamed; a scope or a policy changed; a check that
 fails a build it passed; a higher minimum version of a tool. A breaking change
 also adds its entry to [BREAKING-CHANGES.md](BREAKING-CHANGES.md), under the
 release that will carry it.
-
-Run `just check` and `just test` before pushing: CI runs the same.
 
 ## Designing Profiles
 
