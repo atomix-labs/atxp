@@ -142,8 +142,8 @@ exact = "c74241f559c3e81c0dbc6effdbd7a287c190b2f5f9ae12a018e7e4d9404b8459"
 canonical = "c74241f559c3e81c0dbc6effdbd7a287c190b2f5f9ae12a018e7e4d9404b8459"
 
 [files.".just/devset-collection/catalog.py"]
-exact = "1872be662f980f949fdea4ef948b22100a8ff159506b698b37d7306fe55eb3ca"
-canonical = "1872be662f980f949fdea4ef948b22100a8ff159506b698b37d7306fe55eb3ca"
+exact = "6e6cd01c484f8b409ed2852c6cabf8c30035587abd47d49e6ec9520a3cc098f9"
+canonical = "6e6cd01c484f8b409ed2852c6cabf8c30035587abd47d49e6ec9520a3cc098f9"
 
 [files.".just/devset-collection/pins.py"]
 exact = "307f70a3a5ef59c4e5721714228b26268ec9f0aaf2245984eb1f59e20b770df8"
@@ -194,8 +194,8 @@ exact = "fd5a2ce0b87c59d95cf2ddcc4ae576d74221388967ec37d66b3058ce7b676f70"
 canonical = "fd5a2ce0b87c59d95cf2ddcc4ae576d74221388967ec37d66b3058ce7b676f70"
 
 [files.".just/shell.just"]
-exact = "5e3f28070f5ccb74499c7f50c541cfbdfd39a35a66d6dacd8ec9b3158f23b860"
-canonical = "5e3f28070f5ccb74499c7f50c541cfbdfd39a35a66d6dacd8ec9b3158f23b860"
+exact = "3249b0046733cd933fc2d75021c181e438a0f30cfb612312d9b2ca72cde41345"
+canonical = "3249b0046733cd933fc2d75021c181e438a0f30cfb612312d9b2ca72cde41345"
 
 [files.".just/spelling.just"]
 exact = "40a1b81b63474a8e17379e92de85c7161f61a34af10720fdc1b8b1c7ee3df377"
@@ -409,6 +409,6 @@ policy = "merge"
 
 [parts."typos.toml".spelling]
 scope = "keys"
-exact = "4323c41fa45c14c083587faf012fca46c651d3c5433c7455aa412f6e93b353a8"
-canonical = "4323c41fa45c14c083587faf012fca46c651d3c5433c7455aa412f6e93b353a8"
+exact = "bc581dc9ebae4c00683b02bdfd8efad2889701a49a4475fe8cc0306f06a0e756"
+canonical = "bc581dc9ebae4c00683b02bdfd8efad2889701a49a4475fe8cc0306f06a0e756"
 policy = "merge"

@@ -103,7 +103,7 @@ breaking-changes = ["target"]
 
 [[profiles]]
 name = "spelling"
-digest = "ad9426f64441ff104a1b58c3643235928205a1043e2ad267901165c74512cf36"
+digest = "7f90206c1849f356995896c98c12f89937b0a06d123b05b87248b2996c8d72fc"
 
 [profiles.source]
 path = "profiles"
@@ -162,7 +162,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "shell"
-digest = "4f9176fc3685086a3e6024b683269ecfabe409f0963e7a8437f1052594676035"
+digest = "1a0129386d4f984cad6c2da1ab83c205f7089e05ba43dc8a312ed639d8b3b0be"
 
 [profiles.source]
 path = "profiles"
@@ -211,7 +211,7 @@ agents = ["target"]
 
 [[profiles]]
 name = "devset-collection"
-digest = "29baecb94eaa14e6342967a7ebd8a33b5210832c35da2ab670ae61aa9e0758fd"
+digest = "f2f7b29d94642d236e3769352e3584323b19119de52dfd0c6ed13289ecd5e132"
 
 [profiles.source]
 path = "profiles"
