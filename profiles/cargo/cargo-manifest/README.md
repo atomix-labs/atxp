@@ -10,6 +10,9 @@ workspace = true`. A crate under a `vendor/` directory is upstream's, and is
 left alone. `check-cargo-manifest` also runs cargo-workspace-lints, which fails
 when a crate does not inherit the workspace's `[workspace.lints]`, which is how
 a crate leaves the shared lints without anyone deciding it should.
+`fix-cargo-manifest` puts each dependency under its group, `# external` or `#
+internal`, in every manifest the workspace's included, keeping their order; a
+table with any other line in it is left for the check to name.
 
 The `agents` feature adds the `editing-cargo-manifests` skill in
 `.claude/skills/`: the shape this profile checks, and how to add a crate, a
@@ -39,6 +42,8 @@ dependency or a feature within it.
 - `check-cargo-manifest`: Holds every crate manifest to one shape, which taplo,
   reading values, cannot see, and fails when a crate does not inherit the
   workspace's lints.
+- `fix-cargo-manifest`: Puts every dependency under its group, `# external` or
+  `# internal`, the workspace's included.
 
 ## Requires
 

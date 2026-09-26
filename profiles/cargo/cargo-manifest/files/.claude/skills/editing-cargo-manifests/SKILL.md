@@ -64,7 +64,8 @@ to.
    to git: the manifest check reads only the manifests git tracks.
 2. **Add a dependency**: its entry in `[workspace.dependencies]`, under its
    group, then `{ workspace = true }` in the member.
-3. **Format**: `just fix`, which aligns and orders each group.
+3. **Format**: `just fix`, which puts each dependency under its group, then
+   aligns and orders each group.
 4. **Check**, below.
 
 ```toml

@@ -4,7 +4,12 @@ taplo settles layout: alignment, and alphabetical order inside each dependency g
 reach is the text around the values, because a JSON schema validates a parsed tree and a comment is
 not in one. Those rules are checked here, on the lines rather than the values.
 
-    cargo-manifest.py [<path>...]   # default: every tracked Cargo.toml, vendored crates aside
+    cargo-manifest.py [<path>...]         # default: every tracked Cargo.toml, vendored crates aside
+    cargo-manifest.py --fix [<path>...]   # each dependency under its group, the workspace's too
+
+`--fix` rewrites each dependency table as `# external` and its entries, then `# internal` and
+its, keeping their order: a tool that removes an entry, as `cargo shear --fix` does, takes the
+comment above it too. A table holding any other line is left as it is.
 """
 
 import re
@@ -190,10 +195,63 @@ def check(path: Path, repo: Path, shared: set, internal: set) -> list:
     return sorted(found, key=lambda item: item[1])
 
 
+def regroup(path: Path, internal: set) -> bool:
+    """Writes each dependency table of `path` in its two groups; whether anything changed."""
+    lines = path.read_text().splitlines(keepends=True)
+    out, body, header = [], [], None
+
+    def flush():
+        if header is not None and (kind(header) or header == "workspace.dependencies"):
+            out.extend(grouped(body, internal))
+        else:
+            out.extend(body)
+
+    for line in lines:
+        table = TABLE.match(line)
+        if table:
+            flush()
+            out.append(line)
+            body, header = [], table.group(1)
+        else:
+            body.append(line)
+    flush()
+    text = "".join(out)
+    if text == path.read_text():
+        return False
+    path.write_text(text)
+    return True
+
+
+def grouped(body: list, internal: set) -> list:
+    """A dependency table's lines, `# external` and its entries first, then `# internal` and its;
+    the blank lines that end it stay. Lines of any other kind leave the table as it was."""
+    end = len(body)
+    while end and not body[end - 1].strip():
+        end -= 1
+    entries = [line for line in body[:end] if line.strip() and line.strip() not in GROUPS]
+    if not all(ENTRY.match(line) for line in entries):
+        return body
+    groups = {marker: [] for marker in GROUPS}
+    for line in entries:
+        groups["# internal" if ENTRY.match(line).group(1) in internal else "# external"].append(line)
+    out = []
+    for marker in GROUPS:
+        if groups[marker]:
+            out += [f"{marker}\n", *groups[marker]]
+    return out + body[end:]
+
+
 def main() -> int:
     repo = Path(subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True).stdout.strip())
     every = tracked(repo)
-    paths = [Path(arg).resolve() for arg in sys.argv[1:]] or [path for path in every if path != repo / "Cargo.toml"]
+    args = sys.argv[1:]
+    if args[:1] == ["--fix"]:
+        internal = internal_names(every)
+        changed = [path for path in ([Path(arg).resolve() for arg in args[1:]] or every) if regroup(path, internal)]
+        for path in changed:
+            print(f"{path.relative_to(repo)}: regrouped")
+        return 0
+    paths = [Path(arg).resolve() for arg in args] or [path for path in every if path != repo / "Cargo.toml"]
     for path in paths:
         if not path.is_file():
             print(f"error: no manifest at {path}", file=sys.stderr)
