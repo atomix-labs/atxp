@@ -21,7 +21,11 @@ with `collection_description`.
   `<verb>-<name>`, its helpers are `.just/<name>.<ext>` or under
   `.just/<name>/`, and its pins are in `.config/mise/conf.d/devset-<name>.toml`.
   A variable several profiles declare, each declares alike; and every workflow a
-  profile ships runs one mise.
+  profile ships runs one mise. A skill a profile ships,
+  `.claude/skills/<skill>/SKILL.md`, opens with front matter of `name` and
+  `description` alone: the name its directory's, a gerund phrase, and the
+  description under 1024 characters. No file of a skill runs a recipe, `just
+  <recipe>` in its code, that no profile of the collection defines.
 - `just test-devset-collection` runs the suite, with the devset that
   [`devset`](../devset/README.md) pins. Every profile alone, with its default
   features and with every feature, applies without drift. Then on each fixture
@@ -45,8 +49,8 @@ A collection's payloads are templates until devset renders them, and the suite
 checks them rendered, so its own formatters and linters leave them alone: the
 recipes export `DPRINT_CONFIG_DISCOVERY=ignore-descendants`, so dprint reads no
 payload's `dprint.json` as configuration, and a collection adds
-`profiles/**/files/**` to what dprint, taplo, ruff and yamllint leave out, as
-atxp does.
+`profiles/**/files/**` to what dprint, rumdl, taplo, ruff and yamllint leave
+out, as atxp does.
 
 Its default feature, `schemas`, turns on [`toml`](../../lang/toml/README.md)'s,
 so where toml is applied, `check-toml` holds every `profile.toml` and

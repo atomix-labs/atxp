@@ -5,8 +5,8 @@ Usage: catalog.py [--check] [--dprint]
 
 Run in the collection's root. Its profiles are every `profile.toml` under `profiles/`, at any depth,
 but a profile's own payloads; the directory each is in groups it. With no flag, writes the README's
-tables and every profile's facts. `--check` writes nothing, and fails when any of them is stale or a
-profile breaks a rule. `--dprint` formats what it writes with dprint, as the repository formats its
+tables and every profile's facts. `--check` writes nothing, and fails when any of them is stale, or a
+profile or a skill it ships breaks a rule. `--dprint` formats what it writes with dprint, as the repository formats its
 Markdown. A directory with no profiles has no catalog.
 """
 
@@ -56,6 +56,25 @@ MISE_VERSION = re.compile(r"^\s+version:\s*(\S+)\s*$")
 PARTS = {"file": "whole", "keys": "keys", "block": "block"}
 # A directory that holds this many of a profile's files is shown once, with the count.
 GROUPED = 3
+# A skill a profile ships: its entry point, in the directory that names it.
+SKILLS = ".claude/skills/"
+SKILL = re.compile(rf"^{re.escape(SKILLS)}([^/]+)/SKILL\.md$")
+# A skill's name is the task it does, a gerund phrase: `writing-rustdoc`.
+GERUND = re.compile(r"[a-z]+ing(?:-[a-z0-9]+)*")
+# A skill's front matter holds only the fields every agent that reads the format knows.
+FRONT_MATTER = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
+FIELDS = ("name", "description")
+DESCRIPTION = 1024
+# Code in Markdown: a fenced block, or a span, which may wrap.
+CODE = re.compile(r"^```.*?^```|`[^`]+`", re.DOTALL | re.MULTILINE)
+# A recipe run in code: `just` opening a command, after any variables it sets; a placeholder, as
+# `just check-<name>`, names none.
+JUST = re.compile(
+    r"(?:^|&&|\|\||;)\s*(?:[A-Z_][A-Z0-9_]*=\S*\s+)*just\s+([a-z][a-z0-9-]*[a-z0-9])(?![\w<-])",
+    re.M,
+)
+# A template's line that is only a tag or a comment, which renders to nothing.
+TAG = re.compile(r"^\s*\{[%#].*[%#]\}\s*$")
 
 
 @dataclass(frozen=True)
@@ -154,8 +173,9 @@ def problems(found):
         for name, same in named.items()
         if len(same) > 1
     ]
+    known = set(VERBS) | {recipe for profile in found for recipe, _ in recipes(profile)}
     for profile in found:
-        out += profile_problems(profile, named)
+        out += profile_problems(profile, named) + skill_problems(profile, known)
     return out + variable_problems(found) + mise_problems(found)
 
 
@@ -188,6 +208,41 @@ def profile_problems(profile, named):
     for required, spec in profile.requires.items():
         if "git" not in spec and required not in named:
             out.append(f"{where}: requires `{required}`, which is no profile of the collection")
+    return out
+
+
+def skill_problems(profile, known):
+    """Each way a skill `profile` ships breaks the house form, or runs a recipe outside `known`."""
+    where, out = profile.path, []
+    for path in profile.files:
+        if not path.startswith(SKILLS):
+            continue
+        text = (profile.path / "files" / path).read_text()
+        if skill := SKILL.match(path):
+            out += [f"{where}: {path}: {problem}" for problem in front_matter(skill.group(1), text)]
+        rendered = "\n".join(line for line in text.splitlines() if not TAG.match(line))
+        out += [
+            f"{where}: {path} runs `just {recipe}`, which no profile of the collection defines"
+            for code in CODE.findall(rendered)
+            for recipe in JUST.findall(code.strip("`"))
+            if recipe not in known
+        ]
+    return out
+
+
+def front_matter(name, text):
+    """Each way the front matter of the skill `name`'s SKILL.md, `text`, breaks the house form."""
+    block = FRONT_MATTER.match(text)
+    fields = (
+        dict(line.partition(": ")[::2] for line in block.group(1).splitlines()) if block else {}
+    )
+    if set(fields) != set(FIELDS):
+        return [f"front matter holds {code(FIELDS)}, each on one line, and nothing else"]
+    out = []
+    if fields["name"] != name or not GERUND.fullmatch(name):
+        out.append(f"`name` is `{name}`, its directory, a gerund phrase such as `writing-rustdoc`")
+    if not 0 < len(fields["description"]) < DESCRIPTION:
+        out.append(f"`description` says what it does and when, in under {DESCRIPTION} characters")
     return out
 
 

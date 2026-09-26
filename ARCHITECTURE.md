@@ -171,7 +171,8 @@ applies it with `pins`:
   `check-devset-collection` fails when any is stale, or when a profile breaks a
   rule of CONTRIBUTING.md: a name unique and its directory's, requirements the
   collection resolves, recipes named `<verb>-<name>`, helpers beside them, one
-  declaration of each variable, and one mise across every workflow.
+  declaration of each variable, one mise across every workflow, and skills in
+  the house form that run only the collection's recipes.
 - **The pins**: every profile's lock entries match its pins, for every platform,
   gated as its pins are; `bump-devset-collection` moves them.
 - **The suite**, `test-devset-collection`: every profile alone, with its default

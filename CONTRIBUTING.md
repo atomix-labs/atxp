@@ -133,7 +133,9 @@ rest as optional requirements its features turn on.
 A skill ships with the profile whose concern it serves, in
 `.claude/skills/<skill>/`, each of its files gated by that profile's `agents`
 feature. Its name is the task it does, as a gerund, `writing-rustdoc`, and its
-`SKILL.md` names it the same in its front matter.
+`SKILL.md` names it the same in its front matter, which holds `name` and
+`description` alone, the description under 1024 characters. A recipe a skill
+runs is one a profile of atxp defines.
 
 ## Writing
 
