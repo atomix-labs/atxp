@@ -16,6 +16,8 @@ default = ["schemas"]
 pins = []
 # Every profile.toml and collection.toml held to devset's schemas, where toml is applied.
 schemas = ["toml?/schemas"]
+# The authoring-devset-profiles skill, in .claude/skills/.
+agents = []
 
 [vars.collection_description]
 prompt  = "One line: what the collection's profiles are for"
@@ -37,3 +39,7 @@ template = true
 
 [files.".just/devset-collection/pins.py"]
 when = { features = ["pins"] }
+
+[files.".claude/skills/authoring-devset-profiles/SKILL.md"]
+template = true
+when     = { features = ["agents"] }

@@ -61,17 +61,22 @@ their entries in `.config/mise/mise.lock` as keys. A pin may gate each tool by a
 feature, between lines of `{% if "<feature>" in devset.features %}` and `{%
 endif %}`: its lock entries carry the same gate, and both files are templates.
 
+The `agents` feature adds the `authoring-devset-profiles` skill in
+`.claude/skills/`: the design questions, the rules above, and the checks, for an
+agent that adds or changes a profile.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                 | Part  | Policy | Notes                           |
-| ------------------------------------ | ----- | ------ | ------------------------------- |
-| `collection.toml`                    | whole | once   | template, scaffold `collection` |
-| `.just/devset-collection.just`       | whole | owned  | template                        |
-| `.just/devset-collection/catalog.py` | whole | owned  |                                 |
-| `.just/devset-collection/suite.sh`   | whole | owned  |                                 |
-| `.just/devset-collection/pins.py`    | whole | owned  | feature `pins`                  |
+| File                                                | Part  | Policy | Notes                           |
+| --------------------------------------------------- | ----- | ------ | ------------------------------- |
+| `collection.toml`                                   | whole | once   | template, scaffold `collection` |
+| `.just/devset-collection.just`                      | whole | owned  | template                        |
+| `.just/devset-collection/catalog.py`                | whole | owned  |                                 |
+| `.just/devset-collection/suite.sh`                  | whole | owned  |                                 |
+| `.just/devset-collection/pins.py`                   | whole | owned  | feature `pins`                  |
+| `.claude/skills/authoring-devset-profiles/SKILL.md` | whole | owned  | template, feature `agents`      |
 
 ## Features
 
@@ -79,6 +84,7 @@ endif %}`: its lock entries carry the same gate, and both files are templates.
 | --------- | ------- | --------------- |
 | `pins`    |         |                 |
 | `schemas` | yes     | `toml?/schemas` |
+| `agents`  |         |                 |
 
 ## Recipes
 
