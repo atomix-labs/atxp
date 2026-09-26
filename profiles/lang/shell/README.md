@@ -29,7 +29,7 @@ none of ShellCheck applies the profile without its default features.
 ## Recipes
 
 - `check-shell`: Lints every shell script the repository owns, following what
-  each sources; a file .gitattributes marks `linguist-vendored` or
-  `linguist-generated` is someone else's.
+  each sources; one under a vendor/ directory, or that .gitattributes marks
+  `linguist-vendored` or `linguist-generated`, is someone else's.
 
 <!-- /facts -->
