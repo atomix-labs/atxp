@@ -32,12 +32,12 @@ exact = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
 canonical = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
 
 [files.".claude/skills/using-devset/SKILL.md"]
-exact = "54636738591a6adbbdfd9a8f7b156aba04a6c25da0a09b1e6e1806983dda734b"
-canonical = "54636738591a6adbbdfd9a8f7b156aba04a6c25da0a09b1e6e1806983dda734b"
+exact = "2b8546a37d266c7d48ef714b60ca25d95ee69533dbf1b3765dca7d0e894bbbac"
+canonical = "2b8546a37d266c7d48ef714b60ca25d95ee69533dbf1b3765dca7d0e894bbbac"
 
 [files.".config/mise/conf.d/devset-devset.toml"]
-exact = "84af8c1bcc6237c301441d911b0599e7874507c7b94d2c4f87c705689731d14b"
-canonical = "84af8c1bcc6237c301441d911b0599e7874507c7b94d2c4f87c705689731d14b"
+exact = "2059806642108f29182b80762ee92e5d25bbb5fe31404b8c4a3cc6d751b51585"
+canonical = "2059806642108f29182b80762ee92e5d25bbb5fe31404b8c4a3cc6d751b51585"
 
 [files.".config/mise/conf.d/devset-dprint.toml"]
 exact = "dfcfdcf5b432fa82ed896b95c7ac499f0e8219f11c9e4a8a3bc457a5e3f0f88f"
@@ -250,8 +250,8 @@ policy = "merge"
 
 [parts.".config/mise/mise.lock".devset]
 scope = "keys"
-exact = "0b9615ff1c2ae9c61363c3c2540213e0cadfd9cc30b495fbda22964822cdf33a"
-canonical = "0b9615ff1c2ae9c61363c3c2540213e0cadfd9cc30b495fbda22964822cdf33a"
+exact = "adb98e89dc7892dbf850d9cc26e7d0b215919ba2b2ab3b7c39e3a396a8ff6919"
+canonical = "adb98e89dc7892dbf850d9cc26e7d0b215919ba2b2ab3b7c39e3a396a8ff6919"
 
 [parts.".config/mise/mise.lock".dprint]
 scope = "keys"
