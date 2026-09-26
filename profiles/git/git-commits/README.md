@@ -15,17 +15,27 @@ static build for each platform the locks cover.
 Where the repository has a `CONTRIBUTING.md`, a block of it says these rules to
 those who contribute.
 
+With `agents`, a block of the repository's `AGENTS.md`, where it has one, says
+the same rules to an agent.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                          | Part  | Policy | Notes                    |
-| --------------------------------------------- | ----- | ------ | ------------------------ |
-| `committed.toml`                              | whole | owned  |                          |
-| `.just/git-commits.just`                      | whole | owned  |                          |
-| `.config/mise/conf.d/devset-git-commits.toml` | whole | owned  |                          |
-| `.config/mise/mise.lock`                      | keys  | owned  |                          |
-| `CONTRIBUTING.md`                             | block | owned  | `CONTRIBUTING.md` exists |
+| File                                          | Part  | Policy | Notes                                |
+| --------------------------------------------- | ----- | ------ | ------------------------------------ |
+| `committed.toml`                              | whole | owned  |                                      |
+| `.just/git-commits.just`                      | whole | owned  |                                      |
+| `.config/mise/conf.d/devset-git-commits.toml` | whole | owned  |                                      |
+| `.config/mise/mise.lock`                      | keys  | owned  |                                      |
+| `CONTRIBUTING.md`                             | block | owned  | `CONTRIBUTING.md` exists             |
+| `AGENTS.md`                                   | block | owned  | feature `agents`, `AGENTS.md` exists |
+
+## Features
+
+| Feature  | Default | Enables |
+| -------- | ------- | ------- |
+| `agents` |         |         |
 
 ## Recipes
 
