@@ -1,7 +1,7 @@
 [profile]
 name        = "setup"
 description = "One command readies a machine for a checkout: mise, pinned and verified, then mise bootstrap and just setup"
-devset      = ">=0.2.1"
+devset      = ">=0.2.2"
 
 [requires]
 just = {}

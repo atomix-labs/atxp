@@ -1,7 +1,7 @@
 [profile]
 name        = "vscode"
 description = "VS Code, set up for the tools the target's profiles bring: their extensions and settings"
-devset      = ">=0.2.1"
+devset      = ">=0.2.2"
 
 [files.".vscode/extensions.json"]
 scope    = "keys"

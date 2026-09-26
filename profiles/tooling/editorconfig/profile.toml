@@ -1,7 +1,7 @@
 [profile]
 name        = "editorconfig"
 description = "EditorConfig: UTF-8, LF, a final newline, spaces, and the shared line width"
-devset      = ">=0.2.1"
+devset      = ">=0.2.2"
 
 [vars.line_width]
 prompt  = "Line width, shared by the formatters and EditorConfig"

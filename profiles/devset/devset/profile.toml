@@ -1,7 +1,7 @@
 [profile]
 name        = "devset"
 description = "devset itself: pinned for every machine and job, and drift from the profiles failing the checks"
-devset      = ">=0.2.1"
+devset      = ">=0.2.2"
 
 [requires]
 mise = {}

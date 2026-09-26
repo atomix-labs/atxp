@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-deny"
 description = "cargo-deny: yanked and unmaintained crates, one version each, permissive licences, crates.io only, and the house bans"
-devset      = ">=0.2.1"
+devset      = ">=0.2.2"
 
 [requires]
 rust-toolchain = {}
