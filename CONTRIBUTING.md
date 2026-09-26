@@ -1,9 +1,9 @@
 # Contributing
 
 How to report a problem, and how to change atxp: the commit convention, what
-counts as breaking, the rules every profile keeps, how its documents are
-written, and the checks to run. [ARCHITECTURE.md](ARCHITECTURE.md) says how the
-profiles fit together.
+counts as breaking, the rules every profile and skill keeps, how its documents
+are written, and the checks to run. [ARCHITECTURE.md](ARCHITECTURE.md) says how
+the profiles fit together.
 
 ## Reporting Issues
 
@@ -132,10 +132,26 @@ rest as optional requirements its features turn on.
 
 A skill ships with the profile whose concern it serves, in
 `.claude/skills/<skill>/`, each of its files gated by that profile's `agents`
-feature. Its name is the task it does, as a gerund, `writing-rustdoc`, and its
-`SKILL.md` names it the same in its front matter, which holds `name` and
-`description` alone, the description under 1024 characters. A recipe a skill
-runs is one a profile of atxp defines.
+feature. `check-devset-collection` holds each to its form: its name is the task
+it does, as a gerund, `writing-rustdoc`, and its `SKILL.md` names it the same in
+its front matter, which holds `name` and `description` alone, the description
+under 1024 characters. A recipe a skill runs is one a profile of atxp defines.
+
+What the check cannot hold a skill to, its author does:
+
+- Its description says when to use it, in the third person, in the words a task
+  is asked in, and what it covers; never its steps, which an agent would follow
+  instead of the body.
+- Its body is about 150 lines at most: the rules first, then the steps, then the
+  checks, then what not to do. Longer material goes in `references/`, one level
+  deep, each named where the body needs it.
+- It names a recipe only where the profile that provides it is applied, so a
+  skill that names another profile's recipe is a template; anything that is
+  itself template language sits inside `{% raw %}`.
+- It is written against what an agent does without it. An agent does a task the
+  skill is for, in a repository the bundle writes, first without the skill and
+  then with it; the skill says what the first run got wrong, and its examples
+  come from a domain the task does not use.
 
 ## Writing
 
@@ -156,7 +172,7 @@ Every document here keeps these rules.
 
 ```sh
 just check                   # atxp's own checks, as CI runs them
-just test                    # the suite and the setup stub's test
+just test                    # the suite, the bundle from nothing, and the setup stub's test
 just fix-devset-collection   # after changing a profile: the catalog and every profile's facts
 just bump-devset-collection  # every pin and dprint plugin moved past the cooldown, and relocked
 ```

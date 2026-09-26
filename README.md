@@ -28,7 +28,8 @@ features for the rest.
 
 ## Quick Start
 
-In a repository, apply the bundle, set the machine up, and run every check:
+In a repository, even an empty one, apply the bundle, set the machine up, and
+run every check:
 
 ```sh
 devset init atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.4.0 --var repository=<owner>/<name>
@@ -38,6 +39,10 @@ just check
 
 Features add to the bundle, `devset add atxp/rust --features docs,publish`, and
 any profile is a layer of its own: `devset add atxp/lychee`.
+
+What a repository lacks, the profiles write once and leave to it: a workspace
+and its first crate, a changelog, a justfile, and with `publish` or `oss` a
+README, the licences and the rest of a project's documents.
 
 A machine with nothing on it starts from the published setup script, which
 clones the repository first:
@@ -56,14 +61,15 @@ the lint wall, rustdoc, the dependency policy, tests, build profiles, commits,
 the changelog, CI, the weekly bump, and the tools that check every other file.
 Its features add the rest, none on by default:
 
-| Feature    | Adds                                                                             |
-| ---------- | -------------------------------------------------------------------------------- |
-| `docs`     | the book, built and tested with mdBook                                           |
-| `agents`   | the skills for writing rustdoc and editing Cargo manifests                       |
-| `publish`  | crates.io, by trusted publishing, and the GitHub Release                         |
-| `binaries` | the workspace's binaries, built for each platform, on the GitHub Release         |
-| `nightly`  | the nightly run: every feature alone with cargo-hack, and nightly rustc's lints  |
-| `strict`   | the house policy: the trading path's bans, the full lint wall, `panic = "abort"` |
+| Feature    | Adds                                                                                                    |
+| ---------- | ------------------------------------------------------------------------------------------------------- |
+| `docs`     | the book, built and tested with mdBook, with math, the API and its links checked                        |
+| `agents`   | the agent layer: AGENTS.md, CLAUDE.md, Claude Code's allow-list and Stop hook, and each profile's skill |
+| `publish`  | crates.io, by trusted publishing, the GitHub Release, and the project's documents                       |
+| `binaries` | the workspace's binaries, built for each platform, on the GitHub Release                                |
+| `oss`      | an open-source project's documents, with a code of conduct, and the issue and pull request templates    |
+| `nightly`  | the nightly run: every feature alone with cargo-hack, and nightly rustc's lints                         |
+| `strict`   | the house policy: cargo-deny's bans, the full lint wall, the doc lint, `panic = "abort"`                |
 
 ## Profiles
 
@@ -216,6 +222,7 @@ line, `--var line_width=120`, or when devset asks.
 
 ## Documentation
 
+- [AGENTS.md][Agents]: what an agent needs to work here.
 - [ARCHITECTURE.md][Architecture]: how the profiles compose, from parts of a
   file to features, the recipe spine, pins and CI.
 - [CONTRIBUTING.md][Contributing]: how to change a profile, the commit
@@ -238,6 +245,7 @@ MIT: see [LICENSE][license].
 [devset]: https://github.com/atomix-labs/devset
 [Changelog]: CHANGELOG.md
 [Breaking Changes]: BREAKING-CHANGES.md
+[Agents]: AGENTS.md
 [Architecture]: ARCHITECTURE.md
 [Contributing]: CONTRIBUTING.md
 [Release]: RELEASE.md

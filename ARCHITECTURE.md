@@ -2,8 +2,8 @@
 
 How the profiles in atxp are built and how they compose: what a profile is, how
 it shares a file with a repository and with other profiles, how its features,
-recipes, pins and CI fit together, and the principles behind them.
-[CONTRIBUTING.md](CONTRIBUTING.md) says how to change one.
+recipes, pins, CI and the agent layer fit together, and the principles behind
+them. [CONTRIBUTING.md](CONTRIBUTING.md) says how to change one.
 
 ## Overview
 
@@ -38,7 +38,7 @@ an optional one applies only when a feature turns it on.
 
 The **bundle**, `rust`, owns nothing. It requires the core every Rust repository
 has, each a layer of its own, and offers the rest as features, none on by
-default: `docs`, `agents`, `publish`, `binaries`, `nightly` and `strict`.
+default: `docs`, `agents`, `publish`, `binaries`, `oss`, `nightly` and `strict`.
 
 A profile owns each of its files in one of three ways:
 
@@ -58,6 +58,14 @@ and under one of three policies:
 
 Layout is a formatter's: devset compares values, never spacing, and writes a key
 it adds as its payload writes it.
+
+What a project will own and change is a **scaffold**: written once, where the
+repository lacks it, and the repository's from then on, as `cargo-workspace`
+writes a workspace and its first crate, `project` a README and the licences, and
+`mdbook` a book. A **starter** is a whole file written once so that a part has a
+file to live in: `just` starts a justfile holding its block, and `agents` an
+AGENTS.md holding its own. A repository that has the file keeps it, and gets the
+part added.
 
 A value repositories choose is a variable, rendered into a payload marked
 `template`; one value that several profiles share, such as `line_width`, is one
@@ -146,6 +154,23 @@ The workflows that read their settings from `.github/automation.json` require
 `git-commits` checks; at a release, `git-changelog` writes the changelog from
 them.
 
+## The Agent Layer
+
+`agents` gives a coding agent what it reads before it changes a repository:
+AGENTS.md, started where there is none, with a block on checking a change and on
+the files devset manages; CLAUDE.md, which imports it; and Claude Code's
+permissions and Stop hook in `.claude/`. The permissions allow every check and
+fix and devset's commands that only read, and deny publishing; the hook keeps
+the agent at work until `just check` passes on what it changed.
+
+A profile whose concern an agent needs taught ships a skill, in
+`.claude/skills/<skill>/`, under its own `agents` feature: `rust-doc`,
+`cargo-manifest`, `devset`, `devset-collection`, `github-ci`, `github-release`
+and `mdbook` do. `git-commits`, `cargo-deny` and `mdbook` add a block to
+AGENTS.md where there is one. The bundle's `agents` turns on the layer and every
+one of them. A skill is a template like any payload, so it names a recipe only
+where the profile that provides it is applied.
+
 ## The Repository
 
 ```text
@@ -154,6 +179,7 @@ collection.toml              atxp, as a source names itself
 scripts/                     atxp's own tools: the mise version, the nightly's bump
 tests/fixtures/              a crate and a workspace, the repositories the suite applies profiles to
 tests/setup-stub.sh          the setup stub against a repository served locally
+tests/bundle.sh              the bundle applied to an empty repository, with the features given
 .devset/                     atxp's record of the profiles it applies to itself
 .just/, .github/             written by those profiles; atxp's own recipes are in the justfile
 ```
@@ -180,6 +206,11 @@ applies it with `pins`:
   the bundle with no features, and every profile at once with every feature,
   apply, and `just check` passes there.
 
+atxp's own matrix, `tests/bundle.sh`, applies the bundle to an empty repository
+with the features given, then runs `./setup.sh` and `just check` there, as a new
+project does. `just test` runs it with no features and with every feature, and
+`bundle.yml` runs it each night with each feature alone.
+
 ## Design Principles
 
 - **One concern a profile.** A tool's configuration, pins, recipes and output
@@ -191,7 +222,7 @@ applies it with `pins`:
   every profile's facts are generated from the manifests.
 - **Checks by construction.** What a profile ships is checked the way a
   repository checks it: the suite applies every profile, with every feature, and
-  runs `just check`.
+  runs `just check`, and the matrix starts a project from nothing.
 - **Every download verified.** Tools come from the lock with their checksums,
   plugins with theirs, and nothing younger than the cooldown.
 - **A small, uniform surface.** Every profile has the same shape, its recipes

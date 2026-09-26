@@ -6,6 +6,13 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.5.0](#v050)
+  - [atxp needs devset 0.2.2](#atxp-needs-devset-022)
+  - [`check-mdbook` lints the book, and builds the API](#check-mdbook-lints-the-book-and-builds-the-api)
+  - [A site is published only under `pages`](#a-site-is-published-only-under-pages)
+  - [The doc lint runs under `strict`](#the-doc-lint-runs-under-strict)
+  - [`rustfmt.toml` is the profile's keys, under merge](#rustfmttoml-is-the-profiles-keys-under-merge)
+  - [`.cargo/config.toml` sets CPU floors](#cargoconfigtoml-sets-cpu-floors)
 - [v0.4.0](#v040)
   - [atxp needs devset 0.2.1](#atxp-needs-devset-021)
   - [Profiles are renamed, and grouped by umbrella](#profiles-are-renamed-and-grouped-by-umbrella)
@@ -15,6 +22,87 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.5.0
+
+### atxp Needs devset 0.2.2
+
+**What changed.** Every profile requires devset 0.2.2, which writes an array of
+TOML tables a profile changes as the payload writes it: under 0.2.1, turning on
+`toml`'s `schemas` in a repository that has a `taplo.toml` left the file failing
+`taplo fmt --check`. The `devset` profile pins 0.2.2.
+
+**What to do.** Take the update with devset 0.2.2, since 0.2.1 refuses a profile
+that requires a later release; the pin then moves every machine and job:
+
+```sh
+mise exec github:atomix-labs/devset@0.2.2 -- devset update
+```
+
+### `check-mdbook` Lints the Book, and Builds the API
+
+**What changed.** `mdbook` scaffolds a book where there is none, and
+`check-mdbook` first runs a docs lint: every page listed in `SUMMARY.md`, every
+include and anchor, every recipe a page names. With its default features it also
+builds the workspace's API with nightly rustdoc, at `/api`, and checks every
+link of the built book with lychee. `book.toml`'s `[output.html]` keys and the
+theme are the profile's, under merge.
+
+**What to do.** Fix what the lint names. A book that should have neither the API
+nor the link check applies `mdbook` as a layer of its own, rather than through
+the bundle's `docs`, with the features it keeps:
+
+```toml
+[[layers]]
+profile          = "atxp/mdbook"
+default-features = false
+features         = ["katex", "pages"]
+```
+
+### A Site Is Published Only Under `pages`
+
+**What changed.** `github-ci`'s `check` workflow builds and deploys a site to
+GitHub Pages only with its new feature `pages`, which `mdbook`'s default `pages`
+turns on.
+
+**What to do.** Nothing for a book. A repository that publishes a site of its
+own turns the feature on, in a layer of its own:
+
+```toml
+[[layers]]
+profile  = "atxp/github-ci"
+features = ["pages"]
+```
+
+### The Doc Lint Runs Under `strict`
+
+**What changed.** Under `rust-doc`'s `strict`, which the bundle's `strict` turns
+on, `check-rust-doc` also runs the house's doc lint over every crate. The
+`writing-rustdoc` skill's `scripts/doc-lint.py` is now `.just/rust-doc.py`.
+
+**What to do.** Fix what the lint names, which `.just/rust-doc.py <crate-dir>`
+lists, or leave `strict` off. A script of your own that ran `doc-lint.py` runs
+`.just/rust-doc.py`.
+
+### `rustfmt.toml` Is the Profile's Keys, Under Merge
+
+**What changed.** `rust-fmt` owns the keys its payload names, under merge, not
+the whole file; the options only nightly rustfmt has are written only where
+`channel` is nightly.
+
+**What to do.** Nothing, unless something relied on `devset apply --force`
+restoring the whole file: an option the repository added is its own now, and
+kept.
+
+### `.cargo/config.toml` Sets CPU Floors
+
+**What changed.** `cargo-workspace` owns keys of `.cargo/config.toml`, among
+them CPU floors every build meets: x86-64-v2, CRC32 on Arm, and the first Apple
+silicon.
+
+**What to do.** A machine below a floor builds with `RUSTFLAGS` set to what it
+has; a build tuned to its own machine sets `RUSTFLAGS="-C target-cpu=native"`,
+which replaces them.
 
 ## V0.4.0
 
