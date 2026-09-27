@@ -3,6 +3,26 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.7.0](https://github.com/atomix-labs/atxp/releases/tag/v0.7.0) - 2026-09-27
+
+### Features
+
+- [d519d05](https://github.com/atomix-labs/atxp/commit/d519d055163c95db75a00d6d2397d8b2957448a3) *(agents)* Allow devset explain in place of devset features
+- [a986eec](https://github.com/atomix-labs/atxp/commit/a986eec13c59cfafa5aa424283397bd19a4b58c9) *(devset)* Move a source with update --tag, and take back a conflict with apply --abort
+
+### Documentation
+
+- [d7bdb7f](https://github.com/atomix-labs/atxp/commit/d7bdb7f7f852a3c778f350087045c26dbaff29fc) Write the v0.7.0 migration
+- [24eca7e](https://github.com/atomix-labs/atxp/commit/24eca7e6aba4a303c6d0941f47236a6c7e62ffef) *(devset)* Teach the ten commands in using-devset
+
+### Miscellaneous
+
+- [313396a](https://github.com/atomix-labs/atxp/commit/313396a877a244e4fc8b7d30b159bac8ffee22ed) Apply the profiles' changes to atxp
+- [4598374](https://github.com/atomix-labs/atxp/commit/45983744353932b98599d058895fa72882ef2812) Start the suite's targets with add
+- [ed43dd2](https://github.com/atomix-labs/atxp/commit/ed43dd2b54e66c647fe6045a2d82488847300d4d) Require and pin devset 0.4.0 **breaking**
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.6.2...v0.7.0>
+
 ## [0.6.2](https://github.com/atomix-labs/atxp/releases/tag/v0.6.2) - 2026-09-26
 
 ### Bug Fixes
