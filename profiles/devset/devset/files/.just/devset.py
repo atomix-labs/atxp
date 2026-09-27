@@ -1,10 +1,10 @@
-"""Moves each source a target names by tag to its newest release past the cooldown, then applies.
+"""Moves each source a target names by tag to its newest release past the cooldown, one by one.
 
 Usage: devset.py bump [<report>]
 
 A source on github.com moves to its newest release three days old or older, never backwards; any
-other source is reported as unchecked. After a move, `devset update` merges; a conflict takes the
-move back, `devset update --abort`, and is reported.
+other source is reported as unchecked. `devset update <source> --tag <release>` moves it and merges;
+a conflict takes the move back, `devset apply --abort`, and is reported.
 """
 
 import datetime
@@ -54,12 +54,6 @@ def newest(owner, repo, have):
     return best if best and key(best) > key(have) else None
 
 
-def retag(text, name, tag):
-    """`text`, the config, with source `name`'s tag set to `tag`."""
-    line = re.compile(rf'^(\s*{re.escape(name)}\s*=\s*\{{[^}}]*\btag\s*=\s*")[^"]+(")', re.M)
-    return line.sub(rf"\g<1>{tag}\g<2>", text, count=1)
-
-
 def report_text(sections):
     """The report: each non-empty section as a list."""
     body = "".join(
@@ -71,10 +65,9 @@ def report_text(sections):
 
 
 def bump(report):
-    """Moves every source it can, applies, and reports."""
-    text = CONFIG.read_text()
+    """Moves every source it can, one by one, and reports."""
     moved, unchecked, failed = [], [], []
-    for name, spec in tomllib.loads(text).get("sources", {}).items():
+    for name, spec in tomllib.loads(CONFIG.read_text()).get("sources", {}).items():
         if "tag" not in spec:
             continue
         match = GITHUB.match(spec.get("git", ""))
@@ -86,14 +79,17 @@ def bump(report):
         except OSError as error:
             failed.append(f"`{name}`: {error}")
             continue
-        if want:
-            text = retag(text, name, want)
+        if not want:
+            continue
+        move = ["devset", "--no-input", "update", name, "--tag", want]
+        if subprocess.run(move, check=False).returncode:
+            subprocess.run(["devset", "--no-input", "apply", "--abort"], check=False)
+            failed.append(
+                f"`{name}` {spec['tag']} -> {want} conflicted, and was taken back: "
+                f"run `devset update {name} --tag {want}` by hand"
+            )
+        else:
             moved.append(f"`{name}` {spec['tag']} -> {want}")
-    if moved:
-        CONFIG.write_text(text)
-        if subprocess.run(["devset", "--no-input", "update"], check=False).returncode:
-            subprocess.run(["devset", "--no-input", "update", "--abort"], check=False)
-            failed.append("`devset update` conflicted, and was taken back: run it by hand")
     out = report_text([("Moved", moved), ("Not on GitHub", unchecked), ("Could not move", failed)])
     if report:
         Path(report).write_text(out)
