@@ -1,8 +1,9 @@
 # Working in `atxp`
 
-atxp is a collection of devset profiles for Rust repositories, released together
-under one tag. [ARCHITECTURE.md](ARCHITECTURE.md) says how the profiles are
-built and compose, and [CONTRIBUTING.md](CONTRIBUTING.md) the rules each keeps.
+atxp is a collection of devset profiles, for any repository and for Rust ones,
+released together under one tag. [ARCHITECTURE.md](ARCHITECTURE.md) says how the
+profiles are built and compose, and [CONTRIBUTING.md](CONTRIBUTING.md) the rules
+each keeps.
 
 <!-- >>> devset: agents >>> -->
 

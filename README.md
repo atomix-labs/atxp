@@ -7,7 +7,7 @@
   </picture>
 </h1>
 
-<p align="center">A complete, maintained setup for Rust repositories, applied and kept current by devset.</p>
+<p align="center">Profiles for devset, provided by Atomix Labs and used across its own repositories.</p>
 
 <p align="center">
   <a href="https://github.com/atomix-labs/atxp/actions/workflows/check.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/atomix-labs/atxp/check.yml?branch=main&amp;style=flat-square&amp;label=check"></a>
@@ -32,11 +32,13 @@
 
 <!-- dprint-ignore-end -->
 
-atxp is a collection of profiles for [devset]: each one concern of a Rust
-repository, its configuration, recipes and pinned tools, which devset applies
-and keeps current without losing the repository's own edits. Take the `rust`
-bundle as it is, turn on the features you want, or build your own collection on
-top of it.
+atxp is a collection of [devset] profiles, provided by Atomix Labs and used
+across its own repositories: the configuration, recipes and pinned tools a
+repository needs, one concern to a profile. Some fit any repository, such as
+git, GitHub CI, Markdown, TOML, YAML and the docs; others are for Rust, with a
+`rust` bundle that sets up a Rust repository whole. More come as they are
+needed. Use them as they are, change a variable or a feature where your taste
+differs, build your own collection on top, or contribute a profile.
 
 <details>
 <summary>Table of Contents</summary>
