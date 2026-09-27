@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.8.0](#v080)
+  - [The README's header is the `project` block](#the-readmes-header-is-the-project-block)
 - [v0.7.0](#v070)
   - [atxp needs devset 0.4.0](#atxp-needs-devset-040)
 - [v0.6.0](#v060)
@@ -27,6 +29,31 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.8.0
+
+### The README's Header Is the `project` Block
+
+**What changed.** The README block `project` writes is the whole header now, not
+only the badges: centered, the logo the new `logo` variable names, or else the
+project's name as the title; the tagline the `description` variable gives; then
+the badges. Markdown cannot center, so it is HTML, inside `dprint-ignore`
+markers, and the `markdown` profile's rumdl allows the elements it uses. A
+README the profile starts opens with the block, and shows the demo the new `vhs`
+profile records where that is applied.
+
+**What to do.** Take the update, answering the two variables, then move the
+block to the top of the README and remove the README's own `# title` above it,
+which the block now writes:
+
+```sh
+devset update atxp --tag v0.8.0 --var description="What the project is, in one line" --var logo=docs/src/media/logo
+```
+
+`logo` is a path without its ending: the header shows `<logo>-light.svg` on a
+light page and `<logo>-dark.svg` on a dark one. Left empty, the header shows the
+name. A repository that applies `cargo-workspace` too answers `description` once
+for both.
 
 ## V0.7.0
 
