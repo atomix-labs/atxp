@@ -27,8 +27,7 @@ site's root, which only the built book has.
 ## Recipes
 
 - `check-lychee`: Checks every link into the repository, offline, in each
-  Markdown file git does not ignore; the book's pages are mdbook's where it
-  checks the built book, in which a link to `/` has a root.
+  Markdown file git does not ignore.
 - `nightly-lychee`: Checks every link, the web's too.
 
 ## Variables

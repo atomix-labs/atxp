@@ -1,7 +1,9 @@
-# Lints the book (every page in SUMMARY.md, every include and anchor there, every recipe the prose
-# names), builds it, and runs its Rust examples.{% if "api" in devset.features %} The workspace's
-# API lands at /api, under a page grouping its crates.{% endif %}{% if "links" in devset.features %}
-# Then lychee checks every link of the built book, offline.{% endif %}
+# The lint takes every page in SUMMARY.md, every include and anchor there, and every recipe the
+# prose names.{% if "api" in devset.features %} The workspace's API lands at /api, under a page
+# grouping its crates.{% endif %}{% if "links" in devset.features %} Then lychee checks every link
+# of the built book, offline.{% endif %}
+
+# Lints the book, builds it, and runs its Rust examples.
 check-mdbook:
     #!/usr/bin/env bash
     set -euo pipefail

@@ -91,8 +91,7 @@ agent that adds or changes a profile.
 ## Recipes
 
 - `check-devset-collection`: Checks the catalog and every profile's facts are
-  current, and every profile keeps the collection's rules; with `pins`, also
-  every pin locked for every platform, and every dprint plugin checksummed.
+  current, and every profile keeps the rules.
 - `fix-devset-collection`: Writes the catalog and every profile's facts.
 - `bump-devset-collection`: Moves every pin and dprint plugin past the cooldown,
   and relocks what moved for every platform.

@@ -41,8 +41,8 @@ output must land in `target/doc` rather than `target/<triple>/doc` unsets it.
 
 ## Recipes
 
-- `setup-rust-toolchain`: Installs rustup where it is missing, with no toolchain
-  of its own, then the toolchain rust-toolchain.toml names.
+- `setup-rust-toolchain`: Installs rustup where it is missing, then the
+  toolchain rust-toolchain.toml names.
 
 ## Variables
 

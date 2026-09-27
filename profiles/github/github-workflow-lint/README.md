@@ -51,11 +51,7 @@ someone else's and is left out.
 ## Recipes
 
 - `check-github-workflow-lint`: Checks every workflow by each tool the profile's
-  features turn on: actionlint, for syntax, expressions and the shell in each
-  step; zizmor's audit, offline, needing no token; conftest, holding workflows
-  and actions to the policies in policy/. A file .gitattributes marks
-  `linguist-vendored` or `linguist-generated` is someone else's. Every tool
-  runs, and each that fails is named.
+  features turn on, and names each that fails.
 
 ## Variables
 

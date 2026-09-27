@@ -1,5 +1,6 @@
-# Checks every YAML file the repository owns, tracked or new, for what no formatter fixes; a file
-# .gitattributes marks `linguist-vendored` or `linguist-generated` is someone else's.
+# A file .gitattributes marks `linguist-vendored` or `linguist-generated` is someone else's.
+
+# Checks every YAML file the repository owns, tracked or new, for what no formatter fixes.
 check-yaml:
     #!/usr/bin/env bash
     set -euo pipefail

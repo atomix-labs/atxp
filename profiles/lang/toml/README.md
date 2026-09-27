@@ -40,8 +40,7 @@ default. `schemas` adds devset's own, for every `profile.toml` and
 
 ## Recipes
 
-- `check-toml`: Checks every TOML file: in its layout, with `format`; valid, and
-  true to its schema where taplo.toml names one, with `lint`.
+- `check-toml`: Checks every TOML file.
 - `fix-toml`: Formats every TOML file.
 
 ## Variables

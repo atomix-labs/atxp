@@ -3,8 +3,9 @@
 # reads no configuration below the root.
 export DPRINT_CONFIG_DISCOVERY := "ignore-descendants"
 
-# Checks the catalog and every profile's facts are current, and every profile keeps the collection's
-# rules; with `pins`, also every pin locked for every platform, and every dprint plugin checksummed.
+# With `pins`, also every pin locked for every platform, and every dprint plugin checksummed.
+
+# Checks the catalog and every profile's facts are current, and every profile keeps the rules.
 check-devset-collection:
     mise exec -- python3 -B .just/devset-collection/catalog.py --check{% if "format" in md %} --dprint{% endif %}
 {%- if "pins" in devset.features %}

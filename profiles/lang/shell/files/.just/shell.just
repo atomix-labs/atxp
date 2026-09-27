@@ -1,6 +1,7 @@
-# Lints every shell script the repository owns, following what each sources; one under a vendor/
-# directory, or that .gitattributes marks `linguist-vendored` or `linguist-generated`, is someone
-# else's.
+# A script under a vendor/ directory, or that .gitattributes marks `linguist-vendored` or
+# `linguist-generated`, is someone else's.
+
+# Lints every shell script the repository owns, following what each sources.
 check-shell:
     #!/usr/bin/env bash
     set -euo pipefail

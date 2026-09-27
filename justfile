@@ -1,7 +1,6 @@
 # atxp's own recipes; the block below them is the `just` profile's.
 
-# Checks the setup stub, the mise profile and every workflow run one mise, and the stub's checksums
-# are the release's own.
+# Checks the setup stub, the mise profile and every workflow run one mise, the release's own.
 check-mise-version:
     mise exec -- python3 scripts/mise-version.py check
 
@@ -17,8 +16,7 @@ bump-rust-toolchain:
 check-policies:
     mise exec -- conftest verify --policy profiles/github/github-workflow-lint/files/policy
 
-# After a bump moves the profiles' pins, applies the profiles to this repository again, with the
-# devset mise pins.
+# Applies the profiles to this repository again, with the pins a bump moved.
 bump-self:
     mise exec -- devset apply
 
@@ -43,8 +41,9 @@ release-readme:
 test-setup-stub:
     mise exec -- bash tests/setup-stub.sh
 
-# Applies the rust bundle to an empty repository, with no features and with every feature, then sets
-# it up and checks it, as a new project is; the nightly takes each feature alone.
+# The nightly takes each feature alone.
+
+# Applies the rust bundle to an empty repository, with no features and with all, then checks it.
 test-bundle:
     mise exec -- bash tests/bundle.sh
     mise exec -- bash tests/bundle.sh docs,agents,publish,binaries,oss,nightly,strict

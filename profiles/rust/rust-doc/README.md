@@ -44,8 +44,7 @@ agent writes documentation as the repository wants it.
 ## Recipes
 
 - `check-rust-doc`: Builds every crate's documentation, private items included;
-  a warning, such as a broken link, fails. Then the house's doc lint, over every
-  crate (with `strict`).
+  a warning, broken links too, fails.
 
 ## Requires
 

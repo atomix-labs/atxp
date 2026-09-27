@@ -98,11 +98,7 @@ previewing the book.
 
 ## Recipes
 
-- `check-mdbook`: Lints the book (every page in SUMMARY.md, every include and
-  anchor there, every recipe the prose names), builds it, and runs its Rust
-  examples. The workspace's API lands at /api, under a page grouping its crates
-  (with `api`). Then lychee checks every link of the built book, offline (with
-  `links`).
+- `check-mdbook`: Lints the book, builds it, and runs its Rust examples.
 
 ## Variables
 

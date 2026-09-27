@@ -42,9 +42,7 @@ no fault: the check allows the feature enabled twice.
 
 ## Recipes
 
-- `check-rust-lints`: Checks the lints only nightly has: their features come
-  from -Zcrate-attr, so no source needs a #![feature], and every crate still
-  builds on stable; a crate that enables them itself is no fault.
+- `check-rust-lints`: Checks the lints only nightly has.
 
 ## Requires
 

@@ -41,9 +41,8 @@ dependency or a feature within it.
 
 ## Recipes
 
-- `check-cargo-manifest`: Holds every crate manifest to one shape, which taplo,
-  reading values, cannot see, and fails when a crate does not inherit the
-  workspace's lints.
+- `check-cargo-manifest`: Holds every crate manifest to one shape, and fails
+  where a crate does not inherit the lints.
 - `fix-cargo-manifest`: Puts every dependency under its group, `# external` or
   `# internal`, the workspace's included.
 

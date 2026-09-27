@@ -32,11 +32,9 @@ group.
 
 ## Recipes
 
-- `check-cargo-unused`: Fails on a dependency no crate uses, by each tool the
-  profile's features turn on, and names each tool that found one.
-- `fix-cargo-unused`: Removes each dependency no crate uses, by each tool the
-  profile's features turn on, and puts back the group markers a removal takes
-  with it, where cargo-manifest is applied.
+- `check-cargo-unused`: Fails on a dependency no crate uses, and names each tool
+  that found one.
+- `fix-cargo-unused`: Removes each dependency no crate uses.
 
 ## Requires
 

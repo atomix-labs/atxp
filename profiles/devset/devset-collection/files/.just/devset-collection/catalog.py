@@ -147,7 +147,8 @@ def profiles():
 
 
 def recipes(profile):
-    """The recipes in its `.just/<name>.just`, each with the comment lines just above it."""
+    """The recipes in its `.just/<name>.just`, each with the comment lines just above it, joined by
+    newlines."""
     path = f"{RECIPES}{profile.name}.just"
     if path not in profile.files:
         return []
@@ -159,7 +160,7 @@ def recipes(profile):
         if line.startswith(BETWEEN):
             continue
         if recipe := RECIPE.match(line):
-            found.append((recipe.group(1), " ".join(comment)))
+            found.append((recipe.group(1), "\n".join(comment)))
         comment = []
     return found
 
@@ -223,6 +224,11 @@ def profile_problems(profile, named):
         if not re.fullmatch(rf"(?:{'|'.join(VERBS)})-{re.escape(name)}", recipe):
             out.append(
                 f"{where}: recipe `{recipe}` is not `<verb>-{name}`, a verb of {code(VERBS)}"
+            )
+        if "\n" in comment:
+            out.append(
+                f"{where}: recipe `{recipe}`'s comment is more than one line, and `just --list`"
+                " shows only the last: say more in a comment above it, apart by a blank line"
             )
         if TEMPLATED.search(described(comment)):
             out.append(
@@ -433,7 +439,10 @@ def facts(profile, named):
     listed = recipes(profile)
     if listed:
         out += ["## Recipes", ""]
-        out += [f"- `{name}`: {described(doc)}" if doc else f"- `{name}`" for name, doc in listed]
+        out += [
+            f"- `{name}`: {described(doc.replace(chr(10), ' '))}" if doc else f"- `{name}`"
+            for name, doc in listed
+        ]
         out.append("")
     declared = profile.manifest.get("vars", {})
     if declared:

@@ -37,8 +37,7 @@ yamllint's, which installs through pipx with the uv and Python
 ## Recipes
 
 - `check-yaml`: Checks every YAML file the repository owns, tracked or new, for
-  what no formatter fixes; a file .gitattributes marks `linguist-vendored` or
-  `linguist-generated` is someone else's.
+  what no formatter fixes.
 
 ## Requires
 
