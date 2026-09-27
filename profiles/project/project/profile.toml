@@ -24,6 +24,14 @@ default = ""
 prompt  = "The crate the crates.io and docs.rs badges show; empty takes the project's name"
 default = ""
 
+[vars.description]
+prompt  = "One line: what the project is"
+default = ""
+
+[vars.logo]
+prompt  = "The README's logo: its path before `-light.svg` or `-dark.svg`"
+default = ""
+
 [vars.authors]
 prompt  = "Authors, comma-separated"
 default = ""

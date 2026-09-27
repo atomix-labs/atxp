@@ -1,7 +1,18 @@
-# `{{ name or devset.target }}`
-
 <!-- >>> devset: project >>> -->
 <!-- <<< devset: project <<< -->
+{%- if "vhs" in devset.profiles %}
+
+<!-- dprint-ignore-start -->
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/src/media/demo-dark.gif">
+    <img alt="What the demo shows, in one sentence" src="docs/src/media/demo-light.gif" width="720">
+  </picture>
+</p>
+
+<!-- dprint-ignore-end -->
+{%- endif %}
 
 One paragraph: what the project is, and why someone would use it.
 
