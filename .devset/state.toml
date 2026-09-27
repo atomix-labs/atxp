@@ -45,8 +45,8 @@ exact = "1b58e22f094fc69b393afe5ad006e4c801799970f8ebf89a26e689a43b9a9a1a"
 canonical = "1b58e22f094fc69b393afe5ad006e4c801799970f8ebf89a26e689a43b9a9a1a"
 
 [files.".config/mise/conf.d/devset-devset.toml"]
-exact = "506cf9e3eaed4e1d7fe7550fdda0d8ce719dddb5219740f85c7c0fb7a2380b45"
-canonical = "506cf9e3eaed4e1d7fe7550fdda0d8ce719dddb5219740f85c7c0fb7a2380b45"
+exact = "a26dc769f455ffc586233771fe01f6cbb61967ee3cac88bd93ab5e107fd1d724"
+canonical = "a26dc769f455ffc586233771fe01f6cbb61967ee3cac88bd93ab5e107fd1d724"
 
 [files.".config/mise/conf.d/devset-dprint.toml"]
 exact = "dfcfdcf5b432fa82ed896b95c7ac499f0e8219f11c9e4a8a3bc457a5e3f0f88f"
@@ -289,8 +289,8 @@ policy = "merge"
 
 [parts.".config/mise/mise.lock".devset]
 scope = "keys"
-exact = "b1f8c62d7115b87ccccb108de7907e78d126c694def53c5a5a66e0464e30a511"
-canonical = "b1f8c62d7115b87ccccb108de7907e78d126c694def53c5a5a66e0464e30a511"
+exact = "5afc081f487531dadb7ff702746d900e0d5a1801adb7586e5c8d81bfb2a41b98"
+canonical = "5afc081f487531dadb7ff702746d900e0d5a1801adb7586e5c8d81bfb2a41b98"
 
 [parts.".config/mise/mise.lock".dprint]
 scope = "keys"

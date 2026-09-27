@@ -201,7 +201,7 @@ agents = ["target"]
 
 [[profiles]]
 name = "devset"
-digest = "85178fea216ee7c6da19935cf71ed87feacec0bad2afa850d2b7d052e3e67792"
+digest = "01d4b9bdccb863fd538fae178522ff1dd81f2f572a859803dac644bb320a119c"
 
 [profiles.source]
 path = "profiles"
