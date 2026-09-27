@@ -24,7 +24,8 @@ merges on the recording alone, its commit skipping them. With the automation's
 GitHub App, the variable `BUMP_APP_ID` and the secret `BUMP_APP_KEY` the weekly
 bump uses too, the pull request runs the repository's checks, and GitHub's
 auto-merge merges it once they pass: the way through a default branch whose
-rules require them.
+rules require them, where without the app the pull request is left to a person,
+and the comment says so.
 
 Where the repository has no tape, it scaffolds a pair, dark and light, and a
 session to replace with the project at work. They are the repository's from then

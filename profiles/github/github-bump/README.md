@@ -29,8 +29,8 @@ App, whose id is the variable `BUMP_APP_ID` and whose key the secret
 GitHub's auto-merge, and the commit may change workflows. Without one, `merge`
 merges at once on this run's own gate, the commit skipping the checks that would
 start on a branch already gone, and changes to workflows are left out and named.
-A default branch whose rules require checks needs the app: the run's own token
-can merge nothing there.
+Where the default branch's rules require checks, which the run's own token
+cannot pass, the pull request is left to a person, and the comment says so.
 
 A bump that cannot check something fails the run, and
 [`github-watch`](../../github/github-watch/README.md) opens an issue for it. The

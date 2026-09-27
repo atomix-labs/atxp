@@ -8,7 +8,7 @@
 // green: by GitHub's auto-merge with an app's token, whose pull request runs the required checks;
 // else at once, on the gate this run passed.
 const fs = require("fs");
-const { settings, hold, release, propose, message, land } = require(
+const { settings, hold, release, propose, HELD, merges, message, land } = require(
   `${process.env.GITHUB_WORKSPACE}/.github/scripts/automation.js`,
 );
 
@@ -60,9 +60,10 @@ module.exports = async ({ github, context, core, exec }) => {
   }
   const mode = legacy ? "pr" : config.mode ?? "pr";
   if (!MODES.includes(mode)) throw new Error(`bump.mode is ${mode}: one of ${MODES.join(", ")}`);
-  const merging = legacy || config.merge === true;
-  const branch = config.branch ?? "bot/bump";
   const app = process.env.APP === "true";
+  const wanted = legacy || config.merge === true;
+  const merging = await merges({ github, context, core }, wanted, app);
+  const branch = config.branch ?? "bot/bump";
   const green = process.env.GATE === "success";
   const base = context.payload.repository.default_branch;
   const head = context.sha;
@@ -129,6 +130,8 @@ module.exports = async ({ github, context, core, exec }) => {
     ? `${moved} failed: fix it on the branch.`
     : merging
     ? undefined
+    : wanted
+    ? `${moved} passed. ${HELD}`
     : `${moved} passed: review it, and merge.`;
   const pull = await propose({ github, context }, "chore", {
     branch,

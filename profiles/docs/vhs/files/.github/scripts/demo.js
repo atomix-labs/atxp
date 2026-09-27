@@ -3,7 +3,7 @@
 // merge; with `demo.merge` in .github/automation.json, which the vhs feature `merge` sets, it
 // merges itself, every tape having played to its end. Nothing, when every recording is as it was.
 const fs = require("fs");
-const { settings, propose, message, land } = require(
+const { settings, propose, HELD, merges, message, land } = require(
   `${process.env.GITHUB_WORKSPACE}/.github/scripts/automation.js`,
 );
 
@@ -28,8 +28,9 @@ async function changes(exec) {
 }
 
 module.exports = async ({ github, context, core, exec }) => {
-  const merging = settings().demo?.merge === true;
   const app = process.env.APP === "true";
+  const wanted = settings().demo?.merge === true;
+  const merging = await merges({ github, context, core }, wanted, app);
   const changed = await changes(exec);
   if (!changed.length) {
     core.info("Every recording is as it was.");
@@ -73,10 +74,11 @@ module.exports = async ({ github, context, core, exec }) => {
     tag ? ` at ${tag}` : ""
   }: ${recorded}.`;
   const again = `The demo was recorded again${tag ? ` for ${tag}` : ""}, every tape to its end.`;
-  const note = merging ? undefined : `${again} Look at it, and merge.`;
+  const note = merging ? undefined : `${again} ${wanted ? HELD : "Look at it, and merge."}`;
   const pull = await propose({ github, context }, "docs", { branch, title, body, note });
   if (merging) {
     await land({ github, context }, pull, { app, branch, said: again });
   }
-  core.notice(`${merging ? "Merged" : "Opened"} ${pull.html_url}`);
+  const done = !merging ? "Opened" : app ? "Opened, to merge once its checks pass," : "Merged";
+  core.notice(`${done} ${pull.html_url}`);
 };

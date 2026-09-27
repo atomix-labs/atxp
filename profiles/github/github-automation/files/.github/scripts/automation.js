@@ -100,6 +100,29 @@ async function propose({ github, context }, kind, { branch, title, body, note })
   return pull;
 }
 
+// What a workflow tells the assignees of a pull request it would merge but cannot.
+const HELD =
+  "The default branch requires checks, which GitHub holds for a maintainer to approve on a pull request this workflow opens: approve them, and merge.";
+
+// Whether a workflow that `wanted` its pull request merged merges it: with an app's token, through
+// auto-merge; with its own, only where the default branch's rules require no checks, which GitHub
+// holds for a maintainer on the pull requests that token opens.
+async function merges({ github, context, core }, wanted, app) {
+  if (!wanted || app) return wanted;
+  const { data: repository } = await github.rest.repos.get(context.repo);
+  const branch = repository.default_branch;
+  const { data: rules } = await github.rest.repos.getBranchRules({
+    ...context.repo,
+    branch,
+    per_page: 100,
+  });
+  if (!rules.some((rule) => rule.type === "required_status_checks")) return true;
+  core.warning(
+    `${branch} requires checks this run's own token cannot pass: a person merges, or the automation's app does, with BUMP_APP_ID and BUMP_APP_KEY.`,
+  );
+  return false;
+}
+
 // The message of the commit a workflow puts on a pull request's branch, headed `headline`. One it
 // merges at once, with no app to hold it for its required checks, skips them: they would start on a
 // branch already merged and gone.
@@ -135,4 +158,15 @@ async function land({ github, context }, pull, { app, branch, said }) {
   await github.rest.issues.createComment({ ...issue, body: `${mention()}${said} Merged.` });
 }
 
-module.exports = { settings, mention, find, hold, release, propose, message, land };
+module.exports = {
+  settings,
+  mention,
+  find,
+  hold,
+  release,
+  propose,
+  HELD,
+  merges,
+  message,
+  land,
+};
