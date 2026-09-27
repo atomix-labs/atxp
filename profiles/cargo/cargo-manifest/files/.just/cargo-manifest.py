@@ -4,7 +4,7 @@ taplo settles layout: alignment, and alphabetical order inside each dependency g
 reach is the text around the values, because a JSON schema validates a parsed tree and a comment is
 not in one. Those rules are checked here, on the lines rather than the values.
 
-    cargo-manifest.py [<path>...]         # default: every tracked Cargo.toml, vendored crates aside
+    cargo-manifest.py [<path>...]         # default: the workspace's manifests, vendored crates aside
     cargo-manifest.py --fix [<path>...]   # each dependency under its group, the workspace's too
 
 `--fix` rewrites each dependency table as `# external` and its entries, then `# internal` and
@@ -13,6 +13,7 @@ its, keeping their order and a blank line between the groups: a tool that remove
 holding any other line, is left as it is.
 """
 
+import json
 import re
 import subprocess
 import sys
@@ -41,10 +42,16 @@ DEP_KINDS = {"dependencies", "dev-dependencies", "build-dependencies"}
 
 
 def tracked(repo: Path) -> list[Path]:
-    """Every manifest git knows and the tree still has: the index outlives a staged deletion."""
-    out = subprocess.run(["git", "ls-files", "*Cargo.toml"], cwd=repo, capture_output=True, text=True, check=True)
+    """The workspace's manifests, its root's and each member's, as cargo reads them: a `Cargo.toml`
+    that is no part of it, a test's fixture or an example's, is left alone."""
+    out = subprocess.run(
+        ["cargo", "metadata", "--no-deps", "--format-version", "1"], cwd=repo, capture_output=True, text=True, check=True
+    )
+    metadata = json.loads(out.stdout)
+    paths = {Path(metadata["workspace_root"]) / "Cargo.toml"}
+    paths |= {Path(package["manifest_path"]) for package in metadata["packages"]}
     # A vendored crate is upstream's, under a `vendor/` directory anywhere in the tree.
-    return [repo / line for line in out.stdout.split() if "vendor" not in Path(line).parts[:-1] and (repo / line).is_file()]
+    return sorted(path for path in paths if "vendor" not in path.relative_to(repo).parts[:-1])
 
 
 def internal_names(paths: list[Path]) -> set:
