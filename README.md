@@ -133,7 +133,7 @@ atxp for all of them:
 [profile]
 name        = "house"
 description = "Our Rust repositories: atxp's bundle, with the book, and our deploy workflow"
-devset      = ">=0.4.0"
+devset      = ">=0.5.0"
 
 [requires]
 rust = { git = "https://github.com/atomix-labs/atxp", tag = "v0.10.0", features = ["docs"] }
