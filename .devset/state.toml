@@ -352,8 +352,8 @@ canonical = "75905f895ca860f37df4530f2578fcb238f6d8f36384b7366a5f9b4673bfa7fd"
 
 [parts.".rumdl.toml".markdown]
 scope = "keys"
-exact = "d16a6c2162a07ccda7afb6ee33d9c1ca65efe48efe22a3a26c9f92d49e270905"
-canonical = "d16a6c2162a07ccda7afb6ee33d9c1ca65efe48efe22a3a26c9f92d49e270905"
+exact = "8606490c619de5d4fe2247f195920f64e1c7d3233871d2a9d24b05e49af5bbf8"
+canonical = "8606490c619de5d4fe2247f195920f64e1c7d3233871d2a9d24b05e49af5bbf8"
 policy = "merge"
 
 [parts.".yamllint.yaml".yaml]

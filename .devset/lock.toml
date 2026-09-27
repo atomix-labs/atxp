@@ -129,7 +129,7 @@ path = "profiles"
 
 [[profiles]]
 name = "markdown"
-digest = "42ebc820fa3b1677a8d928d65392a701dff748cd39306d68d5d24c577e6d9eff"
+digest = "4d712f7c3c11864ef665fdd4e7d3301649c0c699a6324e2e8eff90244e84edce"
 
 [profiles.source]
 path = "profiles"
