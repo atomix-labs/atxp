@@ -26,7 +26,9 @@ allowed_elements = [
 [MD024]
 siblings_only = true
 
-# GitHub's templates are the body of an issue or a pull request, which has its own title.
+# GitHub's templates are the body of an issue or a pull request, which has its own title. An mdBook
+# summary titles each part of the book with a `#` heading, which MD025's fix would demote.
 [per-file-ignores]
 ".github/ISSUE_TEMPLATE/*.md"      = ["MD041"]
 ".github/pull_request_template.md" = ["MD041"]
+"**/SUMMARY.md"                    = ["MD025"]

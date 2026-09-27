@@ -6,9 +6,11 @@ profile keeps as keys of `dprint.json`; and linted by rumdl, which fixes what it
 can. Line length is the formatter's; the rules rustdoc's intra-doc links and
 code spans trip are off; headings are in title case; a heading may repeat under
 different parents, as a changelog's sections do under each release; `<details>`,
-`<summary>`, `<code>` and `<span>` are the HTML a page may use; and GitHub's
-issue and pull request templates, each the body of a page with its own title,
-open without a heading.
+`<summary>`, `<code>` and `<span>`, and the README header's `<h1>`, `<p>`,
+`<picture>`, `<source>`, `<img>` and `<a>`, are the HTML a page may use;
+GitHub's issue and pull request templates, each the body of a page with its own
+title, open without a heading; and an mdBook summary titles each part of its
+book with a `#` heading.
 
 It owns those keys of `.rumdl.toml`, under `merge`: `exclude`, and `[MD063]
 ignore-words`, the names heading case leaves as they are, stay the repository's.
