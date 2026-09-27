@@ -8,6 +8,11 @@ github-automation = {}
 github-watch      = {}
 just              = {}
 
+[features]
+# Merges the bump's pull request once `just check` passes: github-automation writes `bump.merge`
+# in .github/automation.json where it is on. Off unless a repository turns it on.
+merge = []
+
 [files.".github/workflows/bump.yml"]
 
 [files.".github/scripts/bump.js"]

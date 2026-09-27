@@ -1,8 +1,14 @@
 {%- set logins = assignees | split(",") | map("trim") | select | list -%}
+{%- set bump = devset.layers | selectattr("profile", "equalto", "github-bump") | map(attribute="features") | first | default([]) -%}
+{%- set demo = devset.layers | selectattr("profile", "equalto", "vhs") | map(attribute="features") | first | default([]) -%}
 {
   "broken": { "labels": ["bug"], "type": "Bug" },
   "chore": { "labels": ["dependencies"], "type": "Task" },
+  "docs": { "labels": ["documentation"], "type": "Task" },
   "assignees": [{% if logins %}"{{ logins | join('", "') }}"{% endif %}],
-  "bump": { "mode": "{{ bump_mode }}" },
+  "bump": { "mode": "{{ bump_mode }}"{% if "merge" in bump %}, "merge": true{% endif %} },
+{%- if "merge" in demo %}
+  "demo": { "merge": true },
+{%- endif %}
   "nightly": { "skip_unchanged": true }
 }

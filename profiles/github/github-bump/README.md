@@ -13,14 +13,22 @@ as far as `bump.mode` in `.github/automation.json`, which
 | -------------- | --------------------------------------------------------------------------- |
 | `branch`       | the commit, and an issue linking to open the pull request                   |
 | `pr` (default) | also the pull request, kept up to date; an issue only while the gate is red |
-| `merge`        | also merges it once green; a red gate never merges                          |
+
+A person merges the pull request. With the feature `merge`, off unless the
+repository turns it on, `github-automation` writes `bump.merge`, and the
+workflow merges it itself once green; a red gate never merges.
+
+The pull request is labelled `dependencies` and assigned to the `assignees`
+[`github-automation`](../../github/github-automation/README.md) names, and a
+comment tells them how the gate came out, and whether it is theirs to merge.
 
 A pull request opened with a run's own token runs no workflows, so the
 repository's checks never report on it. With a GitHub App, whose id is the
 variable `BUMP_APP_ID` and whose key the secret `BUMP_APP_KEY`, the pull request
 runs them, `merge` waits for them through GitHub's auto-merge, and the commit
 may change workflows. Without one, `merge` merges on this run's own gate, and
-changes to workflows are left out and named.
+changes to workflows are left out and named. A default branch whose rules
+require checks needs the app: the run's own token can merge nothing there.
 
 A bump that cannot check something fails the run, and
 [`github-watch`](../../github/github-watch/README.md) opens an issue for it. The
@@ -35,6 +43,12 @@ jobs that build run on `ubuntu-latest`, or on the runner the repository variable
 | ---------------------------- | ----- | ------ | ----- |
 | `.github/workflows/bump.yml` | whole | owned  |       |
 | `.github/scripts/bump.js`    | whole | owned  |       |
+
+## Features
+
+| Feature | Default | Enables |
+| ------- | ------- | ------- |
+| `merge` |         |         |
 
 ## Requires
 

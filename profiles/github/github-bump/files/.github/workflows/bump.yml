@@ -1,6 +1,7 @@
 # Once a week, moves everything the repository pins: `just bump` runs every `bump-*` recipe, `just
 # fix` settles what they moved, and `just check` is the gate. The result goes to one signed commit,
-# and as far as `bump.mode` in .github/automation.json says: `branch`, `pr` (the default), `merge`.
+# and as far as .github/automation.json says: `bump.mode` is `branch` or `pr`, the default, and
+# `bump.merge`, which the feature `merge` sets, merges the pull request once the gate passes.
 #
 # With a GitHub App (`BUMP_APP_ID`, `BUMP_APP_KEY`), its pull request runs the repository's checks,
 # which one opened with this run's token does not, and may change workflows.

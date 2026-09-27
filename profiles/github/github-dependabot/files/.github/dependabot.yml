@@ -1,3 +1,4 @@
+{%- set logins = assignees | split(",") | map("trim") | select | list -%}
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -12,3 +13,6 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+{%- if logins %}
+    assignees: ["{{ logins | join('", "') }}"]
+{%- endif %}

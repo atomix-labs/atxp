@@ -1,16 +1,18 @@
 // Carries a bump from the runner to the repository: one signed commit on the bump branch, then as
-// far as `bump.mode` in .github/automation.json says.
+// far as .github/automation.json says. `bump.mode`:
 //
 //   branch  the commit, and an issue with a link to open the pull request
 //   pr      also the pull request, opened once and kept up to date; the issue only while it is red
-//   merge   also merges it once green: GitHub's auto-merge with an app token, whose pull request
-//           runs the required checks; else at once, on the gate this run passed
+//
+// and `bump.merge`, which github-bump's feature `merge` sets, also merges the pull request once
+// green: by GitHub's auto-merge with an app's token, whose pull request runs the required checks;
+// else at once, on the gate this run passed.
 const fs = require("fs");
-const { settings, hold, release } = require(
-  `${process.env.GITHUB_WORKSPACE}/.github/scripts/issue.js`,
+const { settings, hold, release, propose, land } = require(
+  `${process.env.GITHUB_WORKSPACE}/.github/scripts/automation.js`,
 );
 
-const MODES = ["branch", "pr", "merge"];
+const MODES = ["branch", "pr"];
 const TITLE = "chore(bump): move pinned tools and dependencies";
 
 // Each changed path, and whether it is gone: tracked or not, deletions included.
@@ -51,8 +53,14 @@ function body(dir, gate, skipped) {
 
 module.exports = async ({ github, context, core, exec }) => {
   const config = settings().bump ?? {};
-  const mode = config.mode ?? "pr";
+  // `merge` was a mode before it was a feature; it still means a pull request that merges.
+  const legacy = config.mode === "merge";
+  if (legacy) {
+    core.warning("bump.mode `merge` is now github-bump's feature `merge`: turn it on instead.");
+  }
+  const mode = legacy ? "pr" : config.mode ?? "pr";
   if (!MODES.includes(mode)) throw new Error(`bump.mode is ${mode}: one of ${MODES.join(", ")}`);
+  const merging = legacy || config.merge === true;
   const branch = config.branch ?? "bot/bump";
   const app = process.env.APP === "true";
   const green = process.env.GATE === "success";
@@ -116,39 +124,24 @@ module.exports = async ({ github, context, core, exec }) => {
     return;
   }
   await release({ github, context }, "chore", ready, "Now a pull request.");
-  const open = await github.rest.pulls.list({
-    ...context.repo,
-    head: `${context.repo.owner}:${branch}`,
-    state: "open",
+  const moved = "The weekly bump moved what the repository pins, and `just check`";
+  const note = !green
+    ? `${moved} failed: fix it on the branch.`
+    : merging
+    ? undefined
+    : `${moved} passed: review it, and merge.`;
+  const pull = await propose({ github, context }, "chore", {
+    branch,
+    title: TITLE,
+    body: text,
+    note,
   });
-  const pull = open.data[0]
-    ?? (await github.rest.pulls.create({
-      ...context.repo,
-      head: branch,
-      base,
-      title: TITLE,
-      body: text,
-    })).data;
-  if (open.data[0]) {
-    await github.rest.pulls.update({ ...context.repo, pull_number: pull.number, body: text });
-  }
   if (!green) {
     await hold({ github, context }, "broken", red, `The gate failed on ${pull.html_url}.`);
     return;
   }
   await release({ github, context }, "broken", red, `Green again: ${pull.html_url}.`);
-  if (mode !== "merge") return;
-  if (app) {
-    await github.graphql(
-      `mutation($id: ID!) { enablePullRequestAutoMerge(input: { pullRequestId: $id, mergeMethod: SQUASH }) { clientMutationId } }`,
-      { id: pull.node_id },
-    );
-  } else {
-    await github.rest.pulls.merge({
-      ...context.repo,
-      pull_number: pull.number,
-      merge_method: "squash",
-    });
-    await github.rest.git.deleteRef({ ...context.repo, ref });
+  if (merging) {
+    await land({ github, context }, pull, { app, branch, said: `${moved} passed.` });
   }
 };

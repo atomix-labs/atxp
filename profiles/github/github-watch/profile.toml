@@ -9,5 +9,3 @@ github-automation = {}
 [files.".github/workflows/watch.yml"]
 
 [files.".github/scripts/watch.js"]
-
-[files.".github/scripts/issue.js"]

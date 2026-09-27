@@ -2,7 +2,7 @@
 // whose last scheduled run failed, or that has not run by twice the interval it keeps, or that
 // GitHub has disabled, gets an issue until it recovers.
 const fs = require("fs");
-const { hold, release } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/issue.js`);
+const { hold, release } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/automation.js`);
 
 const FAILED = new Set(["failure", "timed_out", "startup_failure", "action_required"]);
 const GRACE = 60 * 60 * 1000;

@@ -22,7 +22,6 @@ Issues carry the labels, issue type and assignees that
 | ----------------------------- | ----- | ------ | ----- |
 | `.github/workflows/watch.yml` | whole | owned  |       |
 | `.github/scripts/watch.js`    | whole | owned  |       |
-| `.github/scripts/issue.js`    | whole | owned  |       |
 
 ## Requires
 

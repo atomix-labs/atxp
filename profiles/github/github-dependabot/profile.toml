@@ -3,5 +3,10 @@ name        = "github-dependabot"
 description = "Dependabot: weekly updates of the GitHub Actions a repository uses, in one pull request"
 devset      = ">=0.4.0"
 
+[vars.assignees]
+prompt  = "GitHub logins assigned the automation's issues and pull requests, comma-separated"
+default = ""
+
 [files.".github/dependabot.yml"]
-policy = "merge"
+policy   = "merge"
+template = true
