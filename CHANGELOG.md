@@ -3,6 +3,33 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.8.0](https://github.com/atomix-labs/atxp/releases/tag/v0.8.0) - 2026-09-27
+
+### Features
+
+- [cad3fa2](https://github.com/atomix-labs/atxp/commit/cad3fa204391678185560e90fac531a3996f9e2e) *(vhs)* Record the README's demo from tapes on each release
+- [374af42](https://github.com/atomix-labs/atxp/commit/374af42c11af1837667a947732fbfb7b4cdc2f37) *(project)* Write the README's whole header, logo and tagline included **breaking**
+- [e3036d2](https://github.com/atomix-labs/atxp/commit/e3036d277dc561d5a3c1e9a9731bca74ee0d2302) *(markdown)* Admit the README header's HTML
+
+### Bug Fixes
+
+- [7751f34](https://github.com/atomix-labs/atxp/commit/7751f34189c038816631cf629301bc0f456e8990) Show each recipe's whole summary in just --list
+
+### Documentation
+
+- [f5a3bf1](https://github.com/atomix-labs/atxp/commit/f5a3bf191e2543e7ab105db7988fb6f4becb36ef) Say release-readme moves the demo's tag too
+- [de7712f](https://github.com/atomix-labs/atxp/commit/de7712ffcb32879c4698713b269d63ce5e199db3) *(project)* Take a URL for the logo where the README is shown elsewhere
+- [60383aa](https://github.com/atomix-labs/atxp/commit/60383aa5b3ee923eded5c261c1f454177d7dbf68) Write the v0.8.0 migration
+- [5b84b92](https://github.com/atomix-labs/atxp/commit/5b84b92b2818f67aa85f8e87b0ad30bf63b5c75d) Open atxp's README on its header and demo
+- [15d898d](https://github.com/atomix-labs/atxp/commit/15d898d7171f55e0e6e02387e5db5b1774e8c6e5) Record atxp's demo
+- [4303f68](https://github.com/atomix-labs/atxp/commit/4303f68a0ac4d9dfc92cb3a67f38f41f28b3a18b) Draw atxp's logo
+
+### Miscellaneous
+
+- [e1658c2](https://github.com/atomix-labs/atxp/commit/e1658c21bfaf1d4c73edbf5f572414fb7346266d) Apply the profiles' changes to atxp
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.7.0...v0.8.0>
+
 ## [0.7.0](https://github.com/atomix-labs/atxp/releases/tag/v0.7.0) - 2026-09-27
 
 ### Features
