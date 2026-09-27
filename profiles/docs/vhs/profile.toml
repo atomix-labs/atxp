@@ -3,6 +3,14 @@ name        = "vhs"
 description = "The README's demo: terminal sessions VHS records from docs/demo/, again at each release's tag"
 devset      = ">=0.4.0"
 
+[requires]
+github-automation = {}
+
+[features]
+# Merges the demo's pull request once every tape has played: github-automation writes `demo.merge`
+# in .github/automation.json where it is on. Off unless a repository turns it on.
+merge = []
+
 # Until the repository has a tape: a pair, dark and light, and a session to replace with its own.
 [scaffolds.demo]
 unless = "docs/demo/*.tape"

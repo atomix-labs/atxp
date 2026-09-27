@@ -9,12 +9,21 @@ in its own colours.
 
 On each release's tag, and on demand, the `demo` workflow records every tape
 again, with the repository's own tools, and opens a pull request with the
-recordings that changed, in one commit GitHub signs. A tape that waits for
-output which no longer comes fails the workflow, so a demo does not show a
-project as it used to be. GitHub lets a workflow open pull requests only where
-the repository allows it: Settings, Actions, General, Workflow permissions. A
-pull request the workflow's own token opens runs no checks; closing and
-reopening it runs them.
+recordings that changed, in one commit GitHub signs, labelled `documentation`
+and assigned to the `assignees`
+[`github-automation`](../../github/github-automation/README.md) names. A tape
+that waits for output which no longer comes fails the workflow, so a demo does
+not show a project as it used to be. A person merges it; with the feature
+`merge`, off unless the repository turns it on, the workflow merges it itself,
+every tape having played to its end, and says so on it.
+
+GitHub lets a workflow open pull requests only where the repository allows it:
+Settings, Actions, General, Workflow permissions. A pull request the workflow's
+own token opens runs no checks, so `merge` merges on the recording alone. With
+the automation's GitHub App, the variable `BUMP_APP_ID` and the secret
+`BUMP_APP_KEY` the weekly bump uses too, the pull request runs the repository's
+checks, and GitHub's auto-merge merges it once they pass: the way through a
+default branch whose rules require them.
 
 Where the repository has no tape, it scaffolds a pair, dark and light, and a
 session to replace with the project at work. They are the repository's from then
@@ -42,5 +51,15 @@ installed: `for tape in docs/demo/*.tape; do vhs "$tape"; done`.
 | `docs/demo/demo-dark.tape`   | whole | once   | scaffold `demo` |
 | `docs/demo/demo-light.tape`  | whole | once   | scaffold `demo` |
 | `docs/demo/parts/demo.tape`  | whole | once   | scaffold `demo` |
+
+## Features
+
+| Feature | Default | Enables |
+| ------- | ------- | ------- |
+| `merge` |         |         |
+
+## Requires
+
+- [`github-automation`](../../github/github-automation/README.md)
 
 <!-- /facts -->

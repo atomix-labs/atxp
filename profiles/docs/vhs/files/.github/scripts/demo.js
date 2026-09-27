@@ -1,6 +1,11 @@
-// Carries the recordings the demo workflow made to a pull request: one signed commit on a branch of
-// its own, named for the release; nothing when every recording is as it was.
+// Carries the recordings the demo workflow made to the repository: one signed commit on a branch
+// of its own, named for the release, and a pull request, labelled and assigned, for a person to
+// merge; with `demo.merge` in .github/automation.json, which the vhs feature `merge` sets, it
+// merges itself, every tape having played to its end. Nothing, when every recording is as it was.
 const fs = require("fs");
+const { settings, propose, land } = require(
+  `${process.env.GITHUB_WORKSPACE}/.github/scripts/automation.js`,
+);
 
 const MEDIA = "docs/src/media";
 
@@ -23,6 +28,7 @@ async function changes(exec) {
 }
 
 module.exports = async ({ github, context, core, exec }) => {
+  const merging = settings().demo?.merge === true;
   const changed = await changes(exec);
   if (!changed.length) {
     core.info("Every recording is as it was.");
@@ -61,21 +67,16 @@ module.exports = async ({ github, context, core, exec }) => {
       },
     },
   );
-  const open = await github.rest.pulls.list({
-    ...context.repo,
-    head: `${context.repo.owner}:${branch}`,
-    state: "open",
-  });
-  if (open.data.length) {
-    core.notice(`Updated ${open.data[0].html_url}`);
-    return;
+  const recorded = changed.map((c) => `\`${c.path}\``).join(", ");
+  const body = `Recorded by the demo workflow from \`docs/demo/*.tape\`${
+    tag ? ` at ${tag}` : ""
+  }: ${recorded}.`;
+  const again = `The demo was recorded again${tag ? ` for ${tag}` : ""}, every tape to its end.`;
+  const note = merging ? undefined : `${again} Look at it, and merge.`;
+  const pull = await propose({ github, context }, "docs", { branch, title, body, note });
+  if (merging) {
+    const app = process.env.APP === "true";
+    await land({ github, context }, pull, { app, branch, said: again });
   }
-  const { data } = await github.rest.pulls.create({
-    ...context.repo,
-    head: branch,
-    base: context.payload.repository.default_branch,
-    title,
-    body: "Recorded by the demo workflow from `docs/demo/*.tape`.",
-  });
-  core.notice(`Opened ${data.html_url}`);
+  core.notice(`${merging ? "Merged" : "Opened"} ${pull.html_url}`);
 };
