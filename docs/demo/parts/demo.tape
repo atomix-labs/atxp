@@ -1,5 +1,5 @@
-# atxp's demo, both themes: an empty repository takes the rust bundle, each of devset's questions
-# answered with its default, then shows the files it gained, the features still off, and that every
+# atxp's demo, both themes: an empty repository takes the rust bundle, each variable its default
+# but the repository's name, then shows the files it gained, the features still off, and that every
 # file matches its profile. `just release` moves the tag to each release.
 Require devset
 Require git
@@ -14,12 +14,9 @@ Type "devset add atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.10
 Sleep 600ms
 Enter
 
-# Each question, its default taken; the prompt comes back once every file is written.
-Wait+Screen@30s /GitHub logins/
-Sleep 800ms
-Enter@350ms 11
+# The prompt comes back once every file is written.
 Wait@30s
-Sleep 2s
+Sleep 3s
 
 Hide
 Type "clear"
