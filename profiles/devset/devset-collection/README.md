@@ -54,6 +54,27 @@ payload's `dprint.json` as configuration, and a collection adds
 `profiles/**/files/**` to what dprint, rumdl, taplo, ruff and yamllint leave
 out, as atxp does.
 
+With `site`, off unless the collection turns it on, the catalog is a site too:
+an mdBook in `catalog/`, whose pages `just fix-devset-collection` writes under
+`catalog/src/` from the manifests and READMEs, and `just
+check-devset-collection` checks and builds:
+
+- a home: what the collection is, how a repository takes a profile, its bundles,
+  and every group with its profiles;
+- a page per profile: how to take it, its group, the bundles that take it and
+  when, then its README and facts, a link to another profile's README moved to
+  that profile's page and one to anything else in the repository to its page on
+  GitHub; a bundle's page lists every file its profiles may write;
+- a page of every variable, its default, what it asks and who declares it.
+
+The README's tables then name the groups, each profile linked to its page, and
+the site holds the rest. `catalog/book.toml` is scaffolded, the repository's
+from then on; the palette is [`mdbook`](../../docs/mdbook/README.md)'s, and
+mdBook is pinned. A release's pages say `--tag <release>`, which never goes
+stale, beside a badge of the newest.
+[`github-ci`](../../github/github-ci/README.md)'s `pages` publishes the built
+book from a recipe `.github/automation.json` names.
+
 Its default feature, `schemas`, turns on [`toml`](../../lang/toml/README.md)'s,
 so where toml is applied, `check-toml` holds every `profile.toml` and
 `collection.toml` to devset's schemas.
@@ -71,22 +92,28 @@ agent that adds or changes a profile.
 
 ## Owns
 
-| File                                                | Part  | Policy | Notes                           |
-| --------------------------------------------------- | ----- | ------ | ------------------------------- |
-| `collection.toml`                                   | whole | once   | template, scaffold `collection` |
-| `.just/devset-collection.just`                      | whole | owned  | template                        |
-| `.just/devset-collection/catalog.py`                | whole | owned  |                                 |
-| `.just/devset-collection/suite.sh`                  | whole | owned  |                                 |
-| `.just/devset-collection/pins.py`                   | whole | owned  | feature `pins`                  |
-| `.claude/skills/authoring-devset-profiles/SKILL.md` | whole | owned  | template, feature `agents`      |
+| File                                                | Part  | Policy | Notes                                        |
+| --------------------------------------------------- | ----- | ------ | -------------------------------------------- |
+| `collection.toml`                                   | whole | once   | template, scaffold `collection`              |
+| `.just/devset-collection.just`                      | whole | owned  | template                                     |
+| `.just/devset-collection/catalog.py`                | whole | owned  |                                              |
+| `.just/devset-collection/suite.sh`                  | whole | owned  |                                              |
+| `.just/devset-collection/site_pages.py`             | whole | owned  |                                              |
+| `.just/devset-collection/pins.py`                   | whole | owned  | feature `pins`                               |
+| `catalog/book.toml`                                 | whole | once   | template, scaffold `catalog`, feature `site` |
+| `catalog/theme/palette.css`                         | whole | merge  | feature `site`                               |
+| `catalog/theme/catalog.css`                         | whole | owned  | feature `site`                               |
+| `.gitignore`                                        | block | owned  | feature `site`                               |
+| `.claude/skills/authoring-devset-profiles/SKILL.md` | whole | owned  | template, feature `agents`                   |
 
 ## Features
 
-| Feature   | Default | Enables         |
-| --------- | ------- | --------------- |
-| `pins`    |         |                 |
-| `schemas` | yes     | `toml?/schemas` |
-| `agents`  |         |                 |
+| Feature   | Default | Enables           |
+| --------- | ------- | ----------------- |
+| `pins`    |         |                   |
+| `schemas` | yes     | `toml?/schemas`   |
+| `agents`  |         |                   |
+| `site`    |         | `dep:mdbook-tool` |
 
 ## Recipes
 
@@ -103,11 +130,13 @@ agent that adds or changes a profile.
 | Variable                 | Default | Asks                                             |
 | ------------------------ | ------- | ------------------------------------------------ |
 | `collection_description` | empty   | One line: what the collection's profiles are for |
+| `repository`             | none    | The GitHub repository, owner/name                |
 
 ## Requires
 
 - [`devset`](../devset/README.md)
 - [`just`](../../tooling/just/README.md)
+- [`mdbook-tool`](../../docs/mdbook-tool/README.md): optional
 - [`mise`](../../tooling/mise/README.md)
 - [`toml`](../../lang/toml/README.md): optional
 

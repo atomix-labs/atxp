@@ -4,10 +4,11 @@ description = "For a collection of profiles: its catalog, the rules its profiles
 devset      = ">=0.5.0"
 
 [requires]
-devset = {}
-just   = {}
-mise   = {}
-toml   = { optional = true }
+devset      = {}
+just        = {}
+mdbook-tool = { optional = true }
+mise        = {}
+toml        = { optional = true }
 
 [features]
 default = ["schemas"]
@@ -18,13 +19,22 @@ pins = []
 schemas = ["toml?/schemas"]
 # The authoring-devset-profiles skill, in .claude/skills/.
 agents = []
+# The catalog site: an mdBook of every profile in catalog/, its pages written from the manifests and
+# READMEs and checked, the README's tables its groups, linked. Off unless the collection turns it on.
+site = ["dep:mdbook-tool"]
 
 [vars.collection_description]
 prompt  = "One line: what the collection's profiles are for"
 default = ""
 
+[vars.repository]
+prompt = "The GitHub repository, owner/name"
+
 [scaffolds.collection]
 unless = "collection.toml"
+
+[scaffolds.catalog]
+unless = "catalog/book.toml"
 
 [files."collection.toml"]
 scaffold = "collection"
@@ -37,8 +47,26 @@ template = true
 
 [files.".just/devset-collection/suite.sh"]
 
+[files.".just/devset-collection/site_pages.py"]
+
 [files.".just/devset-collection/pins.py"]
 when = { features = ["pins"] }
+
+[files."catalog/book.toml"]
+scaffold = "catalog"
+template = true
+when     = { features = ["site"] }
+
+[files."catalog/theme/palette.css"]
+policy = "merge"
+when   = { features = ["site"] }
+
+[files."catalog/theme/catalog.css"]
+when = { features = ["site"] }
+
+[files.".gitignore"]
+scope = "block"
+when  = { features = ["site"] }
 
 [files.".claude/skills/authoring-devset-profiles/SKILL.md"]
 template = true

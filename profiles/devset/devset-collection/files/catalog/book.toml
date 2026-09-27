@@ -1,0 +1,19 @@
+{%- set repo = repository | split("/") | last -%}
+# The collection's catalog site: devset-collection writes its pages under src/, from the manifests
+# and each profile's README, and checks them; this file is the repository's.
+[book]
+title       = "{{ repo }}"
+description = "{{ collection_description }}"
+language    = "en"
+src         = "src"
+
+[output.html]
+default-theme        = "light"
+preferred-dark-theme = "navy"
+no-section-label     = true
+git-repository-url   = "https://github.com/{{ repository }}"
+site-url             = "/{{ repo }}/"
+additional-css       = ["theme/palette.css", "theme/catalog.css"]
+
+[output.html.search]
+enable = true

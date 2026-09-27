@@ -1,13 +1,15 @@
 """A collection's catalog: the README's tables of profiles and variables, the facts block of every
 profile's README, and the rules every profile keeps.
 
-Usage: catalog.py [--check] [--dprint]
+Usage: catalog.py [--check] [--dprint] [--site <dir> --repository <owner/name>]
 
 Run in the collection's root. Its profiles are every `profile.toml` under `profiles/`, at any depth,
 but a profile's own payloads; the directory each is in groups it. With no flag, writes the README's
 tables and every profile's facts. `--check` writes nothing, and fails when any of them is stale, or a
-profile or a skill it ships breaks a rule. `--dprint` formats what it writes with dprint, as the repository formats its
-Markdown. A directory with no profiles has no catalog.
+profile or a skill it ships breaks a rule. `--dprint` formats what it writes with dprint, as the
+repository formats its Markdown. `--site` also writes the catalog site's pages under `<dir>/src/`,
+as site_pages.py says, and the README's tables then name the groups and link to the site. A
+directory with no profiles has no catalog.
 """
 
 import itertools
@@ -20,6 +22,8 @@ import tomllib
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
+
+from site_pages import Site
 
 PROFILES = Path("profiles")
 README = Path("README.md")
@@ -517,33 +521,63 @@ def formatted(path, text, dprint):
     return result.stdout
 
 
-def readme(found, dprint):
-    """The README, its tables current; the variables' only where a profile declares one."""
+def readme(found, dprint, site=None):
+    """The README, its tables current; the variables' only where a profile declares one. Where the
+    site holds them, the README names the groups and links to it."""
     text = README.read_text() if README.is_file() else ""
-    text = between(README, text, CATALOG, table(found))
+    text = between(README, text, CATALOG, site.readme_catalog() if site else table(found))
     if VARIABLES[0] in text or any(profile.manifest.get("vars") for profile in found):
-        text = between(README, text, VARIABLES, variables(found))
+        body = site.readme_variables() if site else variables(found)
+        text = between(README, text, VARIABLES, body)
     return formatted(README, text, dprint)
 
 
+def options(args):
+    """The flags, and the values `--site` and `--repository` take; `None` when they are wrong."""
+    flags, values, rest = set(), {}, list(args)
+    while rest:
+        arg = rest.pop(0)
+        if arg in {"--check", "--dprint"}:
+            flags.add(arg)
+        elif arg in {"--site", "--repository"} and rest:
+            values[arg] = rest.pop(0)
+        else:
+            return None
+    if ("--site" in values) != ("--repository" in values):
+        return None
+    return flags, values
+
+
 def main(args):
-    if not set(args) <= {"--check", "--dprint"}:
+    parsed = options(args)
+    if parsed is None:
         usage = next(line for line in __doc__.splitlines() if line.startswith("Usage:"))
         print(usage, file=sys.stderr)
         return 2
+    args, values = parsed
     found = profiles()
     if not found:
         return 0
     dprint = "--dprint" in args
     named = by_name(found)
-    wanted = {README: readme(found, dprint)}
+    site = Site(found, named, values["--repository"]) if "--site" in values else None
+    wanted = {README: readme(found, dprint, site)}
     for profile in found:
         if profile.readme.is_file():
             text = between(profile.readme, profile.readme.read_text(), FACTS, facts(profile, named))
             wanted[profile.readme] = formatted(profile.readme, text, dprint)
+    if site:
+        for path, text in site.pages(values["--site"], wanted).items():
+            wanted[path] = formatted(path, text, dprint)
     if "--check" not in args:
         for path, text in wanted.items():
+            path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(text)
+        if site:
+            src = Path(values["--site"]) / "src"
+            for old in sorted(src.rglob("*.md")):
+                if old not in wanted:
+                    old.unlink()
         return 0
     stale = [
         f"{path} is stale: {STALE}"
