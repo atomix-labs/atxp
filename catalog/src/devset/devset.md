@@ -1,0 +1,54 @@
+# `devset`
+
+devset itself: pinned for every machine and job, and drift from the profiles
+failing the checks.
+
+```sh
+devset add atxp/devset --git https://github.com/atomix-labs/atxp --tag <release>
+```
+
+Group `devset` · In [`rust`](../bundles/rust.md): always
+
+devset itself, pinned through mise, so every machine and every CI job applies
+the profiles with one release, which a release of the collection moves.
+`check-devset` runs `devset status --exit-code`, so a file that has drifted from
+its profile, or an update left unfinished, fails the checks, in CI as a job of
+its own.
+
+`bump-devset`, in the weekly bump, moves each source the target names by a tag
+on GitHub to its newest release that is at least three days old, never
+backwards, one source at a time, with `devset update <source> --tag <release>`,
+which merges what the release changed with the repository's own edits. A move
+that conflicts is taken back, with `devset apply --abort`, and the bump says so;
+a source elsewhere is named as unchecked.
+
+The `agents` feature adds the `using-devset` skill in `.claude/skills/`: how an
+agent changes a file devset manages, turns on a feature, and resolves an update
+that conflicts.
+
+## Owns
+
+| File                                     | Part  | Policy | Notes            |
+| ---------------------------------------- | ----- | ------ | ---------------- |
+| `.just/devset.just`                      | whole | owned  |                  |
+| `.just/devset.py`                        | whole | owned  |                  |
+| `.config/mise/conf.d/devset-devset.toml` | whole | owned  |                  |
+| `.config/mise/mise.lock`                 | keys  | owned  |                  |
+| `.claude/skills/using-devset/SKILL.md`   | whole | owned  | feature `agents` |
+
+## Features
+
+| Feature  | Default | Enables |
+| -------- | ------- | ------- |
+| `agents` |         |         |
+
+## Recipes
+
+- `check-devset`: Fails when a file devset manages has drifted from its profile,
+  or an update is unfinished.
+- `bump-devset`: Moves each source the target names by tag to its newest release
+  past the cooldown, and applies it.
+
+## Requires
+
+- [`mise`](../tooling/mise.md)

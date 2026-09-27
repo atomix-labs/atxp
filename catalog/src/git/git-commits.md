@@ -1,0 +1,50 @@
+# `git-commits`
+
+committed holds every commit a branch adds to Conventional Commits, the scope
+the part it changes.
+
+```sh
+devset add atxp/git-commits --git https://github.com/atomix-labs/atxp --tag <release>
+```
+
+Group `git` · In [`rust`](../bundles/rust.md): always
+
+committed checks every commit a branch adds to the default branch against
+Conventional Commits, `type(scope): subject`: an allowed type, an imperative
+subject with no closing period, and no merge commit. The scope names the part
+the commit changes, a profile or a crate. [`git-changelog`](git-changelog.md)
+writes the changelog from these subjects, so each says what changed for someone
+who reads it there.
+
+A pull request is checked out as a merge commit; the check reads the pull
+request's own commits, its second parent's. Where there is no default branch to
+compare with, there is nothing to check. committed comes from its release, one
+static build for each platform the locks cover.
+
+Where the repository has a `CONTRIBUTING.md`, a block of it says these rules to
+those who contribute.
+
+With `agents`, a block of the repository's `AGENTS.md`, where it has one, says
+the same rules to an agent.
+
+## Owns
+
+| File                                          | Part  | Policy | Notes                                |
+| --------------------------------------------- | ----- | ------ | ------------------------------------ |
+| `committed.toml`                              | whole | owned  |                                      |
+| `.just/git-commits.just`                      | whole | owned  |                                      |
+| `.config/mise/conf.d/devset-git-commits.toml` | whole | owned  |                                      |
+| `.config/mise/mise.lock`                      | keys  | owned  |                                      |
+| `CONTRIBUTING.md`                             | block | owned  | `CONTRIBUTING.md` exists             |
+| `AGENTS.md`                                   | block | owned  | feature `agents`, `AGENTS.md` exists |
+
+## Features
+
+| Feature  | Default | Enables |
+| -------- | ------- | ------- |
+| `agents` |         |         |
+
+## Recipes
+
+- `check-git-commits`: Checks every commit the branch adds to the default
+  branch: Conventional Commits, an allowed type.

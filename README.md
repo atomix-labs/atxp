@@ -145,155 +145,88 @@ rust = { git = "https://github.com/atomix-labs/atxp", tag = "v0.10.0", features 
 
 ## Profiles
 
-The profiles, grouped by umbrella. Each profile's README says what it does and
-why, then its facts: the files it owns and when, its features, its recipes, its
-variables and what it requires.
+Each profile's page in the catalog says what it does and why, then its facts:
+the files it owns and when, its features, its recipes, its variables and what it
+requires.
 
 <!-- catalog: written by devset-collection -->
 
-### `agents`
+The profiles, by group, each with its page in
+[the catalog](https://atomix-labs.github.io/atxp/):
 
-| Profile                                      | What                                                                                                                  | Owns                                                                                              |
-| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| [`agents`](profiles/agents/agents/README.md) | What a coding agent reads to work in the repository: AGENTS.md, CLAUDE.md, and Claude Code's allow-list and Stop hook | `AGENTS.md` (block), `CLAUDE.md`, `.claude/settings.json` (keys, merge), `.claude/hooks/check.sh` |
-
-### `bundles`
-
-- [`rust`](profiles/bundles/rust/README.md): A Rust repository: toolchain,
-  formatting, lints, dependency policy, tests, commits, the changelog and CI.
-  Requires `rust-toolchain`, `rust-fmt`, `rust-clippy`, `rust-lints`,
-  `rust-doc`, `cargo-workspace`, `cargo-deny`, `cargo-unused`, `cargo-nextest`,
-  `cargo-profiles`, `cargo-manifest`, `cargo-bump`, `git-ignore`,
-  `git-attributes`, `git-commits`, `git-changelog`, `github-ci`, `github-bump`,
-  `github-watch`, `github-dependabot`, `github-workflow-lint`, `markdown`,
-  `toml`, `yaml`, `spelling`, `shell`, `mise`, `just`, `setup`, `editorconfig`,
-  `devset`. Features: `docs`, `publish`, `binaries`, `oss`, `nightly`, `strict`,
-  `agents`.
-
-### `cargo`
-
-| Profile                                                       | What                                                                                                                                            | Owns                                                                                                                                               |
-| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`cargo-binaries`](profiles/cargo/cargo-binaries/README.md)   | A release's binaries: the workspace's, built for this machine, static on Linux, archived with a sha256                                          | `.gitignore` (block)                                                                                                                               |
-| [`cargo-bump`](profiles/cargo/cargo-bump/README.md)           | The weekly bump of Cargo requirements and git revisions: one at a time, past the cooldown, kept if it resolves                                  | `.config/mise/mise.lock` (keys)                                                                                                                    |
-| [`cargo-deny`](profiles/cargo/cargo-deny/README.md)           | cargo-deny: yanked and unmaintained crates, one version each, permissive licences, crates.io only, and the house bans                           | `deny.toml` (keys), `.config/mise/mise.lock` (keys), `AGENTS.md` (block)                                                                           |
-| [`cargo-hack`](profiles/cargo/cargo-hack/README.md)           | cargo-hack lints every crate with each of its features alone, nightly, where a feature can break                                                | `.config/mise/mise.lock` (keys)                                                                                                                    |
-| [`cargo-manifest`](profiles/cargo/cargo-manifest/README.md)   | Every crate manifest in one shape, the workspace's lints inherited, and the skill for editing them                                              | `.config/mise/mise.lock` (keys), `.claude/skills/editing-cargo-manifests/SKILL.md`, `.claude/skills/editing-cargo-manifests/references/sources.md` |
-| [`cargo-nextest`](profiles/cargo/cargo-nextest/README.md)     | cargo-nextest for every test, and cargo for the doctests; in CI, a `ci` profile that runs them all                                              | `.config/nextest.toml`, `.config/mise/mise.lock` (keys)                                                                                            |
-| [`cargo-profiles`](profiles/cargo/cargo-profiles/README.md)   | Build profiles as keys of the workspace Cargo.toml: release, bench, dev, test, profiling and release-fast                                       | `Cargo.toml` (keys), `.gitignore` (block)                                                                                                          |
-| [`cargo-publish`](profiles/cargo/cargo-publish/README.md)     | crates.io: every crate a release publishes packaged on each change, and published at the release by trusted publishing                          |                                                                                                                                                    |
-| [`cargo-unused`](profiles/cargo/cargo-unused/README.md)       | Dependencies no crate uses, found by cargo-machete from the sources and cargo-shear from the compiled graph                                     | `.config/mise/mise.lock` (keys)                                                                                                                    |
-| [`cargo-workspace`](profiles/cargo/cargo-workspace/README.md) | A Cargo workspace: scaffolded where there is none, its build output ignored, its builds portable, its requirements resolved within rust-version | `Cargo.toml`, `crates/` (4 files), `.gitignore` (block), `.cargo/config.toml` (keys)                                                               |
-
-### `devset`
-
-| Profile                                                            | What                                                                                                        | Owns                                                                    |
-| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| [`devset`](profiles/devset/devset/README.md)                       | devset itself: pinned for every machine and job, and drift from the profiles failing the checks             | `.config/mise/mise.lock` (keys), `.claude/skills/using-devset/SKILL.md` |
-| [`devset-collection`](profiles/devset/devset-collection/README.md) | For a collection of profiles: its catalog, the rules its profiles keep, its test suite, and its pins locked | `collection.toml`, `.claude/skills/authoring-devset-profiles/SKILL.md`  |
-
-### `docs`
-
-| Profile                                    | What                                                                                          | Owns                                                                                                                                                                                                 |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`lychee`](profiles/docs/lychee/README.md) | lychee checks every Markdown link: the repository's own on every change, the web's nightly    | `lychee.toml`, `.config/mise/mise.lock` (keys)                                                                                                                                                       |
-| [`mdbook`](profiles/docs/mdbook/README.md) | mdBook: the book scaffolded, built, tested and linted, with math, diagrams and the API        | `{{ book_dir }}/` (36 files) (keys, merge), `.github/automation.json` (keys), `.config/mise/mise.lock` (keys), `.gitignore` (block), `.claude/skills/writing-the-book/SKILL.md`, `AGENTS.md` (block) |
-| [`vhs`](profiles/docs/vhs/README.md)       | The README's demo: terminal sessions VHS records from docs/demo/, again at each release's tag | `.github/workflows/demo.yml`, `.github/scripts/demo.js`, `docs/` (3 files)                                                                                                                           |
-
-### `git`
-
-| Profile                                                   | What                                                                                                       | Owns                                                                                              |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| [`git-attributes`](profiles/git/git-attributes/README.md) | Git attributes: LF in the repository, CRLF for Windows scripts, and language-aware diffs                   | `.gitattributes` (block)                                                                          |
-| [`git-changelog`](profiles/git/git-changelog/README.md)   | git-cliff writes the changelog from Conventional Commits at each release, grouped, linked, breaking marked | `CHANGELOG.md`, `cliff.toml`, `.config/mise/mise.lock` (keys)                                     |
-| [`git-commits`](profiles/git/git-commits/README.md)       | committed holds every commit a branch adds to Conventional Commits, the scope the part it changes          | `committed.toml`, `.config/mise/mise.lock` (keys), `CONTRIBUTING.md` (block), `AGENTS.md` (block) |
-| [`git-ignore`](profiles/git/git-ignore/README.md)         | Git ignores what tools keep locally, editors' files, and anything that looks like a secret                 | `.gitignore` (block)                                                                              |
-
-### `github`
-
-| Profile                                                                  | What                                                                                                                                                  | Owns                                                                                                                                                        |
-| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`github-automation`](profiles/github/github-automation/README.md)       | The automation's settings and helpers: labels and types, who is assigned, how far the bump goes                                                       | `.github/automation.json` (keys, merge), `.github/scripts/automation.js`                                                                                    |
-| [`github-bump`](profiles/github/github-bump/README.md)                   | A weekly bump: every `bump-*` recipe, gated by `just check`, to a signed commit, a PR or a merge                                                      | `.github/workflows/bump.yml`, `.github/scripts/bump.js`                                                                                                     |
-| [`github-ci`](profiles/github/github-ci/README.md)                       | GitHub Actions: every `check-*` recipe a job of its own, read from the justfile, tools from the mise lock; with pages, a site built once and deployed | `.github/workflows/check.yml`, `.claude/skills/fixing-ci/SKILL.md`                                                                                          |
-| [`github-dependabot`](profiles/github/github-dependabot/README.md)       | Dependabot: weekly updates of the GitHub Actions a repository uses, in one pull request                                                               | `.github/dependabot.yml` (merge)                                                                                                                            |
-| [`github-nightly`](profiles/github/github-nightly/README.md)             | A nightly run of every `nightly-*` recipe, each a job of its own, watched                                                                             | `.github/workflows/nightly.yml`                                                                                                                             |
-| [`github-release`](profiles/github/github-release/README.md)             | A release from its tag: every package-* recipe on each platform, then the GitHub Release with git-cliff's notes                                       | `RELEASE.md`, `.github/workflows/release.yml`, `.claude/skills/cutting-releases/SKILL.md`                                                                   |
-| [`github-templates`](profiles/github/github-templates/README.md)         | GitHub's issue templates and pull request checklist, the repository's once written                                                                    | `.github/` (4 files) (once)                                                                                                                                 |
-| [`github-watch`](profiles/github/github-watch/README.md)                 | Every scheduled workflow watched: one that fails, stops running or is disabled gets an issue                                                          | `.github/workflows/watch.yml`, `.github/scripts/watch.js`                                                                                                   |
-| [`github-workflow-lint`](profiles/github/github-workflow-lint/README.md) | Every GitHub workflow checked: actionlint, zizmor's audit, and conftest against the repository's policies                                             | `.github/actionlint.yaml`, `.github/zizmor.yml`, `policy/workflows/workflows.rego`, `policy/workflows/workflows_test.rego`, `.config/mise/mise.lock` (keys) |
-
-### `lang`
-
-| Profile                                        | What                                                                                                          | Owns                                                                                                            |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| [`ansible`](profiles/lang/ansible/README.md)   | ansible-lint holds every playbook and role in .ansible/ to its production profile, on the pinned ansible-core | `.ansible-lint`, `.config/mise/mise.lock` (keys)                                                                |
-| [`dprint`](profiles/lang/dprint/README.md)     | dprint, the formatter: JSON, CSS and JavaScript, and each language profile's plugin; every plugin checksummed | `dprint.json` (keys, merge), `.config/mise/mise.lock` (keys)                                                    |
-| [`markdown`](profiles/lang/markdown/README.md) | Markdown: formatted by dprint at 80, and linted by rumdl, headings in title case                              | `.rumdl.toml` (keys, merge), `.config/mise/mise.lock` (keys), `.gitignore` (block), `dprint.json` (keys, merge) |
-| [`python`](profiles/lang/python/README.md)     | Python: linted by Ruff at the shared line width, and formatted by dprint through its Ruff plugin              | `ruff.toml` (keys, merge), `.config/mise/mise.lock` (keys), `.gitignore` (block), `dprint.json` (keys, merge)   |
-| [`shell`](profiles/lang/shell/README.md)       | ShellCheck lints every shell script the repository tracks, following what each sources                        | `.config/mise/mise.lock` (keys)                                                                                 |
-| [`spelling`](profiles/lang/spelling/README.md) | typos checks the spelling of code, documents and configuration; a repository adds its own words               | `typos.toml` (keys, merge), `.config/mise/mise.lock` (keys)                                                     |
-| [`toml`](profiles/lang/toml/README.md)         | taplo formats every TOML file in one layout: aligned, four spaces, dependencies in order                      | `taplo.toml` (keys, merge), `.config/mise/mise.lock` (keys)                                                     |
-| [`yaml`](profiles/lang/yaml/README.md)         | YAML: formatted by dprint with double quotes, and checked by yamllint for what no formatter fixes             | `.yamllint.yaml` (keys, merge), `.config/mise/mise.lock` (keys), `dprint.json` (keys, merge)                    |
-
-### `project`
-
-| Profile                                         | What                                                                                                      | Owns                                                                                                                                                                                                                       |
-| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`project`](profiles/project/project/README.md) | The documents every project keeps: the README, the licence, how to contribute, security, breaking changes | `README.md` (block), `CONTRIBUTING.md` (block), `LICENSE-MIT` (once), `LICENSE-APACHE` (once), `LICENSE` (once), `SECURITY.md` (once), `BREAKING-CHANGES.md` (once), `CODE_OF_CONDUCT.md` (once), `ARCHITECTURE.md` (once) |
-
-### `rust`
-
-| Profile                                                    | What                                                                                                                                 | Owns                         |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------- |
-| [`rust-clippy`](profiles/rust/rust-clippy/README.md)       | Clippy over every crate, target and feature, warnings denied; tests may unwrap, panic and print                                      | `clippy.toml` (keys)         |
-| [`rust-doc`](profiles/rust/rust-doc/README.md)             | rustdoc builds every crate's documentation, private items included, warnings denied                                                  | `.claude/` (9 files)         |
-| [`rust-fmt`](profiles/rust/rust-fmt/README.md)             | rustfmt on nightly options: imports by module, comments wrapped, doc examples formatted                                              | `rustfmt.toml` (keys, merge) |
-| [`rust-lints`](profiles/rust/rust-lints/README.md)         | The lint wall, as keys of the workspace Cargo.toml: rustc, rustdoc, clippy and cargo, and nightly's own lints                        | `Cargo.toml` (keys)          |
-| [`rust-msrv`](profiles/rust/rust-msrv/README.md)           | Every crate builds on the rust-version it declares: the oldest toolchain it says it supports                                         |                              |
-| [`rust-toolchain`](profiles/rust/rust-toolchain/README.md) | The toolchain a checkout builds with: rustup where missing, then one pinned nightly with miri, rustc-dev, llvm-tools and the sources | `rust-toolchain.toml` (keys) |
-
-### `tooling`
-
-| Profile                                                   | What                                                                                                          | Owns                                                             |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| [`editorconfig`](profiles/tooling/editorconfig/README.md) | EditorConfig: UTF-8, LF, a final newline, spaces, and the shared line width                                   | `.editorconfig` (merge)                                          |
-| [`just`](profiles/tooling/just/README.md)                 | The recipe spine: imports every active profile's recipes, and `check`, `fix` and the other verbs run them all | `justfile` (block), `.config/mise/mise.lock` (keys)              |
-| [`mise`](profiles/tooling/mise/README.md)                 | mise installs every tool from its lock, verified on every platform, none under three days old                 | `.config/mise/mise.lock` (keys)                                  |
-| [`setup`](profiles/tooling/setup/README.md)               | One command readies a machine for a checkout: mise, pinned and verified, then mise bootstrap and just setup   | `setup.sh`, `.devcontainer/devcontainer.json` (once)             |
-| [`suppressions`](profiles/tooling/suppressions/README.md) | Every lint suppression proves it still suppresses something, for the tools that do not report it themselves   |                                                                  |
-| [`vscode`](profiles/tooling/vscode/README.md)             | VS Code, set up for the tools the target's profiles bring: their extensions and settings                      | `.vscode/extensions.json`, `.vscode/settings.json` (keys, merge) |
+- **`agents`**:
+  [`agents`](https://atomix-labs.github.io/atxp/agents/agents.html)
+- **`bundles`**: [`rust`](https://atomix-labs.github.io/atxp/bundles/rust.html)
+- **`cargo`**:
+  [`cargo-binaries`](https://atomix-labs.github.io/atxp/cargo/cargo-binaries.html),
+  [`cargo-bump`](https://atomix-labs.github.io/atxp/cargo/cargo-bump.html),
+  [`cargo-deny`](https://atomix-labs.github.io/atxp/cargo/cargo-deny.html),
+  [`cargo-hack`](https://atomix-labs.github.io/atxp/cargo/cargo-hack.html),
+  [`cargo-manifest`](https://atomix-labs.github.io/atxp/cargo/cargo-manifest.html),
+  [`cargo-nextest`](https://atomix-labs.github.io/atxp/cargo/cargo-nextest.html),
+  [`cargo-profiles`](https://atomix-labs.github.io/atxp/cargo/cargo-profiles.html),
+  [`cargo-publish`](https://atomix-labs.github.io/atxp/cargo/cargo-publish.html),
+  [`cargo-unused`](https://atomix-labs.github.io/atxp/cargo/cargo-unused.html),
+  [`cargo-workspace`](https://atomix-labs.github.io/atxp/cargo/cargo-workspace.html)
+- **`devset`**:
+  [`devset`](https://atomix-labs.github.io/atxp/devset/devset.html),
+  [`devset-collection`](https://atomix-labs.github.io/atxp/devset/devset-collection.html)
+- **`docs`**: [`lychee`](https://atomix-labs.github.io/atxp/docs/lychee.html),
+  [`mdbook`](https://atomix-labs.github.io/atxp/docs/mdbook.html),
+  [`mdbook-tool`](https://atomix-labs.github.io/atxp/docs/mdbook-tool.html),
+  [`vhs`](https://atomix-labs.github.io/atxp/docs/vhs.html)
+- **`git`**:
+  [`git-attributes`](https://atomix-labs.github.io/atxp/git/git-attributes.html),
+  [`git-changelog`](https://atomix-labs.github.io/atxp/git/git-changelog.html),
+  [`git-commits`](https://atomix-labs.github.io/atxp/git/git-commits.html),
+  [`git-ignore`](https://atomix-labs.github.io/atxp/git/git-ignore.html)
+- **`github`**:
+  [`github-automation`](https://atomix-labs.github.io/atxp/github/github-automation.html),
+  [`github-bump`](https://atomix-labs.github.io/atxp/github/github-bump.html),
+  [`github-ci`](https://atomix-labs.github.io/atxp/github/github-ci.html),
+  [`github-dependabot`](https://atomix-labs.github.io/atxp/github/github-dependabot.html),
+  [`github-nightly`](https://atomix-labs.github.io/atxp/github/github-nightly.html),
+  [`github-release`](https://atomix-labs.github.io/atxp/github/github-release.html),
+  [`github-templates`](https://atomix-labs.github.io/atxp/github/github-templates.html),
+  [`github-watch`](https://atomix-labs.github.io/atxp/github/github-watch.html),
+  [`github-workflow-lint`](https://atomix-labs.github.io/atxp/github/github-workflow-lint.html)
+- **`lang`**: [`ansible`](https://atomix-labs.github.io/atxp/lang/ansible.html),
+  [`dprint`](https://atomix-labs.github.io/atxp/lang/dprint.html),
+  [`markdown`](https://atomix-labs.github.io/atxp/lang/markdown.html),
+  [`python`](https://atomix-labs.github.io/atxp/lang/python.html),
+  [`shell`](https://atomix-labs.github.io/atxp/lang/shell.html),
+  [`spelling`](https://atomix-labs.github.io/atxp/lang/spelling.html),
+  [`toml`](https://atomix-labs.github.io/atxp/lang/toml.html),
+  [`yaml`](https://atomix-labs.github.io/atxp/lang/yaml.html)
+- **`project`**:
+  [`project`](https://atomix-labs.github.io/atxp/project/project.html)
+- **`rust`**:
+  [`rust-clippy`](https://atomix-labs.github.io/atxp/rust/rust-clippy.html),
+  [`rust-doc`](https://atomix-labs.github.io/atxp/rust/rust-doc.html),
+  [`rust-fmt`](https://atomix-labs.github.io/atxp/rust/rust-fmt.html),
+  [`rust-lints`](https://atomix-labs.github.io/atxp/rust/rust-lints.html),
+  [`rust-msrv`](https://atomix-labs.github.io/atxp/rust/rust-msrv.html),
+  [`rust-toolchain`](https://atomix-labs.github.io/atxp/rust/rust-toolchain.html)
+- **`tooling`**:
+  [`editorconfig`](https://atomix-labs.github.io/atxp/tooling/editorconfig.html),
+  [`just`](https://atomix-labs.github.io/atxp/tooling/just.html),
+  [`mise`](https://atomix-labs.github.io/atxp/tooling/mise.html),
+  [`setup`](https://atomix-labs.github.io/atxp/tooling/setup.html),
+  [`suppressions`](https://atomix-labs.github.io/atxp/tooling/suppressions.html),
+  [`vscode`](https://atomix-labs.github.io/atxp/tooling/vscode.html)
 
 <!-- /catalog -->
 
 ## Variables
 
 A variable is a value repositories choose; one that several profiles share, such
-as `line_width`, is one variable with one default. Answer them on the command
-line, `--var line_width=120`, or when devset asks.
+as `line_width`, is one variable with one default. Answer one on the command
+line, `--var line_width=120`; devset asks for any with no default.
 
 <!-- variables: written by devset-collection -->
 
-| Variable                 | Default             | Asks                                                                                      | Declared by                                                                                                                                                                                                                                                                                                                                         |
-| ------------------------ | ------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `assignees`              | empty               | GitHub logins assigned the automation's issues and pull requests, comma-separated         | [`github-automation`](profiles/github/github-automation/README.md), [`github-dependabot`](profiles/github/github-dependabot/README.md)                                                                                                                                                                                                              |
-| `authors`                | empty               | Authors, comma-separated                                                                  | [`cargo-workspace`](profiles/cargo/cargo-workspace/README.md), [`project`](profiles/project/project/README.md)                                                                                                                                                                                                                                      |
-| `book_dir`               | `docs`              | Directory of the mdBook, its book.toml                                                    | [`lychee`](profiles/docs/lychee/README.md), [`mdbook`](profiles/docs/mdbook/README.md)                                                                                                                                                                                                                                                              |
-| `book_logo`              | empty               | The book's logo in its menu bar: its path in the book, before `-light.svg` or `-dark.svg` | [`mdbook`](profiles/docs/mdbook/README.md)                                                                                                                                                                                                                                                                                                          |
-| `book_social`            | empty               | The image a shared link to the book shows: its path in the book, as media/social.png      | [`mdbook`](profiles/docs/mdbook/README.md)                                                                                                                                                                                                                                                                                                          |
-| `bump_mode`              | `pr`                | How far the weekly bump goes: branch, or pr to open a pull request                        | [`github-automation`](profiles/github/github-automation/README.md)                                                                                                                                                                                                                                                                                  |
-| `channel`                | `nightly`           | The toolchain: nightly, the one the profiles pin, or stable                               | [`rust-fmt`](profiles/rust/rust-fmt/README.md), [`rust-toolchain`](profiles/rust/rust-toolchain/README.md)                                                                                                                                                                                                                                          |
-| `collection_description` | empty               | One line: what the collection's profiles are for                                          | [`devset-collection`](profiles/devset/devset-collection/README.md)                                                                                                                                                                                                                                                                                  |
-| `crate`                  | empty               | The crate the crates.io and docs.rs badges show; empty takes the project's name           | [`project`](profiles/project/project/README.md)                                                                                                                                                                                                                                                                                                     |
-| `description`            | empty               | One line: what the project is                                                             | [`cargo-workspace`](profiles/cargo/cargo-workspace/README.md), [`project`](profiles/project/project/README.md)                                                                                                                                                                                                                                      |
-| `kind`                   | `lib`               | What the first crate builds: lib, bin or both                                             | [`cargo-workspace`](profiles/cargo/cargo-workspace/README.md)                                                                                                                                                                                                                                                                                       |
-| `license`                | `MIT OR Apache-2.0` | The licence, an SPDX expression                                                           | [`cargo-workspace`](profiles/cargo/cargo-workspace/README.md), [`project`](profiles/project/project/README.md)                                                                                                                                                                                                                                      |
-| `line_width`             | `100`               | Line width, shared by the formatters and EditorConfig                                     | [`dprint`](profiles/lang/dprint/README.md), [`python`](profiles/lang/python/README.md), [`toml`](profiles/lang/toml/README.md), [`rust-fmt`](profiles/rust/rust-fmt/README.md), [`editorconfig`](profiles/tooling/editorconfig/README.md)                                                                                                           |
-| `logo`                   | empty               | The README's logo: its path or URL before `-light.svg` or `-dark.svg`                     | [`project`](profiles/project/project/README.md)                                                                                                                                                                                                                                                                                                     |
-| `name`                   | empty               | The project's name, and its first crate's; empty takes the directory's                    | [`cargo-workspace`](profiles/cargo/cargo-workspace/README.md), [`project`](profiles/project/project/README.md)                                                                                                                                                                                                                                      |
-| `repository`             | none                | The GitHub repository, owner/name                                                         | [`cargo-workspace`](profiles/cargo/cargo-workspace/README.md), [`mdbook`](profiles/docs/mdbook/README.md), [`git-changelog`](profiles/git/git-changelog/README.md), [`github-release`](profiles/github/github-release/README.md), [`github-templates`](profiles/github/github-templates/README.md), [`project`](profiles/project/project/README.md) |
-| `runner_labels`          | empty               | Self-hosted runner labels actionlint accepts, comma-separated                             | [`github-workflow-lint`](profiles/github/github-workflow-lint/README.md)                                                                                                                                                                                                                                                                            |
-| `rust_version`           | `1.98`              | The oldest Rust the workspace builds with                                                 | [`cargo-workspace`](profiles/cargo/cargo-workspace/README.md)                                                                                                                                                                                                                                                                                       |
+Every variable, its default, and who declares it:
+[Variables](https://atomix-labs.github.io/atxp/variables.html).
 
 <!-- /variables -->
 

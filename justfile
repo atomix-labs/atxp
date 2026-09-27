@@ -20,14 +20,20 @@ check-policies:
 bump-self:
     mise exec -- devset apply
 
-# Builds the site Pages serves, the setup stub at /setup.sh, and checks that the stub parses.
+# Builds the site Pages serves: the catalog, and the setup stub at /setup.sh, which it checks parses.
 check-site:
     #!/usr/bin/env bash
     set -euo pipefail
     rm -rf site
-    mkdir site
+    mise exec -- mdbook build catalog --dest-dir site
     cp profiles/tooling/setup/files/setup.sh site/setup.sh
     bash -n site/setup.sh
+
+# Checks the catalog's palette is the book's: the one file mdbook and devset-collection both ship.
+check-palette:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cmp profiles/docs/mdbook/files/*/theme/palette.css profiles/devset/devset-collection/files/catalog/theme/palette.css
 
 # Points the README's quick start, and the demo the release records, at v$RELEASE_VERSION.
 release-readme:
@@ -70,6 +76,7 @@ import? '.just/github-watch.just'
 import? '.just/github-workflow-lint.just'
 import? '.just/just.just'
 import? '.just/markdown.just'
+import? '.just/mdbook-tool.just'
 import? '.just/mise.just'
 import? '.just/python.just'
 import? '.just/setup.just'

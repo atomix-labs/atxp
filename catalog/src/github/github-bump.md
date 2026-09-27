@@ -1,0 +1,66 @@
+# `github-bump`
+
+A weekly bump: every `bump-*` recipe, gated by `just check`, to a signed commit,
+a PR or a merge.
+
+```sh
+devset add atxp/github-bump --git https://github.com/atomix-labs/atxp --tag <release>
+```
+
+Group `github` · In [`rust`](../bundles/rust.md): always
+
+Once a week, `bump` moves everything the repository pins. `just bump` runs every
+`bump-*` recipe, each writing what it moved, held back or could not check to a
+report; `just fix` settles the files they changed; `just check` is the gate. The
+result is one signed commit on `bot/bump`, rebuilt from the default branch each
+week, titled `chore(bump): move pinned tools and dependencies`, which
+[`git-changelog`](../git/git-changelog.md) lists under Pins. It goes as far as
+`bump.mode` in `.github/automation.json`, which
+[`github-automation`](github-automation.md) sets:
+
+| `bump.mode`    | Does                                                                        |
+| -------------- | --------------------------------------------------------------------------- |
+| `branch`       | the commit, and an issue linking to open the pull request                   |
+| `pr` (default) | also the pull request, kept up to date; an issue only while the gate is red |
+
+A person merges the pull request. With the feature `merge`, off unless the
+repository turns it on, `github-automation` writes `bump.merge`, and the
+workflow merges it itself once green; a red gate never merges.
+
+The pull request is labelled `dependencies` and assigned to the `assignees`
+[`github-automation`](github-automation.md) names, and a comment tells them how
+the gate came out, and whether it is theirs to merge.
+
+GitHub holds the checks of a pull request a run's own token opens until a
+maintainer approves them, as it does a first-time contributor's. With a GitHub
+App, whose id is the variable `BUMP_APP_ID` and whose key the secret
+`BUMP_APP_KEY`, the pull request runs them, `merge` waits for them through
+GitHub's auto-merge, and the commit may change workflows. Without one, `merge`
+merges at once on this run's own gate, the commit skipping the checks that would
+start on a branch already gone, and changes to workflows are left out and named.
+Where the default branch's rules require checks, which the run's own token
+cannot pass, the pull request is left to a person, and the comment says so.
+
+A bump that cannot check something fails the run, and
+[`github-watch`](github-watch.md) opens an issue for it. The jobs that build run
+on `ubuntu-latest`, or on the runner the repository variable `CI_RUNNER` names,
+such as `ubuntu-24.04-arm`.
+
+## Owns
+
+| File                         | Part  | Policy | Notes |
+| ---------------------------- | ----- | ------ | ----- |
+| `.github/workflows/bump.yml` | whole | owned  |       |
+| `.github/scripts/bump.js`    | whole | owned  |       |
+
+## Features
+
+| Feature | Default | Enables |
+| ------- | ------- | ------- |
+| `merge` |         |         |
+
+## Requires
+
+- [`github-automation`](github-automation.md)
+- [`github-watch`](github-watch.md)
+- [`just`](../tooling/just.md)
