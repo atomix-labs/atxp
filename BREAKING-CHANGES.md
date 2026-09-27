@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.11.0](#v0110)
+  - [`devset-collection` asks for `repository`](#devset-collection-asks-for-repository)
 - [v0.10.0](#v0100)
   - [atxp needs devset 0.5.0](#atxp-needs-devset-050)
   - [The automation's helpers are `automation.js`, and merging is a feature](#the-automations-helpers-are-automationjs-and-merging-is-a-feature)
@@ -32,6 +34,25 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.11.0
+
+### `devset-collection` Asks for `repository`
+
+**What changed.** `devset-collection` declares `repository`, the collection's
+GitHub repository as `owner/name`, which its catalog site names in its commands
+and links: the feature `site`, off unless a collection turns it on. It is the
+variable `project`, `github-release` and others declare, with no default, so a
+collection that answered it for one of them has nothing to do; one that did not
+is asked on its next run, and with `--no-input` stops there. mdBook's pin also
+moves to a profile of its own, `mdbook-tool`, which `mdbook` requires; its lock
+entries move with it, with nothing for a repository to do.
+
+**What to do.** Where the run asks, answer it with the update:
+
+```sh
+devset update atxp --tag v0.11.0 --var repository=<owner>/<name>
+```
 
 ## V0.10.0
 
