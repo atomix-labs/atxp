@@ -3,6 +3,33 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.11.0](https://github.com/atomix-labs/atxp/releases/tag/v0.11.0) - 2026-09-27
+
+### Features
+
+- [1c47f02](https://github.com/atomix-labs/atxp/commit/1c47f02b780d0f9f8335c5da32f367b8f5ff2fc0) Publish atxp's catalog at atomix-labs.github.io/atxp
+- [926e956](https://github.com/atomix-labs/atxp/commit/926e9566f85a915ea258342d0a02a72eefb63baa) *(devset-collection)* Build a catalog site with the feature `site`
+- [8b0f936](https://github.com/atomix-labs/atxp/commit/8b0f9361df48ed51a9172a79ca3bac9ab7d79863) *(mdbook-tool)* Pin mdBook in a profile of its own
+
+### Bug Fixes
+
+- [80abcb0](https://github.com/atomix-labs/atxp/commit/80abcb012649058ca133dd86a242fbea66b02ee1) *(github-automation)* Leave a pull request to a person where main requires checks
+- [cff898a](https://github.com/atomix-labs/atxp/commit/cff898ac4953f7243d56c6489103339a62736038) *(github-automation)* Skip the checks of a pull request merged at once
+- [6bcdf15](https://github.com/atomix-labs/atxp/commit/6bcdf1549ff9bf13daab4c18d0921a92f7761032) *(markdown)* Leave the case of a book summary's part titles alone
+
+### Documentation
+
+- [f654768](https://github.com/atomix-labs/atxp/commit/f654768d0485e72107e6f4384e32cf26a5c88792) Ask for devset 0.5.0 in the README's house profile
+- [91c70c6](https://github.com/atomix-labs/atxp/commit/91c70c66591e5452b1307178d332463efbcdc3dd) Write the v0.11.0 migration
+- [bec88bd](https://github.com/atomix-labs/atxp/commit/bec88bd96da45b738dbf24f26d8c65e6429f6c40) Record the demo (#41)
+- [3e4158a](https://github.com/atomix-labs/atxp/commit/3e4158a4e329b048c32d39b17271e2b29171ffc1) Record atxp's demo without the questions devset 0.5.0 no longer asks
+
+### Miscellaneous
+
+- [73e5400](https://github.com/atomix-labs/atxp/commit/73e54002b4af7415d34a3fb6a759e8e10d2a7a3c) Apply the profiles' changes to atxp, the catalog site on
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.10.0...v0.11.0>
+
 ## [0.10.0](https://github.com/atomix-labs/atxp/releases/tag/v0.10.0) - 2026-09-27
 
 ### Features
