@@ -45,14 +45,19 @@ and links: the feature `site`, off unless a collection turns it on. It is the
 variable `project`, `github-release` and others declare, with no default, so a
 collection that answered it for one of them has nothing to do; one that did not
 is asked on its next run, and with `--no-input` stops there. mdBook's pin also
-moves to a profile of its own, `mdbook-tool`, which `mdbook` requires; its lock
-entries move with it, with nothing for a repository to do.
+moves to a profile of its own, `mdbook-tool`, which `mdbook` requires, and its
+lock entries move with it.
 
 **What to do.** Where the run asks, answer it with the update:
 
 ```sh
 devset update atxp --tag v0.11.0 --var repository=<owner>/<name>
 ```
+
+devset 0.5.1 and older lose mdBook's entries in `.config/mise/mise.lock` as they
+move, and `devset status` then reports `mdbook-tool`'s part of it as drift:
+`devset apply --force` writes it again. devset 0.5.2, which atxp v0.11.1 pins,
+keeps them.
 
 ## V0.10.0
 
