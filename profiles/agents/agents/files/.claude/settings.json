@@ -1,14 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(just check*)",
-      "Bash(just fix*)",
-      "Bash(just --list)",
-      "Bash(devset status*)",
-      "Bash(devset diff*)",
-      "Bash(devset explain*)",
-      "Bash(devset features*)"
-    ],
+    "allow": ["Bash(just check*)", "Bash(just fix*)", "Bash(just --list)", "Bash(devset status*)", "Bash(devset diff*)", "Bash(devset explain*)"],
     "deny": ["Bash(just publish*)", "Bash(just bump*)"]
   }
 {%- if "hook" in devset.features %},
