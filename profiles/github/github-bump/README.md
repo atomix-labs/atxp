@@ -22,13 +22,15 @@ The pull request is labelled `dependencies` and assigned to the `assignees`
 [`github-automation`](../../github/github-automation/README.md) names, and a
 comment tells them how the gate came out, and whether it is theirs to merge.
 
-A pull request opened with a run's own token runs no workflows, so the
-repository's checks never report on it. With a GitHub App, whose id is the
-variable `BUMP_APP_ID` and whose key the secret `BUMP_APP_KEY`, the pull request
-runs them, `merge` waits for them through GitHub's auto-merge, and the commit
-may change workflows. Without one, `merge` merges on this run's own gate, and
-changes to workflows are left out and named. A default branch whose rules
-require checks needs the app: the run's own token can merge nothing there.
+GitHub holds the checks of a pull request a run's own token opens until a
+maintainer approves them, as it does a first-time contributor's. With a GitHub
+App, whose id is the variable `BUMP_APP_ID` and whose key the secret
+`BUMP_APP_KEY`, the pull request runs them, `merge` waits for them through
+GitHub's auto-merge, and the commit may change workflows. Without one, `merge`
+merges at once on this run's own gate, the commit skipping the checks that would
+start on a branch already gone, and changes to workflows are left out and named.
+A default branch whose rules require checks needs the app: the run's own token
+can merge nothing there.
 
 A bump that cannot check something fails the run, and
 [`github-watch`](../../github/github-watch/README.md) opens an issue for it. The

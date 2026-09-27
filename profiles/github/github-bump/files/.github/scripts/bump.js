@@ -8,7 +8,7 @@
 // green: by GitHub's auto-merge with an app's token, whose pull request runs the required checks;
 // else at once, on the gate this run passed.
 const fs = require("fs");
-const { settings, hold, release, propose, land } = require(
+const { settings, hold, release, propose, message, land } = require(
   `${process.env.GITHUB_WORKSPACE}/.github/scripts/automation.js`,
 );
 
@@ -99,7 +99,7 @@ module.exports = async ({ github, context, core, exec }) => {
           branchName: branch,
         },
         expectedHeadOid: head,
-        message: { headline: TITLE },
+        message: message(TITLE, { merging: merging && green, app }),
         fileChanges: {
           additions: kept.filter((c) => !c.gone).map((c) => ({
             path: c.path,

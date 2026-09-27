@@ -3,7 +3,7 @@
 // merge; with `demo.merge` in .github/automation.json, which the vhs feature `merge` sets, it
 // merges itself, every tape having played to its end. Nothing, when every recording is as it was.
 const fs = require("fs");
-const { settings, propose, land } = require(
+const { settings, propose, message, land } = require(
   `${process.env.GITHUB_WORKSPACE}/.github/scripts/automation.js`,
 );
 
@@ -29,6 +29,7 @@ async function changes(exec) {
 
 module.exports = async ({ github, context, core, exec }) => {
   const merging = settings().demo?.merge === true;
+  const app = process.env.APP === "true";
   const changed = await changes(exec);
   if (!changed.length) {
     core.info("Every recording is as it was.");
@@ -56,7 +57,7 @@ module.exports = async ({ github, context, core, exec }) => {
           branchName: branch,
         },
         expectedHeadOid: head,
-        message: { headline: title },
+        message: message(title, { merging, app }),
         fileChanges: {
           additions: changed.filter((c) => !c.gone).map((c) => ({
             path: c.path,
@@ -75,7 +76,6 @@ module.exports = async ({ github, context, core, exec }) => {
   const note = merging ? undefined : `${again} Look at it, and merge.`;
   const pull = await propose({ github, context }, "docs", { branch, title, body, note });
   if (merging) {
-    const app = process.env.APP === "true";
     await land({ github, context }, pull, { app, branch, said: again });
   }
   core.notice(`${merging ? "Merged" : "Opened"} ${pull.html_url}`);

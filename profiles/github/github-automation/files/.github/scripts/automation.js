@@ -4,7 +4,7 @@
 // An issue is one per condition, found by its exact title: opened when the condition starts,
 // commented on while it lasts, closed when it ends. A pull request is one per branch: opened, or
 // updated, with its kind's labels and the assignees, who are told in a comment what it holds and
-// what is theirs to do; in `merge` mode it merges once its gate has passed.
+// what is theirs to do; where the repository turns merging on, it merges once its gate has passed.
 const fs = require("fs");
 
 const DEFAULTS = {
@@ -100,8 +100,19 @@ async function propose({ github, context }, kind, { branch, title, body, note })
   return pull;
 }
 
+// The message of the commit a workflow puts on a pull request's branch, headed `headline`. One it
+// merges at once, with no app to hold it for its required checks, skips them: they would start on a
+// branch already merged and gone.
+function message(headline, { merging, app }) {
+  return merging && !app
+    ? { headline, body: "Merged at once by the workflow. [skip ci]" }
+    : { headline };
+}
+
 // Merges `pull`, whose gate has passed, and tells the assignees, `said` first: with an app's token,
-// by GitHub's auto-merge once its required checks pass; else at once, and its branch goes.
+// by GitHub's auto-merge once its required checks pass; else at once, and its branch goes. The
+// squashed commit is the pull request's title and `said`, so no marker of its branch's commit
+// reaches the default branch.
 async function land({ github, context }, pull, { app, branch, said }) {
   const issue = { ...context.repo, issue_number: pull.number };
   if (app) {
@@ -117,9 +128,11 @@ async function land({ github, context }, pull, { app, branch, said }) {
     ...context.repo,
     pull_number: pull.number,
     merge_method: "squash",
+    commit_title: `${pull.title} (#${pull.number})`,
+    commit_message: said,
   });
   await github.rest.git.deleteRef({ ...context.repo, ref: `heads/${branch}` });
   await github.rest.issues.createComment({ ...issue, body: `${mention()}${said} Merged.` });
 }
 
-module.exports = { settings, mention, find, hold, release, propose, land };
+module.exports = { settings, mention, find, hold, release, propose, message, land };
