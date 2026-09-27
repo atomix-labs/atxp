@@ -1,7 +1,7 @@
 [profile]
 name        = "cargo-bump"
 description = "The weekly bump of Cargo requirements and git revisions: one at a time, past the cooldown, kept if it resolves"
-devset      = ">=0.4.0"
+devset      = ">=0.5.0"
 
 [requires]
 cargo-workspace = {}

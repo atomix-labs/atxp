@@ -1,7 +1,7 @@
 [profile]
 name        = "rust-doc"
 description = "rustdoc builds every crate's documentation, private items included, warnings denied"
-devset      = ">=0.4.0"
+devset      = ">=0.5.0"
 
 [requires]
 rust-toolchain = {}

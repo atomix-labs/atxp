@@ -1,7 +1,7 @@
 [profile]
 name        = "github-dependabot"
 description = "Dependabot: weekly updates of the GitHub Actions a repository uses, in one pull request"
-devset      = ">=0.4.0"
+devset      = ">=0.5.0"
 
 [vars.assignees]
 prompt  = "GitHub logins assigned the automation's issues and pull requests, comma-separated"
