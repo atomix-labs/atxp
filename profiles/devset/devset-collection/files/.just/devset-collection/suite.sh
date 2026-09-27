@@ -108,18 +108,15 @@ if ((${#names[@]} == 0)); then
     exit 0
 fi
 
-# Adds the profile `$2` to the target in `$1`, starting the target where there is none, applied
-# the way `$3` names (`plain`, `every` or `bare`), with the flags after them.
+# Adds the profile `$2` to the target in `$1`, which `add` starts where there is none, naming the
+# source the first time, applied the way `$3` names (`plain`, `every` or `bare`), with the flags
+# after them.
 add() {
-    local dir=$1 name=$2 way=$3 flags
+    local dir=$1 name=$2 way=$3 flags source=()
     shift 3
     read -ra flags <<< "${answers[$way:$name]}"
-    if [[ -f $dir/.devset/config.toml ]]; then
-        set -- add "suite/$name" "${flags[@]}" "$@"
-    else
-        set -- init "suite/$name" --path "$root/profiles" "${flags[@]}" "$@"
-    fi
-    (cd "$dir" && "$devset" -q --no-input "$@")
+    [[ -f $dir/.devset/config.toml ]] || source=(--path "$root/profiles")
+    (cd "$dir" && "$devset" -q --no-input add "suite/$name" "${source[@]}" "${flags[@]}" "$@")
 }
 
 # Checks the target in `$1`: nothing drifts, and `just check` passes with the tools it pins.

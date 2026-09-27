@@ -18,6 +18,6 @@ export MISE_TRUSTED_CONFIG_PATHS=$work MISE_YES=1 MISE_LOCKED=1 MISE_CARGO_BINST
 git -C "$work" init -q -b main
 flags=(--var repository=example/project --var name=project)
 [[ -z $features ]] || flags+=(--features "$features")
-(cd "$work" && "$devset" -q --no-input init atxp/rust --path "$root/profiles" "${flags[@]}")
+(cd "$work" && "$devset" -q --no-input add atxp/rust --path "$root/profiles" "${flags[@]}")
 (cd "$work" && "$devset" status --exit-code > /dev/null && ./setup.sh --yes && mise exec -- just check)
 echo "ok: rust${features:+ with $features}, from nothing"

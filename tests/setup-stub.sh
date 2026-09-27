@@ -17,7 +17,7 @@ stub=$root/profiles/tooling/setup/files/setup.sh
 mkdir -p "$work/home"
 cp -R "$root/tests/fixtures/crate" "$work/src"
 git -C "$work/src" init -q -b main
-(cd "$work/src" && "$devset" -q --no-input init atxp/rust --path "$root/profiles" \
+(cd "$work/src" && "$devset" -q --no-input add atxp/rust --path "$root/profiles" \
     --var repository=example/fixture)
 printf '\nhost-probe:\n    touch host-ran\n' >> "$work/src/justfile"
 git -C "$work/src" add -A
