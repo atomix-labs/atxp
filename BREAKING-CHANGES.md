@@ -6,6 +6,9 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.10.0](#v0100)
+  - [atxp needs devset 0.5.0](#atxp-needs-devset-050)
+  - [The automation's helpers are `automation.js`, and merging is a feature](#the-automations-helpers-are-automationjs-and-merging-is-a-feature)
 - [v0.8.0](#v080)
   - [The README's header is the `project` block](#the-readmes-header-is-the-project-block)
 - [v0.7.0](#v070)
@@ -29,6 +32,45 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.10.0
+
+### atxp Needs devset 0.5.0
+
+**What changed.** Every profile requires devset 0.5.0, which keeps a JSON object
+on one line when a key joins it, as `.github/automation.json`'s `bump` does when
+the feature `merge` turns on; it also takes each default in one note and asks
+only for a variable with none. The `devset` profile pins 0.5.0.
+
+**What to do.** Take the update with devset 0.5.0, which moves the pin itself:
+
+```sh
+mise exec github:atomix-labs/devset@0.5.0 -- devset update atxp --tag v0.10.0
+```
+
+### The Automation's Helpers Are `automation.js`, and Merging Is a Feature
+
+**What changed.** `.github/scripts/issue.js` is `.github/scripts/automation.js`
+now, shipped by `github-automation`, and labels, assigns and comments on the
+automation's pull requests as it did its issues: the weekly bump's, the demo's,
+and Dependabot's are assigned to `assignees` too. Merging them is each profile's
+feature `merge`, off unless a repository turns it on: `bump.mode` is `branch` or
+`pr`, and `bump.merge`, which `github-bump`'s `merge` sets, merges the bump's
+pull request once `just check` passes; `vhs`'s `merge` does the same for the
+demo's. A `bump.mode` of `merge` still merges, with a warning naming the
+feature.
+
+**What to do.** A workflow of the repository's own that requires `issue.js`
+requires `automation.js`. Where `bump_mode` was `merge`, turn the feature on and
+answer the mode again:
+
+```sh
+devset add atxp/github-bump --features merge
+devset apply --var bump_mode=pr
+```
+
+To have the automation's issues and pull requests assigned, answer `assignees`:
+`devset apply --var assignees=<login>`.
 
 ## V0.8.0
 
