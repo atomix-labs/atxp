@@ -3,6 +3,23 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.11.1](https://github.com/atomix-labs/atxp/releases/tag/v0.11.1) - 2026-09-27
+
+### Bug Fixes
+
+- [50f8c06](https://github.com/atomix-labs/atxp/commit/50f8c060dfe020116a6ba07fe90f84c6e6eee9e8) *(devset)* Pin devset 0.5.2
+
+### Documentation
+
+- [37e17fe](https://github.com/atomix-labs/atxp/commit/37e17fec4e46fd3551679a791d92f23336c31329) Say what an older devset does to mdBook's lock entries at v0.11.0
+- [329dbdb](https://github.com/atomix-labs/atxp/commit/329dbdb7880d314dd599c987ddda000131467cfd) Record the demo for v0.11.0 (#44)
+
+### Miscellaneous
+
+- [7bb755d](https://github.com/atomix-labs/atxp/commit/7bb755d0b4740ddea9d750624a8f8869d072774f) Apply the profiles' changes to atxp
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.11.0...v0.11.1>
+
 ## [0.11.0](https://github.com/atomix-labs/atxp/releases/tag/v0.11.0) - 2026-09-27
 
 ### Features
