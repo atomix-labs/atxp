@@ -98,3 +98,4 @@ profile = "atxp/agents"
 
 [[layers]]
 profile = "atxp/vhs"
+features = ["merge"]
