@@ -1,0 +1,21 @@
+[profile]
+name        = "vhs"
+description = "The README's demo: terminal sessions VHS records from docs/demo/, again at each release's tag"
+devset      = ">=0.4.0"
+
+# Until the repository has a tape: a pair, dark and light, and a session to replace with its own.
+[scaffolds.demo]
+unless = "docs/demo/*.tape"
+
+[files.".github/workflows/demo.yml"]
+
+[files.".github/scripts/demo.js"]
+
+[files."docs/demo/demo-dark.tape"]
+scaffold = "demo"
+
+[files."docs/demo/demo-light.tape"]
+scaffold = "demo"
+
+[files."docs/demo/parts/demo.tape"]
+scaffold = "demo"
