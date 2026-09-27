@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.7.0](#v070)
+  - [atxp needs devset 0.4.0](#atxp-needs-devset-040)
 - [v0.6.0](#v060)
   - [atxp needs devset 0.3.0](#atxp-needs-devset-030)
   - [The book's prose links to the API](#the-books-prose-links-to-the-api)
@@ -25,6 +27,27 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.7.0
+
+### atxp Needs devset 0.4.0
+
+**What changed.** Every profile requires devset 0.4.0, whose ten commands the
+profiles' scripts and skills use: the weekly bump moves a source with `devset
+update <source> --tag <release>` and takes back a move that conflicts with
+`devset apply --abort`; `using-devset` teaches `devset explain` and `devset
+apply --continue`; the agents' allow-list names `devset explain` where it named
+`devset features`. The `devset` profile pins 0.4.0.
+
+**What to do.** Take the update with devset 0.4.0, which moves the pin itself:
+
+```sh
+mise exec github:atomix-labs/devset@0.4.0 -- devset update atxp --tag v0.7.0
+```
+
+A script of the repository's own that runs `devset new`, `devset init` with a
+layer, `devset features`, `devset update --continue` or `--abort`, or `devset
+schema` moves as devset's BREAKING-CHANGES.md says.
 
 ## V0.6.0
 
