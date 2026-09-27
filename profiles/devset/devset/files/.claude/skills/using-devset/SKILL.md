@@ -49,8 +49,8 @@ which before changing a file, and change each side the way devset expects.
 
 ### Features and Variables
 
-`devset features` shows each layer's features, which are on, and what turned
-each on.
+`devset explain` shows each layer's features, which are on, and what turned each
+on; `devset explain <profile>` shows one layer's, with those it leaves off.
 
 - Turn a feature on: `devset add <source>/<profile> --features <feature>`. On a
   layer the target applies, it adds to the layer's features; on a profile active
@@ -74,12 +74,17 @@ each on.
 ### Updates and Conflicts
 
 `devset update` moves every source to what its ref names now, and merges what
-the profiles changed with the repository's edits. A file both changed in one
-place conflicts: it is written to `.devset/conflicts/<path>` with markers.
+the profiles changed with the repository's edits. A source pinned to a tag stays
+there: `devset update` names the releases newer than it, and `devset update
+<source> --tag <tag>` moves it.
+
+A file both sides changed in one place conflicts, on any command that writes:
+`add`, `remove`, `apply` or `update`. It is written to
+`.devset/conflicts/<path>` with markers.
 
 1. Resolve the markers in `.devset/conflicts/<path>`, keeping both intents.
-2. `devset update --continue` checks and installs it.
-3. Or take the whole update back: `devset update --abort`.
+2. `devset apply --continue` checks and installs it.
+3. Or take the whole run back: `devset apply --abort`.
 
 The weekly bump moves each source's tag itself (`just bump-devset`), and takes
 back an update that conflicts.
@@ -87,7 +92,7 @@ back an update that conflicts.
 ## Checks
 
 - `devset status --exit-code` passes, which `just check-devset` runs: nothing
-  drifted, no update unfinished.
+  drifted, no run left unfinished by a conflict.
 - `devset diff` shows, line by line, what `devset apply` would change.
 - `just check` passes.
 
@@ -98,6 +103,6 @@ back an update that conflicts.
 - Do not add a key a profile owns under another name, or copy a managed file
   aside, to get around its policy: override the policy.
 - Do not resolve a conflict in the file itself: resolve it in
-  `.devset/conflicts/`, then `devset update --continue`.
+  `.devset/conflicts/`, then `devset apply --continue`.
 - Do not run `devset update` to apply a local change: `devset apply` applies,
   and `update` moves the sources.
