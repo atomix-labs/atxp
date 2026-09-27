@@ -1,7 +1,7 @@
 [profile]
 name        = "lychee"
 description = "lychee checks every Markdown link: the repository's own on every change, the web's nightly"
-devset      = ">=0.3.0"
+devset      = ">=0.4.0"
 
 [vars.book_dir]
 prompt  = "Directory of the mdBook, its book.toml"
