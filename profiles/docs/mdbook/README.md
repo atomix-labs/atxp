@@ -9,10 +9,24 @@ pointing at no file an error. Where a book is there, its pages stay as they are.
 It owns the rest of `book.toml` under `merge`: the theme, the repository's
 links, the site's URL, the stylesheets and scripts the features bring, the
 preprocessors, folding and search. And it owns the book's look, under `merge`: a
-wider page, collapsible definitions as cards, and a `$` prompt on `console`
-blocks. `check-mdbook` lints the book (every page in `SUMMARY.md`, every include
-and anchor there, every recipe a page names), builds it, and runs its Rust
-examples. `mdbook serve`, run in `book_dir`, serves it, rebuilt on every change.
+wider page, collapsible definitions as cards, a `$` prompt on `console` blocks,
+and GitHub's palette on mdBook's light and navy themes, which the book opens in
+by the reader's scheme.
+
+Three slots take a repository's own images:
+
+- `book_logo` names a logo to show before the title in the menu bar, a path in
+  the book drawn as `<book_logo>-light.svg` and `<book_logo>-dark.svg`, as
+  `media/mark`.
+- `book_social` names the image a shared link to the book shows, a path in the
+  book, as `media/social.png`; a block of `theme/head.hbs` carries it with the
+  page's title and the book's description, and the rest of that file is the
+  repository's.
+- The favicon is `theme/favicon.svg`, with `theme/favicon.png` beside it for
+  browsers that take no SVG, which mdBook serves as they are. `check-mdbook`
+  lints the book (every page in `SUMMARY.md`, every include and anchor there,
+  every recipe a page names), builds it, and runs its Rust examples. `mdbook
+  serve`, run in `book_dir`, serves it, rebuilt on every change.
 
 The features, all but `mermaid` on by default:
 
@@ -50,6 +64,9 @@ previewing the book.
 | `{{ book_dir }}/theme/width.css`                                        | whole | merge  |                                                |
 | `{{ book_dir }}/theme/details.css`                                      | whole | merge  |                                                |
 | `{{ book_dir }}/theme/prompt.css`                                       | whole | merge  |                                                |
+| `{{ book_dir }}/theme/palette.css`                                      | whole | merge  |                                                |
+| `{{ book_dir }}/theme/logo.css`                                         | whole | owned  | template                                       |
+| `{{ book_dir }}/theme/head.hbs`                                         | block | owned  | template                                       |
 | `{{ book_dir }}/README.md`                                              | whole | once   | scaffold `book`                                |
 | `{{ book_dir }}/vendor/katex/katex.min.css`                             | whole | owned  | feature `katex`                                |
 | `{{ book_dir }}/vendor/katex/README.md`                                 | whole | owned  | feature `katex`                                |
@@ -102,10 +119,12 @@ previewing the book.
 
 ## Variables
 
-| Variable     | Default | Asks                                   |
-| ------------ | ------- | -------------------------------------- |
-| `book_dir`   | `docs`  | Directory of the mdBook, its book.toml |
-| `repository` | none    | The GitHub repository, owner/name      |
+| Variable      | Default | Asks                                                                                      |
+| ------------- | ------- | ----------------------------------------------------------------------------------------- |
+| `book_dir`    | `docs`  | Directory of the mdBook, its book.toml                                                    |
+| `repository`  | none    | The GitHub repository, owner/name                                                         |
+| `book_logo`   | empty   | The book's logo in its menu bar: its path in the book, before `-light.svg` or `-dark.svg` |
+| `book_social` | empty   | The image a shared link to the book shows: its path in the book, as media/social.png      |
 
 ## Requires
 

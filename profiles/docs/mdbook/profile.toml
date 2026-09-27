@@ -32,6 +32,14 @@ default = "docs"
 [vars.repository]
 prompt = "The GitHub repository, owner/name"
 
+[vars.book_logo]
+prompt  = "The book's logo in its menu bar: its path in the book, before `-light.svg` or `-dark.svg`"
+default = ""
+
+[vars.book_social]
+prompt  = "The image a shared link to the book shows: its path in the book, as media/social.png"
+default = ""
+
 [scaffolds.book]
 unless = "{{ book_dir }}/book.toml"
 
@@ -58,6 +66,17 @@ policy = "merge"
 
 [files."{{ book_dir }}/theme/prompt.css"]
 policy = "merge"
+
+[files."{{ book_dir }}/theme/palette.css"]
+policy = "merge"
+
+[files."{{ book_dir }}/theme/logo.css"]
+template = true
+
+[files."{{ book_dir }}/theme/head.hbs"]
+scope    = "block"
+comment  = "<!--"
+template = true
 
 [files."{{ book_dir }}/README.md"]
 scaffold = "book"

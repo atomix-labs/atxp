@@ -1,7 +1,7 @@
 {%- set on = devset.features -%}
 [output.html]
-default-theme        = "rust"
-preferred-dark-theme = "ayu"
+default-theme        = "light"
+preferred-dark-theme = "navy"
 git-repository-url   = "https://github.com/{{ repository }}"
 edit-url-template    = "https://github.com/{{ repository }}/edit/main/{{ book_dir }}/{path}"
 site-url             = "/{{ repository | split("/") | last }}/"
@@ -11,14 +11,22 @@ site-url             = "/{{ repository | split("/") | last }}/"
 {%- if "katex" in on %}
 additional-css = [
     "vendor/katex/katex.min.css",
+    "theme/palette.css",
     "theme/prompt.css",
     "theme/width.css",
     "theme/details.css",
+    "theme/logo.css",
 ]
 additional-js = {{ js }}
 {%- else %}
-additional-css = ["theme/prompt.css", "theme/width.css", "theme/details.css"]
-additional-js  = {{ js }}
+additional-css = [
+    "theme/palette.css",
+    "theme/prompt.css",
+    "theme/width.css",
+    "theme/details.css",
+    "theme/logo.css",
+]
+additional-js = {{ js }}
 {%- endif %}
 
 [output.html.fold]
