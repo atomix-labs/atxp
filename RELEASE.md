@@ -24,7 +24,8 @@ counts as breaking.
    Every `release-*` recipe runs: `release-git-changelog` writes `CHANGELOG.md`
    from the commits since the last tag, in a Rust repository
    `release-cargo-bump` sets every crate's version, and atxp's own
-   `release-readme` points the README's quick start at the new tag.
+   `release-readme` points the README's quick start, and the demo the tag
+   records, at the new tag.
 3. Read the new section; fix a commit's subject by rewording the commit, not the
    file. Run `just check`: the release commit lands on the default branch as any
    commit does.
