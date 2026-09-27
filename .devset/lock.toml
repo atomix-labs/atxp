@@ -2,56 +2,56 @@ version = 2
 
 [[profiles]]
 name = "editorconfig"
-digest = "6d23b97fe90d15285da1303dbd557180c228d08683b32dd9c24cc640f934e643"
+digest = "66d6b633ecd207e65b8fffa55b3a184b1f46a1d81647e16ead4ab1c4ac162455"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "git-attributes"
-digest = "05247d11207937c45bb7d470447091d9a5ace15a4fa11f741adc4d3239bf040b"
+digest = "820fa13c6ab1440794f73827dfce2da88585ad98cf00ed53127bc8e52816d5f8"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "git-ignore"
-digest = "1bac58298a73473cc579082a13716ca67166f0b34a32af8ff5a269919a9fa11e"
+digest = "5ee3a77b39f9045b753973874a7ac3e38c559b5a8e417efe88676abf4eb38596"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "mise"
-digest = "e70cc8a848a4765bcc16f065512d09037892803a0280bd22d2036b9a587c297c"
+digest = "1fc02e0265571599f565c885cc38d9fa9e4e92cba069001d204ec5d053baee2c"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "just"
-digest = "ea4986f8c81d94e4da7bdddf5979216a45f018566fa095cbd1e7d8cc70948716"
+digest = "f41cfef7641317c7d59a45ea43553f00a0864b317157b3c14dbb3c82637c73fa"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "setup"
-digest = "f17b30b202e9032f1705e4a6fe470007458222af145bb604e3fccec7c77a82ed"
+digest = "b45370d214bd802d01d3e0415acb7109384d64590f6f5a9b29fee805cbf3acf9"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "github-automation"
-digest = "3e97f13d0936e32f4bb9d0eebbec77a385c497936d9792ffd02c5ae6cc27196b"
+digest = "e881f2e214943c2ca93725a5a14604341c66b1f0706fc9fc436313e8edb59e43"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "github-ci"
-digest = "175aee271d28032df505e88ed28a1ceebac0ae23d368b2ad5ed0a5f4cfc486a7"
+digest = "ae5a912203d54994e830a1fe0d9f4fddaae1f72785cb73912136b484b91255d6"
 
 [profiles.source]
 path = "profiles"
@@ -62,28 +62,28 @@ pages = ["target"]
 
 [[profiles]]
 name = "github-watch"
-digest = "375b7154e253cfc2787688f4532b3d7ae25fb36950cc9739747fcf9d3fe35754"
+digest = "f7f8916230fdc13f1f3e4e29c154a020d8a2cbe06e5278682998ac66d8c01238"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "github-bump"
-digest = "866fb4b557a43bf7f8614f3ed526084ed0de865fa50de75ee9f6dea54f497f30"
+digest = "c35e2acd5c9102749111b6c204c474f6c91552d253ace2f08354b3b9aa324b00"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "github-dependabot"
-digest = "181f496f824f308cb5b78cb70aa0188cb45d517fdf481d2b9c8087990dbf6c10"
+digest = "de312c3fdd79d86a2b3cfd2b678d77b56279376339eb2ced3d1878688383bd75"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "git-commits"
-digest = "ec967b5e8de40481772a61fde847a7d20b476c0ee04b1599c1c4974eb6d65226"
+digest = "5f10a36d30e13579403b4bb3d7ecd3c44b5be18d5cf7e8ff0b58644065d03c53"
 
 [profiles.source]
 path = "profiles"
@@ -93,7 +93,7 @@ agents = ["target"]
 
 [[profiles]]
 name = "git-changelog"
-digest = "172c88a38976c37963d984460ab8b9000521bdbc4e6c65d7755e2677c51a7ea1"
+digest = "e14b27b05e8d477fd84666721231e6158c10a800cc0a3906521cdc55dbf231c7"
 
 [profiles.source]
 path = "profiles"
@@ -103,14 +103,14 @@ breaking-changes = ["target"]
 
 [[profiles]]
 name = "spelling"
-digest = "7f90206c1849f356995896c98c12f89937b0a06d123b05b87248b2996c8d72fc"
+digest = "90931aeff5d053f91c9c57fc39e9aba2a765e4854a2e9220be2d2ad704805734"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "toml"
-digest = "1268b149e644238b0695b38af3ab21cef2bf488a7a25ec41adac8a0cc61d0eaa"
+digest = "cfcbef1754769472f76000f78e5db9749f5a01b28b4cf5722e08352e02b90a0c"
 
 [profiles.source]
 path = "profiles"
@@ -122,14 +122,14 @@ schemas = ["devset-collection/schemas"]
 
 [[profiles]]
 name = "dprint"
-digest = "30476c106433d5344d53f33288efa172f2faa8fa403d87ef715b31d6fd98831b"
+digest = "7758639656c720b03e27e8a5d34f458582eecec4a345b279fb25f39e5fba5172"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "markdown"
-digest = "5aea4ad9a12a85642a751748574734549c88a52da302e0e79c25e3b1fc331df8"
+digest = "04168b0f34828996c23a7f77feefd58f6ac7d5f3d263c4c236187b20bfe6fc8d"
 
 [profiles.source]
 path = "profiles"
@@ -140,7 +140,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "python"
-digest = "b970d5da2458ceb289b559e052621784f1741a59c4e89be5facd7a6a13473e1d"
+digest = "8243092fceedcbfef8adaef9b0e0d26332baf2dc1d868c0015985b9b8e4cc56d"
 
 [profiles.source]
 path = "profiles"
@@ -151,7 +151,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "yaml"
-digest = "7381512e47aec02a545965d326936106253dd9021349b5fdf3511a78f1678130"
+digest = "939f7f155eecafc8bd13b2e0ae7656fdad8aa8df926ffa63687c52740f7ac2a2"
 
 [profiles.source]
 path = "profiles"
@@ -162,7 +162,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "shell"
-digest = "1a0129386d4f984cad6c2da1ab83c205f7089e05ba43dc8a312ed639d8b3b0be"
+digest = "38f8a92107af55652e8e2d6a146ba6c09793575c82604cfb8d01198dfd978554"
 
 [profiles.source]
 path = "profiles"
@@ -172,7 +172,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "github-workflow-lint"
-digest = "06500b149d81516f0deb56d03183e393b5e195e4b6c9b4986f1b26026d8460d0"
+digest = "e72ee832e85f27cd26dace01a04b71124236c58374ec2182f58ecd95c492a338"
 
 [profiles.source]
 path = "profiles"
@@ -184,14 +184,14 @@ zizmor = ["default"]
 
 [[profiles]]
 name = "suppressions"
-digest = "9c47b0af3c3249e7cc43c73bd091892b5bd88a3dd68d79dae11522dbe0b89133"
+digest = "bdac960a0a117e817572c09552ef9f0b740bf2880c373d5d3c2c508b2907d584"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "075827710e4fa45e5ce0e7ff15265a80fce3363b7f31a0baf46f76278824a256"
+digest = "99931adfa697356108a3f1640e11cb236172d5fcdd933844dde7b9fce306eb4b"
 
 [profiles.source]
 path = "profiles"
@@ -201,7 +201,7 @@ agents = ["target"]
 
 [[profiles]]
 name = "devset"
-digest = "c043986a9a65b08708b4dc1224620234f5f0ceb8d00e23a18692d85e892bde25"
+digest = "c121e44328ef2e5a697fe62fa939632f986dfda84e8149437bf4c375bd34dbaa"
 
 [profiles.source]
 path = "profiles"
@@ -211,7 +211,7 @@ agents = ["target"]
 
 [[profiles]]
 name = "devset-collection"
-digest = "f2f7b29d94642d236e3769352e3584323b19119de52dfd0c6ed13289ecd5e132"
+digest = "6bc306fc25c0e6645c3fa49013f2a00e8c66646bd407ad98cf2cad730c24b756"
 
 [profiles.source]
 path = "profiles"
@@ -223,7 +223,7 @@ schemas = ["default"]
 
 [[profiles]]
 name = "agents"
-digest = "2b328e3c384b3763ea61103a50887537e38ff4a748b4ebc636cb4a342216d58b"
+digest = "fc2adf1c86aa7627178b3acd975515c055f5e8fa949579350a064f150df49923"
 
 [profiles.source]
 path = "profiles"
