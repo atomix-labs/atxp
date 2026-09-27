@@ -29,13 +29,15 @@ check-site:
     cp profiles/tooling/setup/files/setup.sh site/setup.sh
     bash -n site/setup.sh
 
-# Points the README's quick start at v$RELEASE_VERSION.
+# Points the README's quick start, and the demo the release records, at v$RELEASE_VERSION.
 release-readme:
     #!/usr/bin/env bash
     set -euo pipefail
     : "${RELEASE_VERSION:?set it: RELEASE_VERSION=x.y.z just release}"
-    sed -i.bak -E "s/--tag v[0-9]+\.[0-9]+\.[0-9]+/--tag v$RELEASE_VERSION/" README.md
-    rm README.md.bak
+    for file in README.md docs/demo/parts/demo.tape; do
+        sed -i.bak -E "s/(--tag |tag = \")v[0-9]+\.[0-9]+\.[0-9]+/\1v$RELEASE_VERSION/g" "$file"
+        rm "$file.bak"
+    done
 
 # Tests the setup stub against a repository the bundle is applied to, served from a local copy.
 test-setup-stub:
