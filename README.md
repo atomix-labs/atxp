@@ -1,23 +1,51 @@
-# atxp
+<!-- dprint-ignore-start -->
 
-[![CI][ci badge]][ci] [![License][license badge]][license]
-[![Tag][tag badge]][tags]
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/src/media/logo-dark.svg">
+    <img alt="atxp" src="docs/src/media/logo-light.svg" height="56">
+  </picture>
+</h1>
 
-[Changelog] · [Breaking Changes] · [Architecture] · [Contributing] ·
-[Report a bug] · [Request a profile]
+<p align="center">A complete, maintained setup for Rust repositories, applied and kept current by devset.</p>
 
-atxp holds profiles for [devset]: bundles of configuration, recipes and pinned
-tools that devset applies to a repository, and keeps up to date without losing
-the repository's own edits. They are one set of choices for a Rust repository,
-to apply as they are or to build on: each profile owns one concern, grouped by
-umbrella, and the `rust` bundle takes the ones every Rust repository needs, with
-features for the rest.
+<p align="center">
+  <a href="https://github.com/atomix-labs/atxp/actions/workflows/check.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/atomix-labs/atxp/check.yml?branch=main&amp;style=flat-square&amp;label=check"></a>
+  <a href="https://github.com/atomix-labs/atxp/releases"><img alt="Release" src="https://img.shields.io/github/v/release/atomix-labs/atxp?style=flat-square&amp;sort=semver"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/atomix-labs/atxp?style=flat-square"></a>
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#profiles">Profiles</a> ·
+  <a href="https://atomix-labs.github.io/devset/">devset's Manual</a> ·
+  <a href="CHANGELOG.md">Changelog</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/src/media/demo-dark.gif">
+    <img alt="An empty repository takes atxp's rust bundle with one devset add, answering each question with its default; devset explain names the features still off, and devset status finds every file matching its profile" src="docs/src/media/demo-light.gif" width="720">
+  </picture>
+</p>
+
+<!-- dprint-ignore-end -->
+
+atxp is a collection of profiles for [devset]: each one concern of a Rust
+repository, its configuration, recipes and pinned tools, which devset applies
+and keeps current without losing the repository's own edits. Take the `rust`
+bundle as it is, turn on the features you want, or build your own collection on
+top of it.
 
 <details>
 <summary>Table of Contents</summary>
 
+- [What You Get](#what-you-get)
 - [Quick Start](#quick-start)
-- [The Bundle](#the-bundle)
+- [Features](#features)
+- [Staying Current](#staying-current)
+- [Build on It](#build-on-it)
 - [Profiles](#profiles)
 - [Variables](#variables)
 - [Documentation](#documentation)
@@ -25,6 +53,19 @@ features for the rest.
 - [License](#license)
 
 </details>
+
+## What You Get
+
+| Concern           | What the bundle sets up                                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------- |
+| Formatting        | rustfmt, dprint for Markdown, JSON and YAML, and Taplo for TOML, at one line width          |
+| Lints             | Clippy with warnings denied, the lint wall, rumdl, typos, yamllint, ShellCheck, actionlint  |
+| Tests             | cargo-nextest and the doctests; with `nightly`, each feature alone, linted by cargo-hack    |
+| Dependency policy | cargo-deny, cargo-machete and cargo-shear, and a weekly bump past a three-day cooldown      |
+| CI                | GitHub Actions, a job per check, the same `just check` as on a laptop, tools from one lock  |
+| Releases          | git-cliff's changelog; with `publish`, crates.io by trusted publishing and a GitHub Release |
+| Docs              | with `docs`, an mdBook with math, diagrams and the API, its links checked by lychee         |
+| Agents            | with `agents`, AGENTS.md, CLAUDE.md, Claude Code's allow-list, and a skill per profile      |
 
 ## Quick Start
 
@@ -38,11 +79,14 @@ just check
 ```
 
 Features add to the bundle, `devset add atxp/rust --features docs,publish`, and
-any profile is a layer of its own: `devset add atxp/lychee`.
+any profile is a layer of its own: `devset add atxp/vhs`.
 
 What a repository lacks, the profiles write once and leave to it: a workspace
 and its first crate, a changelog, a justfile, and with `publish` or `oss` a
-README, the licences and the rest of a project's documents.
+README, the licences and the rest of a project's documents. What it has, they
+join: a profile that owns part of a file, keys of a TOML or JSON file or a block
+of a text file, takes only that part, and the rest stays the repository's.
+`devset add --dry-run` shows what would change first.
 
 A machine with nothing on it starts from the published setup script, which
 clones the repository first:
@@ -51,10 +95,7 @@ clones the repository first:
 curl -fsSL https://atomix-labs.github.io/atxp/setup.sh | bash -s -- github.com/<owner>/<name>
 ```
 
-`devset update` takes a newer release; `devset status` shows where every file
-stands.
-
-## The Bundle
+## Features
 
 `rust` requires the core every Rust repository has: the toolchain, formatting,
 the lint wall, rustdoc, the dependency policy, tests, build profiles, commits,
@@ -70,6 +111,35 @@ Its features add the rest, none on by default:
 | `oss`      | an open-source project's documents, with a code of conduct, and the issue and pull request templates    |
 | `nightly`  | the nightly run: every feature alone with cargo-hack, and nightly rustc's lints                         |
 | `strict`   | the house policy: cargo-deny's bans, the full lint wall, the doc lint, `panic = "abort"`                |
+
+## Staying Current
+
+`devset status` shows where every file stands, and `devset update --dry-run`
+names the newer releases. `devset update atxp --tag <release>` takes one: each
+file gets the profile's changes merged with the repository's own edits, and
+where both changed the same lines, devset stops for you to choose, and `devset
+apply --continue` finishes. The bundle's weekly bump takes each release in a
+pull request, gated by `just check`.
+
+## Build on It
+
+A team's collection can require atxp's profiles and add its own; one tag pins
+atxp for all of them:
+
+```toml
+# profiles/house/profile.toml, in your own collection
+[profile]
+name        = "house"
+description = "Our Rust repositories: atxp's bundle, with the book, and our deploy workflow"
+devset      = ">=0.4.0"
+
+[requires]
+rust = { git = "https://github.com/atomix-labs/atxp", tag = "v0.7.0", features = ["docs"] }
+
+[files.".github/workflows/deploy.yml"]
+```
+
+[Composing Profiles] in devset's manual has the rest.
 
 ## Profiles
 
@@ -239,13 +309,14 @@ line, `--var line_width=120`, or when devset asks.
 ## Contributing
 
 Issues and pull requests are welcome: read [CONTRIBUTING.md][Contributing]
-first.
+first. [Report a bug] or [request a profile].
 
 ## License
 
 MIT: see [LICENSE][license].
 
 [devset]: https://github.com/atomix-labs/devset
+[Composing Profiles]: https://atomix-labs.github.io/devset/composing.html
 [Changelog]: CHANGELOG.md
 [Breaking Changes]: BREAKING-CHANGES.md
 [Agents]: AGENTS.md
@@ -254,10 +325,5 @@ MIT: see [LICENSE][license].
 [Release]: RELEASE.md
 [Security]: SECURITY.md
 [Report a bug]: https://github.com/atomix-labs/atxp/issues/new?template=bug_report.md
-[Request a profile]: https://github.com/atomix-labs/atxp/issues/new?template=profile_request.md
-[ci]: https://github.com/atomix-labs/atxp/actions/workflows/check.yml
-[ci badge]: https://img.shields.io/github/actions/workflow/status/atomix-labs/atxp/check.yml?branch=main&style=flat-square&logo=github&label=check
+[request a profile]: https://github.com/atomix-labs/atxp/issues/new?template=profile_request.md
 [license]: LICENSE
-[license badge]: https://img.shields.io/github/license/atomix-labs/atxp?style=flat-square
-[tags]: https://github.com/atomix-labs/atxp/tags
-[tag badge]: https://img.shields.io/github/v/tag/atomix-labs/atxp?style=flat-square&sort=semver
