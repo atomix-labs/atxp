@@ -10,7 +10,7 @@ different parents, as a changelog's sections do under each release; `<details>`,
 `<picture>`, `<source>`, `<img>` and `<a>`, are the HTML a page may use;
 GitHub's issue and pull request templates, each the body of a page with its own
 title, open without a heading; and an mdBook summary titles each part of its
-book with a `#` heading.
+book with a `#` heading, in whatever case it is written.
 
 It owns those keys of `.rumdl.toml`, under `merge`: `exclude`, and `[MD063]
 ignore-words`, the names heading case leaves as they are, stay the repository's.
