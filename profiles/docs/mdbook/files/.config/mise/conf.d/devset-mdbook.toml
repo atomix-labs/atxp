@@ -1,5 +1,5 @@
+# mdBook itself is mdbook-tool's; these are the preprocessors the features bring.
 [tools]
-"github:rust-lang/mdBook" = "0.5.4"
 {%- if "katex" in devset.features %}
 # Built with cargo: its releases carry no binaries.
 "cargo:mdbook-katex" = "0.10.0"

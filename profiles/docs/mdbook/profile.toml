@@ -6,6 +6,7 @@ devset      = ">=0.5.0"
 [requires]
 github-ci      = { optional = true }
 lychee         = { optional = true }
+mdbook-tool    = {}
 rust-toolchain = {}
 
 [features]

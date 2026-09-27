@@ -130,6 +130,7 @@ previewing the book.
 
 - [`github-ci`](../../github/github-ci/README.md): optional
 - [`lychee`](../lychee/README.md): optional
+- [`mdbook-tool`](../mdbook-tool/README.md)
 - [`rust-toolchain`](../../rust/rust-toolchain/README.md)
 
 <!-- /facts -->

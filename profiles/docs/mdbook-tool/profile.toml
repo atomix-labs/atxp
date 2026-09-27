@@ -1,0 +1,12 @@
+[profile]
+name        = "mdbook-tool"
+description = "mdBook itself, pinned for every machine and job: for a book, and for a collection's catalog"
+devset      = ">=0.5.0"
+
+[requires]
+mise = {}
+
+[files.".config/mise/conf.d/devset-mdbook-tool.toml"]
+
+[files.".config/mise/mise.lock"]
+scope = "keys"
