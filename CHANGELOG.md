@@ -3,6 +3,26 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.9.0](https://github.com/atomix-labs/atxp/releases/tag/v0.9.0) - 2026-09-27
+
+### Features
+
+- [8407392](https://github.com/atomix-labs/atxp/commit/8407392d90a07fbbbde96f12834dea0874eb95f6) *(mdbook)* Theme the book in GitHub's palette, with a logo and social tags
+
+### Bug Fixes
+
+- [4461291](https://github.com/atomix-labs/atxp/commit/446129160ea221560b50b8c53cd27778dbcf798c) *(markdown)* Keep an mdBook summary's part titles
+
+### Documentation
+
+- [7806c24](https://github.com/atomix-labs/atxp/commit/7806c247f6c12e567c08f2bc6d67d0cda22ba112) Record the demo for v0.8.1
+
+### Miscellaneous
+
+- [a1ea338](https://github.com/atomix-labs/atxp/commit/a1ea338c3b67e4b96e9a306336c8aa42800c7135) Apply the profiles' changes to atxp
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.8.1...v0.9.0>
+
 ## [0.8.1](https://github.com/atomix-labs/atxp/releases/tag/v0.8.1) - 2026-09-27
 
 ### Documentation
