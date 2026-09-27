@@ -3,6 +3,25 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.10.0](https://github.com/atomix-labs/atxp/releases/tag/v0.10.0) - 2026-09-27
+
+### Features
+
+- [67714ad](https://github.com/atomix-labs/atxp/commit/67714ad2e452265eec249788f14867cdad56fa4e) Require devset 0.5.0 **breaking**
+- [8a2a9ea](https://github.com/atomix-labs/atxp/commit/8a2a9ead3267721bd57bc469d28fbc78627b329f) *(vhs)* Label and assign the demo's pull request, and merge it with `merge`
+- [e83e4bc](https://github.com/atomix-labs/atxp/commit/e83e4bc529f2da6fc229f1ae92976b191b12025d) *(github-automation)* Label, assign and comment on the automation's pull requests **breaking**
+
+### Documentation
+
+- [d9fc49c](https://github.com/atomix-labs/atxp/commit/d9fc49c6a9b438cb7842856b143d5a139e3ba42e) Write the v0.10.0 migration
+- [1bd45e1](https://github.com/atomix-labs/atxp/commit/1bd45e13f1f1ae25628290d73a9e99d673da5855) Record the demo for v0.9.1
+
+### Miscellaneous
+
+- [2e6ac01](https://github.com/atomix-labs/atxp/commit/2e6ac01ef2db48b4ab8fd3303853f77b95bf4e4c) Apply the profiles' changes to atxp
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.9.1...v0.10.0>
+
 ## [0.9.1](https://github.com/atomix-labs/atxp/releases/tag/v0.9.1) - 2026-09-27
 
 ### Bug Fixes
