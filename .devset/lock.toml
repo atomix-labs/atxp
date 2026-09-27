@@ -30,7 +30,7 @@ path = "profiles"
 
 [[profiles]]
 name = "just"
-digest = "f41cfef7641317c7d59a45ea43553f00a0864b317157b3c14dbb3c82637c73fa"
+digest = "d7c05a6b8db01c661ba8c28325d27b5ba83e7a92d59a6dd6b53613de25d62983"
 
 [profiles.source]
 path = "profiles"
@@ -103,14 +103,14 @@ breaking-changes = ["target"]
 
 [[profiles]]
 name = "spelling"
-digest = "90931aeff5d053f91c9c57fc39e9aba2a765e4854a2e9220be2d2ad704805734"
+digest = "4db1057fa25b71f82f98abec07744684529af4e2aa7f07f047a6d36db712d8ba"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "toml"
-digest = "cfcbef1754769472f76000f78e5db9749f5a01b28b4cf5722e08352e02b90a0c"
+digest = "bc0cca2d6a0b679003679cd918ec372eb087cedcfd9b088888a3d33d311a32c7"
 
 [profiles.source]
 path = "profiles"
@@ -129,7 +129,7 @@ path = "profiles"
 
 [[profiles]]
 name = "markdown"
-digest = "04168b0f34828996c23a7f77feefd58f6ac7d5f3d263c4c236187b20bfe6fc8d"
+digest = "42ebc820fa3b1677a8d928d65392a701dff748cd39306d68d5d24c577e6d9eff"
 
 [profiles.source]
 path = "profiles"
@@ -151,7 +151,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "yaml"
-digest = "939f7f155eecafc8bd13b2e0ae7656fdad8aa8df926ffa63687c52740f7ac2a2"
+digest = "f793f26d2bf3314d401fe56e05cf9c976f5414cc1b999acc64ae5c204e982909"
 
 [profiles.source]
 path = "profiles"
@@ -162,7 +162,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "shell"
-digest = "38f8a92107af55652e8e2d6a146ba6c09793575c82604cfb8d01198dfd978554"
+digest = "dfc8e7ef1a2b61fb9cb66bb610e1ccbb753baa52ac23863b84cbe28e37a44bec"
 
 [profiles.source]
 path = "profiles"
@@ -172,7 +172,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "github-workflow-lint"
-digest = "e72ee832e85f27cd26dace01a04b71124236c58374ec2182f58ecd95c492a338"
+digest = "71cdce8480b825a18bdb33cabe5dc71477191f7137bcdb3acee48a1966a53aa0"
 
 [profiles.source]
 path = "profiles"
@@ -211,7 +211,7 @@ agents = ["target"]
 
 [[profiles]]
 name = "devset-collection"
-digest = "6bc306fc25c0e6645c3fa49013f2a00e8c66646bd407ad98cf2cad730c24b756"
+digest = "fc5c3384576c6b12addb19e0f6b5c2ea5f1854baac418c2b098d5cc01231ecc3"
 
 [profiles.source]
 path = "profiles"
@@ -230,3 +230,10 @@ path = "profiles"
 
 [profiles.features]
 hook = ["default"]
+
+[[profiles]]
+name = "vhs"
+digest = "98632d5f96b513e9371556dfbe86a59ceaf3340a0b5a5e2e15d420c9d61ac129"
+
+[profiles.source]
+path = "profiles"

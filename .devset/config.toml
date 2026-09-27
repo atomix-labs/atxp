@@ -95,3 +95,6 @@ features = ["pins", "agents"]
 
 [[layers]]
 profile = "atxp/agents"
+
+[[layers]]
+profile = "atxp/vhs"

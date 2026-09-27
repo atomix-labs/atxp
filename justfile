@@ -77,6 +77,7 @@ import? '.just/shell.just'
 import? '.just/spelling.just'
 import? '.just/suppressions.just'
 import? '.just/toml.just'
+import? '.just/vhs.just'
 import? '.just/yaml.just'
 
 # Runs every `check-*` recipe, as CI does, and names each that fails.
