@@ -33,3 +33,8 @@ Thumbs.db
 # >>> devset: python >>>
 __pycache__/
 # <<< devset: python <<<
+
+# >>> devset: devset-collection >>>
+# The catalog site mdBook builds.
+/catalog/book/
+# <<< devset: devset-collection <<<

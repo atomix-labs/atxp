@@ -1,0 +1,7 @@
+/* The catalog's own rules, beside the mdbook profile's palette. */
+
+/* A profile's name, a feature or a path in a table stays on one line: they break at their hyphens
+   and slashes otherwise. */
+td code {
+  white-space: nowrap;
+}

@@ -1,0 +1,18 @@
+# The collection's catalog site: devset-collection writes its pages under src/, from the manifests
+# and each profile's README, and checks them; this file is the repository's.
+[book]
+title       = "atxp"
+description = "Profiles for devset, provided by Atomix Labs and used across its own repositories."
+language    = "en"
+src         = "src"
+
+[output.html]
+default-theme        = "light"
+preferred-dark-theme = "navy"
+no-section-label     = true
+git-repository-url   = "https://github.com/atomix-labs/atxp"
+site-url             = "/atxp/"
+additional-css       = ["theme/palette.css", "theme/catalog.css"]
+
+[output.html.search]
+enable = true

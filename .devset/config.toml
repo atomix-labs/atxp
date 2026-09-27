@@ -91,7 +91,7 @@ features = ["agents"]
 
 [[layers]]
 profile  = "atxp/devset-collection"
-features = ["pins", "agents"]
+features = ["pins", "agents", "site"]
 
 [[layers]]
 profile = "atxp/agents"

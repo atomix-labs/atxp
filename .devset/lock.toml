@@ -30,7 +30,7 @@ path = "profiles"
 
 [[profiles]]
 name = "just"
-digest = "a651c718e9ce507d0a7630ecf9efc9684d9956d4c86b7d9f933da5e5d47d9809"
+digest = "8b67af6f63e8b75b0cfaf62c88408acbcd091a2d8b8b57d095e11e35edb95f54"
 
 [profiles.source]
 path = "profiles"
@@ -44,7 +44,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-automation"
-digest = "aff2334de98f1aa19005414f9b144630dc66dc1fe52d18b634a025a0e7222f27"
+digest = "98efd9e0603a7db8b7ae83db0aaaba8ba9034388d123996a36dfa62de5f2fb88"
 
 [profiles.source]
 path = "profiles"
@@ -69,7 +69,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-bump"
-digest = "0cdae4c40816fa20b0445dd05cfcb966a07adc245b164f15fc6152cf2f8861e8"
+digest = "09f7454d93607a0d1aec8206dd570a81df28f41bdde9eb2852904eddaeddd682"
 
 [profiles.source]
 path = "profiles"
@@ -129,7 +129,7 @@ path = "profiles"
 
 [[profiles]]
 name = "markdown"
-digest = "299c97bf430c41283304d6506bc76a479593b88566ceb41f2d653a24e9338df7"
+digest = "367a6c702eab6ead9b10e544e5a79acf3b471c4a6b2fccaa37de2eae3aaf6a7f"
 
 [profiles.source]
 path = "profiles"
@@ -210,8 +210,15 @@ path = "profiles"
 agents = ["target"]
 
 [[profiles]]
+name = "mdbook-tool"
+digest = "cb1f9e1264ba2549d29990d93cab21c61c0bfe371ceb3b963a0416760ecbdc62"
+
+[profiles.source]
+path = "profiles"
+
+[[profiles]]
 name = "devset-collection"
-digest = "5e35a5a9772741c2d4ee7c6c3dba26598db5b20b6e322c6131e69fcb07578236"
+digest = "3712baa73bbcb613c0d50972e2989fdec9fbdffff714c6d93056fa1c8b212e18"
 
 [profiles.source]
 path = "profiles"
@@ -220,6 +227,7 @@ path = "profiles"
 agents = ["target"]
 pins = ["target"]
 schemas = ["default"]
+site = ["target"]
 
 [[profiles]]
 name = "agents"
@@ -233,7 +241,7 @@ hook = ["default"]
 
 [[profiles]]
 name = "vhs"
-digest = "f5b38864059dca736691f3665000b50d6d45e48e8bfaca7ba5a5666a5d885cde"
+digest = "32aa392e200442d4003f8fa9e720552a2b5c8fb792a43c5b1fdd5579fb5cc792"
 
 [profiles.source]
 path = "profiles"
