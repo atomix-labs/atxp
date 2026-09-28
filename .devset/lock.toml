@@ -241,7 +241,7 @@ hook = ["default"]
 
 [[profiles]]
 name = "vhs"
-digest = "8523d8c22fab91fd9e48a719f2d3543d3ecabb52d14bdf84ee67384b4023f076"
+digest = "7871daf09e885c5f2243f769d2b75a01ea662c7336102b9a3afd8964260ab209"
 
 [profiles.source]
 path = "profiles"
