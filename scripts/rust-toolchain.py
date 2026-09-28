@@ -3,9 +3,9 @@
 
 Usage: scripts/rust-toolchain.py <rust-toolchain.toml> [<report>]
 
-A nightly qualifies when its manifest has every component the nightly's lines name available for
-every platform the locks cover: rustup builds some components only on some nights. The channel
-never moves backwards; a check that cannot be made fails the run.
+A nightly qualifies when its manifest has every component the file names available for every
+platform the locks cover, those a feature adds included: rustup builds some components only on some
+nights. The channel never moves backwards; a check that cannot be made fails the run.
 """
 
 import datetime
@@ -21,8 +21,9 @@ WINDOW = 14
 # The triples of the platforms every lock covers: linux-arm64, linux-x64, macos-arm64.
 TRIPLES = ("aarch64-unknown-linux-gnu", "x86_64-unknown-linux-gnu", "aarch64-apple-darwin")
 CHANNEL = re.compile(r'^(channel\s*=\s*")nightly-(\d{4}-\d{2}-\d{2})(")', re.MULTILINE)
-# The components the nightly's lines name; the file is a template, whose other branch is stable's.
+# The components the file names; it is a template, and each a feature adds sits in its own gate.
 COMPONENTS = re.compile(r"^components\s*=\s*(\[[^\]]*\])", re.MULTILINE)
+GATE = re.compile(r"\{%-?.*?-?%\}")
 
 
 def manifest(day):
@@ -63,7 +64,9 @@ def main(args):
         print(f"{path}: no dated nightly `channel` to move", file=sys.stderr)
         return 1
     listed = COMPONENTS.search(text, have.end())
-    components = tomllib.loads(f"components = {listed.group(1)}")["components"] if listed else []
+    # Every component a feature can add: the pin is every repository's, whatever it turns on.
+    names = GATE.sub("", listed.group(1)) if listed else "[]"
+    components = tomllib.loads(f"components = {names}")["components"]
     today = datetime.date.today()
     want = None
     for back in range(WINDOW + 1):
