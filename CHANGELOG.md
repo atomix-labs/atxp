@@ -3,6 +3,22 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.13.0](https://github.com/atomix-labs/atxp/releases/tag/v0.13.0) - 2026-09-28
+
+### Features
+
+- [5e89824](https://github.com/atomix-labs/atxp/commit/5e89824ae189446cb985839c2c23f23f7d5ccc05) *(git-changelog)* Give performance its own group ([#57](https://github.com/atomix-labs/atxp/pull/57))
+
+### Performance
+
+- [463dadc](https://github.com/atomix-labs/atxp/commit/463dadcb79976b05ae3506f892cf5eecd6ea55a9) Start a Rust toolchain only in jobs whose recipe runs cargo ([#56](https://github.com/atomix-labs/atxp/pull/56)) **breaking**
+
+### Documentation
+
+- [30969e1](https://github.com/atomix-labs/atxp/commit/30969e160e2a32e9c81a0a2e9d60de631cd516f6) Record the demo for v0.12.1 ([#55](https://github.com/atomix-labs/atxp/pull/55))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.12.1...v0.13.0>
+
 ## [0.12.1](https://github.com/atomix-labs/atxp/releases/tag/v0.12.1) - 2026-09-28
 
 ### Bug Fixes
@@ -22,13 +38,13 @@ Every release, newest first, written by [git-cliff](https://git-cliff.org) from 
 - [9fcb794](https://github.com/atomix-labs/atxp/commit/9fcb79403fb754cb1ca26253e10ec790acabda42) *(setup)* Tell contributors how to get a checkout ready ([#50](https://github.com/atomix-labs/atxp/pull/50))
 - [2cf8550](https://github.com/atomix-labs/atxp/commit/2cf855003878276c7a5bc67826ca84331ccd6ef9) *(git-commits)* Check a pull request's title, which its squashed commit takes ([#49](https://github.com/atomix-labs/atxp/pull/49)) **breaking**
 
+### Performance
+
+- [daacea5](https://github.com/atomix-labs/atxp/commit/daacea5d81a2a7b4b4aa7ae1534177f36d3b437a) Take prebuilt tools, and have CI install and cache only what a job needs ([#48](https://github.com/atomix-labs/atxp/pull/48))
+
 ### Documentation
 
 - [cb6665b](https://github.com/atomix-labs/atxp/commit/cb6665b40c15562a11d8c99e6f2338b134d6616f) Record the demo for v0.11.1 ([#47](https://github.com/atomix-labs/atxp/pull/47))
-
-### Miscellaneous
-
-- [daacea5](https://github.com/atomix-labs/atxp/commit/daacea5d81a2a7b4b4aa7ae1534177f36d3b437a) Take prebuilt tools, and have CI install and cache only what a job needs ([#48](https://github.com/atomix-labs/atxp/pull/48))
 
 **Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.11.1...v0.12.0>
 
