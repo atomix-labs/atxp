@@ -3,6 +3,20 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.15.4](https://github.com/atomix-labs/atxp/releases/tag/v0.15.4) - 2026-09-28
+
+### Bug Fixes
+
+- [3aab3fe](https://github.com/atomix-labs/atxp/commit/3aab3feb398f45b243ee3cfc60bbd7e3f1e674fd) *(github-watch)* Count a run by hand as recovery, and say each failure once ([#99](https://github.com/atomix-labs/atxp/pull/99))
+- [8d39ac6](https://github.com/atomix-labs/atxp/commit/8d39ac6dd487b5eba494070608e2d7ccb92c2706) *(github-automation)* Leave a merge queue's pull requests to the app ([#98](https://github.com/atomix-labs/atxp/pull/98))
+- [225494e](https://github.com/atomix-labs/atxp/commit/225494e164d61de65cfca31fcd8d2629e4c6109c) *(agents)* Check only what a turn changed, with mise's tools ([#97](https://github.com/atomix-labs/atxp/pull/97))
+
+### Documentation
+
+- [d4768bc](https://github.com/atomix-labs/atxp/commit/d4768bc4ef75f7f14e67a6b6603109385b8f26a5) Record the demo for v0.15.3 ([#95](https://github.com/atomix-labs/atxp/pull/95))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.15.3...v0.15.4>
+
 ## [0.15.3](https://github.com/atomix-labs/atxp/releases/tag/v0.15.3) - 2026-09-28
 
 ### Bug Fixes
