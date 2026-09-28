@@ -62,14 +62,14 @@ pages = ["target"]
 
 [[profiles]]
 name = "github-watch"
-digest = "c9adef61336b628cffc8566d5e9084956e6ac5d3f0d8fb9184c35afa3a8ce50f"
+digest = "f7c05ce0f6d9508886d34ec8bc91e3b7f31e76f1781d2f97c9727af7fbb2aa90"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "github-bump"
-digest = "09f7454d93607a0d1aec8206dd570a81df28f41bdde9eb2852904eddaeddd682"
+digest = "471df14cfa7afcd2c9a2844d8cef0d473d99c6b730b15022e90e512af85ae184"
 
 [profiles.source]
 path = "profiles"
@@ -241,7 +241,7 @@ hook = ["default"]
 
 [[profiles]]
 name = "vhs"
-digest = "32aa392e200442d4003f8fa9e720552a2b5c8fb792a43c5b1fdd5579fb5cc792"
+digest = "6c20aee4a82e00745b60e9db37598d5ddcc5f24d8bbe5434b6b635f729e61003"
 
 [profiles.source]
 path = "profiles"

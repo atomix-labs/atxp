@@ -61,6 +61,8 @@ jobs:
         env:
           APP: ${{ steps.app.outputs.token != '' }}
         with:
+          # GitHub's API answers a 5xx now and then: each request is tried three more times.
+          retries: 3
           github-token: ${{ steps.app.outputs.token || github.token }}
           script: |
             const demo = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/demo.js`)

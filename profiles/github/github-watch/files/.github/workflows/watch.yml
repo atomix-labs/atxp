@@ -26,6 +26,8 @@ jobs:
           persist-credentials: false
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
+          # GitHub's API answers a 5xx now and then: each request is tried three more times.
+          retries: 3
           script: |
             const watch = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/watch.js`)
             await watch({ github, context, core })
