@@ -14,12 +14,15 @@ reads the justfile and runs every `check-*` recipe as a job of its own. The
 tools come from one cache, which the job `plan` fills before any recipe runs, so
 a changed lock downloads and builds each tool once rather than once a job. A job
 installs no Rust toolchain up front: one installs where a recipe first runs
-cargo, from `rust-toolchain.toml`, so a job that never builds spends nothing on
-it. Cargo's build is cached per recipe, saved from the default branch alone and
-restored by every pull request and merge group, which keeps the repository's
-caches under GitHub's limit. What `just check` runs on a checkout, CI runs, and
-no list of jobs can fall behind the recipes. Each job checks out the whole
-history, which `check-git-changelog` reads.
+cargo, from `rust-toolchain.toml`. A recipe that runs cargo, rustc, rustdoc or
+rustup says so with `[metadata("rust")]` above it, which
+[`devset-collection`](../devset/devset-collection.md) holds a collection's
+recipes to: its job restores and saves Cargo's build, per recipe, from the
+default branch alone, which every pull request and merge group restores; any
+other job starts no toolchain at all. That keeps the repository's caches under
+GitHub's limit. What `just check` runs on a checkout, CI runs, and no list of
+jobs can fall behind the recipes. Each job checks out the whole history, which
+`check-git-changelog` reads.
 
 Require the job `check` in the default branch's ruleset, beside
 [`git-commits`](../git/git-commits.md)' `title`: it passes when every recipe

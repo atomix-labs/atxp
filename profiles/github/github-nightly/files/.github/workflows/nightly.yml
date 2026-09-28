@@ -51,7 +51,14 @@ jobs:
           cache_key: ${{ env.MISE_CACHE_KEY }}
       - id: plan
         if: steps.moved.outputs.result == 'true'
-        run: echo "recipes=$(just --summary | tr ' ' '\n' | jq -Rnc '[inputs | select(startswith("nightly-"))]')" >> "$GITHUB_OUTPUT"
+        # Each `nightly-*` recipe, and whether it runs cargo: `[metadata("rust")]` above it.
+        run: |
+          recipes=$(just --dump --dump-format json | jq -c '
+            [.recipes | to_entries[] | select(.key | startswith("nightly-"))
+              | {recipe: .key, rust: ([.value.attributes[]? | objects | .metadata // empty | .[]]
+                  | index("rust") != null)}]
+            | sort_by(.recipe)')
+          echo "recipes=$recipes" >> "$GITHUB_OUTPUT"
 
   run:
     needs: plan
@@ -59,7 +66,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        recipe: ${{ fromJSON(needs.plan.outputs.recipes) }}
+        include: ${{ fromJSON(needs.plan.outputs.recipes) }}
     name: ${{ matrix.recipe }}
     runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 120
@@ -72,9 +79,9 @@ jobs:
         with:
           version: 2026.9.12
           cache_key: ${{ env.MISE_CACHE_KEY }}
-      # Each recipe's build, saved from the default branch alone; not `~/.cargo/bin`, which holds only
-      # the runner's own rustup.
-      - if: hashFiles('Cargo.lock') != ''
+      # The build of a recipe that runs cargo, as `[metadata("rust")]` says, saved from the default
+      # branch alone; not `~/.cargo/bin`, which holds only the runner's own rustup.
+      - if: matrix.rust && hashFiles('Cargo.lock') != ''
         uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           key: ${{ matrix.recipe }}

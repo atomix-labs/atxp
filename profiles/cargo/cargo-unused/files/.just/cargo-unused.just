@@ -1,6 +1,7 @@
 # By each tool the profile's features turn on.
 
 # Fails on a dependency no crate uses, and names each tool that found one.
+[metadata("rust")]
 check-cargo-unused:
     #!/usr/bin/env bash
     set -euo pipefail

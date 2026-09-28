@@ -2,5 +2,6 @@
 # builds on stable; a crate that enables them itself is no fault.
 
 # Checks the lints only nightly has.
+[metadata("rust")]
 check-rust-lints:
     RUSTFLAGS="${RUSTFLAGS:-} -Zcrate-attr=feature(non_exhaustive_omitted_patterns_lint) -Zcrate-attr=feature(strict_provenance_lints) -Aduplicate_features -Dnon_exhaustive_omitted_patterns -Dimplicit_provenance_casts" cargo check --workspace --all-targets --all-features --locked

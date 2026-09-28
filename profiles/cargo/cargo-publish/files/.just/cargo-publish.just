@@ -1,4 +1,5 @@
 # Packages every crate crates.io would publish, and builds each from its package, as crates.io will.
+[metadata("rust")]
 check-cargo-publish:
     mise exec -- python3 .just/cargo-publish.py check
 

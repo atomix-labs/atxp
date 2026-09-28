@@ -141,7 +141,9 @@ A profile owns one concern, and with it:
   one; a tool one feature brings is gated by it in both files;
 - its recipes, in `.just/<name>.just`, each `<verb>-<name>`, one recipe a verb
   that runs each tool its features turn on, with any helper as
-  `.just/<name>.<ext>` or under `.just/<name>/`;
+  `.just/<name>.<ext>` or under `.just/<name>/`; a `check-` or `nightly-` recipe
+  that runs cargo, rustc, rustdoc or rustup has `[metadata("rust")]` above it,
+  so its CI job restores Cargo's build, and no other recipe has it;
 - its output, ignored in a block of `.gitignore`.
 
 Where a repository adds to a shared file, a profile owns only its part: `scope =

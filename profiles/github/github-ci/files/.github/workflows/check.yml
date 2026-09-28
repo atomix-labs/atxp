@@ -52,14 +52,19 @@ jobs:
           cache_key: ${{ env.MISE_CACHE_KEY }}
       - id: plan
         run: |
-          recipes=$(just --summary | tr ' ' '\n' | jq -Rnc '[inputs | select(startswith("check-"))]')
+          # Each `check-*` recipe, and whether it runs cargo: `[metadata("rust")]` above it.
+          recipes=$(just --dump --dump-format json | jq -c '
+            [.recipes | to_entries[] | select(.key | startswith("check-"))
+              | {recipe: .key, rust: ([.value.attributes[]? | objects | .metadata // empty | .[]]
+                  | index("rust") != null)}]
+            | sort_by(.recipe)')
           echo "recipes=$recipes" >> "$GITHUB_OUTPUT"
 {%- endraw %}{% if "pages" in devset.features %}{% raw %}
           settings=.github/automation.json
           [[ -f $settings ]] || exit 0
           recipe=$(jq -r '.pages.recipe // empty' "$settings")
           [[ -n $recipe ]] || exit 0
-          if ! jq -e --arg recipe "$recipe" 'index($recipe)' <<< "$recipes" > /dev/null; then
+          if ! jq -e --arg recipe "$recipe" 'map(.recipe) | index($recipe)' <<< "$recipes" > /dev/null; then
             echo "::error file=$settings::pages.recipe names $recipe, which is no check recipe"
             exit 1
           fi
@@ -78,7 +83,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        recipe: ${{ fromJSON(needs.plan.outputs.recipes) }}
+        include: ${{ fromJSON(needs.plan.outputs.recipes) }}
     name: ${{ matrix.recipe }}
     runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 120
@@ -93,9 +98,10 @@ jobs:
         with:
           version: 2026.9.12
           cache_key: ${{ env.MISE_CACHE_KEY }}
-      # Each recipe's build, saved from the default branch alone, which every pull request and merge
-      # group restores; not `~/.cargo/bin`, which holds only the runner's own rustup.
-      - if: hashFiles('Cargo.lock') != ''
+      # The build of a recipe that runs cargo, as `[metadata("rust")]` says, saved from the default
+      # branch alone, which every pull request and merge group restores; not `~/.cargo/bin`, which
+      # holds only the runner's own rustup. A job whose recipe runs no Rust tool starts no toolchain.
+      - if: matrix.rust && hashFiles('Cargo.lock') != ''
         uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           key: ${{ matrix.recipe }}

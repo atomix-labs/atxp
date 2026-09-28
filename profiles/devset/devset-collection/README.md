@@ -19,15 +19,17 @@ with `collection_description`.
   description is one line, with no closing period; its README opens with its
   title; it owns a file or requires a profile, and each profile it requires is
   in the collection. Its recipes are in `.just/<name>.just`, each
-  `<verb>-<name>`, whose comment templates nothing but a feature's `{% if %}`;
-  its helpers are `.just/<name>.<ext>` or under `.just/<name>/`, and its pins
-  are in `.config/mise/conf.d/devset-<name>.toml`. A variable several profiles
-  declare, each declares alike; and every workflow a profile ships runs one
-  mise. A skill a profile ships, `.claude/skills/<skill>/SKILL.md`, opens with
-  front matter of `name` and `description` alone: the name its directory's, a
-  gerund phrase, and the description under 1024 characters. No file of a skill
-  runs a recipe, `just <recipe>` in its code, that no profile of the collection
-  defines.
+  `<verb>-<name>`, whose comment templates nothing but a feature's `{% if %}`,
+  and a `check-` or `nightly-` recipe carries `[metadata("rust")]` exactly where
+  it runs cargo, rustc, rustdoc or rustup, which
+  [`github-ci`](../../github/github-ci/README.md) reads; its helpers are
+  `.just/<name>.<ext>` or under `.just/<name>/`, and its pins are in
+  `.config/mise/conf.d/devset-<name>.toml`. A variable several profiles declare,
+  each declares alike; and every workflow a profile ships runs one mise. A skill
+  a profile ships, `.claude/skills/<skill>/SKILL.md`, opens with front matter of
+  `name` and `description` alone: the name its directory's, a gerund phrase, and
+  the description under 1024 characters. No file of a skill runs a recipe, `just
+  <recipe>` in its code, that no profile of the collection defines.
 - `just test-devset-collection` runs the suite, with the devset that
   [`devset`](../devset/README.md) pins. Every profile alone, with its default
   features and with every feature, applies without drift. Then on each fixture

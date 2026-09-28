@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.13.0](#v0130)
+  - [A recipe that runs cargo carries `[metadata("rust")]`](#a-recipe-that-runs-cargo-carries-metadatarust)
 - [v0.12.0](#v0120)
   - [`git-commits` checks a pull request's title](#git-commits-checks-a-pull-requests-title)
   - [`setup` asks for `repository`](#setup-asks-for-repository)
@@ -37,6 +39,28 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.13.0
+
+### A Recipe That Runs Cargo Carries `[metadata("rust")]`
+
+**What changed.** `github-ci`'s jobs restore Cargo's build only for a recipe
+with `[metadata("rust")]` above it, and start no toolchain for any other.
+`check-devset-collection` holds a collection's profiles to it: a `check-` or
+`nightly-` recipe that runs cargo, rustc, rustdoc or rustup carries the tag, and
+no other does. atxp's own profiles carry it already.
+
+**What to do.** In a collection of your own, add the line above each such
+recipe, below its comment:
+
+```just
+# Lints every crate, target and feature; a warning fails.
+[metadata("rust")]
+check-rust-clippy:
+```
+
+A repository's own recipe that builds with cargo, in its `justfile`, takes the
+same line to keep its CI job's cache.
 
 ## V0.12.0
 
