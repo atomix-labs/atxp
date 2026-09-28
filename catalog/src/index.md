@@ -84,7 +84,7 @@ devset add atxp/<profile> --git https://github.com/atomix-labs/atxp --tag <relea
 | [`github-dependabot`](github/github-dependabot.md)       | Dependabot: weekly updates of the GitHub Actions a repository uses, in one pull request                                                               |
 | [`github-nightly`](github/github-nightly.md)             | A nightly run of every `nightly-*` recipe, each a job of its own, watched                                                                             |
 | [`github-release`](github/github-release.md)             | A release from its tag: every package-* recipe on each platform, then the GitHub Release with git-cliff's notes                                       |
-| [`github-templates`](github/github-templates.md)         | GitHub's issue templates and pull request checklist, the repository's once written                                                                    |
+| [`github-templates`](github/github-templates.md)         | GitHub's issue forms and pull request checklist, the repository's once written                                                                        |
 | [`github-watch`](github/github-watch.md)                 | Every scheduled workflow watched: one that fails, stops running or is disabled gets an issue                                                          |
 | [`github-workflow-lint`](github/github-workflow-lint.md) | Every GitHub workflow checked: actionlint, zizmor's audit, and conftest against the repository's policies                                             |
 
