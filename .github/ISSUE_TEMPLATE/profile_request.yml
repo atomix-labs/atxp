@@ -1,0 +1,24 @@
+name: Profile request
+description: A tool or a concern a profile should own
+labels: [enhancement]
+type: Feature
+body:
+  - type: textarea
+    id: tool
+    attributes:
+      label: The tool
+      description: Its name and home page, and the version it would pin.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: What it checks or fixes that no profile does.
+    validations:
+      required: true
+  - type: textarea
+    id: owns
+    attributes:
+      label: What the profile would own
+      description: "Its configuration file, and the recipes: check, fix, bump, nightly, setup."
