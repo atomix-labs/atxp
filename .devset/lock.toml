@@ -51,7 +51,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-ci"
-digest = "b7d93b9281aa16c2d9a11c300ebf63589e894ce506f1b487eae263386670c85d"
+digest = "96ff5def1fd0f027baa31c6711a9362e6fc520e5139696ebf7d705712b70a347"
 
 [profiles.source]
 path = "profiles"
@@ -191,7 +191,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "4c9d08a34f49f83775d5ce10fcca3a8fbe0755fb308baa46fa2a3759af7b3c91"
+digest = "7148a06531006ac39730b37cfec38dd16fab13f9d84d52739e7a70ba548cc63c"
 
 [profiles.source]
 path = "profiles"
