@@ -1,6 +1,7 @@
 assignees = "RishiDarkDevil"
 bump_mode = "pr"
 collection_description = ""
+description = ""
 line_width = "100"
 repository = "atomix-labs/atxp"
 runner_labels = ""

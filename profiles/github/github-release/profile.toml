@@ -1,6 +1,6 @@
 [profile]
 name        = "github-release"
-description = "A release from its tag: every package-* recipe on each platform, then the GitHub Release with git-cliff's notes"
+description = "A release from its tag: every package-* recipe on each platform, then the GitHub Release with its notes"
 devset      = ">=0.5.0"
 
 [requires]
@@ -14,8 +14,15 @@ agents = []
 [vars.repository]
 prompt = "The GitHub repository, owner/name"
 
+[vars.description]
+prompt  = "One line: what the project is"
+default = ""
+
 [scaffolds.release]
 unless = "RELEASE.md"
+
+[scaffolds.notes]
+unless = ".github/release-notes.md"
 
 [files."RELEASE.md"]
 scaffold = "release"
@@ -23,6 +30,15 @@ template = true
 
 [files.".github/workflows/release.yml"]
 template = true
+
+[files.".github/release-notes.md"]
+scaffold = "notes"
+template = true
+
+[files.".just/github-release.just"]
+template = true
+
+[files.".just/github-release/notes.py"]
 
 [files.".claude/skills/cutting-releases/SKILL.md"]
 template = true

@@ -72,7 +72,7 @@ Empty by default · Declared by [`project`](project/project.md)
 One line: what the project is.
 
 Empty by default · Declared by [`cargo-workspace`](cargo/cargo-workspace.md),
-[`project`](project/project.md)
+[`github-release`](github/github-release.md), [`project`](project/project.md)
 
 ## `kind`
 
