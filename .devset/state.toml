@@ -130,20 +130,20 @@ canonical = "a38a61a3d1c789c6bfdd48d6335f091b2893b618b4d677c4aabb18b0184b9a50"
 policy = "once"
 
 [files.".github/scripts/automation.js"]
-exact = "d0697d0cdadfc88afa43fdc0cbb2ec2b235fbe66ab11fcdb5df808a5853e54fb"
-canonical = "d0697d0cdadfc88afa43fdc0cbb2ec2b235fbe66ab11fcdb5df808a5853e54fb"
+exact = "7350adf2485726a4425def98ea49ad525c4ee1d9f304defcf346d84f21416c30"
+canonical = "7350adf2485726a4425def98ea49ad525c4ee1d9f304defcf346d84f21416c30"
 
 [files.".github/scripts/bump.js"]
-exact = "22548ff099dc8ea7a4cf08f5654f2127c7ed75cdf2964d121c61f6a3150e292c"
-canonical = "22548ff099dc8ea7a4cf08f5654f2127c7ed75cdf2964d121c61f6a3150e292c"
+exact = "18cbf82f94e1feb6f81afd1b10a16712449cb4ffaa830ce0a8cc9477023f33be"
+canonical = "18cbf82f94e1feb6f81afd1b10a16712449cb4ffaa830ce0a8cc9477023f33be"
 
 [files.".github/scripts/demo.js"]
 exact = "5e79a2f2922857ced4a9801e1207f525b8bad53c2e5cee68930cd24dc7c7703b"
 canonical = "5e79a2f2922857ced4a9801e1207f525b8bad53c2e5cee68930cd24dc7c7703b"
 
 [files.".github/scripts/watch.js"]
-exact = "9dc6ad6420557683d275dba0188a69321c41e49349ac3e336e917358310f984c"
-canonical = "9dc6ad6420557683d275dba0188a69321c41e49349ac3e336e917358310f984c"
+exact = "59b882fbad94e0849b341b823a212d4f11b1877eb919150310479114d4359829"
+canonical = "59b882fbad94e0849b341b823a212d4f11b1877eb919150310479114d4359829"
 
 [files.".github/workflows/bump.yml"]
 exact = "2e6a5ad7a240c5860e3feef7028a9bfe2e3e035df8c599192945077d24efacf2"

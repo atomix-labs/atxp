@@ -39,11 +39,19 @@ async function find({ github, context }, kind, title) {
   return issues.find((issue) => issue.title === title && !issue.pull_request);
 }
 
-// Opens the issue `title`, or comments on it if it is open: the condition holds.
+// Opens the issue `title`, or comments on it if it is open and has not said `body` yet: the
+// condition holds, and each new turn of it is told once.
 async function hold({ github, context }, kind, title, body) {
   const open = await find({ github, context }, kind, title);
   if (open) {
-    await github.rest.issues.createComment({ ...context.repo, issue_number: open.number, body });
+    const comments = await github.paginate(github.rest.issues.listComments, {
+      ...context.repo,
+      issue_number: open.number,
+      per_page: 100,
+    });
+    if (![open.body, ...comments.map((comment) => comment.body)].includes(body)) {
+      await github.rest.issues.createComment({ ...context.repo, issue_number: open.number, body });
+    }
     return open.number;
   }
   const config = settings();
