@@ -2,12 +2,12 @@
 
 git-cliff writes `CHANGELOG.md` from the commits at each release: `just
 release`, with `RELEASE_VERSION` set, runs `release-git-changelog`, which gives
-the release its section. A release lists Features, Bug Fixes, Pins (the weekly
-bumps), Refactor, Documentation, CI and Miscellaneous; each entry links its
-commit, and its pull request where the commit is a squashed one's, names its
-scope, and is marked **breaking** where it is; and the release ends with its
-compare link. Release commits, and history that is not conventional, are left
-out; [`git-commits`](../../git/git-commits/README.md) keeps the rest
+the release its section. A release lists Features, Bug Fixes, Performance, Pins
+(the weekly bumps), Refactor, Documentation, CI and Miscellaneous; each entry
+links its commit, and its pull request where the commit is a squashed one's,
+names its scope, and is marked **breaking** where it is; and the release ends
+with its compare link. Release commits, and history that is not conventional,
+are left out; [`git-commits`](../../git/git-commits/README.md) keeps the rest
 conventional.
 
 `repository`, the GitHub repository as `owner/name`, makes the links; it has no
