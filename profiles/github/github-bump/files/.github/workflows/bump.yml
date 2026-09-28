@@ -52,6 +52,21 @@ jobs:
         run: |
           mkdir -p "$BUMP_REPORT_DIR"
           just bump
+      # A bump that moves mise itself settles and gates with the mise the tree now asks for: the
+      # setup stub's, checked against its release's sha256, or else mise's own update.
+      - name: Mise
+        run: |
+          want=$(sed -n 's/^min_version *= *"\(.*\)"$/\1/p' .config/mise/conf.d/devset-mise.toml 2> /dev/null || true)
+          have=$(mise --version | cut -d' ' -f1)
+          if [[ -z $want || $(printf '%s\n' "$want" "$have" | sort -V | head -n1) == "$want" ]]; then
+            exit 0
+          fi
+          if [[ -x setup.sh ]]; then
+            ./setup.sh --yes
+            echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          else
+            mise self-update --yes --no-plugins "$want"
+          fi
       - name: Settle
         continue-on-error: true
         run: just fix
