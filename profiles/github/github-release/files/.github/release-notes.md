@@ -1,5 +1,5 @@
 {% if description -%}
-{{ description }}.
+{{ description | trim(".") }}.
 
 {% endif -%}
 <!-- changes -->
