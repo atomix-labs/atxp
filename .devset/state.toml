@@ -150,6 +150,10 @@ canonical = "55d5881c89c0e4b30e0b8daed8f987421d1f4e7dc4d9a958da3165be26d7acd1"
 exact = "ec24a93c464170a9c5bc5216de171ace642d97836a289f60c0c2fc1f5fc61801"
 canonical = "ec24a93c464170a9c5bc5216de171ace642d97836a289f60c0c2fc1f5fc61801"
 
+[files.".github/workflows/title.yml"]
+exact = "8529a4b6808d279bdebb9488fcc53c063fc6b9892802857fcf26a4104dfef592"
+canonical = "8529a4b6808d279bdebb9488fcc53c063fc6b9892802857fcf26a4104dfef592"
+
 [files.".github/workflows/watch.yml"]
 exact = "51beac8abe7056cba86bd93d9dde1993c4ea9854ea820dc3f6c2e8a659ea51e0"
 canonical = "51beac8abe7056cba86bd93d9dde1993c4ea9854ea820dc3f6c2e8a659ea51e0"
@@ -195,8 +199,8 @@ exact = "0393ca20a05e6a7f6089b05a892c62d464ba40579649faa0f99ee6560eef4a59"
 canonical = "0393ca20a05e6a7f6089b05a892c62d464ba40579649faa0f99ee6560eef4a59"
 
 [files.".just/git-commits.just"]
-exact = "9fca67db8ccd75372f5b50876e7066b6f6b25d3dfe834a7cbc8e6661a3e9d70f"
-canonical = "9fca67db8ccd75372f5b50876e7066b6f6b25d3dfe834a7cbc8e6661a3e9d70f"
+exact = "60d03daee633864b3a0a620178bd99d2c68bcc5613856a362a1e5a75ae662dc5"
+canonical = "60d03daee633864b3a0a620178bd99d2c68bcc5613856a362a1e5a75ae662dc5"
 
 [files.".just/github-workflow-lint.just"]
 exact = "0c2d08e020c16a193f7536edb88e8d3505a204aec849a061573d30d4902209cf"
@@ -262,8 +266,8 @@ canonical = "227f8ccee4b7ff2557ea8d5bc69432b76271b650c00a5fed0ae74f2b5bb38f05"
 policy = "merge"
 
 [files."cliff.toml"]
-exact = "a416710049a94392bb577508af87b3945a2b66d56d7cb3be3450b2173c05d8e1"
-canonical = "a416710049a94392bb577508af87b3945a2b66d56d7cb3be3450b2173c05d8e1"
+exact = "818fee81fb7c15d59f43ab2400f89138fa459eba52549408e4701602d8f4d62b"
+canonical = "818fee81fb7c15d59f43ab2400f89138fa459eba52549408e4701602d8f4d62b"
 
 [files."committed.toml"]
 exact = "e247332cdf9e82db6b29a70b0d6628a6dba1054fcb1e76664602f6cda7cfe20e"
@@ -407,13 +411,13 @@ canonical = "cf8ac9a823c3b6311ca300eb7802a4d06546d23fa9b01559d1ef8acacda1545f"
 
 [parts."AGENTS.md".git-commits]
 scope = "block"
-exact = "45cc77ee89e84124fdad1b4cd10b96168665b04909972c94f5aba8a98b08c961"
-canonical = "399b6bdfaa1dca07e9e64c4074bc16a6ee64593b7e1c74a751dc3b99f42ce46d"
+exact = "2160577dedcf0b5ff8de2e5cf96184fcc97c05f301664cd3e17a40888e65fb04"
+canonical = "08202cbacde91784a85a553fdb63e216f90020c0d84fe7cab1445cbc0d99cda7"
 
 [parts."CONTRIBUTING.md".git-commits]
 scope = "block"
-exact = "f33bd71d99ca44c40904cf9e2a1942d33258da6653ca263f70b5e2c03d9a9d59"
-canonical = "d6009d01738f8efc5f4f63d1f87ccff416dd4ba4ecb7a9b77062ca756d9fde66"
+exact = "ddf288444f8d4a664c49fcdd34889f82cd5ba9897cfe00c0522db656bf7da0f8"
+canonical = "8370f539a11c7b96fad133ea2d16c668b014b3312c0c83eb4a539b356f697362"
 
 [parts."dprint.json".dprint]
 scope = "keys"

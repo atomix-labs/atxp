@@ -83,7 +83,7 @@ path = "profiles"
 
 [[profiles]]
 name = "git-commits"
-digest = "b16dd0833a451529b7dee73a438e65a683fc8d1b16fc1b6dc25f5329a099203e"
+digest = "4cabd48a667bad13af3c0ba31af83435a4045b215418ca2d36852e86d09b0f6f"
 
 [profiles.source]
 path = "profiles"
@@ -93,7 +93,7 @@ agents = ["target"]
 
 [[profiles]]
 name = "git-changelog"
-digest = "7c4365f94cc300333d4afe88f92179698f4832650749e0c8b2bda7f1b83c8f91"
+digest = "e50401340667dea9159c21a4546ff2e4bb6eeadc3c0696b20dce2544f660804f"
 
 [profiles.source]
 path = "profiles"
