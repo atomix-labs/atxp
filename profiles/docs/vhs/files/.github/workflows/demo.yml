@@ -45,12 +45,18 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # Every locked tool, so a tape runs the repository's own commands. A release run restores no
-      # cache that another ref wrote.
+      # mise alone: a release run restores no cache that another ref wrote, and the tools come next.
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
           version: 2026.9.12
+          install: false
           cache: false
+      # Every locked tool mise downloads, checked against the lock, so a tape runs the repository's
+      # own commands; those cargo builds from source are the checks' own, and no tape waits on them.
+      - run: |
+          mapfile -t tools < <(mise ls --current --json | jq -r 'keys[] | select(startswith("cargo:") | not)')
+          if ((${#tools[@]})); then mise install --locked "${tools[@]}"; fi
+          mise bin-paths >> "$GITHUB_PATH"
       # VHS, with ttyd, ffmpeg and JetBrains Mono.
       - uses: charmbracelet/vhs-action@f6d7db07a432fcd3b06772628d36a57f96d95dcf # v2.1.1
         with:

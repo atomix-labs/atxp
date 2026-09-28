@@ -17,14 +17,15 @@ made for a light page play the same session, `docs/demo/parts/demo.tape`, each
 in its own colours.
 
 On each release's tag, and on demand, the `demo` workflow records every tape
-again, with the repository's own tools, and opens a pull request with the
-recordings that changed, in one commit GitHub signs, labelled `documentation`
-and assigned to the `assignees`
-[`github-automation`](../github/github-automation.md) names. A tape that waits
-for output which no longer comes fails the workflow, so a demo does not show a
-project as it used to be. A person merges it; with the feature `merge`, off
-unless the repository turns it on, the workflow merges it itself, every tape
-having played to its end, and says so on it.
+again, with the repository's own tools, every locked one mise downloads (those
+cargo builds from source are the checks', which no tape runs, and would keep a
+release waiting on a compiler), and opens a pull request with the recordings
+that changed, in one commit GitHub signs, labelled `documentation` and assigned
+to the `assignees` [`github-automation`](../github/github-automation.md) names.
+A tape that waits for output which no longer comes fails the workflow, so a demo
+does not show a project as it used to be. A person merges it; with the feature
+`merge`, off unless the repository turns it on, the workflow merges it itself,
+every tape having played to its end, and says so on it.
 
 GitHub lets a workflow open pull requests only where the repository allows it:
 Settings, Actions, General, Workflow permissions. A pull request the workflow's
