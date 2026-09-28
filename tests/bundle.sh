@@ -10,8 +10,12 @@ set -euo pipefail
 root=$PWD
 devset=${DEVSET:-devset}
 features=${1:-}
-work=$(mktemp -d)
-trap 'rm -rf "$work"' EXIT
+scratch=$(mktemp -d)
+trap 'rm -rf "$scratch"' EXIT
+# The project takes its directory's name, in its book, its AGENTS.md and its licence: a fixed one,
+# since a random one can hold what typos reads as a misspelling.
+work=$scratch/project
+mkdir "$work"
 # Locked, as CI installs; cargo tools built by cargo, as the profiles that pin them say.
 export MISE_TRUSTED_CONFIG_PATHS=$work MISE_YES=1 MISE_LOCKED=1 MISE_CARGO_BINSTALL=0
 
