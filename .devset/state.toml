@@ -387,8 +387,8 @@ canonical = "101c66ee41425f624b75e0d8e0417a28c93be54fef7bd97514a51195d077ddf4"
 
 [parts.".github/automation.json".github-automation]
 scope = "keys"
-exact = "fe326ba7b24d0b06ea4732a0ee0a9e3597e7fdf4f665911738cd3b28359d900f"
-canonical = "fe326ba7b24d0b06ea4732a0ee0a9e3597e7fdf4f665911738cd3b28359d900f"
+exact = "ec5e0df8a74ad9ad7f204e8f7b98ee27cb6af8f22dd73904ef68c33d7de062e9"
+canonical = "ec5e0df8a74ad9ad7f204e8f7b98ee27cb6af8f22dd73904ef68c33d7de062e9"
 policy = "merge"
 
 [parts.".gitignore".devset-collection]
