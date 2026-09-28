@@ -49,7 +49,7 @@ jobs:
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         if: steps.moved.outputs.result == 'true'
         with:
-          version: 2026.9.12
+          version: 2026.9.13
           cache_key: ${{ env.MISE_CACHE_KEY }}
       - id: plan
         if: steps.moved.outputs.result == 'true'
@@ -79,7 +79,7 @@ jobs:
       # Every locked tool, from the cache `plan` filled.
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          version: 2026.9.12
+          version: 2026.9.13
           cache_key: ${{ env.MISE_CACHE_KEY }}
       # The toolchain rust-toolchain.toml names, for a recipe that runs cargo, as `[metadata("rust")]`
       # says; rust-cache runs rustc to key its cache.
