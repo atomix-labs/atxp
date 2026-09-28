@@ -7,10 +7,13 @@ keeps, how its documents are written, and the checks to run.
 
 ## Reporting Issues
 
-Open an issue with the template that fits: a **bug report** names the profile,
+Open an issue with the form that fits: a **bug report** names the profile,
 devset's version, what happened and how to reproduce it; a **profile request**
-names the tool, why, and what the profile would own. A bug in devset itself
-belongs in [devset's repository](https://github.com/atomix-labs/devset/issues).
+names the tool, why, and what the profile would own. A question, or a profile to
+talk over first, goes to
+[Discussions](https://github.com/atomix-labs/atxp/discussions), and a collection
+of your own to show others to its Show and tell. A bug in devset itself belongs
+in [devset's repository](https://github.com/atomix-labs/devset/issues).
 
 <!-- >>> devset: setup >>> -->
 
