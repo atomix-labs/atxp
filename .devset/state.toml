@@ -266,8 +266,8 @@ canonical = "227f8ccee4b7ff2557ea8d5bc69432b76271b650c00a5fed0ae74f2b5bb38f05"
 policy = "merge"
 
 [files."cliff.toml"]
-exact = "818fee81fb7c15d59f43ab2400f89138fa459eba52549408e4701602d8f4d62b"
-canonical = "818fee81fb7c15d59f43ab2400f89138fa459eba52549408e4701602d8f4d62b"
+exact = "24648657da4e950306aadb5267e9c47e41e32ec1bbe39185ce53efddfeefe12e"
+canonical = "24648657da4e950306aadb5267e9c47e41e32ec1bbe39185ce53efddfeefe12e"
 
 [files."committed.toml"]
 exact = "e247332cdf9e82db6b29a70b0d6628a6dba1054fcb1e76664602f6cda7cfe20e"
