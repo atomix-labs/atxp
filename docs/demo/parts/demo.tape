@@ -10,7 +10,7 @@ Enter
 Sleep 500ms
 Show
 
-Type "devset add atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.13.1 --var repository=you/hello"
+Type "devset add atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.13.2 --var repository=you/hello"
 Sleep 600ms
 Enter
 

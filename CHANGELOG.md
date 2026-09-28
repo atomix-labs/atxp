@@ -3,6 +3,22 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.13.2](https://github.com/atomix-labs/atxp/releases/tag/v0.13.2) - 2026-09-28
+
+### Bug Fixes
+
+- [ca8d870](https://github.com/atomix-labs/atxp/commit/ca8d8706f2638473c97737a966035e865d49c2c2) Retry the automation's GitHub API requests ([#63](https://github.com/atomix-labs/atxp/pull/63))
+
+### Documentation
+
+- [d5bb18c](https://github.com/atomix-labs/atxp/commit/d5bb18cefb09afc0b2df9f854bc19ed21e70b24f) Record the demo for v0.13.1 ([#62](https://github.com/atomix-labs/atxp/pull/62))
+
+### Miscellaneous
+
+- [b753c4d](https://github.com/atomix-labs/atxp/commit/b753c4db30d1fae826b269a2453d23b1589d51a0) Build the bundle's project in a directory of a fixed name ([#64](https://github.com/atomix-labs/atxp/pull/64))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.13.1...v0.13.2>
+
 ## [0.13.1](https://github.com/atomix-labs/atxp/releases/tag/v0.13.1) - 2026-09-28
 
 ### Bug Fixes
