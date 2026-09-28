@@ -3,6 +3,23 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.12.0](https://github.com/atomix-labs/atxp/releases/tag/v0.12.0) - 2026-09-28
+
+### Features
+
+- [9fcb794](https://github.com/atomix-labs/atxp/commit/9fcb79403fb754cb1ca26253e10ec790acabda42) *(setup)* Tell contributors how to get a checkout ready ([#50](https://github.com/atomix-labs/atxp/pull/50))
+- [2cf8550](https://github.com/atomix-labs/atxp/commit/2cf855003878276c7a5bc67826ca84331ccd6ef9) *(git-commits)* Check a pull request's title, which its squashed commit takes ([#49](https://github.com/atomix-labs/atxp/pull/49)) **breaking**
+
+### Documentation
+
+- [cb6665b](https://github.com/atomix-labs/atxp/commit/cb6665b40c15562a11d8c99e6f2338b134d6616f) Record the demo for v0.11.1 ([#47](https://github.com/atomix-labs/atxp/pull/47))
+
+### Miscellaneous
+
+- [daacea5](https://github.com/atomix-labs/atxp/commit/daacea5d81a2a7b4b4aa7ae1534177f36d3b437a) Take prebuilt tools, and have CI install and cache only what a job needs ([#48](https://github.com/atomix-labs/atxp/pull/48))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.11.1...v0.12.0>
+
 ## [0.11.1](https://github.com/atomix-labs/atxp/releases/tag/v0.11.1) - 2026-09-27
 
 ### Bug Fixes
@@ -12,7 +29,7 @@ Every release, newest first, written by [git-cliff](https://git-cliff.org) from 
 ### Documentation
 
 - [37e17fe](https://github.com/atomix-labs/atxp/commit/37e17fec4e46fd3551679a791d92f23336c31329) Say what an older devset does to mdBook's lock entries at v0.11.0
-- [329dbdb](https://github.com/atomix-labs/atxp/commit/329dbdb7880d314dd599c987ddda000131467cfd) Record the demo for v0.11.0 (#44)
+- [329dbdb](https://github.com/atomix-labs/atxp/commit/329dbdb7880d314dd599c987ddda000131467cfd) Record the demo for v0.11.0 ([#44](https://github.com/atomix-labs/atxp/pull/44))
 
 ### Miscellaneous
 
@@ -38,7 +55,7 @@ Every release, newest first, written by [git-cliff](https://git-cliff.org) from 
 
 - [f654768](https://github.com/atomix-labs/atxp/commit/f654768d0485e72107e6f4384e32cf26a5c88792) Ask for devset 0.5.0 in the README's house profile
 - [91c70c6](https://github.com/atomix-labs/atxp/commit/91c70c66591e5452b1307178d332463efbcdc3dd) Write the v0.11.0 migration
-- [bec88bd](https://github.com/atomix-labs/atxp/commit/bec88bd96da45b738dbf24f26d8c65e6429f6c40) Record the demo (#41)
+- [bec88bd](https://github.com/atomix-labs/atxp/commit/bec88bd96da45b738dbf24f26d8c65e6429f6c40) Record the demo ([#41](https://github.com/atomix-labs/atxp/pull/41))
 - [3e4158a](https://github.com/atomix-labs/atxp/commit/3e4158a4e329b048c32d39b17271e2b29171ffc1) Record atxp's demo without the questions devset 0.5.0 no longer asks
 
 ### Miscellaneous
