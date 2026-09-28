@@ -1,6 +1,6 @@
 [profile]
 name        = "git-commits"
-description = "committed holds every commit a branch adds to Conventional Commits, the scope the part it changes"
+description = "committed holds what lands to Conventional Commits: a pull request's title, which its squashed commit takes, and a branch's commits"
 devset      = ">=0.5.0"
 
 [features]
@@ -10,6 +10,9 @@ agents = []
 [files."committed.toml"]
 
 [files.".just/git-commits.just"]
+
+[files.".github/workflows/title.yml"]
+when = { profiles = ["github-ci"] }
 
 [files.".config/mise/conf.d/devset-git-commits.toml"]
 
