@@ -23,8 +23,9 @@ Run `just check` and `just test` before pushing: CI runs the same.
 
 ## Commits
 
-Commits follow [Conventional Commits](https://www.conventionalcommits.org),
-which `just check-git-commits` holds every commit of a branch to:
+A pull request lands squashed, as one commit its title names, so its **title**
+follows [Conventional Commits](https://www.conventionalcommits.org), which CI
+checks on every edit:
 
 ```text
 type(scope): subject
@@ -34,8 +35,11 @@ type(scope): subject
   `ci`, `chore`, `style` or `revert`.
 - The **subject** is imperative, lower case, with no closing period: it is the
   line the changelog shows.
-- A breaking change adds `!` after the scope, and a `BREAKING CHANGE:` footer
-  saying what to do.
+- A breaking change adds `!` after the scope, and its description says what to
+  do.
+
+The commits on your branch are yours to shape; `just check-git-commits` checks
+them against the same rules, for a branch that reads well in review.
 
 <!-- <<< devset: git-commits <<< -->
 

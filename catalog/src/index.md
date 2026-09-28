@@ -67,12 +67,12 @@ devset add atxp/<profile> --git https://github.com/atomix-labs/atxp --tag <relea
 
 ### `git`
 
-| Profile                                   | What                                                                                                       |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [`git-attributes`](git/git-attributes.md) | Git attributes: LF in the repository, CRLF for Windows scripts, and language-aware diffs                   |
-| [`git-changelog`](git/git-changelog.md)   | git-cliff writes the changelog from Conventional Commits at each release, grouped, linked, breaking marked |
-| [`git-commits`](git/git-commits.md)       | committed holds every commit a branch adds to Conventional Commits, the scope the part it changes          |
-| [`git-ignore`](git/git-ignore.md)         | Git ignores what tools keep locally, editors' files, and anything that looks like a secret                 |
+| Profile                                   | What                                                                                                                                |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| [`git-attributes`](git/git-attributes.md) | Git attributes: LF in the repository, CRLF for Windows scripts, and language-aware diffs                                            |
+| [`git-changelog`](git/git-changelog.md)   | git-cliff writes the changelog from Conventional Commits at each release, grouped, linked, breaking marked                          |
+| [`git-commits`](git/git-commits.md)       | committed holds what lands to Conventional Commits: a pull request's title, which its squashed commit takes, and a branch's commits |
+| [`git-ignore`](git/git-ignore.md)         | Git ignores what tools keep locally, editors' files, and anything that looks like a secret                                          |
 
 ### `github`
 
