@@ -3,6 +3,18 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.13.1](https://github.com/atomix-labs/atxp/releases/tag/v0.13.1) - 2026-09-28
+
+### Bug Fixes
+
+- [bd5cb6a](https://github.com/atomix-labs/atxp/commit/bd5cb6ac03134b2867bac3426dfb01078a02c064) Start no toolchain for a recipe that runs no Rust tool ([#60](https://github.com/atomix-labs/atxp/pull/60))
+
+### Documentation
+
+- [45ba859](https://github.com/atomix-labs/atxp/commit/45ba859f464da1bd519ee1e4b67e3a1ea890b98a) Record the demo for v0.13.0 ([#59](https://github.com/atomix-labs/atxp/pull/59))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.13.0...v0.13.1>
+
 ## [0.13.0](https://github.com/atomix-labs/atxp/releases/tag/v0.13.0) - 2026-09-28
 
 ### Features
