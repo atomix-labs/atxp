@@ -3,6 +3,19 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.15.2](https://github.com/atomix-labs/atxp/releases/tag/v0.15.2) - 2026-09-28
+
+### Performance
+
+- [35c9d12](https://github.com/atomix-labs/atxp/commit/35c9d12e9deee3545f4fc2375dc03bcc8a99eb53) *(vhs)* Install only the tools mise downloads in the demo ([#82](https://github.com/atomix-labs/atxp/pull/82))
+
+### Documentation
+
+- [b213815](https://github.com/atomix-labs/atxp/commit/b2138153291fb5c9e97377ca2d7d0ad1be213c2c) Send questions to Discussions, and link the issue forms ([#83](https://github.com/atomix-labs/atxp/pull/83))
+- [5452396](https://github.com/atomix-labs/atxp/commit/54523964142cfc75f8d7c4cc239969088ba93fba) Record the demo for v0.15.1 ([#81](https://github.com/atomix-labs/atxp/pull/81))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.15.1...v0.15.2>
+
 ## [0.15.1](https://github.com/atomix-labs/atxp/releases/tag/v0.15.1) - 2026-09-28
 
 ### Bug Fixes
