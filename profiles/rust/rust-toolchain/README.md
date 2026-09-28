@@ -25,8 +25,10 @@ found without a line in the shell's rc.
 It owns those keys of `rust-toolchain.toml`: `targets` stays the repository's.
 `.just/rust-toolchain.just` exports `CARGO_BUILD_TARGET` as the host's triple,
 so every cargo command names its target and keeps `RUSTFLAGS` off host build
-scripts, which a build under `target-cpu=native` can break; a recipe whose
-output must land in `target/doc` rather than `target/<triple>/doc` unsets it.
+scripts, which a build under `target-cpu=native` can break. The triple is the
+machine's, from just's `arch()` and `os()` and the C library, not rustc's, so a
+recipe that runs no Rust tool starts no toolchain; a recipe whose output must
+land in `target/doc` rather than `target/<triple>/doc` unsets it.
 
 <!-- facts: written by devset-collection -->
 
