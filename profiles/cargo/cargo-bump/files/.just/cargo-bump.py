@@ -2,7 +2,7 @@
 
 Usage: cargo-bump.py [<report>]
 
-For every workspace root: each requirement `cargo upgrade` would move, to a release at least three
+For every workspace root, but one a root's `[workspace] exclude` leaves out: each requirement `cargo upgrade` would move, to a release at least three
 days old, is moved on its own and kept only if the workspace still resolves; each git dependency
 pinned by `rev` moves to its repository's HEAD once that commit is three days old; then every
 lockfile is settled. Crates named in the root's `[workspace.metadata.bump] exclude` stay put.
@@ -33,9 +33,16 @@ def run(*args, check=True):
 
 
 def roots():
-    """Every manifest that is a workspace root."""
+    """Every manifest that is a workspace root, but one under a path another root's `[workspace]
+    exclude` names, as a crate's examples or test fixtures are: those are data, not workspaces."""
     out = run("git", "grep", "-lE", r"^\[workspace\]", "--", "**/Cargo.toml", "Cargo.toml", check=False)
-    return [Path(line) for line in out.stdout.split()]
+    found = [Path(line) for line in out.stdout.split()]
+    excluded = []
+    for root in found:
+        with root.open("rb") as file:
+            paths = tomllib.load(file).get("workspace", {}).get("exclude", [])
+        excluded += [Path(os.path.normpath(root.parent / path)) for path in paths]
+    return [root for root in found if not any(root.is_relative_to(path) for path in excluded)]
 
 
 def excluded(root):
