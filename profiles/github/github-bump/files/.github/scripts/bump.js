@@ -140,7 +140,9 @@ module.exports = async ({ github, context, core, exec }) => {
     note,
   });
   if (!green) {
-    await hold({ github, context }, "broken", red, `The gate failed on ${pull.html_url}.`);
+    const run =
+      `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+    await hold({ github, context }, "broken", red, `The gate failed on ${pull.html_url}: ${run}`);
     return;
   }
   await release({ github, context }, "broken", red, `Green again: ${pull.html_url}.`);

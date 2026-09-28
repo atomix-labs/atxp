@@ -44,7 +44,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-automation"
-digest = "4fec9af2dbf3f9084b26c5fcc784f3f3fc961600a1b88411215862030092cd14"
+digest = "dbbaf8f427f9adb5a4ca5cac0b8c0334ee085fec9e593455b43179e67c91b486"
 
 [profiles.source]
 path = "profiles"
@@ -62,14 +62,14 @@ pages = ["target"]
 
 [[profiles]]
 name = "github-watch"
-digest = "f7c05ce0f6d9508886d34ec8bc91e3b7f31e76f1781d2f97c9727af7fbb2aa90"
+digest = "67ee3e4eff704a12d016dc5dc8a33b97cc5602bc9ecc6195803c6fbb7e407d3e"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "github-bump"
-digest = "9aacc39d82c57af542aa0d10af9fb1d739bfd8656011e637ab0390f971b13c67"
+digest = "71989bec8d7e6bdc433e7629f42e5ae9b2505abb887ee7c513efedeca31e1f80"
 
 [profiles.source]
 path = "profiles"
