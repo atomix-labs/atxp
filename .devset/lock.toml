@@ -23,7 +23,7 @@ path = "profiles"
 
 [[profiles]]
 name = "mise"
-digest = "f5bdba05cb79541e2366e704841238453f1e41cd2881038da9212e7a76349882"
+digest = "5f35eeb235a92af1d548ae0b46847ef02d0b79be82e498a6ad5ad702965c59b6"
 
 [profiles.source]
 path = "profiles"
@@ -37,7 +37,7 @@ path = "profiles"
 
 [[profiles]]
 name = "setup"
-digest = "7f2e19d3e05a02f1861a6b59effb2fc9fee27ec78fd3951f756bafa8c447692c"
+digest = "e27d112625605930681215e36476c685f60669f01aa38ad31249e8da750f803f"
 
 [profiles.source]
 path = "profiles"
@@ -51,7 +51,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-ci"
-digest = "e25c4b4e365de63980a68493d7f0f99f9cdb24109fcc1b908870d5aa136f99a6"
+digest = "e891d0b1bb6db648ae1525f108e4c8e0a69055b2c97787279591366f8d740104"
 
 [profiles.source]
 path = "profiles"
@@ -69,7 +69,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-bump"
-digest = "7f7b5a9c0ccfbd88e153a79e66b56b61b9221146c41983de53ce69487bd15239"
+digest = "9aacc39d82c57af542aa0d10af9fb1d739bfd8656011e637ab0390f971b13c67"
 
 [profiles.source]
 path = "profiles"
@@ -86,7 +86,7 @@ path = "profiles"
 
 [[profiles]]
 name = "git-commits"
-digest = "4cabd48a667bad13af3c0ba31af83435a4045b215418ca2d36852e86d09b0f6f"
+digest = "7e0312972c875fe7c12fa743f19019e345b9556a642c4edb06e9479b47d95cae"
 
 [profiles.source]
 path = "profiles"
@@ -125,14 +125,14 @@ schemas = ["devset-collection/schemas"]
 
 [[profiles]]
 name = "dprint"
-digest = "2d2d2fc7ffe0be6d69f28cefb846ba5762c114ef61994ed1bc329037ffcec8f0"
+digest = "8c85d7ab6242a0d2aff16010af192ee1cc01323147c4b2622eb3f77ae5c9e6b2"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "markdown"
-digest = "43910d5eb7a90efd888e37b7798426a90a98fbdd1e6ab9b1afc1e6e3df58ae96"
+digest = "75442bf10ec9c3f3dcd3e9e15d427f2fc9fecfc42375fc08ce3346969b617b6e"
 
 [profiles.source]
 path = "profiles"
@@ -143,7 +143,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "python"
-digest = "5032c4a3a9e6f595bd261c3d5bf3f5777e060f72dd0a79a5d6c25a040aa52b87"
+digest = "72b39c451656b80a23228076e31dbf4110d797dae04f14f31a095b6b8c706581"
 
 [profiles.source]
 path = "profiles"
@@ -194,7 +194,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "ceeb10fcd356f165acc30504655353bc06eaca0ca4386271487a465f6f425ada"
+digest = "1d646b0551786ca81f7ebde535a91d9f79f810e5bd918ef50c4189520603338f"
 
 [profiles.source]
 path = "profiles"
@@ -244,7 +244,7 @@ hook = ["default"]
 
 [[profiles]]
 name = "vhs"
-digest = "7871daf09e885c5f2243f769d2b75a01ea662c7336102b9a3afd8964260ab209"
+digest = "eb9f20b4e666a181612a443fcf7e085f95be381075db938c2df945a572fbe43f"
 
 [profiles.source]
 path = "profiles"

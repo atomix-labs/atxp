@@ -1,5 +1,5 @@
 [[tools."pipx:ansible-lint"]]
-version = "26.8.0"
+version = "26.9.0"
 backend = "pipx:ansible-lint"
 
 [tools."pipx:ansible-lint".options]

@@ -1,4 +1,4 @@
 # ansible-lint, beside the ansible-core the playbooks run on, installed together by uv.
 [tools."pipx:ansible-lint"]
-version = "26.8.0"
+version = "26.9.0"
 uvx_args = "--with ansible-core==2.21.4"
