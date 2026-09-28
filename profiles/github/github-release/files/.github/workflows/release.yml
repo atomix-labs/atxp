@@ -2,6 +2,8 @@
 # each platform the locks cover, attests it, publishes the GitHub Release, git-cliff's notes for the
 # tag and every archive with its sha256, then runs every `publish-*` recipe, which puts the release
 # in a registry. `just release` wrote the changelog and the versions before the tag; RELEASE.md says how.
+# Every job installs its tools afresh and builds from nothing: a release restores no cache that
+# another ref wrote.
 name: release
 
 on:
