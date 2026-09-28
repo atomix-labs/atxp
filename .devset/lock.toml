@@ -129,7 +129,7 @@ path = "profiles"
 
 [[profiles]]
 name = "markdown"
-digest = "367a6c702eab6ead9b10e544e5a79acf3b471c4a6b2fccaa37de2eae3aaf6a7f"
+digest = "43910d5eb7a90efd888e37b7798426a90a98fbdd1e6ab9b1afc1e6e3df58ae96"
 
 [profiles.source]
 path = "profiles"
@@ -191,7 +191,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "7148a06531006ac39730b37cfec38dd16fab13f9d84d52739e7a70ba548cc63c"
+digest = "ceeb10fcd356f165acc30504655353bc06eaca0ca4386271487a465f6f425ada"
 
 [profiles.source]
 path = "profiles"

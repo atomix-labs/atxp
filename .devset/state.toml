@@ -18,6 +18,12 @@ decision = "found"
 [scaffolds."git-changelog/changelog"]
 decision = "found"
 
+[scaffolds."github-release/notes"]
+decision = "written"
+
+[scaffolds."github-release/notes".files]
+".github/release-notes.md" = ".github/release-notes.md"
+
 [scaffolds."github-release/release"]
 decision = "found"
 
@@ -118,6 +124,11 @@ exact = "631e5ee108f3631eb853b1d6845020dad44d0ee3ab9bba162f8c23344de38058"
 canonical = "631e5ee108f3631eb853b1d6845020dad44d0ee3ab9bba162f8c23344de38058"
 policy = "merge"
 
+[files.".github/release-notes.md"]
+exact = "a38a61a3d1c789c6bfdd48d6335f091b2893b618b4d677c4aabb18b0184b9a50"
+canonical = "a38a61a3d1c789c6bfdd48d6335f091b2893b618b4d677c4aabb18b0184b9a50"
+policy = "once"
+
 [files.".github/scripts/automation.js"]
 exact = "ae1e80b3f95958e0fa343bc1e8cf3cbe929a376b24474009da550b5bddbf36c0"
 canonical = "ae1e80b3f95958e0fa343bc1e8cf3cbe929a376b24474009da550b5bddbf36c0"
@@ -147,8 +158,8 @@ exact = "654c695069965a63fe33c683c19a01e32331962fe8bf49c77c135eca393f4ec4"
 canonical = "654c695069965a63fe33c683c19a01e32331962fe8bf49c77c135eca393f4ec4"
 
 [files.".github/workflows/release.yml"]
-exact = "ec24a93c464170a9c5bc5216de171ace642d97836a289f60c0c2fc1f5fc61801"
-canonical = "ec24a93c464170a9c5bc5216de171ace642d97836a289f60c0c2fc1f5fc61801"
+exact = "abfad2be17bdf298d8b6e948dff17d0ea673f37d93547c04ac4b89515d9123b0"
+canonical = "abfad2be17bdf298d8b6e948dff17d0ea673f37d93547c04ac4b89515d9123b0"
 
 [files.".github/workflows/title.yml"]
 exact = "8529a4b6808d279bdebb9488fcc53c063fc6b9892802857fcf26a4104dfef592"
@@ -201,6 +212,14 @@ canonical = "0393ca20a05e6a7f6089b05a892c62d464ba40579649faa0f99ee6560eef4a59"
 [files.".just/git-commits.just"]
 exact = "60d03daee633864b3a0a620178bd99d2c68bcc5613856a362a1e5a75ae662dc5"
 canonical = "60d03daee633864b3a0a620178bd99d2c68bcc5613856a362a1e5a75ae662dc5"
+
+[files.".just/github-release.just"]
+exact = "3afe236f858c969192126d46394d036089e89309edd77140abe6a1a914e43d8a"
+canonical = "3afe236f858c969192126d46394d036089e89309edd77140abe6a1a914e43d8a"
+
+[files.".just/github-release/notes.py"]
+exact = "61f1f9a755f9c573ada8866033ed3c1298e48d748f754b86d4452446caed80a3"
+canonical = "61f1f9a755f9c573ada8866033ed3c1298e48d748f754b86d4452446caed80a3"
 
 [files.".just/github-workflow-lint.just"]
 exact = "0c2d08e020c16a193f7536edb88e8d3505a204aec849a061573d30d4902209cf"
@@ -394,8 +413,8 @@ canonical = "75905f895ca860f37df4530f2578fcb238f6d8f36384b7366a5f9b4673bfa7fd"
 
 [parts.".rumdl.toml".markdown]
 scope = "keys"
-exact = "c477aa0f3762605dc3a99672827531aaf33f3705e15c3ccf07cb61422aec1ddc"
-canonical = "c477aa0f3762605dc3a99672827531aaf33f3705e15c3ccf07cb61422aec1ddc"
+exact = "33dbb6fdcf87dc5765b7a57b43c4823e5e842a71a872ff812cf8e33a2decbe16"
+canonical = "33dbb6fdcf87dc5765b7a57b43c4823e5e842a71a872ff812cf8e33a2decbe16"
 policy = "merge"
 
 [parts.".yamllint.yaml".yaml]
