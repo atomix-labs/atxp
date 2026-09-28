@@ -245,8 +245,18 @@ Every variable, its default, and who declares it:
 
 ## Contributing
 
-Issues and pull requests are welcome: read [CONTRIBUTING.md][Contributing]
-first. [Report a bug] or [request a profile].
+Issues and pull requests are welcome. To work on atxp, fork it, clone your fork,
+and run `./setup.sh`, which installs mise and every tool atxp pins:
+
+```sh
+git clone https://github.com/<you>/atxp.git && cd atxp
+./setup.sh
+just check    # every check, as CI runs them
+just test     # every profile, applied to scratch repositories and checked
+```
+
+[CONTRIBUTING.md][Contributing] has the rest: how a pull request lands, and the
+rules every profile keeps. [Report a bug] or [request a profile].
 
 ## License
 

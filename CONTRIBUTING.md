@@ -1,9 +1,9 @@
 # Contributing
 
-How to report a problem, and how to change atxp: the commit convention, what
-counts as breaking, the rules every profile and skill keeps, how its documents
-are written, and the checks to run. [ARCHITECTURE.md](ARCHITECTURE.md) says how
-the profiles fit together.
+How to report a problem, and how to change atxp: setting up a checkout, how a
+pull request lands, what counts as breaking, the rules every profile and skill
+keeps, how its documents are written, and the checks to run.
+[ARCHITECTURE.md](ARCHITECTURE.md) says how the profiles fit together.
 
 ## Reporting Issues
 
@@ -12,12 +12,43 @@ devset's version, what happened and how to reproduce it; a **profile request**
 names the tool, why, and what the profile would own. A bug in devset itself
 belongs in [devset's repository](https://github.com/atomix-labs/devset/issues).
 
+<!-- >>> devset: setup >>> -->
+
+## Getting Started
+
+`./setup.sh` readies a machine to work on the repository: it installs mise,
+pinned and checked against its release's sha256, then every tool the repository
+pins, at the version its lock records, and runs `just setup`. It needs git, curl
+and bash, installs into your home directory without sudo, and `--dry-run` says
+what it would do. Fork the repository, then:
+
+```sh
+git clone https://github.com/<you>/atxp.git
+cd atxp
+./setup.sh
+```
+
+Or clone and set up in one line:
+
+```sh
+curl -fsSL https://atomix-labs.github.io/atxp/setup.sh | bash -s -- github.com/atomix-labs/atxp
+```
+
+The first run takes a few minutes; run it again after pulling, and it installs
+only what moved. `./setup.sh --activate` adds mise to your shell, so the tools
+are on `PATH` in every new one; without it, `mise exec -- just check` runs them.
+
+<!-- <<< devset: setup <<< -->
+
 ## Pull Requests
 
 Keep each pull request to one change: a profile, a fix, or a refactor, not a mix
-of them.
+of them. Every change to `main` is a pull request, merged once its checks pass:
+`check`, every check recipe; `profiles`, the suite; and `title`, its title.
 
-Run `just check` and `just test` before pushing: CI runs the same.
+Run `just check` and `just test` before pushing: CI runs the same. `just test`
+applies every profile to scratch repositories and checks each, which takes a few
+minutes.
 
 <!-- >>> devset: git-commits >>> -->
 
