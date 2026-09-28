@@ -71,6 +71,9 @@ class Pinned(NamedTuple):
         return self.profile.path / "files" / LOCK
 
 
+# Backends that build or fetch a tool from a registry: a lock entry holds its version, no download.
+REGISTRY = ("cargo:", "pipx:", "npm:", "go:", "gem:")
+
 def untemplated(path):
     """A pin or lock file as TOML, its gates dropped, and the feature that gates each gated tool."""
     plain, gated, feature = [], defaultdict(list), None
@@ -175,29 +178,52 @@ def dprint_files():
     ]
 
 
+def registry_entry(tool, spec):
+    """The lock entry of `tool`, which a registry builds or fetches, as its pin `spec` asks: its
+    version, and its options. mise would lock a pipx tool's dependencies into files beside the
+    lock, which no repository taking the profile has, and refuses one with `uvx_args`."""
+    version, options = (spec, {}) if isinstance(spec, str) else (spec["version"], spec)
+    text = f'[[tools."{tool}"]]\nversion = "{version}"\nbackend = "{tool}"\n'
+    options = {key: value for key, value in options.items() if key != "version"}
+    if options:
+        text += f'\n[tools."{tool}".options]\n'
+        text += "".join(f"{key} = {json.dumps(value)}\n" for key, value in options.items())
+    return text
+
+
 def lock(names):
     """Rewrites each named profile's lock entries, or every one's, for every platform, their
-    checksums filled, each gated as its pin gates it."""
+    checksums filled, each gated as its pin gates it: `mise lock`'s for a tool that downloads, and
+    the version and options alone for one a registry builds, as mise's own lock keeps them."""
     notes = []
     for name, pinned in pins().items():
         if names and name not in names:
             continue
+        text, _ = untemplated(pinned.pin)
+        specs = tomllib.loads(text).get("tools", {})
+        found = {
+            tool: [registry_entry(tool, specs[tool])]
+            for tool in pinned.versions
+            if tool.startswith(REGISTRY)
+        }
+        downloaded = [tool for tool in pinned.versions if tool not in found]
         with tempfile.TemporaryDirectory() as scratch:
             scratch = Path(scratch)
             (scratch / PIN).mkdir(parents=True)
-            (scratch / PIN / pinned.pin.name).write_text(untemplated(pinned.pin)[0])
+            (scratch / PIN / pinned.pin.name).write_text(text)
             settings = f'[settings]\nlockfile = true\nminimum_release_age = "{COOLDOWN}"\n'
             (scratch / "mise.toml").write_text(settings)
             env = os.environ | {"MISE_TRUSTED_CONFIG_PATHS": str(scratch)}
-            subprocess.run(
-                ["mise", "lock", "--platform", ",".join(MISE.PLATFORMS)],
-                cwd=scratch,
-                env=env,
-                check=True,
-                capture_output=True,
-            )
-            notes += [f"`{name}`: {note}" for note in MISE.fill(scratch / LOCK)]
-            found = blocks((scratch / LOCK).read_text())
+            if downloaded:
+                subprocess.run(
+                    ["mise", "lock", "--platform", ",".join(MISE.PLATFORMS), *downloaded],
+                    cwd=scratch,
+                    env=env,
+                    check=True,
+                    capture_output=True,
+                )
+                notes += [f"`{name}`: {note}" for note in MISE.fill(scratch / LOCK)]
+                found |= blocks((scratch / LOCK).read_text())
         text = ""
         for tool in pinned.versions:
             entries = "\n".join(found.get(tool, []))
