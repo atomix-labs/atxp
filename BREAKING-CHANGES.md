@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.12.0](#v0120)
+  - [`git-commits` checks a pull request's title](#git-commits-checks-a-pull-requests-title)
 - [v0.11.0](#v0110)
   - [`devset-collection` asks for `repository`](#devset-collection-asks-for-repository)
 - [v0.10.0](#v0100)
@@ -34,6 +36,22 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.12.0
+
+### `git-commits` Checks a Pull Request's Title
+
+**What changed.** A pull request lands squashed, as one commit its title names,
+so its title is what `git-commits` holds to Conventional Commits: where
+`github-ci` is applied, the new workflow `title` checks it on every change to
+the pull request, an edit of the title included. CI no longer checks a pull
+request's own commits, which never land; a push to the default branch has what
+it landed checked. On a checkout, `just check-git-commits` still checks the
+branch's commits.
+
+**What to do.** Squash-merge pull requests: in the repository's settings, allow
+squash merging alone, titled by the pull request. Require the job `title` beside
+`check` in the default branch's ruleset.
 
 ## V0.11.0
 
