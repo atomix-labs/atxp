@@ -29,6 +29,9 @@ CONF_D = Path(".config/mise/conf.d")
 # Backends that build or fetch from a registry, so a lock entry holds a version and no download.
 UNDOWNLOADED = ("cargo:", "pipx:", "npm:", "go:", "gem:", "asdf:", "vfox:", "core:rust", "ubi:")
 
+# The bump rewrites the lock, which the `locked` setting keeps every install from doing.
+UNLOCKED = os.environ | {"MISE_LOCKED": "0"}
+
 HEADER = re.compile(r'^\[tools\.("[^"]+"|[^."]+)\."platforms\.([a-z0-9-]+)"\]\s*$')
 FIELD = re.compile(r'^(url|url_api|checksum) = "([^"]*)"\s*$')
 
@@ -191,13 +194,17 @@ def bump(report):
             held.append(f"`{name}` {newest}")
         if version_key(want) > version_key(have):
             if track(pin):
-                subprocess.run(["mise", "upgrade", name], check=True)
+                subprocess.run(["mise", "upgrade", name], check=True, env=UNLOCKED)
             else:
-                subprocess.run(["mise", "use", "--path", str(source), f"{name}@{want}"], check=True)
+                subprocess.run(
+                    ["mise", "use", "--path", str(source), f"{name}@{want}"], check=True, env=UNLOCKED
+                )
             moved.append(f"`{name}` {have} -> {want}")
         locks.add(lockfile(source))
     if own:
-        subprocess.run(["mise", "lock", "--platform", ",".join(PLATFORMS), *own], check=True)
+        subprocess.run(
+            ["mise", "lock", "--platform", ",".join(PLATFORMS), *own], check=True, env=UNLOCKED
+        )
     for lock in sorted(locks):
         if lock.is_file():
             notes += fill(lock)

@@ -9,7 +9,9 @@ not mise's default 30 seconds, as a release's can on a busy CI runner.
 
 Each profile owns its tools' entries in the lock, so the lock composes as the
 profiles do; tools the repository configures itself, in `mise.toml`, lock in
-`mise.lock`.
+`mise.lock`. The lock is authoritative: mise's `locked` setting keeps every
+install from rewriting it, a laptop's as CI's, so only `mise lock` and `just
+bump-mise` move it. A tool tried out with `mise use` asks for `MISE_LOCKED=0`.
 
 - `just check-mise` fails when a tool is not locked at its pinned version, lacks
   a platform, or has neither a checksum nor provenance.
