@@ -49,6 +49,10 @@ release-readme:
 test-setup-stub:
     mise exec -- bash tests/setup-stub.sh
 
+# Tests the agents profile's hooks through the turns they tell apart.
+test-agents-hook:
+    mise exec -- bash tests/agents-hook.sh
+
 # The nightly takes each feature alone.
 
 # Applies the rust bundle to an empty repository, with no features and with all, then checks it.

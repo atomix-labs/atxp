@@ -5,7 +5,7 @@ devset      = ">=0.5.0"
 
 [features]
 default = ["hook"]
-# A Stop hook: the agent stops only once `just check` passes on what it changed.
+# Claude Code's hooks: a turn that changes the repository ends only once `just check` passes.
 hook = []
 
 [requires]

@@ -31,8 +31,8 @@ decision = "found"
 decision = "found"
 
 [files.".claude/hooks/check.sh"]
-exact = "0ba38df078e228a747756fedf082e3d06aea9555e08a1b47f73a34095212ee07"
-canonical = "0ba38df078e228a747756fedf082e3d06aea9555e08a1b47f73a34095212ee07"
+exact = "9ccdf435877abe0b89c73c81ff6f3b32ec371f502eaef1e62dd71bd1e1286e2b"
+canonical = "9ccdf435877abe0b89c73c81ff6f3b32ec371f502eaef1e62dd71bd1e1286e2b"
 
 [files.".claude/skills/authoring-devset-profiles/SKILL.md"]
 exact = "a11b6cfc4b862fa1a56d1f5705251faed6d248276861e7e0389ee90bd8a042dd"
@@ -306,8 +306,8 @@ canonical = "d21a7c0b3dca1668b2034fcc68496382da99b43af977b7a1903e617a8644904e"
 
 [parts.".claude/settings.json".agents]
 scope = "keys"
-exact = "fe2202380ee5d3692453d48649bffb97b3e7e8073d9c4426841d9c37dd9eec6f"
-canonical = "fe2202380ee5d3692453d48649bffb97b3e7e8073d9c4426841d9c37dd9eec6f"
+exact = "1a7a14e629fff766c9cf9e7f20e98374f899d7b957cdefc3170d31e036db943d"
+canonical = "1a7a14e629fff766c9cf9e7f20e98374f899d7b957cdefc3170d31e036db943d"
 policy = "merge"
 
 [parts.".config/mise/mise.lock".devset]
