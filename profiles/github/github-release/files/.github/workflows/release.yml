@@ -107,7 +107,7 @@ jobs:
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git cliff --latest --strip header > notes.md
+          python3 .just/github-release/notes.py "$GITHUB_REF_NAME" "$GITHUB_REPOSITORY" > notes.md
           shopt -s nullglob
           gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --notes-file notes.md dist/*
 
