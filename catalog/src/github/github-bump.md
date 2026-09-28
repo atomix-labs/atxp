@@ -41,6 +41,9 @@ start on a branch already gone, and changes to workflows are left out and named.
 Where the default branch's rules require checks, which the run's own token
 cannot pass, the pull request is left to a person, and the comment says so.
 
+A bump that moves mise itself, as a new atxp release asking for a newer one
+does, settles and gates with the mise the tree now asks for: the setup stub
+installs it, checked against its release's sha256, or else mise updates itself.
 A bump that cannot check something fails the run, and
 [`github-watch`](github-watch.md) opens an issue for it. The jobs that build run
 on `ubuntu-latest`, or on the runner the repository variable `CI_RUNNER` names,

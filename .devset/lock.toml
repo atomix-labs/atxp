@@ -69,7 +69,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-bump"
-digest = "276a57663ad88b2b5e7bf49b7020cda1075bb7f8936bd18b4b886e4cfaa47876"
+digest = "7f7b5a9c0ccfbd88e153a79e66b56b61b9221146c41983de53ce69487bd15239"
 
 [profiles.source]
 path = "profiles"
