@@ -1,0 +1,48 @@
+name: Bug report
+description: A profile does something it should not, or fails to do what its README says
+labels: [bug]
+type: Bug
+body:
+  - type: input
+    id: profile
+    attributes:
+      label: Profile
+      description: The profile, and atxp's tag or commit.
+      placeholder: taplo at v0.15.0
+    validations:
+      required: true
+  - type: input
+    id: devset
+    attributes:
+      label: devset
+      description: The output of `devset --version`.
+      placeholder: devset 0.5.2
+    validations:
+      required: true
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened
+      description: What you ran, and what it did.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What was expected
+      description: What the profile's README says it does.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: To reproduce
+      description: The smallest repository and commands that show it.
+    validations:
+      required: true
+  - type: textarea
+    id: status
+    attributes:
+      label: devset status -v
+      description: Its output in the repository, which names every layer and file.
+      render: text
