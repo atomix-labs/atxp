@@ -9,7 +9,9 @@ every lockfile is settled, taking the newest release each crate's `rust-version`
 allows, as [`cargo-workspace`](../../cargo/cargo-workspace/README.md)'s resolver
 key says.
 
-Crates a root names in `[workspace.metadata.bump] exclude` stay put. At a
+Crates a root names in `[workspace.metadata.bump] exclude` stay put, and a
+workspace root under a path a root's `[workspace] exclude` names is not bumped:
+an example's or a test fixture's manifest is data, as Cargo says it is. At a
 release, `just release` runs `release-cargo-bump`, which sets every crate's
 version to `RELEASE_VERSION` with cargo-edit's `set-version`, and the lock with
 them.
