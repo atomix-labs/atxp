@@ -1,9 +1,8 @@
 [toolchain]
 {%- if channel == "stable" %}
 channel    = "stable"
-components = ["rust-src", "rustfmt", "clippy", "llvm-tools"]
 {%- else %}
 channel    = "nightly-2026-09-21"
-components = ["rust-src", "rustfmt", "clippy", "miri", "rustc-dev", "llvm-tools"]
 {%- endif %}
+components = ["rust-src", "rustfmt", "clippy"{% if "miri" in devset.features %}, "miri"{% endif %}{% if "rustc-dev" in devset.features %}, "rustc-dev"{% endif %}{% if "llvm-tools" in devset.features %}, "llvm-tools"{% endif %}]
 profile    = "minimal"
