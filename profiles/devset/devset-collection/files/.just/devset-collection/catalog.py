@@ -54,6 +54,10 @@ VERBS = (
 RECIPE = re.compile(r"^@?([a-z][a-z0-9-]*)(?:\s+[^:]*?)?:(?!=)")
 # Lines between a recipe's comment and its name: an attribute, `[private]`, or a template's tag.
 BETWEEN = ("[", "{%", "{#")
+# A Rust tool a recipe runs, which makes it one whose CI job restores and saves Cargo's build; and
+# the attribute that says so, which github-ci's plan reads.
+RUST_TOOL = re.compile(r"\b(cargo|rustc|rustdoc|rustup)\b")
+RUST_TAG = '[metadata("rust")]'
 # A workflow step that installs mise, and the version it names.
 MISE_ACTION = re.compile(r"^(\s*)(- )?uses: jdx/mise-action@")
 MISE_VERSION = re.compile(r"^\s+version:\s*(\S+)\s*$")
@@ -169,6 +173,33 @@ def recipes(profile):
     return found
 
 
+def rust_recipes(profile):
+    """Each `check-*` and `nightly-*` recipe in its `.just/<name>.just`: whether its body runs a Rust
+    tool, and whether `[metadata("rust")]` is above it."""
+    path = f"{RECIPES}{profile.name}.just"
+    if path not in profile.files:
+        return []
+    found, tagged, current = [], False, None
+    for line in (profile.path / "files" / path).read_text().splitlines():
+        # A body's lines are indented; a blank line or a template's tag at the margin continues it.
+        if not line.strip() or line.startswith(("{%", "{#")):
+            continue
+        if line[:1] in (" ", "\t"):
+            if current and not line.strip().startswith("#") and RUST_TOOL.search(line):
+                current[1] = True
+            continue
+        current = None
+        if line.startswith("["):
+            tagged = tagged or line.strip() == RUST_TAG
+        elif (recipe := RECIPE.match(line)) and recipe.group(1).startswith(("check-", "nightly-")):
+            current = [recipe.group(1), False, tagged]
+            found.append(current)
+            tagged = False
+        elif not line.startswith("#"):
+            tagged = False
+    return [tuple(entry) for entry in found]
+
+
 def described(comment):
     """A recipe's comment as its facts show it: each sentence it says only with a feature on,
     closed by that feature, as `(with `api`)`."""
@@ -239,6 +270,14 @@ def profile_problems(profile, named):
                 f"{where}: recipe `{recipe}`'s comment templates more than a feature's"
                 ' `{% if "<feature>" in devset.features %}`, which its facts cannot show'
             )
+    for recipe, runs, tagged in rust_recipes(profile):
+        if runs and not tagged:
+            out.append(
+                f"{where}: recipe `{recipe}` runs a Rust tool: `{RUST_TAG}` above it gives its CI"
+                " job Cargo's cache"
+            )
+        if tagged and not runs:
+            out.append(f"{where}: recipe `{recipe}` carries `{RUST_TAG}` but runs no Rust tool")
     for required, spec in profile.requires.items():
         if "git" not in spec and required not in named:
             out.append(f"{where}: requires `{required}`, which is no profile of the collection")
