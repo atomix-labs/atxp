@@ -1,4 +1,5 @@
 # Builds every crate on the oldest rust-version one declares, every target and feature included.
+[metadata("rust")]
 check-rust-msrv:
     #!/usr/bin/env bash
     set -euo pipefail

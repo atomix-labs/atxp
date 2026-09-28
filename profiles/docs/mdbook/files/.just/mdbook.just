@@ -4,6 +4,7 @@
 # of the built book, offline.{% endif %}
 
 # Lints the book, builds it, and runs its Rust examples.
+[metadata("rust")]
 check-mdbook:
     #!/usr/bin/env bash
     set -euo pipefail
