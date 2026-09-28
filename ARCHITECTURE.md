@@ -159,9 +159,9 @@ them.
 `agents` gives a coding agent what it reads before it changes a repository:
 AGENTS.md, started where there is none, with a block on checking a change and on
 the files devset manages; CLAUDE.md, which imports it; and Claude Code's
-permissions and Stop hook in `.claude/`. The permissions allow every check and
-fix and devset's commands that only read, and deny publishing; the hook keeps
-the agent at work until `just check` passes on what it changed.
+permissions and hooks in `.claude/`. The permissions allow every check and fix
+and devset's commands that only read, and deny publishing; the hooks keep the
+agent at work until `just check` passes on what its turn changed.
 
 A profile whose concern an agent needs taught ships a skill, in
 `.claude/skills/<skill>/`, under its own `agents` feature: `rust-doc`,
@@ -179,6 +179,7 @@ collection.toml              atxp, as a source names itself
 scripts/                     atxp's own tools: the mise version, the nightly's bump
 tests/fixtures/              a crate and a workspace, the repositories the suite applies profiles to
 tests/setup-stub.sh          the setup stub against a repository served locally
+tests/agents-hook.sh         the agents profile's hooks through the turns they tell apart
 tests/bundle.sh              the bundle applied to an empty repository, with the features given
 .devset/                     atxp's record of the profiles it applies to itself
 .just/, .github/             written by those profiles; atxp's own recipes are in the justfile

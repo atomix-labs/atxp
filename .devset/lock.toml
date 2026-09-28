@@ -234,7 +234,7 @@ site = ["target"]
 
 [[profiles]]
 name = "agents"
-digest = "36430fda50a3061eb544c37d1b04c9d6c5b4973eba9e22e08868d2561bc8c0eb"
+digest = "bee0ac523fc88edc16be07ec92301b254f8555bb79e66ebb5e73f7e683f6de9f"
 
 [profiles.source]
 path = "profiles"

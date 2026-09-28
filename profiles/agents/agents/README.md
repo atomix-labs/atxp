@@ -14,10 +14,21 @@ asking. It may never run `just publish`, which no release can take back, or
 `just bump`, the weekly workflow's; `just release`, which only writes, asks
 first.
 
-With `hook`, the default, a Stop hook runs `just check` before the agent stops,
-on a tree that differs from `HEAD`, and its failures keep the agent at work.
-Once it has blocked, the agent may stop if nothing changed since, so a failure
-it cannot fix never loops.
+With `hook`, the default, a turn that changes the repository ends only once
+`just check` passes. As each prompt arrives, a `UserPromptSubmit` hook notes the
+repository's state: `HEAD`, the changes to tracked files, and the untracked
+files. The Stop hook runs `just check` only if that state has changed, so a turn
+that reads, plans or answers ends at once, whatever the tree held before it.
+
+- **The check runs through `mise exec`**, as CI's does, since a hook's shell has
+  no mise activated; mise is found on `PATH` or in `~/.local/bin`.
+- **Its failures block the stop**, and the agent works on. If it then changes
+  nothing, it may stop, so a failure it cannot fix, or that was there before the
+  turn, never loops.
+- **When the check cannot run**, with mise or just not installed or mise
+  failing, the hook tells you why and lets the agent stop.
+
+The notes are kept per session in `.git/claude-hook/`.
 
 Skills come with the profiles they teach, each under that profile's `agents`
 feature; the bundle [`rust`](../../bundles/rust/README.md)'s `agents` turns on

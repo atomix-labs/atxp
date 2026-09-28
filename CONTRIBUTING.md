@@ -212,7 +212,7 @@ Every document here keeps these rules.
 
 ```sh
 just check                   # atxp's own checks, as CI runs them
-just test                    # the suite, the bundle from nothing, and the setup stub's test
+just test                    # the suite, the bundle from nothing, the setup stub and the hooks
 just fix-devset-collection   # after changing a profile: the catalog and every profile's facts
 just bump-devset-collection  # every pin and dprint plugin moved past the cooldown, and relocked
 ```
