@@ -19,7 +19,7 @@
 
 <p align="center">{{ description }}</p>
 {%- endif %}
-{%- if "github-ci" in p or crates or "mdbook" in p %}
+{%- if "github-ci" in p or crates or "mdbook" in p or "devset-badge" in devset.features %}
 
 <p align="center">
 {%- if "github-ci" in p %}
@@ -31,6 +31,9 @@
 {%- endif %}
 {%- if "mdbook" in p %}
   <a href="https://{{ owner }}.github.io/{{ repo }}/"><img alt="Book" src="https://img.shields.io/badge/book-read-blue?style=flat-square"></a>
+{%- endif %}
+{%- if "devset-badge" in devset.features %}
+  <a href="https://github.com/atomix-labs/devset"><img alt="managed with devset" src="https://img.shields.io/badge/managed_with-devset-0969da?style=flat-square&amp;logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHRpdGxlPmRldnNldDwvdGl0bGU+PHBhdGggZmlsbD0iI2YwZjZmYyIgZD0ibTE2IDMgMTMgNi41TDE2IDE2IDMgOS41WiIvPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2YwZjZmYyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjIuNSIgZD0ibTMgMTYgMTMgNi41TDI5IDE2TTMgMjIuNSAxNiAyOWwxMy02LjUiLz48L3N2Zz4K"></a>
 {%- endif %}
 </p>
 {%- endif %}
