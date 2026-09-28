@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Ask a question
+    url: https://github.com/atomix-labs/atxp/discussions/new?category=q-a
+    about: A question, or a profile to talk over before it is a request
   - name: The catalog
     url: https://atomix-labs.github.io/atxp/
     about: Every profile, what it owns and what it asks, which may answer it already

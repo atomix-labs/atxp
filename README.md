@@ -257,7 +257,8 @@ just test     # every profile, applied to scratch repositories and checked
 ```
 
 [CONTRIBUTING.md][Contributing] has the rest: how a pull request lands, and the
-rules every profile keeps. [Report a bug] or [request a profile].
+rules every profile keeps. [Report a bug], [request a profile], or ask a
+question in [Discussions].
 
 ## License
 
@@ -272,6 +273,7 @@ MIT: see [LICENSE][license].
 [Contributing]: CONTRIBUTING.md
 [Release]: RELEASE.md
 [Security]: SECURITY.md
-[Report a bug]: https://github.com/atomix-labs/atxp/issues/new?template=bug_report.md
-[request a profile]: https://github.com/atomix-labs/atxp/issues/new?template=profile_request.md
+[Discussions]: https://github.com/atomix-labs/atxp/discussions
+[Report a bug]: https://github.com/atomix-labs/atxp/issues/new?template=bug_report.yml
+[request a profile]: https://github.com/atomix-labs/atxp/issues/new?template=profile_request.yml
 [license]: LICENSE
