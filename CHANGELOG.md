@@ -3,6 +3,27 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.15.0](https://github.com/atomix-labs/atxp/releases/tag/v0.15.0) - 2026-09-28
+
+### Features
+
+- [997dd37](https://github.com/atomix-labs/atxp/commit/997dd37c5a567a0b433f7013260d1b02875b46dd) *(github-release)* Write a release's notes from the repository's own file ([#73](https://github.com/atomix-labs/atxp/pull/73))
+- [ad9e6c1](https://github.com/atomix-labs/atxp/commit/ad9e6c176bb499f698cdb244e7256f356dcd589a) *(project)* Offer a managed-with-devset badge in the header ([#75](https://github.com/atomix-labs/atxp/pull/75))
+- [56096c3](https://github.com/atomix-labs/atxp/commit/56096c31bc82e8bcab96b9f859b837bc17e50119) *(github-templates)* Write issue forms, not Markdown templates ([#74](https://github.com/atomix-labs/atxp/pull/74)) **breaking**
+- [86a4698](https://github.com/atomix-labs/atxp/commit/86a46985b468b5f7fa7c30eb04956ff51a926890) *(cargo-binaries)* Archive the binary's shell completions ([#72](https://github.com/atomix-labs/atxp/pull/72))
+
+### Documentation
+
+- [e037ac4](https://github.com/atomix-labs/atxp/commit/e037ac44d2bf8bddf98b82a81fe6a92b24dcf9fc) Write atxp's release notes and issue forms, and show its devset badge ([#76](https://github.com/atomix-labs/atxp/pull/76))
+- [388d94f](https://github.com/atomix-labs/atxp/commit/388d94fb1fb37a066d23409d1fa8cfe424cbb644) Record the demo ([#70](https://github.com/atomix-labs/atxp/pull/70))
+- [48750f2](https://github.com/atomix-labs/atxp/commit/48750f24eda19b54b9034fb3ce46997f517e356c) Record the demo for v0.14.0 ([#69](https://github.com/atomix-labs/atxp/pull/69))
+
+### Miscellaneous
+
+- [46a2fbc](https://github.com/atomix-labs/atxp/commit/46a2fbc146989caceb9fea0372c3963a4d5570cc) *(vhs)* Wrap the demo workflow's header at the line width ([#71](https://github.com/atomix-labs/atxp/pull/71))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.14.0...v0.15.0>
+
 ## [0.14.0](https://github.com/atomix-labs/atxp/releases/tag/v0.14.0) - 2026-09-28
 
 ### Features
