@@ -42,6 +42,7 @@ profile = "atxp/github-watch"
 
 [[layers]]
 profile = "atxp/github-bump"
+features = ["merge"]
 
 [[layers]]
 profile = "atxp/github-dependabot"

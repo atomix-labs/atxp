@@ -44,7 +44,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-automation"
-digest = "98efd9e0603a7db8b7ae83db0aaaba8ba9034388d123996a36dfa62de5f2fb88"
+digest = "10de1a406c7561a189a35f661540c9f58fc34c0b7561ab3cceae399d77aee764"
 
 [profiles.source]
 path = "profiles"
@@ -69,10 +69,13 @@ path = "profiles"
 
 [[profiles]]
 name = "github-bump"
-digest = "471df14cfa7afcd2c9a2844d8cef0d473d99c6b730b15022e90e512af85ae184"
+digest = "276a57663ad88b2b5e7bf49b7020cda1075bb7f8936bd18b4b886e4cfaa47876"
 
 [profiles.source]
 path = "profiles"
+
+[profiles.features]
+merge = ["target"]
 
 [[profiles]]
 name = "github-dependabot"
