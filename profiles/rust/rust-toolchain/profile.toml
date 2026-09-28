@@ -1,11 +1,21 @@
 [profile]
 name        = "rust-toolchain"
-description = "The toolchain a checkout builds with: rustup where missing, then one pinned nightly with miri, rustc-dev, llvm-tools and the sources"
+description = "The toolchain a checkout builds with: rustup where missing, then one pinned nightly with rustfmt, clippy and the sources"
 devset      = ">=0.5.0"
 
 [requires]
 just = {}
 mise = {}
+
+# Components beyond the sources, rustfmt and clippy, each off unless a repository turns it on. The
+# nightly the profile pins has every one of them, on every platform the locks cover.
+[features]
+# miri, which runs tests to find undefined behaviour; with the nightly.
+miri = []
+# rustc-dev, for tools that link the compiler, as a lint driver does; with the nightly.
+rustc-dev = []
+# llvm-tools, for coverage and profiling, as cargo-llvm-cov reads them.
+llvm-tools = []
 
 [vars.channel]
 prompt  = "The toolchain: nightly, the one the profiles pin, or stable"

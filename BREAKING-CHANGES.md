@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.14.0](#v0140)
+  - [`miri`, `rustc-dev` and `llvm-tools` are features](#miri-rustc-dev-and-llvm-tools-are-features)
 - [v0.13.0](#v0130)
   - [A recipe that runs cargo carries `[metadata("rust")]`](#a-recipe-that-runs-cargo-carries-metadatarust)
 - [v0.12.0](#v0120)
@@ -39,6 +41,24 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.14.0
+
+### `miri`, `rustc-dev` and `llvm-tools` Are Features
+
+**What changed.** `rust-toolchain`'s toolchain is `rust-src`, rustfmt and
+clippy, which the checks use. miri, `rustc-dev` and `llvm-tools`, which no check
+uses and which made up about half of every checkout's and every CI job's
+download, are the features `miri`, `rustc-dev` and `llvm-tools`, each off unless
+a repository turns it on. The pinned nightly still has all three on every
+platform the locks cover.
+
+**What to do.** A repository that runs `cargo miri`, a tool linking the
+compiler, or coverage turns on what it uses:
+
+```sh
+devset add atxp/rust-toolchain --features miri,rustc-dev,llvm-tools
+```
 
 ## V0.13.0
 

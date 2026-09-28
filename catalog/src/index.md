@@ -109,14 +109,14 @@ devset add atxp/<profile> --git https://github.com/atomix-labs/atxp --tag <relea
 
 ### `rust`
 
-| Profile                                    | What                                                                                                                                 |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| [`rust-clippy`](rust/rust-clippy.md)       | Clippy over every crate, target and feature, warnings denied; tests may unwrap, panic and print                                      |
-| [`rust-doc`](rust/rust-doc.md)             | rustdoc builds every crate's documentation, private items included, warnings denied                                                  |
-| [`rust-fmt`](rust/rust-fmt.md)             | rustfmt on nightly options: imports by module, comments wrapped, doc examples formatted                                              |
-| [`rust-lints`](rust/rust-lints.md)         | The lint wall, as keys of the workspace Cargo.toml: rustc, rustdoc, clippy and cargo, and nightly's own lints                        |
-| [`rust-msrv`](rust/rust-msrv.md)           | Every crate builds on the rust-version it declares: the oldest toolchain it says it supports                                         |
-| [`rust-toolchain`](rust/rust-toolchain.md) | The toolchain a checkout builds with: rustup where missing, then one pinned nightly with miri, rustc-dev, llvm-tools and the sources |
+| Profile                                    | What                                                                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| [`rust-clippy`](rust/rust-clippy.md)       | Clippy over every crate, target and feature, warnings denied; tests may unwrap, panic and print                          |
+| [`rust-doc`](rust/rust-doc.md)             | rustdoc builds every crate's documentation, private items included, warnings denied                                      |
+| [`rust-fmt`](rust/rust-fmt.md)             | rustfmt on nightly options: imports by module, comments wrapped, doc examples formatted                                  |
+| [`rust-lints`](rust/rust-lints.md)         | The lint wall, as keys of the workspace Cargo.toml: rustc, rustdoc, clippy and cargo, and nightly's own lints            |
+| [`rust-msrv`](rust/rust-msrv.md)           | Every crate builds on the rust-version it declares: the oldest toolchain it says it supports                             |
+| [`rust-toolchain`](rust/rust-toolchain.md) | The toolchain a checkout builds with: rustup where missing, then one pinned nightly with rustfmt, clippy and the sources |
 
 ### `tooling`
 

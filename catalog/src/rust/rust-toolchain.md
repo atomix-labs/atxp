@@ -1,7 +1,7 @@
 # `rust-toolchain`
 
 The toolchain a checkout builds with: rustup where missing, then one pinned
-nightly with miri, rustc-dev, llvm-tools and the sources.
+nightly with rustfmt, clippy and the sources.
 
 ```sh
 devset add atxp/rust-toolchain --git https://github.com/atomix-labs/atxp --tag <release>
@@ -10,14 +10,19 @@ devset add atxp/rust-toolchain --git https://github.com/atomix-labs/atxp --tag <
 Group `rust` · In [`rust`](../bundles/rust.md): always
 
 The toolchain a checkout builds with, on rustup's minimal profile, and rustup
-itself where it is missing. With `channel` `nightly`, the default, it is one
-pinned nightly, with `rust-src`, rustfmt, clippy, miri, `rustc-dev` and
-`llvm-tools`; the nightly moves weekly with atxp's `bump-rust-toolchain`, to the
-newest nightly of the last fourteen days that has every component on every
-platform the locks cover, never backwards, and a repository takes it with
-`devset update`. With `channel` `stable`, it is the current stable release, with
-`rust-src`, rustfmt, clippy and `llvm-tools`; `rust-lints`' `nightly` and
-`cargo-hack` need the nightly.
+itself where it is missing: `rust-src`, rustfmt and clippy, which the checks
+use. With `channel` `nightly`, the default, it is one pinned nightly, which
+moves weekly with atxp's `bump-rust-toolchain`, to the newest nightly of the
+last fourteen days that has every component on every platform the locks cover,
+those the features add included, never backwards; a repository takes it with
+`devset update`. With `channel` `stable`, it is the current stable release;
+`rust-lints`' `nightly` and `cargo-hack` need the nightly.
+
+Three features add a component each, off unless a repository turns them on,
+since no check uses them and each adds to every checkout's download: `miri`,
+which runs tests to find undefined behaviour, and `rustc-dev`, for tools that
+link the compiler, both with the nightly; and `llvm-tools`, for coverage and
+profiling. `devset add atxp/rust-toolchain --features miri` turns one on.
 
 `.just/rust-toolchain.sh` installs rustup with rustup's own installer where it
 is missing, with no default toolchain and without editing shell profiles, then
@@ -47,6 +52,14 @@ land in `target/doc` rather than `target/<triple>/doc` unsets it.
 | `.just/rust-toolchain.just`                      | whole | owned  |            |
 | `.just/rust-toolchain.sh`                        | whole | owned  | executable |
 | `.config/mise/conf.d/devset-rust-toolchain.toml` | whole | owned  |            |
+
+## Features
+
+| Feature      | Default | Enables |
+| ------------ | ------- | ------- |
+| `miri`       |         |         |
+| `rustc-dev`  |         |         |
+| `llvm-tools` |         |         |
 
 ## Recipes
 
