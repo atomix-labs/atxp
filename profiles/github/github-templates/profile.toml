@@ -1,15 +1,15 @@
 [profile]
 name        = "github-templates"
-description = "GitHub's issue templates and pull request checklist, the repository's once written"
+description = "GitHub's issue forms and pull request checklist, the repository's once written"
 devset      = ">=0.5.0"
 
 [vars.repository]
 prompt = "The GitHub repository, owner/name"
 
-[files.".github/ISSUE_TEMPLATE/bug_report.md"]
+[files.".github/ISSUE_TEMPLATE/bug_report.yml"]
 policy = "once"
 
-[files.".github/ISSUE_TEMPLATE/feature_request.md"]
+[files.".github/ISSUE_TEMPLATE/feature_request.yml"]
 policy = "once"
 
 [files.".github/ISSUE_TEMPLATE/config.yml"]

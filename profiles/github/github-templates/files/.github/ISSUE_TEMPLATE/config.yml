@@ -1,5 +1,12 @@
+{%- set owner = repository | split("/") | first -%}
+{%- set repo = repository | split("/") | last -%}
 blank_issues_enabled: false
 contact_links:
+{%- if devset.layers | selectattr("profile", "equalto", "mdbook") | list %}
+  - name: Documentation
+    url: https://{{ owner }}.github.io/{{ repo }}/
+    about: The book, which may answer it already
+{%- endif %}
   - name: Security
     url: https://github.com/{{ repository }}/security/advisories/new
     about: Report a vulnerability privately, never in a public issue

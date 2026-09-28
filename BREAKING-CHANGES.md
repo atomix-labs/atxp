@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.15.0](#v0150)
+  - [`github-templates` writes issue forms](#github-templates-writes-issue-forms)
 - [v0.14.0](#v0140)
   - [`miri`, `rustc-dev` and `llvm-tools` are features](#miri-rustc-dev-and-llvm-tools-are-features)
 - [v0.13.0](#v0130)
@@ -41,6 +43,20 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.15.0
+
+### `github-templates` Writes Issue Forms
+
+**What changed.** The issue templates are GitHub's YAML forms,
+`.github/ISSUE_TEMPLATE/bug_report.yml` and `feature_request.yml`, whose
+required fields a reporter fills in; the Markdown templates, `bug_report.md` and
+`feature_request.md`, are gone from the profile. devset writes the forms where
+they are missing, and takes an old template away where it is as devset wrote it.
+
+**What to do.** Where you edited an old template, devset keeps it, untracked:
+move what you added into the form, and remove the Markdown file, so GitHub
+offers each kind of issue once.
 
 ## V0.14.0
 
