@@ -3,6 +3,28 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.15.3](https://github.com/atomix-labs/atxp/releases/tag/v0.15.3) - 2026-09-28
+
+### Bug Fixes
+
+- [70a4cbc](https://github.com/atomix-labs/atxp/commit/70a4cbce13bd66dbfc09a42ac91d01bc2549911b) *(github-bump)* Gate a bump that moves mise with the new mise ([#92](https://github.com/atomix-labs/atxp/pull/92))
+- [db490fe](https://github.com/atomix-labs/atxp/commit/db490fe240ec37535a709757636a60f05ceb9821) *(cargo-bump)* Leave out a root its workspace excludes ([#88](https://github.com/atomix-labs/atxp/pull/88))
+- [8292848](https://github.com/atomix-labs/atxp/commit/82928487875077db2441fef2a31ad37a75ddd7e3) *(devset-collection)* Lock a registry's tools without mise lock ([#87](https://github.com/atomix-labs/atxp/pull/87))
+
+### Pins
+
+- [935fa83](https://github.com/atomix-labs/atxp/commit/935fa83bba2db10163020bc61bf41ec7edfb7d5d) *(bump)* Move pinned tools and dependencies ([#93](https://github.com/atomix-labs/atxp/pull/93))
+
+### Documentation
+
+- [8e2507f](https://github.com/atomix-labs/atxp/commit/8e2507f29e958b68cd094af43de9cbbb021d393e) Record the demo for v0.15.2 ([#86](https://github.com/atomix-labs/atxp/pull/86))
+
+### CI
+
+- [6f89a44](https://github.com/atomix-labs/atxp/commit/6f89a44b3b630f70b3903ba4dcf5d6d544353e9b) Let atxp's weekly bump merge itself once green ([#89](https://github.com/atomix-labs/atxp/pull/89))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.15.2...v0.15.3>
+
 ## [0.15.2](https://github.com/atomix-labs/atxp/releases/tag/v0.15.2) - 2026-09-28
 
 ### Performance
@@ -11,6 +33,7 @@ Every release, newest first, written by [git-cliff](https://git-cliff.org) from 
 
 ### Documentation
 
+- [d33850d](https://github.com/atomix-labs/atxp/commit/d33850d07e3edb43494a5a0926adb5dbafcbd28a) Record the demo ([#84](https://github.com/atomix-labs/atxp/pull/84))
 - [b213815](https://github.com/atomix-labs/atxp/commit/b2138153291fb5c9e97377ca2d7d0ad1be213c2c) Send questions to Discussions, and link the issue forms ([#83](https://github.com/atomix-labs/atxp/pull/83))
 - [5452396](https://github.com/atomix-labs/atxp/commit/54523964142cfc75f8d7c4cc239969088ba93fba) Record the demo for v0.15.1 ([#81](https://github.com/atomix-labs/atxp/pull/81))
 
