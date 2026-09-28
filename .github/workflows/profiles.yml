@@ -1,15 +1,21 @@
 # Runs every `test-*` recipe, with the devset release atxp pins: the collection's suite, every profile
 # alone, then the bundle and every profile at once on each fixture; the setup stub's test; and the
-# bundle from nothing, with no features and with every feature.
+# bundle from nothing, with no features and with every feature. Require the job `profiles` beside
+# `check`.
 name: profiles
 
 on:
   push:
     branches: [main]
   pull_request:
+  merge_group:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   profiles:
@@ -19,8 +25,23 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # Every tool any profile pins, which the suite installs in its targets, keyed by every pin:
+      # saved from the default branch alone, as the tools stood after the suite.
+      - id: tools
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.local/share/mise
+          key: suite-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.config/mise/**', 'profiles/**/.config/mise/**') }}
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
           version: 2026.9.12
+          cache: false
       - run: devset status --exit-code
       - run: just test
+      - if: >-
+          steps.tools.outputs.cache-hit != 'true'
+          && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.local/share/mise
+          key: ${{ steps.tools.outputs.cache-primary-key }}

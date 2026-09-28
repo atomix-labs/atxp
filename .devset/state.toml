@@ -139,16 +139,16 @@ exact = "ec3cbc62c615c7537821266d5225ebdddb76e8d7498c1b2ef36553b202c1e401"
 canonical = "ec3cbc62c615c7537821266d5225ebdddb76e8d7498c1b2ef36553b202c1e401"
 
 [files.".github/workflows/check.yml"]
-exact = "ffec8c8d6fc3c5b062767248ae72a1f1961a0deed410f6c26c3b852e7cddc6b1"
-canonical = "ffec8c8d6fc3c5b062767248ae72a1f1961a0deed410f6c26c3b852e7cddc6b1"
+exact = "97117155aee78701cc1fb3ec5c0b4c83922c8f088737e6b1fcf10449892a4a68"
+canonical = "97117155aee78701cc1fb3ec5c0b4c83922c8f088737e6b1fcf10449892a4a68"
 
 [files.".github/workflows/demo.yml"]
 exact = "55d5881c89c0e4b30e0b8daed8f987421d1f4e7dc4d9a958da3165be26d7acd1"
 canonical = "55d5881c89c0e4b30e0b8daed8f987421d1f4e7dc4d9a958da3165be26d7acd1"
 
 [files.".github/workflows/release.yml"]
-exact = "8fc58d9bd056dd1fede0c58c6726be3b0b02d8c92fef9f7db54868458e8bbdcf"
-canonical = "8fc58d9bd056dd1fede0c58c6726be3b0b02d8c92fef9f7db54868458e8bbdcf"
+exact = "ec24a93c464170a9c5bc5216de171ace642d97836a289f60c0c2fc1f5fc61801"
+canonical = "ec24a93c464170a9c5bc5216de171ace642d97836a289f60c0c2fc1f5fc61801"
 
 [files.".github/workflows/watch.yml"]
 exact = "51beac8abe7056cba86bd93d9dde1993c4ea9854ea820dc3f6c2e8a659ea51e0"
