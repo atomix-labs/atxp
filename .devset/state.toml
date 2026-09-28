@@ -130,8 +130,8 @@ canonical = "a38a61a3d1c789c6bfdd48d6335f091b2893b618b4d677c4aabb18b0184b9a50"
 policy = "once"
 
 [files.".github/scripts/automation.js"]
-exact = "ae1e80b3f95958e0fa343bc1e8cf3cbe929a376b24474009da550b5bddbf36c0"
-canonical = "ae1e80b3f95958e0fa343bc1e8cf3cbe929a376b24474009da550b5bddbf36c0"
+exact = "d0697d0cdadfc88afa43fdc0cbb2ec2b235fbe66ab11fcdb5df808a5853e54fb"
+canonical = "d0697d0cdadfc88afa43fdc0cbb2ec2b235fbe66ab11fcdb5df808a5853e54fb"
 
 [files.".github/scripts/bump.js"]
 exact = "22548ff099dc8ea7a4cf08f5654f2127c7ed75cdf2964d121c61f6a3150e292c"

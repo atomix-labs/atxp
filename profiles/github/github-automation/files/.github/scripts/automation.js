@@ -102,11 +102,12 @@ async function propose({ github, context }, kind, { branch, title, body, note })
 
 // What a workflow tells the assignees of a pull request it would merge but cannot.
 const HELD =
-  "The default branch requires checks, which GitHub holds for a maintainer to approve on a pull request this workflow opens: approve them, and merge.";
+  "The default branch requires checks or a merge queue, which a pull request this workflow opens cannot pass alone: approve its checks where GitHub holds them, and merge it.";
 
 // Whether a workflow that `wanted` its pull request merged merges it: with an app's token, through
-// auto-merge; with its own, only where the default branch's rules require no checks, which GitHub
-// holds for a maintainer on the pull requests that token opens.
+// auto-merge, which a merge queue takes too; with its own, only where the default branch's rules
+// require no checks, which GitHub holds for a maintainer on the pull requests that token opens, and
+// no merge queue, which refuses a merge that skips it.
 async function merges({ github, context, core }, wanted, app) {
   if (!wanted || app) return wanted;
   const { data: repository } = await github.rest.repos.get(context.repo);
@@ -116,9 +117,10 @@ async function merges({ github, context, core }, wanted, app) {
     branch,
     per_page: 100,
   });
-  if (!rules.some((rule) => rule.type === "required_status_checks")) return true;
+  const gates = ["required_status_checks", "merge_queue"];
+  if (!rules.some((rule) => gates.includes(rule.type))) return true;
   core.warning(
-    `${branch} requires checks this run's own token cannot pass: a person merges, or the automation's app does, with BUMP_APP_ID and BUMP_APP_KEY.`,
+    `${branch} requires checks or a merge queue, which this run's own token cannot pass: a person merges, or the automation's app does, with BUMP_APP_ID and BUMP_APP_KEY.`,
   );
   return false;
 }

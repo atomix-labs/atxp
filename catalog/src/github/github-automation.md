@@ -25,10 +25,11 @@ The bump goes as far as `bump_mode` says, a branch or a pull request; each
 automation merges its own pull requests only where the repository turns on its
 feature `merge`, as [`github-bump`](github-bump.md) and [`vhs`](../docs/vhs.md)
 offer. With the run's own token it merges only where the default branch's rules
-require no checks: GitHub holds the checks of a pull request that token opens
-for a maintainer to approve, so there it leaves the pull request to a person,
-and says so, unless the automation's GitHub App merges it through auto-merge. A
-night with no new commit is skipped.
+require no checks and no merge queue: GitHub holds the checks of a pull request
+that token opens for a maintainer to approve, and a queue refuses a merge that
+skips it. There it leaves the pull request to a person, and says so, unless the
+automation's GitHub App merges it through auto-merge, which joins the queue
+where there is one. A night with no new commit is skipped.
 
 [`github-watch`](github-watch.md), [`github-bump`](github-bump.md),
 [`github-nightly`](github-nightly.md) and [`vhs`](../docs/vhs.md) read these
