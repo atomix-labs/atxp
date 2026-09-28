@@ -3,6 +3,18 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.14.0](https://github.com/atomix-labs/atxp/releases/tag/v0.14.0) - 2026-09-28
+
+### Features
+
+- [83ab5c0](https://github.com/atomix-labs/atxp/commit/83ab5c0e5c05c70e158058447c5b43e47d845c55) *(rust-toolchain)* Make miri, rustc-dev and llvm-tools opt-in features ([#67](https://github.com/atomix-labs/atxp/pull/67)) **breaking**
+
+### Documentation
+
+- [540e882](https://github.com/atomix-labs/atxp/commit/540e8826938ca02b647067bc349544c7aab21e8e) Record the demo for v0.13.2 ([#66](https://github.com/atomix-labs/atxp/pull/66))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.13.2...v0.14.0>
+
 ## [0.13.2](https://github.com/atomix-labs/atxp/releases/tag/v0.13.2) - 2026-09-28
 
 ### Bug Fixes
