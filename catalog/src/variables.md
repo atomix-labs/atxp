@@ -117,7 +117,7 @@ No default · Declared by [`cargo-workspace`](cargo/cargo-workspace.md),
 [`git-changelog`](git/git-changelog.md),
 [`github-release`](github/github-release.md),
 [`github-templates`](github/github-templates.md),
-[`project`](project/project.md)
+[`project`](project/project.md), [`setup`](tooling/setup.md)
 
 ## `runner_labels`
 
