@@ -10,20 +10,35 @@ a pure-Rust build. `<version>` is `RELEASE_VERSION`, which
 [`github-release`](../../github/github-release/README.md) sets from the tag, or
 the workspace's. git ignores `dist/`, in a block of `.gitignore`.
 
+With the feature `completions`, off unless the repository turns it on, each
+archive also holds `completions/`, beside the binary: what `<bin> completions
+<shell>` prints for bash, zsh, fish, elvish and PowerShell, named as each shell
+looks for them, `<bin>.bash`, `_<bin>`, `<bin>.fish`, `<bin>.elv` and
+`_<bin>.ps1`. It is for a binary whose command line has that subcommand, as one
+built with clap_complete does; each platform's archive is built on that
+platform, so the binary runs where it is packaged.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
 | File                        | Part  | Policy | Notes      |
 | --------------------------- | ----- | ------ | ---------- |
-| `.just/cargo-binaries.just` | whole | owned  |            |
+| `.just/cargo-binaries.just` | whole | owned  | template   |
 | `.just/cargo-binaries.sh`   | whole | owned  | executable |
 | `.gitignore`                | block | owned  |            |
+
+## Features
+
+| Feature       | Default | Enables |
+| ------------- | ------- | ------- |
+| `completions` |         |         |
 
 ## Recipes
 
 - `package-cargo-binaries`: Builds the workspace's binaries for this machine
-  into dist/, each archived with its sha256.
+  into dist/, each archived with its sha256 and its shell completions (with
+  `completions`).
 
 ## Requires
 
