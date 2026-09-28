@@ -1,9 +1,9 @@
 # Records the demos again from docs/demo/*.tape, each a terminal session VHS plays and films, and
 # opens a pull request with the recordings that changed, labelled and assigned: on each release's
 # tag, and on demand. With the vhs feature `merge`, `demo.merge` in .github/automation.json, it
-# merges once every tape has played. A tape whose output no longer comes fails here, on its Wait lines, rather than
-# going stale. The tag, not the GitHub Release: a release the workflow token publishes starts no
-# other workflow.
+# merges once every tape has played. A tape whose output no longer comes fails here, on its Wait
+# lines, rather than going stale. The tag, not the GitHub Release: a release the workflow token
+# publishes starts no other workflow.
 #
 # With the automation's GitHub App (`BUMP_APP_ID`, `BUMP_APP_KEY`), which the weekly bump uses too,
 # the pull request runs the repository's checks, and GitHub's auto-merge merges it once they pass:
