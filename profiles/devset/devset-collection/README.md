@@ -90,6 +90,10 @@ The `agents` feature adds the `authoring-devset-profiles` skill in
 `.claude/skills/`: the design questions, the rules above, and the checks, for an
 agent that adds or changes a profile.
 
+A collection others may take is easiest to find tagged: the GitHub topic
+`devset-collection` on its repository lists it at
+<https://github.com/topics/devset-collection>, beside atxp.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
