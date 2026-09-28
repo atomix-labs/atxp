@@ -12,6 +12,8 @@ security         = []
 breaking-changes = ["git-changelog?/breaking-changes"]
 conduct          = []
 architecture     = []
+# "managed with devset" among the header's badges, linking devset.
+devset-badge = []
 
 [requires]
 git-changelog = { optional = true }

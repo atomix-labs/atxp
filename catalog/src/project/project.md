@@ -24,13 +24,15 @@ Two of them keep a managed block:
   where [`github-ci`](../github/github-ci.md) is, crates.io and docs.rs where
   [`cargo-publish`](../cargo/cargo-publish.md) publishes the crate `crate`
   names, or else the one [`cargo-workspace`](../cargo/cargo-workspace.md) names,
-  and the book where [`mdbook`](../docs/mdbook.md) builds one. Markdown cannot
-  center, so the header is HTML, inside `dprint-ignore` markers that keep the
-  formatter from laying it out again. A README the project starts from here
-  opens with it, then the demo [`vhs`](../docs/vhs.md) records where that is
-  applied; one the project has already gets the block at its end, to move to its
-  top in place of its own title. Where the README is shown away from the
-  repository too, as crates.io shows a crate's, `logo` is a URL, such as
+  the book where [`mdbook`](../docs/mdbook.md) builds one, and, with the feature
+  `devset-badge`, off unless the project turns it on, "managed with devset",
+  linking devset. Markdown cannot center, so the header is HTML, inside
+  `dprint-ignore` markers that keep the formatter from laying it out again. A
+  README the project starts from here opens with it, then the demo
+  [`vhs`](../docs/vhs.md) records where that is applied; one the project has
+  already gets the block at its end, to move to its top in place of its own
+  title. Where the README is shown away from the repository too, as crates.io
+  shows a crate's, `logo` is a URL, such as
   `https://raw.githubusercontent.com/<owner>/<name>/main/docs/src/media/logo`,
   since a relative path resolves against the page showing it.
 - CONTRIBUTING's checks say to run `just check` before a pull request and `just
@@ -67,6 +69,7 @@ contact is left for the project to fill in.
 | `breaking-changes` | yes     | `git-changelog?/breaking-changes` |
 | `conduct`          |         |                                   |
 | `architecture`     |         |                                   |
+| `devset-badge`     |         |                                   |
 
 ## Variables
 
