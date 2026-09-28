@@ -23,7 +23,7 @@ path = "profiles"
 
 [[profiles]]
 name = "mise"
-digest = "9a66d6ebff84433011650d2fa384080f65f28e480637c171020528cdce6ec347"
+digest = "f5bdba05cb79541e2366e704841238453f1e41cd2881038da9212e7a76349882"
 
 [profiles.source]
 path = "profiles"
