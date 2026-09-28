@@ -7,7 +7,13 @@ devset      = ">=0.5.0"
 just           = {}
 rust-toolchain = {}
 
+[features]
+# Each archive also holds the binary's shell completions, where it answers `<bin> completions
+# <shell>`, as a clap_complete command does.
+completions = []
+
 [files.".just/cargo-binaries.just"]
+template = true
 
 [files.".just/cargo-binaries.sh"]
 executable = true
