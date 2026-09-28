@@ -51,7 +51,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-ci"
-digest = "96ff5def1fd0f027baa31c6711a9362e6fc520e5139696ebf7d705712b70a347"
+digest = "df7c2c5ae86a3c37bf339510c3ec1daa6bee30c13607cccd9f7513a76b98c39a"
 
 [profiles.source]
 path = "profiles"
@@ -218,7 +218,7 @@ path = "profiles"
 
 [[profiles]]
 name = "devset-collection"
-digest = "3712baa73bbcb613c0d50972e2989fdec9fbdffff714c6d93056fa1c8b212e18"
+digest = "2ad47fc359fad239b37c962f62d53d17df8365e233dda4856b843b8225496426"
 
 [profiles.source]
 path = "profiles"
