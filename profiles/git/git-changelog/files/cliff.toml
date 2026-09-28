@@ -38,6 +38,11 @@ filter_commits           = true
 tag_pattern              = "v[0-9]*"
 sort_commits             = "newest"
 
+# The number GitHub adds to a squashed pull request's subject links to the pull request.
+commit_preprocessors = [
+    { pattern = '\(#([0-9]+)\)', replace = "([#${1}](https://github.com/{{ repository }}/pull/${1}))" },
+]
+
 # The group each commit falls in, in the order a release lists them; a release commit is left out.
 commit_parsers = [
     { message = "^chore\\(release\\)", skip = true },
