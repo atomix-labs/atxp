@@ -11,6 +11,9 @@ mise = {}
 default      = []
 devcontainer = []
 
+[vars.repository]
+prompt = "The GitHub repository, owner/name"
+
 [files."setup.sh"]
 executable = true
 
@@ -20,3 +23,8 @@ executable = true
 policy   = "once"
 template = true
 when     = { features = ["devcontainer"] }
+
+[files."CONTRIBUTING.md"]
+scope    = "block"
+template = true
+when     = { exists = ["CONTRIBUTING.md"] }

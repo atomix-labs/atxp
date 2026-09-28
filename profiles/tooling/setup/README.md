@@ -24,21 +24,33 @@ repository's once written.
 A pinned stub is the file at a release tag:
 `https://raw.githubusercontent.com/atomix-labs/atxp/<tag>/profiles/tooling/setup/files/setup.sh`.
 
+Where the repository has a `CONTRIBUTING.md`, a block of it, Getting Started,
+tells a contributor how to set up: fork and clone, then `./setup.sh`, or the one
+line that clones and sets up, from `repository`, the GitHub repository as
+`owner/name`.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                    | Part  | Policy | Notes                            |
-| --------------------------------------- | ----- | ------ | -------------------------------- |
-| `setup.sh`                              | whole | owned  | executable                       |
-| `.config/mise/conf.d/devset-setup.toml` | whole | owned  |                                  |
-| `.devcontainer/devcontainer.json`       | whole | once   | template, feature `devcontainer` |
+| File                                    | Part  | Policy | Notes                              |
+| --------------------------------------- | ----- | ------ | ---------------------------------- |
+| `setup.sh`                              | whole | owned  | executable                         |
+| `.config/mise/conf.d/devset-setup.toml` | whole | owned  |                                    |
+| `.devcontainer/devcontainer.json`       | whole | once   | template, feature `devcontainer`   |
+| `CONTRIBUTING.md`                       | block | owned  | template, `CONTRIBUTING.md` exists |
 
 ## Features
 
 | Feature        | Default | Enables |
 | -------------- | ------- | ------- |
 | `devcontainer` |         |         |
+
+## Variables
+
+| Variable     | Default | Asks                              |
+| ------------ | ------- | --------------------------------- |
+| `repository` | none    | The GitHub repository, owner/name |
 
 ## Requires
 

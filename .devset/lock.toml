@@ -37,7 +37,7 @@ path = "profiles"
 
 [[profiles]]
 name = "setup"
-digest = "c07e0cd9e7948000c664afbc4693f7cd4d25750873112b53a5da5176e60fb79a"
+digest = "7f2e19d3e05a02f1861a6b59effb2fc9fee27ec78fd3951f756bafa8c447692c"
 
 [profiles.source]
 path = "profiles"

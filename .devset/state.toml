@@ -419,6 +419,11 @@ scope = "block"
 exact = "ddf288444f8d4a664c49fcdd34889f82cd5ba9897cfe00c0522db656bf7da0f8"
 canonical = "8370f539a11c7b96fad133ea2d16c668b014b3312c0c83eb4a539b356f697362"
 
+[parts."CONTRIBUTING.md".setup]
+scope = "block"
+exact = "ba276f37c14c8cb649b2672464e29af5d192680512972654ef440661c65d1f10"
+canonical = "0920a93ab4f2238eb5a93657298532ce043732d5bc83b08639d21f0034c50d08"
+
 [parts."dprint.json".dprint]
 scope = "keys"
 exact = "7504d813affeaebc7ddd4c065112ef7da1900d471d5af016aed14a8538c25db0"

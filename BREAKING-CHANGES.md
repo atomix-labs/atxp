@@ -8,6 +8,7 @@ every change; this lists only those a repository must act on.
 
 - [v0.12.0](#v0120)
   - [`git-commits` checks a pull request's title](#git-commits-checks-a-pull-requests-title)
+  - [`setup` asks for `repository`](#setup-asks-for-repository)
 - [v0.11.0](#v0110)
   - [`devset-collection` asks for `repository`](#devset-collection-asks-for-repository)
 - [v0.10.0](#v0100)
@@ -52,6 +53,23 @@ branch's commits.
 **What to do.** Squash-merge pull requests: in the repository's settings, allow
 squash merging alone, titled by the pull request. Require the job `title` beside
 `check` in the default branch's ruleset.
+
+### `setup` Asks for `repository`
+
+**What changed.** `setup` writes a Getting Started section into
+`CONTRIBUTING.md`, where the repository has one, which names the repository to
+fork and clone. It declares `repository`, the variable `project`,
+`github-release` and others declare with no default, so a repository that
+answered it for one of them has nothing to do.
+
+**What to do.** Where the run asks, answer it with the update:
+
+```sh
+devset update atxp --tag v0.12.0 --var repository=<owner>/<name>
+```
+
+The section goes at the end of `CONTRIBUTING.md`; move it where it reads best,
+and it stays there.
 
 ## V0.11.0
 
