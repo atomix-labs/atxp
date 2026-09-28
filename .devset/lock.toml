@@ -51,7 +51,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-ci"
-digest = "df7c2c5ae86a3c37bf339510c3ec1daa6bee30c13607cccd9f7513a76b98c39a"
+digest = "e25c4b4e365de63980a68493d7f0f99f9cdb24109fcc1b908870d5aa136f99a6"
 
 [profiles.source]
 path = "profiles"
