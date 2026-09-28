@@ -44,7 +44,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-automation"
-digest = "10de1a406c7561a189a35f661540c9f58fc34c0b7561ab3cceae399d77aee764"
+digest = "4fec9af2dbf3f9084b26c5fcc784f3f3fc961600a1b88411215862030092cd14"
 
 [profiles.source]
 path = "profiles"
