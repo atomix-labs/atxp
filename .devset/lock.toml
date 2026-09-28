@@ -93,7 +93,7 @@ agents = ["target"]
 
 [[profiles]]
 name = "git-changelog"
-digest = "e50401340667dea9159c21a4546ff2e4bb6eeadc3c0696b20dce2544f660804f"
+digest = "986e764a2d63288dc0bc380388c536a823031d01fbdc6b5139128124fe1eecca"
 
 [profiles.source]
 path = "profiles"
