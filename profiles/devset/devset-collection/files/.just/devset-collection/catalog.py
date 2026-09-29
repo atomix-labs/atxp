@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from site_pages import Site
-from skill_form import TEMPLATED, agent_read_problems, shipped_skills
+from skill_form import TEMPLATED, agent_read_problems, code, shipped_skills
 
 PROFILES = Path("profiles")
 README = Path("README.md")
@@ -403,11 +403,6 @@ def default(spec):
     if "default" not in spec:
         return "none"
     return f"`{spec['default']}`" if spec["default"] else "empty"
-
-
-def code(names):
-    """`names`, each in backticks, comma-separated."""
-    return ", ".join(f"`{name}`" for name in names)
 
 
 def facts(profile, named):

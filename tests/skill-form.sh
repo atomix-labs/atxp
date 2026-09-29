@@ -12,9 +12,10 @@ cd "$work"
 printf '[collection]\nname = "form"\ndescription = "Skills that break the form"\n' > collection.toml
 
 # A profile `$1` whose skill `$2` has the SKILL.md on stdin, and any further files: each ships with
-# `agents`, and is a template where `$template` is set.
+# `agents`, or as `$when` says, and is a template where `$template` is set.
 profile() {
-    local name=$1 skill=$2 dir=profiles/test/$1 file
+    local name=$1 skill=$2 dir=profiles/test/$1 file gate='{ features = ["agents"] }'
+    [[ -z ${when:-} ]] || gate=$when
     mkdir -p "$dir/files/.claude/skills/$skill/references"
     cat > "$dir/files/.claude/skills/$skill/SKILL.md"
     {
@@ -23,7 +24,7 @@ profile() {
         for file in ".claude/skills/$skill/SKILL.md" "${@:3}"; do
             printf '[files."%s"]\n' "$file"
             [[ -z ${template:-} ]] || printf 'template = true\n'
-            printf 'when = { features = ["agents"] }\n\n'
+            printf 'when = %s\n\n' "$gate"
         done
     } > "$dir/profile.toml"
 }
@@ -120,14 +121,14 @@ Reads the change, then reports each finding with its place.
 fn wall() -> String { format!("{{}}", 1) }
 ```
 EOF
-# A template's other gates: a tag that trims both sides, one over two lines, a raw `{% endif %}`
-# inside a real gate, a loop's `else` inside one, and a Rust block of braces inside `{% raw %}`.
+# A template's other gates: a raw `{% endif %}` inside a real gate, a tag over two lines, one that
+# trims both sides, a loop's `else` inside a gate, and a Rust block of braces inside `{% raw %}`.
 template=1 profile good-raw writing-grout << 'EOF'
 ---
 name: writing-grout
 description: Use when grouting.
 ---
-{%- if "hinges" in devset.profiles -%}
+{%- if "hinges" in devset.profiles %}
 
 A gate closes with {% raw %}`{% endif %}`{% endraw %}; then run `just check-hinges`.
 {%- endif %}
@@ -136,6 +137,8 @@ A gate closes with {% raw %}`{% endif %}`{% endraw %}; then run `just check-hing
 
 Then `mise exec -- just check fix-hinges`.
 {%- endif %}
+
+Fix what fails{%- if "hinges" in devset.profiles -%}, with `just fix-hinges`,{%- endif %} and go on.
 {%- if "hinges" in devset.profiles %}
 {%- for layer in devset.layers %}{{ layer.profile }}{% else %}none{% endfor %}
 
@@ -173,7 +176,7 @@ description: Use when fitting latches.
 Run `just check-hinges` after.
 EOF
 printf '[requires]\nhinges = {}\n' >> profiles/test/good-requires/profile.toml
-profile good-when writing-bolts << 'EOF'
+when='{ features = ["agents"], profiles = ["hinges"] }' profile good-when writing-bolts << 'EOF'
 ---
 name: writing-bolts
 description: Use when fitting bolts.
@@ -181,8 +184,6 @@ description: Use when fitting bolts.
 
 Run `just check-hinges` after.
 EOF
-sed -i 's/features = \["agents"\] }/features = ["agents"], profiles = ["hinges"] }/' \
-    profiles/test/good-when/profile.toml
 
 # Front matter: a guide with a field it does not hold, a pass without its fields, on another agent,
 # a guide and a pass each named as the other, and a description that does not say when.
@@ -321,7 +322,8 @@ description: Use when cutting treads.
 EOF
 
 # Gates that hold nothing: in a file that is no template, which ships them as text; under an `or`,
-# a `not` and an `else`; after an `{% if %}` shown as raw text, and one inside a comment.
+# a `not` and an `else`, and under a gate on another profile inside an `or`, which needs no
+# nesting; after an `{% if %}` shown as raw text, and one inside a comment.
 profile literal writing-frames << 'EOF'
 ---
 name: writing-frames
@@ -363,6 +365,18 @@ Set the posts first.
 {%- else %}
 
 Run `just check-hinges` after.
+{%- endif %}
+EOF
+template=1 profile inner writing-coves << 'EOF'
+---
+name: writing-coves
+description: Use when running coves.
+---
+{%- if "hinges" in devset.profiles or "posts" in devset.profiles %}
+{%- if "posts" in devset.profiles %}
+
+Run `just check-hinges` after.
+{%- endif %}
 {%- endif %}
 EOF
 template=1 profile shown writing-mullions << 'EOF'
@@ -420,8 +434,8 @@ printf -- '---\nname: writing-jambs\ndescription: Use when hanging jambs.\n---\n
 printf '[files.".claude/skills/writing-jambs/SKILL.md"]\nwhen = { features = ["jambs"] }\n' \
     >> profiles/test/sibling/profile.toml
 
-# Fences: an ignored Rust block, of backticks and of tildes, a failing one that does not say what
-# it fails with, and one that holds template syntax in a template.
+# Fences: an ignored Rust block, of backticks and of tildes, one marked in capitals, a failing one
+# that does not say what it fails with, and one that holds template syntax in a template.
 profile fence writing-floors << 'EOF'
 ---
 name: writing-floors
@@ -441,6 +455,16 @@ description: Use when laying joists.
 ~~~rust,ignore
 fn joist() {}
 ~~~
+EOF
+profile shouting writing-cornices << 'EOF'
+---
+name: writing-cornices
+description: Use when running cornices.
+---
+
+```Rust
+fn cornice() {}
+```
 EOF
 profile failing writing-piers << 'EOF'
 ---
@@ -465,9 +489,10 @@ EOF
 
 out=$(python3 -B "$catalog" --check 2>&1 || true)
 failed=0 expected=0
+# Each finding `$1` names, and what it shows, `$2`; with `$3` as `x`, the whole finding.
 expect() {
     expected=$((expected + 1))
-    if grep -qF -- "$1" <<< "$out"; then
+    if grep -q"${3:-}"F -- "$1" <<< "$out"; then
         echo "ok: $2"
     else
         echo "FAILED: $2: no \`$1\`"
@@ -515,6 +540,8 @@ expect "writing-frames/SKILL.md $hinges$plain" "a recipe gated in a file that is
 expect "writing-panes/SKILL.md $hinges$nested" "a recipe under an \`or\`"
 expect "writing-sashes/SKILL.md $hinges$nested" "a recipe under a \`not\`"
 expect "writing-transoms/SKILL.md $hinges$nested" "a recipe under an \`else\`"
+expect "profiles/test/inner: .claude/skills/writing-coves/SKILL.md $hinges" \
+    "a recipe under another profile's gate inside an \`or\`, the whole finding" x
 expect "writing-mullions/SKILL.md $hinges" "a recipe after an \`{% if %}\` shown as raw text"
 expect "writing-muntins/SKILL.md $hinges" "a recipe after an \`{% if %}\` in a comment"
 
@@ -531,6 +558,7 @@ expect "writing-floors/SKILL.md: line 6: a Rust block is \`rust\` or \`rust,comp
     "an ignored block"
 expect "writing-joists/SKILL.md: line 6: a Rust block is \`rust\` or \`rust,compile_fail\`" \
     "an ignored block of tildes"
+expect "writing-cornices/SKILL.md: line 6: a Rust block is \`rust\` or" "a block marked in capitals"
 expect "writing-piers/SKILL.md: line 6: a failing block opens \`// fails:" \
     "a failing block that does not say why"
 expect "writing-arches/SKILL.md: line 6: a Rust block holds no template syntax" \

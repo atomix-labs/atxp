@@ -115,7 +115,7 @@ class Page:
 
     def advice(self, held):
         """What a gate finding under the conditions `held` adds: to make the file a template, or to
-        nest a condition that holds nothing."""
+        nest the innermost condition, which holds nothing."""
         if not self.template:
             return TEMPLATE
         return NESTED if VOID in held else ""
@@ -252,9 +252,9 @@ def masked(text):
 def conditions(text):
     """The conditions in force from each offset of `text` on, as the offset each span starts at and
     what it holds: `("profile", p)` where the profile `p` is active, `("layer", p, f)` where its
-    feature `f` is on, `("feature", f)` where this profile's is, and `VOID` under a condition that
-    holds nothing, an `or` or a `not`, and under an `else`. A `for` holds nothing, and its `else` is
-    its own."""
+    feature `f` is on, `("feature", f)` where this profile's is, and `VOID` where the innermost
+    condition holds nothing, an `or` or a `not`, or is an `else`. A `for` holds nothing, and its
+    `else` is its own."""
     layers, frames, starts, held = {}, [], [0], [frozenset()]
     for tag in TAGS.finditer(text):
         kind, rest = tag.group(1), tag.group(2)
@@ -277,8 +277,11 @@ def conditions(text):
             frames[-1][1] = frozenset({VOID}) if frames[-1][0] == "if" else frozenset()
         elif kind in ("endif", "endfor") and frames:
             frames.pop()
+        innermost = frames[-1][1] if frames else frozenset()
         starts.append(tag.end())
-        held.append(frozenset().union(*(frame[1] for frame in frames)))
+        held.append(
+            frozenset().union(*(frame[1] - {VOID} for frame in frames)) | innermost & {VOID}
+        )
     return starts, held
 
 
@@ -289,16 +292,17 @@ def fence_problems(page):
     shown = blanked(page.text, raw=True) if page.template else None
     out = []
     for fence in FENCE.finditer(page.text):
+        # A Rust block is found in any case, and marked in one.
         info = fence.group("info").strip()
         kind = info.lower()
         line = page.text.count("\n", 0, fence.start()) + 1
-        if (kind.startswith("rust") or kind.split(",")[0] == "rs") and kind not in RUST:
+        if (kind.startswith("rust") or kind.split(",")[0] == "rs") and info not in RUST:
             out.append(
                 f"line {line}: a Rust block is `rust` or `rust,compile_fail`, never `{info}`"
             )
-        if kind == "rust,compile_fail" and not FAILS.match(fence.group("body")):
+        if info == "rust,compile_fail" and not FAILS.match(fence.group("body")):
             out.append(f"line {line}: a failing block opens `// fails: <lint or error code>`")
-        if page.template and kind in RUST and TEMPLATED.search(shown, *fence.span("body")):
+        if page.template and info in RUST and TEMPLATED.search(shown, *fence.span("body")):
             out.append(f"line {line}: a Rust block holds no template syntax outside `{{% raw %}}`")
     return out
 

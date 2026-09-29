@@ -182,8 +182,8 @@ exact = "8639fe9f4b04651a2a6bf99fa6ce464b965788da9f7a292e1d288ecd4d09f130"
 canonical = "8639fe9f4b04651a2a6bf99fa6ce464b965788da9f7a292e1d288ecd4d09f130"
 
 [files.".just/devset-collection/catalog.py"]
-exact = "b9d92cd8719cc114cf9310035eee96bc665960558800fd0868786c794385dac8"
-canonical = "b9d92cd8719cc114cf9310035eee96bc665960558800fd0868786c794385dac8"
+exact = "0101ea03b5baf200538a3b5ef3bb00f853ef3dacbffa392ea6c1abd3a7b0055f"
+canonical = "0101ea03b5baf200538a3b5ef3bb00f853ef3dacbffa392ea6c1abd3a7b0055f"
 
 [files.".just/devset-collection/pins.py"]
 exact = "e6a63c5534b7f2beed9087976b194f76bf03689450e6b33fc85459fbc1744786"
@@ -194,8 +194,8 @@ exact = "43a2aaa3aadece5e31ad3a2fbb7a5003e4cc55822657cacc15c0687f1094afd4"
 canonical = "43a2aaa3aadece5e31ad3a2fbb7a5003e4cc55822657cacc15c0687f1094afd4"
 
 [files.".just/devset-collection/skill_form.py"]
-exact = "fd962722b493cbd894b6dd4920686c7381727fbb99c1e9ff598909b18627abe0"
-canonical = "fd962722b493cbd894b6dd4920686c7381727fbb99c1e9ff598909b18627abe0"
+exact = "68c12b6d6fcceac273554c3fc5e51da2ab6a34230829cd3d5a0f535b9eecea06"
+canonical = "68c12b6d6fcceac273554c3fc5e51da2ab6a34230829cd3d5a0f535b9eecea06"
 
 [files.".just/devset-collection/suite.sh"]
 exact = "2c15db8edcf7864bbe5e0d973c5815900e1da68916a4291a605117352f30f074"
