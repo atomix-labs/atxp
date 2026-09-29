@@ -1,5 +1,5 @@
 {%- set lints = devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([]) -%}
-{%- set toolchain = devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([]) -%}
+{%- set rustdoc = devset.layers | selectattr("profile", "equalto", "rust-doc") | map(attribute="features") | first | default([]) -%}
 # Writing Tests
 
 Read this before writing or changing a test: its name, its assertions and their
@@ -7,6 +7,13 @@ messages, what it provokes, how it fails, what it shares with the tests beside
 it, and what it stands in for. A test is read twice: when it is written, and
 when it fails in someone else's run, where its name and its messages are all
 that reader has.
+{%- if "strict" in lints %}
+
+The examples are written for a crate with `std`. Under `strict` a library is
+`#![no_std]`, and its tests reach `std` through `#[cfg(test)] extern crate std;`
+in `lib.rs`, and import `alloc`'s names, `alloc::string::ToString` for
+`to_string`, by name.
+{%- endif %}
 
 ## A Test's Name Is the Property It Pins
 
@@ -68,7 +75,9 @@ restriction lint no check turns on.
 beside what was wanted. `assert!(a == b)` prints neither, and `assert!(result
 .is_err())` or `assert!(matches!(…))` say only that the shape was wrong. The
 workspace's error types are `PartialEq` where their payload allows, so a test
-compares the whole `Result`, the error and its fields included.
+compares the whole `Result`, the error and its fields included. It never
+compares `format!("{x:?}")`: a `Debug` form is no contract, and a derive or a
+new field changes it.
 {%- if "rust-lints" in devset.profiles %}
 
 ```rust,compile_fail
@@ -249,12 +258,14 @@ mod tests {
 ```
 
 Held by review.
+{%- if "strict" in lints %}
 {%- if "rust-clippy" in devset.profiles %}
 
-The workspace's `clippy.toml` lets code in a `#[test]` function or a
-`#[cfg(test)]` module unwrap, expect, panic, index and print, which the lints
-refuse elsewhere; a helper outside both carries its own `#[expect]` with a
-reason.
+Under `strict`, the workspace's `clippy.toml` lets code in a `#[test]` function
+or a `#[cfg(test)]` module unwrap, expect, panic, index, print and use `dbg!`,
+which the lints refuse elsewhere; a helper outside both carries its own
+`#[expect]` with a reason.
+{%- endif %}
 {%- endif %}
 
 ## An Impossible Arm Panics with What Arrived
@@ -407,15 +418,19 @@ mod tests {
 
 Held by review.
 
-## A Test Returns `()`
+## A `#[test]` Function Returns `()`
 
 A test that returns `Result` and fails through `?` prints the error's `Debug`,
 `Error: ParseTileError { held: '?' }`, and no line, so the reader cannot tell
 which call failed; a panic from `expect` names its file and line, and its
-message says what was assumed. A test returns `()`, and each call that must
-succeed says so with an `expect`.
+message says what was assumed. A `#[test]` function returns `()`, and each call
+that must succeed says so with an `expect`. A doctest is not one: it is an
+example a caller copies, so it uses `?` as the caller would, closed by a hidden
+`# Ok::<(), E>(())`.
+{%- if "strict" in lints %}
 
-```rust
+```rust,compile_fail
+// fails: clippy::panic_in_result_fn
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
@@ -446,16 +461,27 @@ impl TryFrom<char> for Tile {
 mod tests {
     use super::{ParseTileError, Tile};
 
-    // Bad: a failure prints the error and no line, and nothing checks which tile came back.
+    // Bad: a failure prints the error and no line.
     #[test]
-    fn a_row_of_tiles_parses() -> Result<(), ParseTileError> {
-        for held in ['.', '#', '.'] {
-            let _tile = Tile::try_from(held)?;
-        }
+    fn each_tile_parses_from_its_own_character() -> Result<(), ParseTileError> {
+        assert_eq!(Tile::try_from('.')?, Tile::Blank, "a dot is blank");
+        assert_eq!(Tile::try_from('#')?, Tile::Wall, "and a hash a wall");
         Ok(())
     }
 }
 ```
+{%- else %}
+
+```text
+// Bad: a failure prints the error and no line.
+#[test]
+fn each_tile_parses_from_its_own_character() -> Result<(), ParseTileError> {
+    assert_eq!(Tile::try_from('.')?, Tile::Blank, "a dot is blank");
+    assert_eq!(Tile::try_from('#')?, Tile::Wall, "and a hash a wall");
+    Ok(())
+}
+```
+{%- endif %}
 
 ```rust
 use thiserror::Error;
@@ -497,27 +523,33 @@ mod tests {
 ```
 
 {% if "strict" in lints -%}
-Held by review, and by `clippy::panic_in_result_fn`, which refuses an assertion
-in a test that returns `Result`.
+Held by `clippy::panic_in_result_fn`, which refuses an assertion in a test that
+returns `Result`; one with no assertion, by review.
 {%- else -%}
 Held by review.
+{%- endif %}
+{%- if "agents" in rustdoc %}
+
+A doctest's form is `writing-rustdoc`'s.
 {%- endif %}
 
 ## `#[should_panic]` Names Its Message, on a Test That Returns `()`
 
-A test that pins a panic says which one: `#[should_panic(expected = "…")]`,
-whose text the panic's message must contain. A bare `#[should_panic]` passes on
-any panic at all, an index out of bounds in the test's own setup included. The
-panic is the test's result, so it returns `()`: on a test that returns `Result`,
-`#[should_panic]` does not compile. A refusal a caller can cause is an error,
-not a panic, and its test compares the `Err`.
+A panic worth a test is one the API promises: an `Index` that panics off the
+board, as a slice's does, beside a `get` that refuses, or a precondition set up
+at startup. A refusal a caller can cause through any other call is an error, and
+its test compares the `Err`. The test says which panic it pins,
+`#[should_panic(expected = "…")]`, whose text the panic's message must contain:
+a bare `#[should_panic]` passes on any panic at all, an index out of bounds in
+the test's own setup included. The panic is the test's result, so it returns
+`()`: on a test that returns `Result`, `#[should_panic]` does not compile.
 
 ```text
 // Bad: rustc refuses it: "functions using `#[should_panic]` must return `()`".
 #[test]
-#[should_panic(expected = "a board has at least one column")]
-fn a_board_of_no_columns_panics() -> Result<(), ParseTileError> {
-    let _board = Board::new(0);
+#[should_panic(expected = "index only a pos on the board")]
+fn indexing_past_the_last_column_panics() -> Result<(), BoundsError> {
+    let _square = Board::default()[Pos { col: 8, row: 0 }];
     Ok(())
 }
 ```
@@ -525,67 +557,107 @@ fn a_board_of_no_columns_panics() -> Result<(), ParseTileError> {
 
 ```rust,compile_fail
 // fails: clippy::should_panic_without_expect
+use core::ops::Index;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Pos {
+    pub col: u16,
+    pub row: u16,
+}
+
+#[derive(Debug)]
 pub struct Board {
-    cols: u16,
+    squares: [u8; 64],
+}
+
+impl Default for Board {
+    fn default() -> Self {
+        Self { squares: [0; 64] }
+    }
 }
 
 impl Board {
     #[must_use]
-    #[track_caller]
-    pub const fn new(cols: u16) -> Self {
-        assert!(cols > 0, "a board has at least one column");
-        Self { cols }
+    pub fn get(&self, at: Pos) -> Option<&u8> {
+        if at.col >= 8 || at.row >= 8 {
+            return None;
+        }
+        self.squares.get(usize::from(at.row).checked_mul(8)?.checked_add(usize::from(at.col))?)
     }
+}
 
-    #[must_use]
-    pub const fn cols(self) -> u16 {
-        self.cols
+impl Index<Pos> for Board {
+    type Output = u8;
+
+    #[track_caller]
+    #[expect(clippy::expect_used, reason = "indexing panics off the board, as a slice's does")]
+    fn index(&self, at: Pos) -> &u8 {
+        self.get(at).expect("index only a pos on the board, or ask with `get`")
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Board;
+    use super::{Board, Pos};
 
     // Bad: passes on any panic, a typo in the test included.
     #[test]
     #[should_panic]
-    fn a_board_of_no_columns_panics() {
-        let _board = Board::new(0);
+    fn indexing_past_the_last_column_panics() {
+        let _square = Board::default()[Pos { col: 8, row: 0 }];
     }
 }
 ```
 {%- endif %}
 
 ```rust
+use core::ops::Index;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Pos {
+    pub col: u16,
+    pub row: u16,
+}
+
+#[derive(Debug)]
 pub struct Board {
-    cols: u16,
+    squares: [u8; 64],
+}
+
+impl Default for Board {
+    fn default() -> Self {
+        Self { squares: [0; 64] }
+    }
 }
 
 impl Board {
     #[must_use]
-    #[track_caller]
-    pub const fn new(cols: u16) -> Self {
-        assert!(cols > 0, "a board has at least one column");
-        Self { cols }
+    pub fn get(&self, at: Pos) -> Option<&u8> {
+        if at.col >= 8 || at.row >= 8 {
+            return None;
+        }
+        self.squares.get(usize::from(at.row).checked_mul(8)?.checked_add(usize::from(at.col))?)
     }
+}
 
-    #[must_use]
-    pub const fn cols(self) -> u16 {
-        self.cols
+impl Index<Pos> for Board {
+    type Output = u8;
+
+    #[track_caller]
+    #[expect(clippy::expect_used, reason = "indexing panics off the board, as a slice's does")]
+    fn index(&self, at: Pos) -> &u8 {
+        self.get(at).expect("index only a pos on the board, or ask with `get`")
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Board;
+    use super::{Board, Pos};
 
     #[test]
-    #[should_panic(expected = "a board has at least one column")]
-    fn a_board_of_no_columns_panics() {
-        let _board = Board::new(0);
+    #[should_panic(expected = "index only a pos on the board")]
+    fn indexing_past_the_last_column_panics() {
+        let _square = Board::default()[Pos { col: 8, row: 0 }];
     }
 }
 ```
@@ -788,13 +860,95 @@ mod tests {
 Held by review. A loop that polls sleeps a millisecond or so between tries and
 asserts against a deadline, `Instant::now() < deadline`, on each.
 
+## The Clock, the Environment and the Directory Are Arguments
+
+A value the process shares, the environment, the working directory, the wall
+clock, makes a test depend on every other thread that reads it. `env::set_var`
+is `unsafe` in edition 2024 for that reason, and `set_current_dir` moves every
+thread at once. So the code under test takes what it reads as a value or a
+trait, `cols(setting)` or `is_stale(painted_at, now)`, and the binary passes
+`env::var` and `Instant::now()` in; a test passes its own values, and waits on
+no clock.
+
+```rust,compile_fail
+// fails: E0133
+use core::num::ParseIntError;
+use std::env;
+
+pub fn cols() -> Result<u16, ParseIntError> {
+    env::var("TILES_COLS").map_or(Ok(8), |text| text.parse())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::env;
+
+    use super::cols;
+
+    // Bad: `set_var` is unsafe, since every other thread reads the same environment.
+    #[test]
+    fn the_board_is_as_wide_as_its_setting() {
+        env::set_var("TILES_COLS", "12");
+        assert_eq!(cols(), Ok(12), "twelve columns");
+    }
+}
+```
+
+```rust
+use core::num::ParseIntError;
+use core::time::Duration;
+use std::time::Instant;
+
+pub fn cols(setting: Option<&str>) -> Result<u16, ParseIntError> {
+    setting.map_or(Ok(8), str::parse)
+}
+
+#[must_use]
+pub fn is_stale(painted_at: Instant, now: Instant) -> bool {
+    now.saturating_duration_since(painted_at) > Duration::from_secs(60)
+}
+
+#[cfg(test)]
+mod tests {
+    use core::time::Duration;
+    use std::time::Instant;
+
+    use super::{cols, is_stale};
+
+    #[test]
+    fn the_board_is_as_wide_as_its_setting() {
+        assert_eq!(cols(Some("12")), Ok(12), "twelve columns");
+        assert_eq!(cols(None), Ok(8), "and eight with none");
+    }
+
+    #[test]
+    fn a_tile_painted_over_a_minute_ago_is_stale() {
+        let painted_at = Instant::now();
+        let later =
+            painted_at.checked_add(Duration::from_secs(61)).expect("a minute on is an instant");
+        assert!(is_stale(painted_at, later), "sixty-one seconds on");
+        assert!(!is_stale(painted_at, painted_at), "and not at once");
+    }
+}
+```
+
+Held by rustc for `set_var`, and by review.
+{%- if "async" in lints %}
+
+An async test that waits on time runs on a paused clock,
+`#[tokio::test(start_paused = true)]`, which needs tokio's `test-util` feature
+among the dev-dependencies: a paused runtime moves its clock to the next timer
+whenever every task waits, so a minute's timeout passes at once.
+{%- endif %}
+
 ## A Fixture Gives Back What It Made
 
 A test that writes files, binds a port or makes a shared-memory segment runs
 beside others that do the same, and may panic before its last line. So it makes
 each in a fresh place of its own, a directory from `tempfile`, never a fixed
 path, and holds it in a value whose `Drop` removes it, so it is gone however the
-test ends.
+test ends. A socket binds port 0, which the system fills with a free port, and
+the test reads back which from `local_addr`.
 
 ```text
 // Bad: a fixed path every run shares, removed only if nothing above panics.
@@ -819,7 +973,7 @@ fn a_board_file_reads_back() {
 Held by review. A fixture several tests use is a type in `testing.rs` that holds
 the `TempDir`, so each test gets a fresh one.
 
-## A Double Is a Fake of a Trait the Code Already Takes
+## A Double Is a Fake of a Trait the Code Takes
 
 Code that reaches outside the process, a store, a clock, a dealer of tiles,
 takes it as a trait, and a test hands it a fake: a small type in the tests that
@@ -868,6 +1022,6 @@ mod tests {
 }
 ```
 
-Held by review. Where a repository does use mockall, a value for each call is an
-expectation for each, `.times(1).return_const(Some(1))`, in a `Sequence` where
-their order matters.
+Held by review. Where the repository already uses mockall, a value for each call
+is an expectation for each, `.times(1).return_const(Some(1))`, in a `Sequence`
+where their order matters.

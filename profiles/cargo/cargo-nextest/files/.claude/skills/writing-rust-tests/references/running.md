@@ -87,28 +87,31 @@ Held by review.
 
 ## Tests That Cannot Share the Machine Run in a Test Group
 
-Tests that contend for one thing outside the process, a fixed port, a core they
-pin, the build directory trybuild compiles its fixtures in, run one at a time in
-a nextest test group, in `.config/nextest.toml`, whose `[test-groups]` and
-`[profile.default]` keys are the repository's: the cargo-nextest profile owns
-only the `ci` profile's. An override in `profile.default` holds under `ci` too.
-Tests outside the group run as before.
+What a test makes outside the process it makes fresh: a directory of its own, a
+socket on port 0. What cannot be made fresh, a core a test pins, a device the
+machine has one of, the build directory trybuild compiles its fixtures in, is
+shared, and the tests that contend for it run one at a time in a nextest test
+group, in `.config/nextest.toml`, whose `[test-groups]` and `[profile.default]`
+keys are the repository's: the cargo-nextest profile owns only the `ci`
+profile's. An override in `profile.default` holds under `ci` too. Tests outside
+the group run as before.
 
 ```text
-# Bad: every test in the workspace one at a time, for the two that share a port.
+# Bad: every test in the workspace one at a time, for the two that drive the tile display.
 cargo nextest run --workspace --test-threads 1
 ```
 
 ```toml
-[test-groups.tile-server]
+[test-groups.tile-display]
 max-threads = 1
 
 [[profile.default.overrides]]
-filter      = 'test(/tile_server/)'
-test-group  = 'tile-server'
+filter     = 'test(/on_the_tile_display/)'
+test-group = 'tile-display'
 ```
 
-Held by review.
+Held by review. A filter that names a binary or a package the workspace lacks
+fails to parse, so a group names only what the workspace has.
 
 ## A Flaky Test Is Found by a Retry, and Fixed
 

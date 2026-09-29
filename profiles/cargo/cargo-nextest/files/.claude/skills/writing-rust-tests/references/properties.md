@@ -107,12 +107,14 @@ mod tests {
 Held by review. proptest is a `[dev-dependencies]` entry; `PROPTEST_CASES`
 raises the count for a run by hand.
 
-## A Property Generates Valid Inputs, and Does Not Filter for Them
+## A Property Generates Valid Inputs, and Discards Few
 
 A property over squares on an 8 by 8 board generates columns and rows below 8,
-from ranges or a strategy's `prop_map`. One that generates any `u16` and throws
-away what is off the board with `prop_assume!` rejects nearly every input, and
-proptest gives up after 1,024 rejections, failing a property that holds.
+from ranges or a strategy's `prop_map`. `prop_assume!` is for the sliver of
+inputs a strategy cannot rule out cheaply, never for most of them: one that
+generates any `u16` and throws away what is off the board rejects nearly every
+input, and proptest gives up after 1,024 rejections, failing a property that
+holds.
 
 ```rust
 #[must_use]
@@ -374,7 +376,7 @@ Held by review. rstest is a `[dev-dependencies]` entry.
 
 ## Input from Outside Is Fuzzed, in a Workspace of Its Own
 
-A parser or decoder that reads what another program or a person wrote is fuzzed:
+A parser or decoder of what another program or a person wrote is fuzzed:
 cargo-fuzz runs a target on inputs libFuzzer mutates towards new paths, under a
 sanitizer, for as long as it is given, and finds the input a property's strategy
 never generates. The targets live in the crate's `fuzz/`, whose manifest holds
@@ -431,7 +433,8 @@ fuzz_target!(|data: &[u8]| {
 ```
 
 Held by review. `cargo fuzz run parse_pos` fuzzes, on a nightly toolchain, since
-it needs nightly's sanitizer flags; no recipe runs it.
+it needs nightly's sanitizer flags; no recipe runs it, and no profile pins
+cargo-fuzz, which `cargo install cargo-fuzz` installs.
 
 ## A Fuzz Target's Corpus Is Committed and Replayed
 

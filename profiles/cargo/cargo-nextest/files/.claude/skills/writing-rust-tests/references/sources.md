@@ -35,6 +35,14 @@ why `properties.md` skips a property under it; `cargo miri test` runs a crate's
 tests as `cargo test` does, doctests included, and `--lib --tests` leaves the
 doctests out.
 {%- endif %}
+{%- set lints = devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([]) %}
+{%- if "async" in lints %}
+
+[tokio's `#[tokio::test]`](https://docs.rs/tokio/latest/tokio/attr.test.html)
+runs on a current-thread runtime, and `start_paused = true`, which needs the
+`test-util` feature, starts it on a paused clock that moves to the next timer
+whenever every task waits.
+{%- endif %}
 
 ## Where the Workspace Departs
 

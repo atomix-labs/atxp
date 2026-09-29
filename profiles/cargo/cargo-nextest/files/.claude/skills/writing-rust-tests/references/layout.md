@@ -78,7 +78,8 @@ What a caller of the crate does, through its public API alone, is an integration
 test: `tests/<name>.rs`, which Cargo builds as a crate of its own against the
 library, so a test there cannot lean on a private item. Its tests sit in a
 `#[cfg(test)] mod tests`, as a unit test's do, with the file's shared helpers
-inside it, and the file opens with a `//!` that says what it proves.
+inside it, so every test in the workspace has one form, and the file opens with
+a `//!` that says what it proves.
 
 ```text
 // Bad: tests/moves.rs, its tests loose at the top of the file.
@@ -123,7 +124,8 @@ Cargo finds a test target in each `tests/*.rs` and each `tests/*/main.rs`, and
 nowhere else unless the manifest names one: a `tests/<name>/mod.rs` compiles
 into no target, so its tests never run, and no runner says so. A test that
 outgrows one file becomes a directory with a `main.rs` that declares its
-modules.
+modules, and reaches the shared `tests/testing/mod.rs` by its path, since a `mod
+testing;` there looks beside the `main.rs`.
 
 ```text
 // Bad: no target, so these tests are never built or run.
@@ -132,9 +134,17 @@ tests/moves/diagonal.rs
 ```
 
 ```text
-tests/moves/main.rs      mod diagonal; mod straight;
-tests/moves/diagonal.rs
-tests/moves/straight.rs
+// tests/moves/main.rs, beside tests/moves/diagonal.rs and tests/moves/straight.rs
+//! A tile moves as a caller of the crate moves it, along a line or a diagonal.
+
+#[cfg(test)]
+#[path = "../testing/mod.rs"]
+mod testing;
+
+#[cfg(test)]
+mod diagonal;
+#[cfg(test)]
+mod straight;
 ```
 
 Held by review. `cargo nextest list` names every test the targets hold; one

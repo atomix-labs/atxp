@@ -56,7 +56,13 @@ Held by the fixtures. trybuild is a `[dev-dependencies]` entry; a fixture
 reaches the crate by its name, and the crate's dev-dependencies too.
 {%- if "miri" in toolchain %}
 
-`tests/trybuild.rs` carries `#![cfg(not(miri))]`, since Miri spawns no compiler.
+`tests/trybuild.rs` carries `#![cfg(not(miri))]`, since Miri drives no compiler,
+and `#![cfg(not(any(loom, miri)))]` in a crate with loom models, since a loom
+model drives none either.
+{%- else %}
+
+In a crate with loom models, `tests/trybuild.rs` carries `#![cfg(not(loom))]`,
+since a loom model drives no compiler.
 {%- endif %}
 
 ## A Fixture's Message Is Written by `trybuild`, and Read
@@ -87,7 +93,9 @@ trybuild builds each fixture against the crate with the features the test was
 built with, and the checks build every feature at once. A fixture that must fail
 only while a feature is off compiles under `--all-features`, and fails the test.
 So a fixture refuses what no feature allows, or it sits in a directory of its
-own, which the test compiles only under `cfg!(not(feature = "…"))`.
+own, which the test compiles only under `cfg!(not(feature = "…"))`. Every check
+builds with `--all-features`, so that directory runs by hand, in a build without
+the feature: `cargo nextest run -p tiles --no-default-features --test trybuild`.
 
 ```text
 // Bad: tests/compile_fail/a_narrow_brush_has_no_width.rs, which compiles once `wide` is on.
@@ -98,18 +106,23 @@ fn main() {
 
 ```text
 // tests/trybuild.rs
-#[test]
-fn each_misuse_fails_to_compile() {
-    let cases = trybuild::TestCases::new();
-    cases.compile_fail("tests/compile_fail/*.rs");
-    if cfg!(not(feature = "wide")) {
-        cases.compile_fail("tests/compile_fail/narrow/*.rs");
+//! The misuses the types refuse, each a fixture that must not compile.
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn each_misuse_fails_to_compile() {
+        let cases = trybuild::TestCases::new();
+        cases.compile_fail("tests/compile_fail/*.rs");
+        if cfg!(not(feature = "wide")) {
+            cases.compile_fail("tests/compile_fail/narrow/*.rs");
+        }
     }
 }
 ```
 
-Held by the fixtures, under `just check-cargo-nextest`, which builds every
-feature.
+Held by the fixtures: the ones for every build under `just check-cargo-nextest`,
+the others by hand.
 
 ## A Macro's Accepted Forms Are Fixtures Too
 
