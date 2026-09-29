@@ -214,14 +214,16 @@ to its form:
   the `SKILL.md` names each reference, by a link or in code; and each relative
   link outside code leads to a file the profile ships, so a skill of another
   profile is named, never linked.
-- **Gates**, in a skill's files, AGENTS.md and CLAUDE.md. A recipe of a profile
+- **Recipes and gates**, in a skill's files, AGENTS.md and CLAUDE.md. A recipe
+  named there is one a profile of the collection defines. A recipe of a profile
   this one does not require sits under a condition on the profile that defines
   it: `"<profile>" in devset.profiles`, or a `devset.layers` variable for it. A
   skill of another profile sits under the feature that ships it, through a
-  `devset.layers` variable; a skill of the same profile, under its feature
-  through `devset.features`, unless the file ships with that feature too. Only a
-  file marked `template = true` has conditions, and a condition with `or` or
-  `not`, or an `else`, holds nothing it names.
+  `devset.layers` variable, or under that profile where it ships with no
+  feature; a skill of the same profile, under its feature through
+  `devset.features`, unless the file ships with that feature too. Only a file
+  marked `template = true` has conditions, and a condition with `or` or `not`,
+  or an `else`, holds nothing it names.
 - **Fences.** A Rust block is `rust` or `rust,compile_fail`, a
   `rust,compile_fail` block opens `// fails: <lint or error code>`, and no Rust
   block holds template syntax.
