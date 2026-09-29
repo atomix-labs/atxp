@@ -82,6 +82,7 @@ devset add atxp/<profile> --git https://github.com/atomix-labs/atxp --tag <relea
 | [`github-bump`](github/github-bump.md)                   | A weekly bump: every `bump-*` recipe, gated by `just check`, to a signed commit, a PR or a merge                                                      |
 | [`github-ci`](github/github-ci.md)                       | GitHub Actions: every `check-*` recipe a job of its own, read from the justfile, tools from the mise lock; with pages, a site built once and deployed |
 | [`github-dependabot`](github/github-dependabot.md)       | Dependabot: weekly updates of the GitHub Actions a repository uses, in one pull request                                                               |
+| [`github-labels`](github/github-labels.md)               | Labels as code: a few, kept on GitHub from one file, and set on pull requests from their files and title                                              |
 | [`github-nightly`](github/github-nightly.md)             | A nightly run of every `nightly-*` recipe, each a job of its own, watched                                                                             |
 | [`github-release`](github/github-release.md)             | A release from its tag: every package-* recipe on each platform, then the GitHub Release with its notes                                               |
 | [`github-templates`](github/github-templates.md)         | GitHub's issue forms and pull request checklist, the repository's once written                                                                        |

@@ -1,6 +1,6 @@
 name: Bug report
 description: A profile does something it should not, or fails to do what its README says
-labels: [bug]
+labels: [triage]
 type: Bug
 body:
   - type: input

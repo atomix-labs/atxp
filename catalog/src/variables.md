@@ -61,6 +61,13 @@ One line: what the collection's profiles are for.
 Empty by default · Declared by
 [`devset-collection`](devset/devset-collection.md)
 
+## `conduct_contact`
+
+Where conduct is reported privately, an email address or URL; empty sends it
+through GitHub's Report content.
+
+Empty by default · Declared by [`project`](project/project.md)
+
 ## `crate`
 
 The crate the crates.io and docs.rs badges show; empty takes the project's name.
@@ -115,6 +122,7 @@ The GitHub repository, owner/name.
 No default · Declared by [`cargo-workspace`](cargo/cargo-workspace.md),
 [`devset-collection`](devset/devset-collection.md), [`mdbook`](docs/mdbook.md),
 [`git-changelog`](git/git-changelog.md),
+[`github-labels`](github/github-labels.md),
 [`github-release`](github/github-release.md),
 [`github-templates`](github/github-templates.md),
 [`project`](project/project.md), [`setup`](tooling/setup.md)

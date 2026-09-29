@@ -11,7 +11,9 @@ contributing     = []
 security         = []
 breaking-changes = ["git-changelog?/breaking-changes"]
 conduct          = []
-architecture     = []
+# A SUPPORT.md, which GitHub links beside a new issue: where to ask, report, and disclose.
+support      = []
+architecture = []
 # "managed with devset" among the header's badges, linking devset.
 devset-badge = []
 
@@ -44,6 +46,10 @@ default = "MIT OR Apache-2.0"
 
 [vars.repository]
 prompt = "The GitHub repository, owner/name"
+
+[vars.conduct_contact]
+prompt  = "Where conduct is reported privately, an email address or URL; empty sends it through GitHub's Report content"
+default = ""
 
 [files."README.md"]
 scope    = "block"
@@ -81,8 +87,14 @@ template = true
 when     = { features = ["breaking-changes"] }
 
 [files."CODE_OF_CONDUCT.md"]
-policy = "once"
-when   = { features = ["conduct"] }
+policy   = "once"
+template = true
+when     = { features = ["conduct"] }
+
+[files."SUPPORT.md"]
+policy   = "once"
+template = true
+when     = { features = ["support"] }
 
 [files."ARCHITECTURE.md"]
 policy = "once"

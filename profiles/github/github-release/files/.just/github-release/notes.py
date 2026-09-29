@@ -4,9 +4,10 @@ Usage: notes.py <tag> <owner/name> | --unreleased <owner/name>
 
 `{version}` and `{tag}` in the file take the release's, and its `<!-- changes -->` line takes the
 changes: a callout where one is breaking, linking the release's migration in BREAKING-CHANGES.md,
-then git-cliff's section for the tag without its heading, which the release's title says already.
-With no such file, the notes are the changes alone. `--unreleased` renders what the next release's
-notes would be, to check the file.
+then git-cliff's section for the tag without its heading, which the release's title says already,
+and who made their first contribution in it, as GitHub's own notes say. With no such file, the notes
+are the changes alone. `--unreleased` renders what the next release's notes would be, to check the
+file, without asking GitHub.
 """
 
 import re
@@ -19,6 +20,8 @@ MARKER = "<!-- changes -->"
 MIGRATIONS = Path("BREAKING-CHANGES.md")
 # How the changelog's body marks a breaking change.
 BREAKING = "**breaking**"
+# The section of GitHub's own notes that names each first contribution.
+NEWCOMERS = re.compile(r"^## New Contributors\n(.*?)(?:\n\n|\Z)", re.MULTILINE | re.DOTALL)
 
 
 def changes(tag):
@@ -43,12 +46,47 @@ def callout(tag, repo):
     return f"> [!WARNING]\n> This release has breaking changes: [{MIGRATIONS}]({target}) says what to do."
 
 
+def newcomers(tag, repo):
+    """Who made their first contribution in `tag`, as GitHub's notes say: a section, or nothing
+    where no one did, or where GitHub cannot be asked. Bots are left out."""
+    previous = subprocess.run(
+        ["git", "describe", "--tags", "--abbrev=0", f"{tag}^"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+    ).stdout.strip()
+    ask = ["gh", "api", f"repos/{repo}/releases/generate-notes", "-f", f"tag_name={tag}"]
+    if previous:
+        ask += ["-f", f"previous_tag_name={previous}"]
+    try:
+        answer = subprocess.run(
+            [*ask, "--jq", ".body"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            check=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return ""
+    found = NEWCOMERS.search(answer)
+    lines = found.group(1).splitlines() if found else []
+    people = [f"- {line[2:]}" for line in lines if line.startswith("* ") and "[bot]" not in line]
+    return "### New Contributors\n\n" + "\n".join(people) if people else ""
+
+
 def notes(tag, repo):
     """The notes for `tag` of `repo`, or for its next release where `tag` is None."""
     shown = tag or "vX.Y.Z"
     body = changes(tag)
     if BREAKING in body:
         body = f"{callout(shown, repo)}\n\n{body}"
+    if tag and (first := newcomers(tag, repo)):
+        full = body.rfind("**Full Changelog**")
+        body = (
+            f"{body[:full].rstrip()}\n\n{first}\n\n{body[full:]}"
+            if full >= 0
+            else f"{body}\n\n{first}"
+        )
     if not TEMPLATE.is_file():
         return body + "\n"
     text = TEMPLATE.read_text()

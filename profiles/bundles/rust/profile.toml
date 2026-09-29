@@ -24,6 +24,7 @@ github-ci            = {}
 github-bump          = {}
 github-watch         = {}
 github-dependabot    = {}
+github-labels        = {}
 github-workflow-lint = {}
 markdown             = {}
 toml                 = {}
@@ -50,7 +51,7 @@ default  = []
 docs     = ["dep:mdbook"]
 publish  = ["dep:cargo-publish", "dep:github-release", "dep:project"]
 binaries = ["dep:cargo-binaries", "dep:github-release"]
-oss      = ["dep:project", "project/conduct", "dep:github-templates"]
+oss      = ["dep:project", "project/conduct", "project/support", "dep:github-templates"]
 nightly  = ["rust-lints/nightly", "dep:cargo-hack", "dep:github-nightly"]
 strict   = ["cargo-deny/strict", "rust-lints/strict", "cargo-profiles/strict", "rust-doc/strict"]
 

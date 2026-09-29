@@ -13,6 +13,8 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+    # Labels github-labels keeps: without them, Dependabot makes labels of its own.
+    labels: [dependencies, automation]
 {%- if logins %}
     assignees: ["{{ logins | join('", "') }}"]
 {%- endif %}

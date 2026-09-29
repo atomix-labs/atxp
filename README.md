@@ -186,6 +186,7 @@ The profiles, by group, each with its page in
   [`github-bump`](https://atomix-labs.github.io/atxp/github/github-bump.html),
   [`github-ci`](https://atomix-labs.github.io/atxp/github/github-ci.html),
   [`github-dependabot`](https://atomix-labs.github.io/atxp/github/github-dependabot.html),
+  [`github-labels`](https://atomix-labs.github.io/atxp/github/github-labels.html),
   [`github-nightly`](https://atomix-labs.github.io/atxp/github/github-nightly.html),
   [`github-release`](https://atomix-labs.github.io/atxp/github/github-release.html),
   [`github-templates`](https://atomix-labs.github.io/atxp/github/github-templates.html),

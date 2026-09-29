@@ -7,6 +7,11 @@ contact_links:
     url: https://{{ owner }}.github.io/{{ repo }}/
     about: The book, which may answer it already
 {%- endif %}
+{%- if "discussions" in devset.features %}
+  - name: Ask a question
+    url: https://github.com/{{ repository }}/discussions/new?category=q-a
+    about: A question, or an idea to talk over before it is a request
+{%- endif %}
   - name: Security
     url: https://github.com/{{ repository }}/security/advisories/new
     about: Report a vulnerability privately, never in a public issue

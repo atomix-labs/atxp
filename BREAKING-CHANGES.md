@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.16.0](#v0160)
+  - [Labels are code, and kind is not a label](#labels-are-code-and-kind-is-not-a-label)
 - [v0.15.0](#v0150)
   - [`github-templates` writes issue forms](#github-templates-writes-issue-forms)
 - [v0.14.0](#v0140)
@@ -43,6 +45,31 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.16.0
+
+### Labels Are Code, and Kind Is Not a Label
+
+**What changed.** The bundle applies `github-labels`: `.github/labels.toml`
+holds the repository's labels, a workflow keeps GitHub's as it says, and
+`check-github-labels` fails where a form, `.github/automation.json` or
+`.github/dependabot.yml` names a label the file does not hold. An issue's kind
+is its type and a pull request's its title's, so `bug`, `enhancement` and
+`documentation` are retired, with GitHub's other first labels. The forms label a
+new issue `triage`; the automation labels its issues and pull requests
+`automation`, and the bump and Dependabot's updates `dependencies` too.
+
+**What to do.**
+
+- In each issue form you keep, which devset wrote once, change `labels: [bug]`
+  or `labels: [enhancement]` to `labels: [triage]`.
+- Close any open issue the automation opened under `bug`, such as "The bump
+  workflow is failing": it now finds its issues by `automation`.
+- Add your areas to `.github/labels.toml`, if you want them, and a label you
+  keep of your own; `[retired]` names one to remove.
+
+On the first change to the file on `main`, or a run of the `labels` workflow by
+hand, the retired labels go; their issues first take the type the file names.
 
 ## V0.15.0
 

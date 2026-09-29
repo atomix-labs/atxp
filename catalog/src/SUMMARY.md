@@ -50,6 +50,7 @@
 - [`github-bump`](github/github-bump.md)
 - [`github-ci`](github/github-ci.md)
 - [`github-dependabot`](github/github-dependabot.md)
+- [`github-labels`](github/github-labels.md)
 - [`github-nightly`](github/github-nightly.md)
 - [`github-release`](github/github-release.md)
 - [`github-templates`](github/github-templates.md)
