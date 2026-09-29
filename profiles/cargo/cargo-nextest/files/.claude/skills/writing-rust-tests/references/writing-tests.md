@@ -11,8 +11,9 @@ that reader has.
 
 The examples are written for a crate with `std`. Under `strict` a library is
 `#![no_std]`, and its tests reach `std` through `#[cfg(test)] extern crate std;`
-in `lib.rs`, and import `alloc`'s names, `alloc::string::ToString` for
-`to_string`, by name.
+in `lib.rs`, and `alloc` through `#[cfg(test)] extern crate alloc;` where the
+library has no `extern crate alloc;` of its own, and import `alloc`'s names,
+`alloc::string::ToString` for `to_string`, by name.
 {%- endif %}
 
 ## A Test's Name Is the Property It Pins

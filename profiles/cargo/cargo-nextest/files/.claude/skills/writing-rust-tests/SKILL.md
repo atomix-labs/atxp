@@ -23,8 +23,9 @@ saying what it proves, and a line on each fixture saying its role.
 
 Under `strict`, `missing_docs` asks each file in `tests/` for its `//!`, and no
 lint asks a test or a fixture for more. A `#![no_std]` library's tests need what
-the examples assume: `#[cfg(test)] extern crate std;` in `lib.rs`, and `alloc`'s
-names, `alloc::string::ToString`, imported by name.
+the examples assume: `#[cfg(test)] extern crate std;` in `lib.rs`, and
+`#[cfg(test)] extern crate alloc;` where the library has no `extern crate
+alloc;`, and `alloc`'s names, `alloc::string::ToString`, imported by name.
 {%- endif %}
 
 ## Rules
