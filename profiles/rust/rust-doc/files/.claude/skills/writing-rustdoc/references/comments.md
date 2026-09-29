@@ -44,7 +44,7 @@ not *reachability*).
 Rationale that is not a safety argument goes on its own `//` line above,
 separated by a bare `//`:
 
-```rust
+```text
 // Built where it lands, so nothing is moved in; on `Err` it wrote nothing.
 //
 // SAFETY: a fresh unaliased slot for one `T`, and `Init` cancels the pinning duty.
@@ -104,7 +104,7 @@ warns. The reason is the *cause*, lowercase, no terminal period, one clause; it
 names the concrete thing the lint misreads, never the consequence (`"otherwise
 clippy complains"`) or the lint's name.
 
-```rust
+```text
 #[expect(clippy::mem_forget, reason = "pin-init disarms its field guards this way")]
 #[expect(clippy::indexing_slicing, reason = "a `Bucket` is below `NUM_BUCKETS`, this array's length")]
 #[expect(clippy::indexing_slicing, reason = "as `index`")]
@@ -112,7 +112,7 @@ clippy complains"`) or the lint's name.
 
 Crate-level `unsafe_code` names the concrete unsafe and its obligation:
 
-```rust
+```text
 #![expect(
     unsafe_code,
     reason = "writing a value straight into raw destination bytes is this crate's whole purpose"
