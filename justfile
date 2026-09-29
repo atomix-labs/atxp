@@ -57,9 +57,10 @@ test-agents-hook:
 test-skill-form:
     mise exec -- bash tests/skill-form.sh
 
-# Compiles every Rust example the skills show under the strict lints, each as its block says.
-test-skill-examples:
-    mise exec -- python3 -B tests/skill_examples.py
+# Compiles every Rust example the skills show under the strict lints, each as its block says; with
+# skills named, only theirs.
+test-skill-examples *skills:
+    mise exec -- python3 -B tests/skill_examples.py {{ skills }}
 
 # The nightly takes each feature alone.
 
