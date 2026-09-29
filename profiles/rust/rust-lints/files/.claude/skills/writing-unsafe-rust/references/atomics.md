@@ -1,0 +1,473 @@
+# Atomics
+
+Read this before a value is shared between threads through anything but a lock
+or a channel: an atomic, a fence, a `static` that changes, an `unsafe impl Sync`
+over shared state. It says which orderings a protocol needs, how each is written
+down, and how atomics are reached so a model checker can see them.
+
+An ordering is a promise about what else a thread sees. A `Release` store
+publishes everything its thread wrote before it; an `Acquire` load that reads
+the value it stored sees all of that. `Relaxed` orders nothing but the atomic
+itself. `SeqCst` adds one order every thread agrees on across all `SeqCst`
+operations and fences. A data race, two accesses to one place that nothing
+orders, one a write and one not atomic, is undefined behaviour; a wrong ordering
+between atomics is not, but it lets a thread act on a value another has not
+finished, which is the same bug one step removed.
+
+## Shared State Is a Lock, a `OnceLock` or an Atomic, Never `static mut`
+
+`static mut` is a global any thread may write, whose every access is unsafe with
+a proof no module can keep, and edition 2024 denies taking a reference to it. A
+value set once is a `OnceLock`, a value that changes is a `Mutex` or an
+`RwLock`, and a lone word, a flag or a count, is an atomic. A lock's proof is
+the standard library's; an atomic protocol is one the crate proves itself,
+ordering by ordering, so it is written only where a measured lock costs too
+much.
+
+```rust,compile_fail
+// fails: static_mut_refs
+static mut TILESET: Vec<char> = Vec::new();
+
+#[expect(unsafe_code, reason = "the tile set installed once at startup")]
+pub fn install(glyphs: &[char]) {
+    // Bad: a `&mut` to a global any thread may take one of too.
+    // SAFETY: `install` runs once, before any thread starts.
+    let tileset = unsafe { &mut TILESET };
+    tileset.extend_from_slice(glyphs);
+}
+```
+
+```rust
+use std::sync::OnceLock;
+
+use thiserror::Error;
+
+static TILESET: OnceLock<Vec<char>> = OnceLock::new();
+
+#[derive(Debug, Error, Clone, PartialEq, Eq)]
+#[error("install error: a tile set is installed already")]
+pub struct InstallError {
+    pub refused: Vec<char>,
+}
+
+pub fn install(glyphs: Vec<char>) -> Result<(), InstallError> {
+    TILESET.set(glyphs).map_err(|refused| InstallError { refused })
+}
+
+#[must_use]
+pub fn tileset() -> Option<&'static [char]> {
+    TILESET.get().map(Vec::as_slice)
+}
+```
+
+Held by `static_mut_refs`, which edition 2024 denies.
+{%- if "strict" in devset.features %}
+
+Under `strict`, `clippy::mutex_atomic` and `clippy::mutex_integer` refuse a
+`Mutex` around what an atomic holds.
+{%- endif %}
+
+## Reach Atomics Through One Module, so `--cfg loom` Swaps Them
+
+A model checker such as loom sees only the atomics, cells and threads that are
+its own. So a crate with an atomic protocol takes its atomics, `fence`,
+`UnsafeCell` and `spin_loop` from one module of its own, which re-exports
+`core`'s and, under `--cfg loom`, loom's, and the same body is both the
+production code and the model. Loom's types differ in small ways the module
+covers: its atomics have no `const fn new`, so a `static` atomic has no model,
+and its `UnsafeCell` is reached through `with` and `with_mut`.
+
+```text
+// grid.rs
+// Bad: `core`'s atomic, which a loom model cannot see.
+use core::sync::atomic::{AtomicBool, Ordering};
+```
+
+```text
+// sync.rs: every atomic the crate uses, from one place.
+#[cfg(not(loom))]
+pub(crate) use core::sync::atomic::{AtomicBool, AtomicU8, Ordering, fence};
+#[cfg(loom)]
+pub(crate) use loom::sync::atomic::{AtomicBool, AtomicU8, Ordering, fence};
+
+// grid.rs
+use crate::sync::{AtomicBool, Ordering};
+```
+
+Held by review. `verifying.md` shows the model, and how the workspace declares
+the cfg.
+
+## Every Atomic Operation Has an `// ORDERING:` That Names What It Pairs With
+
+An ordering is chosen for what it pairs with: a `Release` store with the
+`Acquire` loads that read it, and the other way about. The `// ORDERING:`
+comment above each operation names the ordering and that pair, "Release, pairing
+with the Acquire load in `winner`", or says it publishes nothing; a function
+whose operations all share one ordering says so once at its top, "Relaxed
+throughout". A reader then checks each pair from both ends, and a change to one
+end finds the other.
+
+```rust
+use core::sync::atomic::Ordering::Relaxed;
+use core::sync::atomic::{AtomicBool, AtomicU8};
+
+#[derive(Debug, Default)]
+pub struct Game {
+    winner: AtomicU8,
+    over: AtomicBool,
+}
+
+impl Game {
+    pub fn finish(&self, winner: u8) {
+        self.winner.store(winner, Relaxed);
+        // Bad: `Relaxed` orders nothing, so a reader may see the game over and no winner yet.
+        self.over.store(true, Relaxed);
+    }
+
+    #[must_use]
+    pub fn winner(&self) -> Option<u8> {
+        self.over.load(Relaxed).then(|| self.winner.load(Relaxed))
+    }
+}
+```
+
+```rust
+use core::sync::atomic::Ordering::{Acquire, Relaxed, Release};
+use core::sync::atomic::{AtomicBool, AtomicU8};
+
+#[derive(Debug, Default)]
+pub struct Game {
+    winner: AtomicU8,
+    over: AtomicBool,
+}
+
+impl Game {
+    pub fn finish(&self, winner: u8) {
+        // ORDERING: Relaxed; the Release store of `over` below publishes it.
+        self.winner.store(winner, Relaxed);
+        // ORDERING: Release, pairing with the Acquire load in `winner`, so a reader that sees the
+        // game over sees the winner stored before it.
+        self.over.store(true, Release);
+    }
+
+    #[must_use]
+    pub fn winner(&self) -> Option<u8> {
+        // ORDERING: Acquire, pairing with the Release store in `finish`.
+        let over = self.over.load(Acquire);
+        // ORDERING: Relaxed; the Acquire load above orders it after the store `finish` published.
+        over.then(|| self.winner.load(Relaxed))
+    }
+}
+```
+
+Held by review, and by a loom model of the pair.
+
+## `Relaxed` Where Nothing Pairs
+
+An atomic that publishes nothing but its own value, a stop flag or a statistic,
+needs no ordering, and a stronger one "to be safe" may cost a barrier on every
+access, and tells a reader a pairing exists that does not. Whatever else such a
+word's readers rely on is ordered by something else, a join or a lock, which its
+`// ORDERING:` names.
+
+```rust
+use core::sync::atomic::AtomicBool;
+use core::sync::atomic::Ordering::SeqCst;
+
+#[derive(Debug, Default)]
+pub struct Renderer {
+    stop: AtomicBool,
+}
+
+impl Renderer {
+    pub fn stop(&self) {
+        // Bad: `SeqCst` to be safe, which orders nothing this flag needs, and says nothing why.
+        self.stop.store(true, SeqCst);
+    }
+
+    #[must_use]
+    pub fn stopped(&self) -> bool {
+        self.stop.load(SeqCst)
+    }
+}
+```
+
+```rust
+use core::sync::atomic::AtomicBool;
+use core::sync::atomic::Ordering::Relaxed;
+
+#[derive(Debug, Default)]
+pub struct Renderer {
+    stop: AtomicBool,
+}
+
+impl Renderer {
+    pub fn stop(&self) {
+        // ORDERING: Relaxed; the flag publishes nothing but itself, and whoever waits for the
+        // renderer to end joins its thread, which orders the rest.
+        self.stop.store(true, Relaxed);
+    }
+
+    #[must_use]
+    pub fn stopped(&self) -> bool {
+        // ORDERING: Relaxed, as in `stop`.
+        self.stop.load(Relaxed)
+    }
+}
+```
+
+Held by review.
+
+## `SeqCst` Only with Its Reason, and as a Fence Between a Store and a Load
+
+`Release` and `Acquire` order what a thread does before a store, and what it
+does after a load, but never a store before a later load: each of two threads
+may store its own flag and then read the other's as it was before either store.
+Where a protocol rests on that order, two sides that each announce and then
+look, a `SeqCst` fence between the store and the load puts every such fence in
+one order, so one side's look comes after the other's announcement. That order
+is what `SeqCst` buys, and it is written only where a protocol rests on it, with
+an `// ORDERING:` paragraph that says how. It is a fence rather than `SeqCst`
+accesses, which loom models only as `AcqRel`.
+
+```rust
+use core::sync::atomic::AtomicBool;
+use core::sync::atomic::Ordering::{Acquire, Release};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Painter {
+    Left,
+    Right,
+}
+
+#[derive(Debug, Default)]
+pub struct Square {
+    left: AtomicBool,
+    right: AtomicBool,
+}
+
+impl Square {
+    const fn flags(&self, painter: Painter) -> (&AtomicBool, &AtomicBool) {
+        match painter {
+            Painter::Left => (&self.left, &self.right),
+            Painter::Right => (&self.right, &self.left),
+        }
+    }
+
+    #[must_use]
+    pub fn enter(&self, painter: Painter) -> bool {
+        let (mine, theirs) = self.flags(painter);
+        mine.store(true, Release);
+        // Bad: the load may see the other painter's flag as it was before its store, and so may
+        // theirs of this one: both paint.
+        if theirs.load(Acquire) {
+            mine.store(false, Release);
+            return false;
+        }
+        true
+    }
+}
+```
+
+```rust
+use core::sync::atomic::Ordering::{Acquire, Release, SeqCst};
+use core::sync::atomic::{AtomicBool, fence};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Painter {
+    Left,
+    Right,
+}
+
+#[derive(Debug, Default)]
+pub struct Square {
+    left: AtomicBool,
+    right: AtomicBool,
+}
+
+impl Square {
+    const fn flags(&self, painter: Painter) -> (&AtomicBool, &AtomicBool) {
+        match painter {
+            Painter::Left => (&self.left, &self.right),
+            Painter::Right => (&self.right, &self.left),
+        }
+    }
+
+    #[must_use]
+    pub fn enter(&self, painter: Painter) -> bool {
+        let (mine, theirs) = self.flags(painter);
+        // ORDERING: Release, so a painter that sees this flag sees what this one did before; then
+        // a SeqCst fence, the store-load order the exclusion rests on. Both painters announce,
+        // then look, and the fences' one order puts one painter's look after the other's
+        // announcement, so at most one finds the square clear. A fence rather than SeqCst
+        // accesses, since loom models the fence and not the accesses.
+        mine.store(true, Release);
+        fence(SeqCst);
+        // ORDERING: Acquire, pairing with the Release store in `leave`, so a painter that enters
+        // sees what the last one painted.
+        if theirs.load(Acquire) {
+            // ORDERING: Release, as in `leave`.
+            mine.store(false, Release);
+            return false;
+        }
+        true
+    }
+
+    pub fn leave(&self, painter: Painter) {
+        // ORDERING: Release, pairing with the Acquire load in `enter`, so the next painter sees
+        // what this one painted.
+        self.flags(painter).0.store(false, Release);
+    }
+}
+```
+
+Held by review, and by a loom model, which finds both painters inside without
+the fence.
+
+## A `compare_exchange` Chooses Both Orderings
+
+A `compare_exchange` has an ordering for when it succeeds, and one for when it
+fails, which only reads: `Release` or `AcqRel` there is refused. A claim that
+takes what the last holder released succeeds with `Acquire`, and a failure that
+acts on nothing it read is `Relaxed`. `compare_exchange_weak` may fail
+spuriously, so it belongs in a loop that retries; a lone attempt is
+`compare_exchange`.
+
+```rust,compile_fail
+// fails: invalid_atomic_ordering
+use core::sync::atomic::AtomicU32;
+use core::sync::atomic::Ordering::{Acquire, Release};
+
+#[derive(Debug, Default)]
+pub struct Claim {
+    owner: AtomicU32,
+}
+
+impl Claim {
+    #[must_use]
+    pub fn try_claim(&self, editor: u32) -> bool {
+        // Bad: a failed exchange writes nothing, so it has nothing to release.
+        self.owner.compare_exchange(0, editor, Acquire, Release).is_ok()
+    }
+}
+```
+
+```rust
+use core::num::NonZeroU32;
+use core::sync::atomic::AtomicU32;
+use core::sync::atomic::Ordering::{Acquire, Relaxed, Release};
+
+use thiserror::Error;
+
+const FREE: u32 = 0;
+
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+#[error("claim error: editor {held} holds the square")]
+pub struct ClaimError {
+    pub held: u32,
+}
+
+#[derive(Debug, Default)]
+pub struct Claim {
+    owner: AtomicU32,
+}
+
+impl Claim {
+    pub fn try_claim(&self, editor: NonZeroU32) -> Result<(), ClaimError> {
+        // ORDERING: Acquire on success, pairing with the Release store in `release`, so this
+        // editor sees what the last one wrote; Relaxed on failure, which acts on nothing it read.
+        self.owner
+            .compare_exchange(FREE, editor.get(), Acquire, Relaxed)
+            .map(drop)
+            .map_err(|held| ClaimError { held })
+    }
+
+    pub fn release(&self) {
+        // ORDERING: Release, pairing with the Acquire exchange in `try_claim`.
+        self.owner.store(FREE, Release);
+    }
+}
+```
+
+Held by `invalid_atomic_ordering`, which refuses a failure ordering that writes,
+a load that releases and a store that acquires.
+
+## A Pointer Shared Across Threads Is an `AtomicPtr`
+
+An `AtomicUsize` holds an address, and an address has no provenance, so a
+pointer stored in one comes back as a guess. `AtomicPtr<T>` holds the pointer
+itself, provenance and all, and its loads and stores order what it points at
+like any other atomic's.
+
+```rust
+use core::ptr;
+use core::sync::atomic::AtomicUsize;
+use core::sync::atomic::Ordering::{Acquire, Release};
+
+#[derive(Debug)]
+pub struct Tileset {
+    pub glyphs: [char; 4],
+}
+
+#[derive(Debug, Default)]
+pub struct Theme {
+    // Bad: an address, so the tile set's provenance is dropped with each store.
+    current: AtomicUsize,
+}
+
+impl Theme {
+    pub fn set(&self, tileset: &'static Tileset) {
+        self.current.store(ptr::from_ref(tileset).expose_provenance(), Release);
+    }
+
+    #[must_use]
+    #[expect(unsafe_code, reason = "a tile set rebuilt from the address the theme holds")]
+    pub fn get(&self) -> Option<&'static Tileset> {
+        let current = ptr::with_exposed_provenance::<Tileset>(self.current.load(Acquire));
+        // SAFETY: zero, or the address of a `&'static Tileset` whose provenance `set` exposed.
+        unsafe { current.as_ref() }
+    }
+}
+```
+
+```rust
+use core::ptr;
+use core::sync::atomic::AtomicPtr;
+use core::sync::atomic::Ordering::{Acquire, Release};
+
+#[derive(Debug)]
+pub struct Tileset {
+    pub glyphs: [char; 4],
+}
+
+#[derive(Debug, Default)]
+pub struct Theme {
+    // INVARIANT: null, or a `&'static Tileset` that `set` stored, never written through.
+    current: AtomicPtr<Tileset>,
+}
+
+impl Theme {
+    pub fn set(&self, tileset: &'static Tileset) {
+        // ORDERING: Release, pairing with the Acquire load in `get`, so a reader sees the tile set
+        // as it was built.
+        self.current.store(ptr::from_ref(tileset).cast_mut(), Release);
+    }
+
+    #[must_use]
+    #[expect(unsafe_code, reason = "the tile set the theme's pointer names")]
+    pub fn get(&self) -> Option<&'static Tileset> {
+        // ORDERING: Acquire, pairing with the Release store in `set`.
+        let current = self.current.load(Acquire);
+        // SAFETY: by the field INVARIANT the pointer is null or a `&'static Tileset`'s, with its
+        // provenance, and nothing writes through it.
+        unsafe { current.as_ref() }
+    }
+}
+```
+
+Held by review.
+{%- if "nightly" in devset.features %}
+
+Under `nightly`, `implicit_provenance_casts` refuses the `as` casts an
+`AtomicUsize` of pointers would otherwise need.
+{%- endif %}

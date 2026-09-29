@@ -44,21 +44,36 @@ reference for async Rust on tokio: locks across `.await`, bounded channels,
 blocking work, `JoinSet`, cancellation, `select!`, async traits and tests, and
 `tracing`.
 
+The `agents` feature also adds the `writing-unsafe-rust` skill: where unsafe
+code goes and how each site is marked, what a `// SAFETY:` proof must establish,
+`// INVARIANT:` fields, `unsafe impl Send` and `Sync` with their bounds,
+pointers that keep their provenance, `transmute`, `MaybeUninit` and FFI, atomics
+whose every `// ORDERING:` names what it pairs with, and how the proofs are
+tested: edge cases, loom models, compile-fail tests, and Miri where
+[`rust-toolchain`](rust-toolchain.md) has its `miri` feature. Each bad example a
+lint catches fails with that lint, and each good one compiles under this wall.
+
 ## Owns
 
-| File                                                   | Part  | Policy | Notes                             |
-| ------------------------------------------------------ | ----- | ------ | --------------------------------- |
-| `Cargo.toml`                                           | keys  | owned  | template                          |
-| `.just/rust-lints.just`                                | whole | owned  | feature `nightly`                 |
-| `.claude/skills/writing-rust/SKILL.md`                 | whole | owned  | template, feature `agents`        |
-| `.claude/skills/writing-rust/references/api-design.md` | whole | owned  | template, feature `agents`        |
-| `.claude/skills/writing-rust/references/async.md`      | whole | owned  | feature `agents`, feature `async` |
-| `.claude/skills/writing-rust/references/errors.md`     | whole | owned  | template, feature `agents`        |
-| `.claude/skills/writing-rust/references/layout.md`     | whole | owned  | template, feature `agents`        |
-| `.claude/skills/writing-rust/references/lints.md`      | whole | owned  | template, feature `agents`        |
-| `.claude/skills/writing-rust/references/naming.md`     | whole | owned  | feature `agents`                  |
-| `.claude/skills/writing-rust/references/ownership.md`  | whole | owned  | template, feature `agents`        |
-| `.claude/skills/writing-rust/references/sources.md`    | whole | owned  | template, feature `agents`        |
+| File                                                               | Part  | Policy | Notes                             |
+| ------------------------------------------------------------------ | ----- | ------ | --------------------------------- |
+| `Cargo.toml`                                                       | keys  | owned  | template                          |
+| `.just/rust-lints.just`                                            | whole | owned  | feature `nightly`                 |
+| `.claude/skills/writing-rust/SKILL.md`                             | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/api-design.md`             | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/async.md`                  | whole | owned  | feature `agents`, feature `async` |
+| `.claude/skills/writing-rust/references/errors.md`                 | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/layout.md`                 | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/lints.md`                  | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/naming.md`                 | whole | owned  | feature `agents`                  |
+| `.claude/skills/writing-rust/references/ownership.md`              | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/sources.md`                | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-unsafe-rust/SKILL.md`                      | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-unsafe-rust/references/atomics.md`         | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-unsafe-rust/references/pointers.md`        | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-unsafe-rust/references/safety-comments.md` | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-unsafe-rust/references/sources.md`         | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-unsafe-rust/references/verifying.md`       | whole | owned  | template, feature `agents`        |
 
 ## Features
 

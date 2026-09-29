@@ -945,8 +945,8 @@ message states the precondition as an instruction.
 
 A check a release build need not pay for is a `debug_assert!` whose message
 states the fact it checks: an invariant the type's own code keeps, or the
-contract an `unsafe` function states, which is out of scope here. A caller's
-input is never such a check: it is refused with an error, as above.
+contract an `unsafe` function states, which `writing-unsafe-rust` teaches. A
+caller's input is never such a check: it is refused with an error, as above.
 
 ```rust
 use core::num::NonZeroU16;
