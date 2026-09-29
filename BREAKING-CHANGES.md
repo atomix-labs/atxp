@@ -64,9 +64,11 @@ and a relative link leads only to a file the profile ships. A recipe that a
 skill, AGENTS.md or CLAUDE.md names sits under a condition on the profile that
 defines it, unless the profile requires that one; a skill it names, under the
 feature that ships it, through `devset.layers` for another profile's and
-`devset.features` for its own. Only a template's conditions count. A Rust block
-is `rust` or `rust,compile_fail`, a failing one opens `// fails: <lint or error
-code>`, and none holds template syntax. atxp's own skills keep the form already.
+`devset.features` for its own. Only a template's conditions count, and none
+inside `{% raw %}` or a comment. A Rust block is `rust` or `rust,compile_fail`,
+a failing one opens `// fails: <lint or error code>`, and none in a template
+holds template syntax outside `{% raw %}`. atxp's own skills keep the form
+already.
 
 **What to do.** In a collection of your own, run `just check-devset-collection`
 and fix what it names:

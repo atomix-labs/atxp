@@ -209,7 +209,8 @@ to its form:
   `general-purpose`, `model: inherit` and `background: false`, and may hold
   `allowed-tools`; its name is an imperative for its command, `review-rust`. A
   description starts "Use when", under 1024 characters.
-- **The body** stays within 18,000 characters.
+- **The body** stays within 18,000 characters, counted in the source, a
+  template's tags and all.
 - **Files.** Every file under the skill's directory is an entry of its profile;
   the `SKILL.md` names each reference, by a link or in code; and each relative
   link outside code leads to a file the profile ships, so a skill of another
@@ -221,12 +222,16 @@ to its form:
   skill of another profile sits under the feature that ships it, through a
   `devset.layers` variable, or under that profile where it ships with no
   feature; a skill of the same profile, under its feature through
-  `devset.features`, unless the file ships with that feature too. Only a file
-  marked `template = true` has conditions, and a condition with `or` or `not`,
-  or an `else`, holds nothing it names.
+  `devset.features`, unless the file ships with that feature too.
+  - A skill counts as named where a code span holds its name alone,
+    `writing-rustdoc` or `/review-rust`.
+  - Only a file marked `template = true` has conditions, and a tag in a comment
+    or inside `{% raw %}` is text: it gates nothing.
+  - A condition with `or` or `not`, and so one with `and not`, holds nothing it
+    names, nor does an `else`: nest an `if` instead.
 - **Fences.** A Rust block is `rust` or `rust,compile_fail`, a
   `rust,compile_fail` block opens `// fails: <lint or error code>`, and no Rust
-  block holds template syntax.
+  block in a template holds template syntax outside `{% raw %}`.
 
 What the check cannot hold a skill to, its author does:
 
