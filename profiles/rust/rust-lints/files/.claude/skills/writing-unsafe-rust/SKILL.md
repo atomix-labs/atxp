@@ -64,13 +64,13 @@ Under `strict`, real code also documents every item.
    included; each `// SAFETY:` that relies on it cites the field INVARIANT.
 4. **Every `unsafe impl` proves its trait, and `Send` and `Sync` carry the
    bounds its access needs**: `Send` needs `T: Send`, and `T: Sync` too where
-   the `T` is shared, as in an `Arc`; `Sync` needs `T: Sync` where `&self` hands
-   out `&T`, `T: Send` where it hands out `&mut T` or a `T`, as a lock does, and
-   both where it does both. A type that owns `T` through a pointer holds
-   `PhantomData<T>`.
-5. **A marker field keeps a type on one thread**, `PhantomData<*const ()>` for
-   neither trait and `PhantomData<Cell<()>>` for `Send` alone, since a doc binds
-   no caller and `impl !Sync` needs nightly's `negative_impls`.
+   the `T` is shared, as in an `Arc`; `Sync` needs `T: Sync` where it lends `&T`
+   to several threads at once, `T: Send` where it hands out `&mut T` or a `T`,
+   as a lock does, and both where it does both. A type that owns `T` through a
+   pointer holds `PhantomData<T>`.
+5. **A marker field keeps a type on one thread**: `PhantomData<*const ()>` takes
+   both traits away and `PhantomData<Cell<()>>` takes `Sync` alone, since a doc
+   binds no caller and `impl !Sync` needs nightly's `negative_impls`.
 6. **`debug_assert!` checks an `unsafe fn`'s contract, with a message naming the
    violation, and proves nothing**: a build without debug assertions skips it,
    so a safe function never rests on one.
@@ -99,8 +99,9 @@ Under `strict`, real code also documents every item.
    wherever it runs.
 6. **A reference made from a pointer holds for all of its lifetime**, aligned,
    initialized and unaliased as its kind demands, with a lifetime from a borrow
-   the signature shows, and a `&mut` from a `&mut`, an owner, or an `UnsafeCell`
-   whose exclusive access the module proves, as a lock's guard does.
+   the signature shows, or a `# Safety` that names it, and a `&mut` from a
+   `&mut`, an owner, or an `UnsafeCell` whose exclusive access the module
+   proves, as a lock's guard does.
 7. **No `transmute`: name the conversion**, `from_le_bytes`, `from_bits`,
    `cast`, a `TryFrom`, since a transmute checks only sizes; one that remains
    names both types and proves the rest.
@@ -113,16 +114,19 @@ Under `strict`, real code also documents every item.
     or a projection proves the value never moves again, its `Drop` included, and
     names a structurally pinned field in an `// INVARIANT:`; `PhantomPinned`
     keeps a type that must not move from being `Unpin`.
-11. **An `extern` block is `unsafe extern`, an item `safe` only when no argument
-    can make it unsound, and a wrapper passes pointers it holds for the call**,
-    a `CString` bound to a name; an exported symbol is `#[unsafe(no_mangle)]`.
-12. **A C enum arrives as its integer and becomes a Rust enum through
-    `TryFrom`**, since an enum with no variant for its value is undefined.
-13. **A foreign `(ptr, 0)` becomes `&[]` before `slice::from_raw_parts`**, which
-    takes no null pointer, even for no elements.
-14. **A callback handed to C catches its panics and returns a code**, since a
-    panic out of `extern "C"` aborts; `"C-unwind"` only where both sides unwind,
-    and a foreign exception through a `"C"` import is undefined.
+
+### FFI
+
+1. **An `extern` block is `unsafe extern`, an item `safe` only when no argument
+   can make it unsound, and a wrapper passes pointers it holds for the call**, a
+   `CString` bound to a name; an exported symbol is `#[unsafe(no_mangle)]`.
+2. **A C enum arrives as its integer and becomes a Rust enum through
+   `TryFrom`**, since an enum with no variant for its value is undefined.
+3. **A foreign `(ptr, 0)` becomes `&[]` before `slice::from_raw_parts`**, which
+   takes no null pointer, even for no elements.
+4. **A callback handed to C catches its panics and returns a code**, since a
+   panic out of `extern "C"` aborts; `"C-unwind"` only where both sides unwind,
+   and a foreign exception through a `"C"` import is undefined.
 
 ### Atomics
 
@@ -142,11 +146,9 @@ Under `strict`, real code also documents every item.
    never order a store before a later load; loom models the fence.
 6. **A `compare_exchange` chooses both orderings**, the failure one a load's,
    `Relaxed` or `Acquire`; `compare_exchange_weak` in a loop.
-7. **A type over an `UnsafeCell` is `Sync` with the bound its access needs**: a
-   lock lends `&mut T`, so it needs `T: Send`, as `Mutex` does.
-8. **A pointer shared across threads is an `AtomicPtr`**, never an
+7. **A pointer shared across threads is an `AtomicPtr`**, never an
    `AtomicUsize`, which drops the provenance.
-9. **A node another thread may read is freed only through a reclamation scheme,
+8. **A node another thread may read is freed only through a reclamation scheme,
    epochs or hazard pointers, or once the structure drops**, since freeing it
    early is a use after free, and its reused address fools a `compare_exchange`,
    the ABA problem.
@@ -219,7 +221,7 @@ Read each reference a step names, whole, before writing the code.
 How a `// SAFETY:` or `// ORDERING:` comment and a `# Safety` section are worded
 is `writing-rustdoc`'s; this skill says what they prove, and teaches `//
 INVARIANT:`. Where they differ, this skill holds: an `// ORDERING:` on every
-atomic operation, and a `// SAFETY:` above its `#[expect]`, as long as its
+atomic operation, and a `// SAFETY:` above its `#[expect]`, as many lines as its
 preconditions need.
 {%- endif %}
 
@@ -283,12 +285,14 @@ Read every reference a task touches before writing code, and read them again
 after compaction: this body is the summary, and the examples are there.
 
 - `references/safety-comments.md`: before an `unsafe` block, `unsafe fn`,
-  `unsafe impl` or `unsafe trait`, a field unsafe code relies on, or a change to
-  a module that holds unsafe code.
+  `unsafe impl` or `unsafe trait`, a field unsafe code relies on, a guard, a
+  `ptr::read`, or a change to a module that holds unsafe code.
 - `references/pointers.md`: before a raw pointer is made, cast, offset or read,
-  an address, `transmute`, `MaybeUninit`, `mem::zeroed`, or an `extern` block.
-- `references/atomics.md`: before an atomic, a fence, a shared `static`, or
-  state shared between threads outside a lock.
+  an address, alignment or layout, `transmute`, `MaybeUninit`, `mem::zeroed`,
+  `Pin`, an `extern` block, a C enum, a foreign slice or a callback.
+- `references/atomics.md`: before an atomic, a fence, a shared `static`, a lock
+  over an `UnsafeCell`, a lock-free structure, or state shared between threads
+  outside a lock.
 - `references/verifying.md`: before a test of unsafe code, a loom model or a
   compile-fail test, and before calling unsafe code done.
 - `references/sources.md`: before citing a source for a rule, or adapting one.

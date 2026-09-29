@@ -304,9 +304,10 @@ review.
 A reference promises, for as long as it lives, that its pointer is non-null,
 aligned and points at a valid, initialized value; a `&T` that nothing writes the
 value outside an `UnsafeCell`, and a `&mut T` that nothing else reads or writes
-it. So a reference made from a pointer gets its lifetime from a borrow the
-signature shows, `&self` giving `&'_ T`, never an unbounded `'a` a caller picks,
-and a `&mut` comes from a `&mut`, from an owner, or from an `UnsafeCell` whose
+it. So a safe function takes a reference's lifetime from a borrow its signature
+shows, `&self` giving `&'_ T`; an unbounded `'a` appears only in an `unsafe fn`
+whose `# Safety` says what lives for it, as `slice::from_raw_parts` does, and a
+`&mut` comes from a `&mut`, from an owner, or from an `UnsafeCell` whose
 exclusive access the module proves, as a lock's guard does: a `&mut` from
 `&self` with no such proof lets two callers hold one each.
 

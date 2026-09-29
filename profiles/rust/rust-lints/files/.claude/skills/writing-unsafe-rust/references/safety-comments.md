@@ -450,11 +450,12 @@ pointer or `NonNull` field takes both away, an `UnsafeCell` takes `Sync`, and an
 impl gives them back only with the bounds its access needs. A type that owns its
 `T`s alone is `Send` only where `T: Send`, and a handle that shares them, as
 `Arc` does, only where `T: Send + Sync`, since each thread that holds one
-reaches the same `T`. It is `Sync` where `T: Sync` if `&self` hands out `&T`,
-where `T: Send` if `&self` hands out a `&mut T` or moves a `T` in or out, as a
-lock does, and where both hold if it does both, as `RwLock` and `OnceLock` do;
-`atomics.md` shows the lock. A type that owns `T` through a pointer holds
-`PhantomData<T>`, so drop check and the auto traits see the `T`s it owns.
+reaches the same `T`. It is `Sync` with `T: Sync` where it lends `&T` to several
+threads at once, with `T: Send` where `&self` hands out a `&mut T` or moves a
+`T` in or out, as a lock does, and with both where it does both, as `RwLock` and
+`OnceLock` do; `atomics.md` shows the lock. A type that owns `T` through a
+pointer holds `PhantomData<T>`, so drop check and the auto traits see the `T`s
+it owns.
 
 ```rust
 extern crate alloc;
