@@ -5,8 +5,8 @@ what `agent_read_problems` finds.
 A skill is a guide, which teaches while the agent works, or a pass, which runs forked on finished
 work and reports. Its front matter says which; its body stays within what Claude keeps after
 compaction; its files are its profile's and its references named; each recipe or skill it names is
-there when an agent reads it; and its Rust blocks compile as they stand. `FENCE`, `RUST` and
-`FAILS` are the fence grammar a compiler of the examples reads too.
+there when an agent reads it; and its Rust blocks compile as they stand. `FENCE`, `RUST`,
+`FAILING` and `FAILS` are the fence grammar a compiler of the examples reads too.
 """
 
 import bisect
@@ -43,9 +43,11 @@ BLOCK = (
     r"^ *(?P=fence)(?(ticks)`*|~*)[ \t]*$"
 )
 FENCE = re.compile(BLOCK, re.DOTALL | re.MULTILINE)
-# How a Rust block is marked, and the first line of a failing one: what it fails with.
-RUST = {"rust", "rust,compile_fail"}
-FAILS = re.compile(r"\A *// fails: (?:clippy::[a-z_]+|[a-z_]+|E\d{4})\n")
+# How a Rust block is marked, and one that must fail; and the first line of a failing one, which
+# names what it fails with, a lint or an error code, as `failure`.
+FAILING = "rust,compile_fail"
+RUST = {"rust", FAILING}
+FAILS = re.compile(r"\A *// fails: (?P<failure>clippy::[a-z_]+|[a-z_]+|E\d{4})\n")
 # Code in Markdown: a fenced block, or a span, which may wrap, closed by as many backticks as open
 # it.
 CODE = re.compile(
@@ -288,7 +290,7 @@ def conditions(text):
 def fence_problems(page):
     """Each Rust block of `page` marked other than `rust` or `rust,compile_fail`, a failing block
     that does not say what it fails with, and, in a template, a Rust block that holds template
-    syntax outside a raw block: each is compiled as it stands."""
+    syntax, where no raw block wraps it whole: each is compiled as it stands."""
     shown = blanked(page.text, raw=True) if page.template else None
     out = []
     for fence in FENCE.finditer(page.text):
@@ -300,10 +302,13 @@ def fence_problems(page):
             out.append(
                 f"line {line}: a Rust block is `rust` or `rust,compile_fail`, never `{info}`"
             )
-        if info == "rust,compile_fail" and not FAILS.match(fence.group("body")):
+        if info == FAILING and not FAILS.match(fence.group("body")):
             out.append(f"line {line}: a failing block opens `// fails: <lint or error code>`")
         if page.template and info in RUST and TEMPLATED.search(shown, *fence.span("body")):
-            out.append(f"line {line}: a Rust block holds no template syntax outside `{{% raw %}}`")
+            out.append(
+                f"line {line}: a Rust block holds no template syntax: to show it as written, wrap"
+                " the whole block in `{% raw %}`"
+            )
     return out
 
 

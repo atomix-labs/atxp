@@ -40,8 +40,9 @@ with `collection_description`.
   `devset.layers` for another profile's and `devset.features` for its own. Only
   a template's conditions count, and none inside `{% raw %}` or a comment. A
   Rust block is `rust` or `rust,compile_fail`, a `rust,compile_fail` block opens
-  `// fails: <lint or error code>`, and none in a template holds template syntax
-  outside `{% raw %}`. The rules are skill_form.py's.
+  `// fails: <lint or error code>`, and none in a template holds template
+  syntax, unless `{% raw %}` wraps the whole block. The rules are
+  skill_form.py's.
 - `just test-devset-collection` runs the suite, with the devset that
   [`devset`](../devset/README.md) pins. Every profile alone, with its default
   features and with every feature, applies without drift. Then on each fixture
