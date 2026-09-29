@@ -353,10 +353,12 @@ fields by name. Variant docs are one line stating what it *is*; no value trivia.
 
 #![feature(non_exhaustive_omitted_patterns_lint, strict_provenance_lints)]
 #![cfg(not(any(loom, miri)))]
-#![expect(
-    clippy::tests_outside_test_module,
-    reason = "an integration test's functions are top-level by construction"
-)]
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn <the_property_as_a_sentence>() { … }
+}
 ```
 
 ```text

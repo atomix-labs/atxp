@@ -121,8 +121,8 @@ Crate-level `unsafe_code` names the concrete unsafe and its obligation:
 
 A file whose role excuses a lint says so once at the top, in the same voice:
 `#![expect(clippy::print_stdout, reason = "a demo binary reports its result on
-stdout")]`, `#![expect(clippy::tests_outside_test_module, reason = "an
-integration test's functions are top-level by construction")]`.
+stdout")]`. An integration test needs none: its tests sit in `#[cfg(test)] mod
+tests`, as a unit test's do.
 
 No comment ever explains an `#[expect]`; the reason is its one home. If the only
 unsafe in a crate is a derived `unsafe impl`, the crate-level expect is
