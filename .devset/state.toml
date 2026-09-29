@@ -182,8 +182,8 @@ exact = "8639fe9f4b04651a2a6bf99fa6ce464b965788da9f7a292e1d288ecd4d09f130"
 canonical = "8639fe9f4b04651a2a6bf99fa6ce464b965788da9f7a292e1d288ecd4d09f130"
 
 [files.".just/devset-collection/catalog.py"]
-exact = "db9fa36acf5676bf5591c3dce5ac768603d2eb0abecef7a30850bbea581fb017"
-canonical = "db9fa36acf5676bf5591c3dce5ac768603d2eb0abecef7a30850bbea581fb017"
+exact = "7f043c5669f32014973b6ac346465232b042e7fe81740dab15e7454a13395fd8"
+canonical = "7f043c5669f32014973b6ac346465232b042e7fe81740dab15e7454a13395fd8"
 
 [files.".just/devset-collection/pins.py"]
 exact = "e6a63c5534b7f2beed9087976b194f76bf03689450e6b33fc85459fbc1744786"

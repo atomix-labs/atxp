@@ -85,16 +85,21 @@ DESCRIPTION = 1024
 # Claude re-attaches the first 5,000 tokens of each skill after compaction: a body within this
 # survives whole.
 BODY = 18_000
-# Code in Markdown: a fenced block, closed by a fence as long, or a span, which may wrap, closed by
-# as many backticks as open it.
-CODE = re.compile(r"^(`{3,}).*?^\1`*[ \t]*$|(`+)(?!`).+?(?<!`)\2(?!`)", re.DOTALL | re.MULTILINE)
+# Code in Markdown: a block fenced by backticks or tildes, closed by a fence as long, or a span,
+# which may wrap, closed by as many backticks as open it.
+CODE = re.compile(
+    r"^(?P<ticks>`{3,}).*?^(?P=ticks)`*[ \t]*$"
+    r"|^(?P<tildes>~{3,}).*?^(?P=tildes)~*[ \t]*$"
+    r"|(?P<span>`+)(?!`).+?(?<!`)(?P=span)(?!`)",
+    re.DOTALL | re.MULTILINE,
+)
 # A link to a file beside it: relative, not a URL or an anchor.
 LINK = re.compile(r"\]\((?![a-z]+:|#)([^)#\s]+)")
-# The recipes run in code: `just` opening a command, after any variables it sets, then each recipe
-# it runs, the first a word and the rest `<verb>-<name>`; a placeholder, as `just check-<name>`,
-# names none.
+# The recipes run in code: `just` opening a command, after any variables it sets and through any
+# `mise exec --`, then each recipe it runs, the first a word and the rest `<verb>-<name>`; a
+# placeholder, as `just check-<name>`, names none.
 JUST = re.compile(
-    r"(?:^|&&|\|\||;)\s*(?:[A-Z_][A-Z0-9_]*=\S*\s+)*just\s+"
+    r"(?:^|&&|\|\||;)\s*(?:[A-Z_][A-Z0-9_]*=\S*\s+)*(?:mise\s+exec\s+--\s+)?just\s+"
     r"([a-z][a-z0-9-]*[a-z0-9](?![\w<-])(?:[ \t]+[a-z][a-z0-9]*-[a-z0-9-]*[a-z0-9](?![\w<-]))*)",
     re.M,
 )
@@ -121,9 +126,12 @@ LAYER = re.compile(
 EITHER = re.compile(r"(?<![\w-])(?:or|not)(?![\w-])")
 # What an agent reads: every recipe or skill it names must be there when it reads it.
 READ = (SKILLS, "AGENTS.md", "CLAUDE.md")
-# A code block, at any indent, closed by a fence as long: its info string and its body; how a Rust
-# block is marked; what a failing one says it fails with.
-FENCE = re.compile(r"^ *(`{3,})([^\n`]*)\n(.*?)^ *\1`*[ \t]*$", re.DOTALL | re.MULTILINE)
+# A code block, at any indent, fenced by backticks or tildes and closed by a fence as long: its
+# info string and its body; how a Rust block is marked; what a failing one says it fails with.
+FENCE = re.compile(
+    r"^ *(?P<fence>`{3,}|~{3,})(?P<info>[^\n`]*)\n(?P<body>.*?)^ *(?P=fence)[`~]*[ \t]*$",
+    re.DOTALL | re.MULTILINE,
+)
 RUST = {"rust", "rust,compile_fail"}
 FAILS = re.compile(r"\A *// fails: (?:clippy::[a-z_]+|[a-z_]+|E\d{4})\n")
 
@@ -349,14 +357,16 @@ def skill_problems(profile, definers, shipped):
 def gate_problems(profile, path, entry, text, definers, shipped):
     """Each recipe or skill that `text`, the file at `path` that `profile` ships as `entry`, names
     where that one may be absent: another profile's, with no condition in force on that profile,
-    or a skill with no condition on the feature it ships with. A skill may name itself."""
+    or a skill with no condition on the feature it ships with. A skill may name itself. Only a
+    template's conditions hold anything: any other file ships its tags as they stand."""
+    template = entry.get("template", False)
     when = entry.get("when", {})
     mine = set(when.get("features", []))
     present = {profile.name, *when.get("profiles", [])}
     present |= {required for required, spec in profile.requires.items() if not spec.get("optional")}
     own = path.removeprefix(SKILLS).split("/")[0] if path.startswith(SKILLS) else None
-    events, out = conditions(text), []
-    for span in CODE.finditer(masked(text)):
+    events, out = (conditions(text) if template else [(0, frozenset())]), []
+    for span in CODE.finditer(masked(text) if template else text):
         inner = span.group(0).strip("`")
         start = span.start() + len(span.group(0)) - len(span.group(0).lstrip("`"))
         for match in JUST.finditer(inner):
@@ -450,7 +460,7 @@ def fence_problems(text):
     compiled as it stands."""
     out = []
     for fence in FENCE.finditer(text):
-        info, body = fence.group(2).strip(), fence.group(3)
+        info, body = fence.group("info").strip(), fence.group("body")
         line = text.count("\n", 0, fence.start()) + 1
         if (info.startswith("rust") or info.split(",")[0] == "rs") and info not in RUST:
             out.append(
@@ -508,7 +518,7 @@ def reference_problems(profile, skill):
     on_disk = {p.relative_to(base).as_posix() for p in (base / root).rglob("*") if p.is_file()}
     out = [f"{path} is not an entry of profile.toml" for path in sorted(on_disk - declared)]
     body = (base / root / "SKILL.md").read_text()
-    spans = [span.group(0).strip("`") for span in CODE.finditer(body) if not span.group(1)]
+    spans = [span.group(0).strip("`") for span in CODE.finditer(body) if span.group("span")]
     named = {os.path.normpath(root + target) for target in links(body) + spans}
     out += [
         f"{path} is named nowhere in its SKILL.md, so no agent reads it"

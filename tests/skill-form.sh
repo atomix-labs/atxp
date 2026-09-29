@@ -11,7 +11,8 @@ trap 'rm -rf "$work"' EXIT
 cd "$work"
 printf '[collection]\nname = "form"\ndescription = "Skills that break the form"\n' > collection.toml
 
-# A profile `$1` whose skill `$2` has the SKILL.md on stdin, and any further files.
+# A profile `$1` whose skill `$2` has the SKILL.md on stdin, and any further files: each ships with
+# `agents`, and is a template where `$template` is set.
 profile() {
     local name=$1 skill=$2 dir=profiles/test/$1 file
     mkdir -p "$dir/files/.claude/skills/$skill/references"
@@ -20,73 +21,14 @@ profile() {
         printf '[profile]\nname = "%s"\ndescription = "A test"\ndevset = ">=0.5.0"\n\n' "$name"
         printf '[features]\nagents = []\n\n'
         for file in ".claude/skills/$skill/SKILL.md" "${@:3}"; do
-            printf '[files."%s"]\nwhen = { features = ["agents"] }\n\n' "$file"
+            printf '[files."%s"]\n' "$file"
+            [[ -z ${template:-} ]] || printf 'template = true\n'
+            printf 'when = { features = ["agents"] }\n\n'
         done
     } > "$dir/profile.toml"
 }
 
-profile good writing-tiles .claude/skills/writing-tiles/references/{grid,edges}.md << 'EOF'
----
-name: writing-tiles
-description: Use when laying tiles.
----
-
-# Writing Tiles
-
-Read [the grid](references/grid.md) before laying one, and `references/edges.md`
-before a cut.
-{%- if "hinges" in devset.profiles %}
-
-Run `just check-hinges` after.
-{%- endif %}
-
-```rust
-/// Lays a tile, as [`lay`](Self::lay) does.
-fn lay() {}
-```
-EOF
-printf '# The Grid\n' > profiles/test/good/files/.claude/skills/writing-tiles/references/grid.md
-printf '# The Edges\n' > profiles/test/good/files/.claude/skills/writing-tiles/references/edges.md
-profile good-pass review-walls << 'EOF'
----
-name: review-walls
-description: Use when a wall is built, before calling it done.
-argument-hint: "[<paths>]"
-context: fork
-agent: Explore
-model: inherit
-background: false
----
-
-Reads the change, then reports each finding with its place.
-EOF
-
-profile kind review-tiles << 'EOF'
----
-name: review-tiles
-description: Use when tiles are laid.
-context: fork
----
-EOF
-{
-    printf -- '---\nname: writing-walls\ndescription: Use when walling.\n---\n\n'
-    head -c 18001 /dev/zero | tr '\0' a
-} | profile budget writing-walls
-profile orphan writing-roofs << 'EOF'
----
-name: writing-roofs
-description: Use when roofing.
----
-EOF
-printf '# Slates\n' > profiles/test/orphan/files/.claude/skills/writing-roofs/references/slates.md
-profile gate writing-doors << 'EOF'
----
-name: writing-doors
-description: Use when hanging doors.
----
-
-Run `just check-hinges` after.
-EOF
+# A profile that defines a recipe, `check-hinges`, and ships no skill.
 mkdir -p profiles/test/hinges/files/.just
 cat > profiles/test/hinges/profile.toml << 'EOF'
 [profile]
@@ -101,6 +43,176 @@ cat > profiles/test/hinges/files/.just/hinges.just << 'EOF'
 check-hinges:
     true
 EOF
+
+# The guide and the pass that keep every rule: the guide names its references by a link and in
+# code, gates another profile's recipe on it and its pass on the feature that ships it, and links
+# an item in a Rust example, which is rustdoc's link, not the skill's.
+tiles=.claude/skills/writing-tiles
+template=1 profile good writing-tiles "$tiles"/references/{grid,edges}.md << 'EOF'
+---
+name: writing-tiles
+description: Use when laying tiles.
+---
+
+# Writing Tiles
+
+Read [the grid](references/grid.md) before laying one, and `references/edges.md`
+before a cut.
+{%- if "hinges" in devset.profiles %}
+
+Run `just check-hinges` after.
+{%- endif %}
+{%- set walls = devset.layers | selectattr("profile", "equalto", "good-pass")
+    | map(attribute="features") | first | default([]) %}
+{%- if "agents" in walls %}
+
+Then run `/review-walls`.
+{%- endif %}
+
+```rust
+/// Lays a tile, as [`lay`](Self::lay) does.
+fn lay() {}
+```
+EOF
+printf '# The Grid\n' > "profiles/test/good/files/$tiles/references/grid.md"
+printf '# The Edges\n' > "profiles/test/good/files/$tiles/references/edges.md"
+profile good-pass review-walls << 'EOF'
+---
+name: review-walls
+description: Use when a wall is built, before calling it done.
+argument-hint: "[<paths>]"
+context: fork
+agent: Explore
+model: inherit
+background: false
+---
+
+Reads the change, then reports each finding with its place.
+EOF
+
+# Front matter: a pass without its fields, on another agent, a guide and a pass each named as the
+# other, and a description that does not say when.
+profile kind review-tiles << 'EOF'
+---
+name: review-tiles
+description: Use when tiles are laid.
+context: fork
+---
+EOF
+profile agent review-beams << 'EOF'
+---
+name: review-beams
+description: Use when the beams are up.
+argument-hint: "[<paths>]"
+context: fork
+agent: Plan
+model: inherit
+background: false
+---
+EOF
+profile bossy lay-bricks << 'EOF'
+---
+name: lay-bricks
+description: Use when laying bricks.
+---
+EOF
+profile idle reviewing-slabs << 'EOF'
+---
+name: reviewing-slabs
+description: Use when a slab is poured.
+argument-hint: "[<paths>]"
+context: fork
+agent: Explore
+model: inherit
+background: false
+---
+EOF
+profile said writing-gables << 'EOF'
+---
+name: writing-gables
+description: Covers gables.
+---
+EOF
+
+# The body's budget.
+{
+    printf -- '---\nname: writing-walls\ndescription: Use when walling.\n---\n\n'
+    head -c 18001 /dev/zero | tr '\0' a
+} | profile budget writing-walls
+
+# Files: one the profile does not declare, a reference the SKILL.md does not name, and a link to
+# a file the profile does not ship.
+profile orphan writing-roofs << 'EOF'
+---
+name: writing-roofs
+description: Use when roofing.
+---
+EOF
+printf '# Slates\n' > profiles/test/orphan/files/.claude/skills/writing-roofs/references/slates.md
+profile unnamed writing-eaves .claude/skills/writing-eaves/references/gutters.md << 'EOF'
+---
+name: writing-eaves
+description: Use when finishing eaves.
+---
+EOF
+printf '# Gutters\n' \
+    > profiles/test/unnamed/files/.claude/skills/writing-eaves/references/gutters.md
+profile broken writing-stairs << 'EOF'
+---
+name: writing-stairs
+description: Use when building stairs.
+---
+
+Read [the treads](references/treads.md) first.
+EOF
+
+# Gates: another profile's recipe named bare, and under a condition in a file that is no template,
+# which ships the condition as text; another profile's skill gated on its profile, not the feature
+# that ships it; and a skill of the same profile that ships with another feature, named bare.
+profile gate writing-doors << 'EOF'
+---
+name: writing-doors
+description: Use when hanging doors.
+---
+
+Run `just check-hinges` after.
+EOF
+profile literal writing-frames << 'EOF'
+---
+name: writing-frames
+description: Use when framing.
+---
+{%- if "hinges" in devset.profiles %}
+
+Run `just check-hinges` after.
+{%- endif %}
+EOF
+template=1 profile layered writing-lintels << 'EOF'
+---
+name: writing-lintels
+description: Use when setting lintels.
+---
+{%- if "good" in devset.profiles %}
+
+Lay the tiles first, with `writing-tiles`.
+{%- endif %}
+EOF
+profile sibling writing-sills << 'EOF'
+---
+name: writing-sills
+description: Use when setting sills.
+---
+
+Hang the jambs first, with `writing-jambs`.
+EOF
+mkdir -p profiles/test/sibling/files/.claude/skills/writing-jambs
+printf -- '---\nname: writing-jambs\ndescription: Use when hanging jambs.\n---\n' \
+    > profiles/test/sibling/files/.claude/skills/writing-jambs/SKILL.md
+printf '[files.".claude/skills/writing-jambs/SKILL.md"]\nwhen = { features = ["jambs"] }\n' \
+    >> profiles/test/sibling/profile.toml
+
+# Fences: an ignored Rust block, a failing one that does not say what it fails with, and one that
+# holds template syntax.
 profile fence writing-floors << 'EOF'
 ---
 name: writing-floors
@@ -109,6 +221,26 @@ description: Use when laying floors.
 
 ```rust,ignore
 fn floor() {}
+```
+EOF
+profile failing writing-piers << 'EOF'
+---
+name: writing-piers
+description: Use when sinking piers.
+---
+
+```rust,compile_fail
+fn pier() -> u8 { "" }
+```
+EOF
+profile braces writing-arches << 'EOF'
+---
+name: writing-arches
+description: Use when turning arches.
+---
+
+```rust
+fn arch() -> &'static str { "{{ span }}" }
 ```
 EOF
 
@@ -123,14 +255,37 @@ expect() {
     fi
 }
 expect "review-tiles/SKILL.md: a pass runs forked" "a pass without its fields"
+expect "review-beams/SKILL.md: a pass runs on \`Explore\`, \`general-purpose\`" \
+    "a pass on another agent"
+expect "lay-bricks/SKILL.md: \`name\` is \`lay-bricks\`, its directory, a gerund phrase" \
+    "a guide named as a pass"
+expect "reviewing-slabs/SKILL.md: \`name\` is \`reviewing-slabs\`, its directory, an imperative" \
+    "a pass named as a guide"
+expect "writing-gables/SKILL.md: \`description\` starts \`Use when\`" \
+    "a description that does not say when"
 expect "writing-walls/SKILL.md: the body is over 18000 characters" "the body's budget"
 expect "writing-roofs/references/slates.md is not an entry" "a file the profile does not declare"
+expect "writing-eaves/references/gutters.md is named nowhere in its SKILL.md" \
+    "a reference the SKILL.md does not name"
+expect "writing-stairs/SKILL.md links \`references/treads.md\`, which its profile does not ship" \
+    "a link to nothing"
 expect "writing-doors/SKILL.md names \`just check-hinges\`, which hinges defines" \
     "an ungated recipe"
+expect "writing-frames/SKILL.md names \`just check-hinges\`, which hinges defines" \
+    "a recipe gated in a file that is no template"
+expect "writing-lintels/SKILL.md names \`writing-tiles\`, which ships only with good's \`agents\`" \
+    "another profile's skill gated on its profile"
+expect "writing-sills/SKILL.md names \`writing-jambs\`, which ships only with its \`jambs\`" \
+    "a skill of another feature, ungated"
 expect "writing-floors/SKILL.md: line 6: a Rust block is \`rust\` or \`rust,compile_fail\`" \
     "an ignored block"
+expect "writing-piers/SKILL.md: line 6: a failing block opens \`// fails:" \
+    "a failing block that does not say why"
+expect "writing-arches/SKILL.md: line 6: a Rust block holds no template syntax" \
+    "template syntax in a Rust block"
 if grep -q "profiles/test/good.*skills" <<< "$out"; then
     echo "FAILED: a skill that keeps the form drew a finding"
+    grep "profiles/test/good.*skills" <<< "$out"
     failed=1
 fi
 exit "$failed"
