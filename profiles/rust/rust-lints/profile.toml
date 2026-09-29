@@ -45,8 +45,7 @@ template = true
 when     = { features = ["agents"] }
 
 [files.".claude/skills/writing-rust/references/naming.md"]
-template = true
-when     = { features = ["agents"] }
+when = { features = ["agents"] }
 
 [files.".claude/skills/writing-rust/references/ownership.md"]
 template = true

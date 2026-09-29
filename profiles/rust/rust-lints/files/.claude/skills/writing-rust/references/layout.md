@@ -1,8 +1,8 @@
 # Layout
 
-Read this before adding a crate, a module, a file, a re-export or a binary, or
-before changing what a crate makes public. It says where code goes and what
-callers see of it.
+Read this before adding a crate, a module, a file or a re-export, or before
+changing what a crate makes public. It says where code goes and what callers see
+of it.
 
 ## `lib.rs` Holds Docs, Attributes, Modules, Then Re-Exports
 
@@ -226,14 +226,15 @@ A module is a short singular noun for the thing it holds: `grid`, `tile`,
 `errors.rs`, plural, for the crate's refusals; `testing.rs`, under
 `#[cfg(test)]`, for fixtures the crate's tests share, its items `pub(crate)`;
 `consts.rs` for constants several modules use; and `tests/common/mod.rs`, as
-Cargo names it, for what integration tests share. No module of the crate's own
-is `utils`, `helpers` or `misc`, which say nothing of what is inside.
+Cargo names it, for what integration tests share. No other module is `utils`,
+`helpers` or `common`, which say nothing of what is inside.
 
 ```text
 // Bad: names that say nothing of what the module holds.
 src/error.rs
 src/utils.rs
 src/helpers/mod.rs
+src/common.rs
 src/test_utils.rs
 ```
 
@@ -243,25 +244,6 @@ src/grid/mod.rs
 src/grid/walk.rs
 src/consts.rs
 src/testing.rs
-```
-
-Held by review.
-
-## `main.rs` Is Thin, and the Work Lives in `lib.rs`
-
-A binary's `main` reads its arguments, calls the library and reports what came
-back. Everything else is in `lib.rs`, where tests, benches and a second binary
-can reach it, and where the lints hold it as library code. A crate with several
-binaries lists each as a `[[bin]]` over a file that is itself thin.
-
-```text
-// Bad: the parsing, the grid and the drawing, all in `main.rs`.
-src/main.rs        700 lines
-```
-
-```text
-src/lib.rs         the grid, the moves, the board file
-src/main.rs        `fn main() -> Result<(), BoxError> { tiles::run(env::args()) }`
 ```
 
 Held by review.

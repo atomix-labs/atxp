@@ -7,12 +7,13 @@ compile and right ones read plainly.
 
 ## Configure with a Spec Struct, Not a Builder
 
-A door that takes several parameters takes one `*Spec` struct with public
-fields, built as a literal and passed by reference. Every field is written at
-the call site, so nothing is configured by a default nobody wrote down, a
-missing field is a compile error, and a reader sees the whole configuration in
-one place. A builder is for construction that is a sequence of steps, as a
-message encoded field by field, not for a set of values.
+A call that creates or opens something takes its parameters as one `*Spec`
+struct with public fields, built as a literal and passed by reference. Every
+field is written at the call site, so nothing is configured by a default nobody
+wrote down, a missing field is a compile error, and a reader sees the whole
+configuration in one place. A program's settings, loaded from a file or the
+environment, are a `*Config`. A builder is for construction that is a sequence
+of steps, as a message encoded field by field, not for a set of values.
 
 ```rust
 // Bad: three fields behind a builder, so a forgotten setter is a silent
@@ -152,18 +153,42 @@ pub fn index(col: Col, row: Row, cols: u16) -> Option<usize> {
 ```rust
 /// A column, counted from the left edge.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Col(pub u16);
+pub struct Col(u16);
+
+impl Col {
+    #[must_use]
+    pub const fn new(raw: u16) -> Self {
+        Self(raw)
+    }
+
+    #[must_use]
+    pub const fn get(self) -> u16 {
+        self.0
+    }
+}
 
 /// A row, counted from the top edge.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Row(pub u16);
+pub struct Row(u16);
+
+impl Row {
+    #[must_use]
+    pub const fn new(raw: u16) -> Self {
+        Self(raw)
+    }
+
+    #[must_use]
+    pub const fn get(self) -> u16 {
+        self.0
+    }
+}
 
 /// The squares of one row: an alias, since every use means this exact slice.
 pub type Squares<'a> = &'a [u8];
 
 #[must_use]
 pub fn index(col: Col, row: Row, cols: u16) -> Option<usize> {
-    usize::from(row.0).checked_mul(usize::from(cols))?.checked_add(usize::from(col.0))
+    usize::from(row.get()).checked_mul(usize::from(cols))?.checked_add(usize::from(col.get()))
 }
 ```
 
@@ -433,7 +458,9 @@ default variant `#[default]`; no attribute sets a field's default.
 A function whose only effect is its return value is `#[must_use]`, bare. A type
 whose value holds something until it drops, a guard, is `#[must_use = "…"]`, the
 reason saying what stays held. A function that returns a `Result` or a guard
-needs nothing more, since the type already says it.
+itself needs nothing more, since the type already says it; one that returns
+either inside an `Option` carries the guard's reason, since `Option` is not
+`#[must_use]`.
 
 ```rust,compile_fail
 // fails: clippy::double_must_use
@@ -471,6 +498,7 @@ pub struct Grid {
 }
 
 impl Grid {
+    #[must_use = "the square stays claimed until the guard drops"]
     pub fn claim(&mut self, at: usize) -> Option<ClaimGuard<'_>> {
         self.squares.get_mut(at).filter(|square| square.is_none()).map(|square| ClaimGuard { square })
     }
@@ -488,7 +516,9 @@ impl Grid {
 ```
 
 Held by `clippy::must_use_candidate`, which asks for the bare attribute, and
-`clippy::double_must_use`, which refuses it on a `Result`.
+`clippy::double_must_use`, which refuses it on a `Result`. A guard in an
+`Option` is held by review: `must_use_candidate` passes over a method on `&mut
+self`.
 
 ## Public Signatures Name Their Generics
 
@@ -766,27 +796,25 @@ pub const fn arrow(side: Side) -> char {
 ```
 
 Held by `clippy::wildcard_enum_match_arm`.
-{%- if "nightly" in devset.features %}
-
-`check-rust-lints` adds `non_exhaustive_omitted_patterns`, which refuses a
-wildcard on another crate's `#[non_exhaustive]` enum that swallows a variant the
-match could name.
-{%- endif %}
 {%- endif %}
 
-## An Enum Is Exhaustive Unless It Is Published and Will Grow
+## A Type Is Exhaustive, Unless a Published Crate Means It to Grow
 
-`#[non_exhaustive]` makes every match outside the crate end in a wildcard, where
-the variant added next lands without a word. In a workspace built together,
-adding a variant is a compile error at every match that must decide what to do
-with it, which is the alarm wanted, so its enums and structs are exhaustive. A
-crate published for others marks an enum `#[non_exhaustive]` only where growing
-it within a major version is part of its contract, as an error whose causes will
-multiply.
+Enums and structs are exhaustive by default. `#[non_exhaustive]` costs every
+caller outside the crate: a `match` on the enum can no longer be exhaustive and
+ends in a wildcard arm, where the variant added next lands without a word, and
+the struct can no longer be built as a literal or taken apart without `..`.
+Within a workspace built together, a new variant is a compile error at every
+match that must decide what to do with it, which is the alarm wanted. So the
+attribute goes only on a public type of a published crate whose variants or
+fields are expected to grow within a major version, the error enum of a library
+that will gain causes being the usual one, and never on a type complete by
+nature: a direction, a closed set of states. The author judges each type; the
+attribute is never applied by default.
 
 ```rust
-// Bad: an internal enum marked to grow, so every match in the workspace
-// needs a wildcard that hides the next side.
+// Bad: marked to grow, though a grid has no fifth side, so every caller's match
+// needs a wildcard for a variant that will never come.
 #[non_exhaustive]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Side {
@@ -798,6 +826,9 @@ pub enum Side {
 ```
 
 ```rust
+use thiserror::Error;
+
+/// Complete by nature: exhaustive.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Side {
     North,
@@ -805,9 +836,26 @@ pub enum Side {
     South,
     West,
 }
+
+/// Why a board file was refused. `#[non_exhaustive]`: the crate is published,
+/// and each new board format brings new ways for a file to be wrong.
+#[non_exhaustive]
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+pub enum LoadError {
+    #[error("load error: the file holds no rows")]
+    Empty,
+    #[error("load error: row {row} has {have} squares, the grid needs {need}")]
+    Short { row: u16, need: u16, have: u16 },
+}
 ```
 
 Held by review.
+{%- if "nightly" in devset.features %}
+
+`check-rust-lints` runs `non_exhaustive_omitted_patterns`, which refuses a
+wildcard on another crate's `#[non_exhaustive]` enum that swallows a variant the
+match could name, so a caller's wildcard is watched.
+{%- endif %}
 
 ## Bound a Generic Where It Is Used
 

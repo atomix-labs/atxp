@@ -6,10 +6,13 @@ how a lint is answered, which lints the workspace turns on beyond clippy's
 defaults and why, and what to write instead of what each refuses.
 
 The rust-lints profile writes the lint table, `[workspace.lints]`, into the
-workspace `Cargo.toml`, and every crate inherits it. The check passes `-D
-warnings`, so a lint at `warn` fails it too. Nearly every lint names a better
-spelling, and that is the first answer; an `#[expect]` is for the place a lint
-misreads.
+workspace `Cargo.toml`, and every crate inherits it. Nearly every lint names a
+better spelling, and that is the first answer; an `#[expect]` is for the place a
+lint misreads.
+{%- if "rust-clippy" in devset.profiles %}
+
+`just check-rust-clippy` passes `-D warnings`, so a lint at `warn` fails it too.
+{%- endif %}
 
 ## Suppress at the Site with `#[expect]` and a Reason, Never `#[allow]`
 
@@ -283,6 +286,7 @@ workspace = true
 
 Held by Cargo, which refuses the first. In the table, each group is set at
 `priority = -1`, so a lint named on its own overrides its group.
+{%- if "rust-clippy" in devset.profiles %}
 
 ## `clippy.toml` Configures Lints, and the Nearest One Wins
 
@@ -308,6 +312,7 @@ disallowed-methods              = [{ path = "alloc::vec::Vec::new", reason = "no
 ```
 
 Held by review.
+{%- endif %}
 
 ## Convert with `From` and `TryFrom`, Not `as`
 
@@ -491,18 +496,18 @@ each refuses, and what to write instead.
 | `empty_enums`      | allowed: an enum with no variants, which is how a type that cannot be built is written                                                                                                                                      |                 |
 {%- if "strict" in devset.features %}
 
-The `strict` feature adds the house policy:
+The `strict` feature adds:
 
-| rustc (`strict`)                | refuses                                                            | write instead                                                                                      |
-| ------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| `unsafe_code`                   | any `unsafe`                                                       | an `#[expect]` at the narrowest scope, with its reason; unsafe code is out of scope for this skill |
-| `missing_docs`                  | a public item with no doc                                          | its doc                                                                                            |
-| `missing_debug_implementations` | a public type with no `Debug`                                      | `#[derive(Debug)]`, or a hand-written one                                                          |
-| `unreachable_pub`               | a `pub` item no path outside the crate reaches                     | `pub(crate)` or `pub(super)`                                                                       |
-| `unused`                        | dead code, unused imports, variables, `mut` and results, at `deny` | delete it; a leading `_` for what is kept on purpose                                               |
-| `single_use_lifetimes`          | a lifetime named where it is used once                             | `'_`                                                                                               |
-| `unused_lifetimes`              | a lifetime declared and never used                                 | delete it                                                                                          |
-| `variant_size_differences`      | an enum whose largest variant is over three times the next         | box the large payload                                                                              |
+| rustc (`strict`)                | refuses                                                                                    | write instead                                                                                      |
+| ------------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `unsafe_code`                   | any `unsafe`                                                                               | an `#[expect]` at the narrowest scope, with its reason; unsafe code is out of scope for this skill |
+| `missing_docs`                  | a public item with no doc                                                                  | its doc                                                                                            |
+| `missing_debug_implementations` | a public type with no `Debug`                                                              | `#[derive(Debug)]`, or a hand-written one                                                          |
+| `unreachable_pub`               | a `pub` item no path outside the crate reaches                                             | `pub(crate)` or `pub(super)`                                                                       |
+| `unused`                        | dead code, and unused imports, variables, assignments, `mut`, labels and macros, at `deny` | delete it; a leading `_` for what is kept on purpose                                               |
+| `single_use_lifetimes`          | a lifetime named where it is used once                                                     | `'_`                                                                                               |
+| `unused_lifetimes`              | a lifetime declared and never used                                                         | delete it                                                                                          |
+| `variant_size_differences`      | an enum whose largest variant is over three times the next                                 | box the large payload                                                                              |
 
 | clippy (`strict`)                                                                                                     | refuses                                                                                                                                                                                      | write instead                                                     |
 | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
@@ -511,29 +516,26 @@ The `strict` feature adds the house policy:
 | `self_named_module_files`                                                                                             | `grid.rs` beside a `grid/` directory                                                                                                                                                         | `grid/mod.rs`                                                     |
 | `allow_attributes`                                                                                                    | `#[allow]`                                                                                                                                                                                   | `#[expect]`                                                       |
 | `allow_attributes_without_reason`                                                                                     | an `#[expect]` with no `reason`                                                                                                                                                              | a `reason` that says why the lint is wrong here                   |
-| `unwrap_used`, `expect_used`                                                                                          | `unwrap` and `expect` outside tests                                                                                                                                                          | `?`, `ok_or`, a `match`; an `#[expect]` on a broken invariant     |
-| `panic`, `todo`, `unimplemented`, `unreachable`                                                                       | the panicking macros outside tests                                                                                                                                                           | an error; `match never {}` for an uninhabited arm                 |
+| `unwrap_used`, `expect_used`                                                                                          | `unwrap` and `expect`                                                                                                                                                                        | `?`, `ok_or`, a `match`; an `#[expect]` on a broken invariant     |
+| `panic`, `todo`, `unimplemented`, `unreachable`                                                                       | the panicking macros                                                                                                                                                                         | an error; `match never {}` for an uninhabited arm                 |
 | `panic_in_result_fn`, `unwrap_in_result`                                                                              | a panic, an assertion or an `unwrap` in a function that returns a `Result`                                                                                                                   | the error the function already returns                            |
 | `indexing_slicing`                                                                                                    | `squares[at]` and `squares[a..b]`                                                                                                                                                            | `get`, an iterator, a slice pattern                               |
 | `string_slice`                                                                                                        | `text[a..b]` on a `str`, which panics off a character boundary                                                                                                                               | `text.get(a..b)`                                                  |
 | `get_unwrap`                                                                                                          | `.get(at).unwrap()`                                                                                                                                                                          | `.get(at)` and an answer to `None`                                |
 | `arithmetic_side_effects`                                                                                             | `+`, `-`, `*`, `/`, `%` and `<<` on integers                                                                                                                                                 | `checked_`, `saturating_`, `wrapping_`                            |
 | `as_conversions`                                                                                                      | `as`                                                                                                                                                                                         | `From`, `TryFrom`                                                 |
-| `float_cmp`                                                                                                           | `==` between floats                                                                                                                                                                          | a tolerance, or `total_cmp`                                       |
 | `lossy_float_literal`                                                                                                 | a float literal its type cannot hold exactly                                                                                                                                                 | one it can                                                        |
 | `error_impl_error`                                                                                                    | a type named `Error` that implements `Error`                                                                                                                                                 | `<Question>Error`                                                 |
 | `map_err_ignore`                                                                                                      | `map_err(\|_\| …)`                                                                                                                                                                           | `map_err(\|_gone\| …)`, naming what is dropped                    |
 | `unused_result_ok`                                                                                                    | `.ok();` as a statement                                                                                                                                                                      | an answer to the error, or a named drop                           |
 | `let_underscore_must_use`                                                                                             | `let _ = ` on a `#[must_use]` value                                                                                                                                                          | an answer, or `let _held = `                                      |
 | `mem_forget`                                                                                                          | `mem::forget` on a value with a destructor                                                                                                                                                   | let it drop, or `ManuallyDrop` with a reason                      |
-| `dbg_macro`                                                                                                           | `dbg!` outside tests                                                                                                                                                                         | delete it                                                         |
-| `print_stdout`, `print_stderr`                                                                                        | `print!` and `eprint!` outside tests                                                                                                                                                         | return the text; in a binary, an `#[expect]` with a reason        |
+| `dbg_macro`                                                                                                           | `dbg!`                                                                                                                                                                                       | delete it                                                         |
+| `print_stdout`, `print_stderr`                                                                                        | `print!` and `eprint!`                                                                                                                                                                       | return the text; in a binary, an `#[expect]` with a reason        |
 | `exit`                                                                                                                | `process::exit` outside `main`                                                                                                                                                               | return an error to `main`                                         |
 | `absolute_paths`                                                                                                      | a path of more than two segments written inline, `core::fmt::Display`                                                                                                                        | a `use`                                                           |
-| `wildcard_imports`                                                                                                    | `use grid::*`                                                                                                                                                                                | each name                                                         |
 | `std_instead_of_core`, `std_instead_of_alloc`                                                                         | `std::` for what `core` or `alloc` has                                                                                                                                                       | `core::`, then `alloc::` with `extern crate alloc`                |
 | `clone_on_ref_ptr`                                                                                                    | `.clone()` on an `Arc` or `Rc`                                                                                                                                                               | `Arc::clone(&board)`                                              |
-| `await_holding_lock`                                                                                                  | a `std` lock's guard held across an `.await`                                                                                                                                                 | drop the guard first, or an async lock                            |
 | `mutex_atomic`, `mutex_integer`                                                                                       | a `Mutex` around a `bool` or an integer                                                                                                                                                      | an atomic                                                         |
 | `rc_buffer`, `rc_mutex`                                                                                               | `Rc<String>`, `Rc<Vec<T>>`, `Rc<Mutex<T>>`                                                                                                                                                   | `Rc<str>`, `Rc<[T]>`, `Rc<RefCell<T>>`                            |
 | `wildcard_enum_match_arm`                                                                                             | `_ =>` on an enum                                                                                                                                                                            | every variant by name                                             |
@@ -556,6 +558,10 @@ The `strict` feature adds the house policy:
 | `impl_trait_in_params`                                                                                                | `impl Trait` in a public function's arguments                                                                                                                                                | a named generic                                                   |
 | `missing_docs_in_private_items`                                                                                       | a private item, field or test helper with no doc                                                                                                                                             | its doc                                                           |
 | `undocumented_unsafe_blocks`, `multiple_unsafe_ops_per_block`, `unnecessary_safety_comment`, `unnecessary_safety_doc` | the unsafe lints                                                                                                                                                                             | out of scope for this skill                                       |
+
+`strict` also names three lints the groups above already deny:
+`await_holding_lock`, in `suspicious`, which refuses a `std` lock's guard held
+across an `.await`, and `float_cmp` and `wildcard_imports`, in `pedantic`.
 {%- endif %}
 {%- if "nightly" in devset.features %}
 

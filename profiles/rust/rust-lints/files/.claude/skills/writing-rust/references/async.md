@@ -346,9 +346,10 @@ Held by review.
 ## A `#[tokio::test]` Runs on One Thread
 
 `#[tokio::test]` builds a current-thread runtime, not a multi-thread one as some
-guides say, so a spawned task runs only while the test awaits. A test that
-blocks, or that needs two tasks truly at once, asks for `flavor =
-"multi_thread"`; one that can await instead does, and keeps the single thread.
+guides say, so a spawned task runs only while the test awaits. A test awaits
+what it waits for, through tokio's channels, and keeps its one thread; only a
+test that needs two tasks truly at once asks for `#[tokio::test(flavor =
+"multi_thread")]`.
 
 ```rust
 #[cfg(test)]
@@ -370,15 +371,15 @@ mod tests {
 ```rust
 #[cfg(test)]
 mod tests {
-    use std::sync::mpsc;
+    use tokio::sync::oneshot;
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    #[tokio::test]
     async fn a_painter_paints_while_the_test_waits() {
-        let (tiles, painted) = mpsc::channel();
+        let (tiles, painted) = oneshot::channel();
         tokio::spawn(async move {
             let _sent = tiles.send(7_u8);
         });
-        assert_eq!(painted.recv(), Ok(7), "the painter's tile");
+        assert_eq!(painted.await, Ok(7), "the painter's tile");
     }
 }
 ```
@@ -470,25 +471,44 @@ Held by review.
 
 ## A Log Line Is a `tracing` Event with Fields
 
-An async service logs through `tracing`, whose events carry fields a collector
-can filter on. The message is a stable lowercase phrase with no final period,
-and every value is a field, never text in the message, so each line of one kind
-reads alike and can be searched. Every error path logs its error as `error = %e`
-before it drops or converts it; an `Err(_)` or an `is_err()` that logs nothing
-hides the failure. A library emits events and never installs a subscriber, which
-is the binary's. A secret, a token or a user's data is never a field.
+A service, and async code generally, logs through `tracing`, whose events carry
+fields a collector can filter on. The message is a stable lowercase phrase with
+no final period, and every value is a field, never text in the message, so each
+line of one kind reads alike and can be searched. Every error path logs its
+error as `error = %e` before it drops or converts it; an `Err(_)` or an
+`is_err()` that logs nothing hides the failure. A library emits events and never
+installs a subscriber, which is the binary's. A secret, a token or a user's data
+is never a field. Code that takes no logging crate reports through what it
+returns, and only a binary prints, where an operator watches.
 
-```text
-// Bad: the values are in the message, and the error is dropped unlogged.
-tracing::info!("Painted tile {} at {}.", tile, at);
-if save(&board).await.is_err() { return; }
+```rust
+use std::path::Path;
+
+use tokio::fs;
+
+pub async fn save(board: &[u8], path: &Path) -> bool {
+    // Bad: the values are in the message, and a failed save is dropped unlogged.
+    tracing::info!("Saving {} squares to {}.", board.len(), path.display());
+    fs::write(path, board).await.is_ok()
+}
 ```
 
-```text
-tracing::info!(tile, at, "tile painted");
-if let Err(e) = save(&board).await {
-    tracing::warn!(error = %e, board = %board.name(), "board save failed");
-    return;
+```rust
+use std::path::Path;
+
+use tokio::fs;
+
+pub async fn save(board: &[u8], path: &Path) -> bool {
+    match fs::write(path, board).await {
+        Ok(()) => {
+            tracing::info!(squares = board.len(), path = %path.display(), "board saved");
+            true
+        },
+        Err(e) => {
+            tracing::warn!(error = %e, path = %path.display(), "board save failed");
+            false
+        },
+    }
 }
 ```
 

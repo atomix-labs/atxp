@@ -56,7 +56,7 @@ blocking work, `JoinSet`, cancellation, `select!`, async traits and tests, and
 | `.claude/skills/writing-rust/references/errors.md`     | whole | owned  | template, feature `agents`        |
 | `.claude/skills/writing-rust/references/layout.md`     | whole | owned  | template, feature `agents`        |
 | `.claude/skills/writing-rust/references/lints.md`      | whole | owned  | template, feature `agents`        |
-| `.claude/skills/writing-rust/references/naming.md`     | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/naming.md`     | whole | owned  | feature `agents`                  |
 | `.claude/skills/writing-rust/references/ownership.md`  | whole | owned  | template, feature `agents`        |
 | `.claude/skills/writing-rust/references/sources.md`    | whole | owned  | template, feature `agents`        |
 

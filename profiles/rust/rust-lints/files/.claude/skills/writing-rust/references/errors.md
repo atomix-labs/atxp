@@ -84,9 +84,10 @@ re-exports name each type.
 
 `#[derive(thiserror::Error)]` writes `Display` from `#[error("…")]` and `Error`
 with its `source`, so the type states its message once, beside its fields.
-thiserror 2 with its default features off works in a `no_std` crate. A crate
-writes both impls by hand only where a derive dependency is unwelcome: a crate
-everything depends on, which depends on nothing; its doc says so.
+thiserror 2 with its default features off works in a `no_std` crate. Both impls
+are written by hand only where the derive cannot say it: a `Display` that hands
+off to another type's rendering, as an errno's to `io::Error`'s, or a crate that
+takes no dependency at all, whose doc says so.
 
 ```rust
 use core::{error, fmt};
@@ -247,7 +248,7 @@ pub enum PlaceError {
 ```
 
 Held by review: `clippy::enum_variant_names` sees a shared prefix or suffix only
-on an enum the crate does not export.
+on an enum the crate does not export, and only on one of three variants or more.
 
 ## Errors Are `Copy` and `Eq` Where the Payload Allows
 
@@ -917,8 +918,11 @@ function that can panic for a `# Panics` section.
 
 Under `strict`, `clippy::panic`, `unwrap_used`, `expect_used`,
 `indexing_slicing`, `unreachable`, `todo`, `unimplemented`, `panic_in_result_fn`
-and `unwrap_in_result` refuse the panicking forms in library code; a test may
-use them.
+and `unwrap_in_result` refuse the panicking forms.
+{%- if "rust-clippy" in devset.profiles %}
+
+The workspace's `clippy.toml` lets a test unwrap, expect, panic and index.
+{%- endif %}
 {%- endif %}
 
 ## Panic Only for a Broken Invariant, and Say Which
@@ -928,26 +932,37 @@ process, or a door that mirrors a `core` name, `expect` or `unwrap`, whose
 callers asked for the panic. Such a function carries `#[track_caller]`, so the
 report points at the caller that broke the promise, and a `# Panics` section
 saying when; its `expect` message states the precondition as an instruction. A
-check a release hot path must not pay for is a `debug_assert!` whose message
-states the violated fact.
+check a release build need not pay for, of an invariant the type's own code
+keeps, or of the contract an `unsafe` function states, which is out of scope
+here, is a `debug_assert!` whose message states the fact. A caller's input is
+never such a check: it is refused with an error, as above.
 
 ```rust
+use core::num::NonZeroU16;
+
 #[derive(Debug)]
 pub struct Grid {
-    cols: u16,
+    cols: NonZeroU16,
     squares: Vec<u8>,
 }
 
 impl Grid {
-    /// The square at `col` and `row`.
-    ///
-    /// # Panics
-    /// Debug builds assert `col` is inside the row, which the caller promises.
+    /// A grid of `cols` columns and `rows` rows, every square blank.
     #[must_use]
-    pub fn square(&self, col: u16, row: u16) -> Option<&u8> {
-        debug_assert!(col < self.cols, "a column past the row's end");
-        let at = usize::from(row).checked_mul(usize::from(self.cols))?.checked_add(usize::from(col))?;
-        self.squares.get(at)
+    pub fn new(cols: NonZeroU16, rows: u16) -> Self {
+        let squares = usize::from(cols.get()).saturating_mul(usize::from(rows));
+        Self { cols, squares: vec![0; squares] }
+    }
+
+    /// The grid's rows, each `cols` squares long.
+    pub fn rows(&self) -> impl Iterator<Item = &[u8]> {
+        // `new` lays whole rows, and nothing changes the length after it: an
+        // invariant of this type's own, which no caller can break.
+        debug_assert!(
+            self.squares.len().is_multiple_of(usize::from(self.cols.get())),
+            "a grid of whole rows"
+        );
+        self.squares.chunks(usize::from(self.cols.get()))
     }
 }
 ```

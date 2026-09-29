@@ -54,17 +54,18 @@ Unsafe code is out of scope for this skill.
    `pub(super)`**, so an item says how far it reaches.
 3. **A module with children is `mod.rs`, and every module is a singular noun for
    what it holds**: `errors.rs`, `testing.rs` and `consts.rs` are fixed, and
-   nothing is `utils`.
-4. **`main.rs` is thin**: the work is in `lib.rs`, where tests reach it.
+   none is `utils`, `helpers` or `common`.
 
 ### Names, API and Ownership
 
 1. **Names follow `references/naming.md`**: no `get_`; `as_`, `to_` and `into_`
    by cost; `try_` refuses, `_with` takes a closure, `_in` an allocator; `new`
-   builds, `create` lays, `open` binds, `open_or_create` does either; `*Spec`,
-   `*Guard` and `*Error` by role; an acronym is one word.
-2. **Configure with a `*Spec` of public fields, passed by reference, not a
-   builder**, so every field is written where it is used.
+   builds, `create` lays, `open` binds, `open_or_create` does either; `*Spec`
+   for one call's parameters, `*Config` for a program's settings, `*Guard` and
+   `*Error` by role, never `*Options`; an acronym is one word.
+2. **A call that creates or opens something takes a `*Spec` of public fields,
+   passed by reference, not a builder**, so every field is written where it is
+   used.
 3. **A newtype has a private field and `const fn new` and `get`**, so two
    meanings of one primitive cannot be swapped; an alias only where the name is
    worth having and a second type is not.
@@ -79,8 +80,9 @@ Unsafe code is out of scope for this skill.
 7. **Derive `Debug` always, and each common trait the type's meaning supports**;
    `Default` where one value is obvious, with `new` delegating to it; bounds on
    the `impl`, not the type.
-8. **Enums are exhaustive unless published and meant to grow**, so a new variant
-   is a compile error at every match that must decide.
+8. **Enums and structs are exhaustive; `#[non_exhaustive]` goes only on a
+   published crate's type that is meant to grow, judged type by type**, since it
+   costs every caller its exhaustive match.
 9. **Borrow `&str` and `&[T]`, take a value only where it is kept, and pass a
    small `Copy` value by value**, so a caller never builds or gives up what the
    function only reads.
@@ -101,11 +103,11 @@ Unsafe code is out of scope for this skill.
    profile.
 {%- if "strict" in devset.features %}
 
-The house policy, `strict`, which the lints hold:
+Under `strict`, the lints hold more:
 
 - **No panics in library code**: `unwrap`, `expect`, `panic!`, indexing and
-  their kin are refused outside tests, and a broken invariant's door names its
-  reason in an `#[expect]`.
+  their kin are refused, and a broken invariant's door names its reason in an
+  `#[expect]`.
 - **No `as`**: `From` for a widening, `TryFrom` for the rest.
 - **Arithmetic says how it overflows**: `checked_`, `saturating_` or
   `wrapping_`, whichever it means.
@@ -185,7 +187,7 @@ Every manifest follows `editing-cargo-manifests`.
 | "A builder for these three fields"             | A `*Spec` literal, passed by reference.                                        |
 | "`pub` is simpler than `pub(crate)`"           | `pub(crate)` inside a private module.                                          |
 | "`.clone()` to quiet the borrow checker"       | Shape the borrow: a shorter scope, a reference kept, a move.                   |
-| "`#[non_exhaustive]`, for the future"          | Exhaustive, unless published and meant to grow.                                |
+| "`#[non_exhaustive]`, for the future"          | Exhaustive; only a published type meant to grow, judged one by one.            |
 | "`[lints.clippy]` in this crate's manifest"    | Cargo refuses it; `#[expect]` at the site.                                     |
 {%- if "strict" in devset.features %}
 

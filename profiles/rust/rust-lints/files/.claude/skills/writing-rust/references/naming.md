@@ -2,8 +2,8 @@
 
 Read this before naming a crate, a module, a type, a trait, a function, a
 method, a constant or a field, and before renaming one. The names follow the
-Rust API Guidelines, and the house adds families of its own, so that a name says
-what a call costs and how it can refuse before anyone reads its body.
+Rust API Guidelines, and the workspace adds families of its own, so that a name
+says what a call costs and how it can refuse before anyone reads its body.
 
 ## Casing Follows RFC 430
 
@@ -56,7 +56,8 @@ pub struct TileId(u32);
 ```
 
 Held by review: `clippy::upper_case_acronyms` sees only a name the crate does
-not export.
+not export, and there only one written wholly in capitals, `JSON`; `TileID`
+needs its `upper-case-acronyms-aggressive` option, which is off.
 
 ## An Associated Constant Names the Value
 
@@ -192,9 +193,11 @@ impl Row {
 }
 ```
 
-Held by review, by `clippy::wrong_self_convention` on a method the crate does
-not export, and by `clippy::inherent_to_string`, which refuses a `to_string` of
-a type's own.
+Held by review, which alone holds the cost. `clippy::wrong_self_convention`
+holds the receiver each prefix takes, a reference for `as_`, `self` for `into_`,
+`&self` for `to_` or `self` on a `Copy` type, and only on a method the crate
+does not export; `clippy::inherent_to_string` refuses a `to_string` of a type's
+own.
 
 ## `try_` Can Refuse, `_with` Takes a Closure, `_in` Takes an Allocator
 
@@ -401,28 +404,49 @@ impl<'a> IntoIterator for &'a Grid {
 
 Held by `clippy::iter_without_into_iter`.
 
-## A Type's Name Says Its Role: `Spec`, `Guard`, `Error`
+## A Type's Name Says Its Role: `Spec`, `Config`, `Guard`, `Error`
 
-The last word of a type's name says what it is for: `*Spec` for the parameters
-of a door, passed by reference; `*Guard` for a value that holds something until
-it drops; `*Error` for a refusal. A marker type is an adjective or a role,
-`Editing`, `Sealed`, `Shared`. A door's parameters are never `*Config`,
-`*Options` or `*Params`, so every such struct reads the same way.
+The last word of a type's name says what it is for. A `*Spec` holds the
+parameters of one call that creates or opens something, `Grid::new(&GridSpec { …
+})`, built as a literal and passed by reference; a `*Config` holds a program's
+settings, as loaded from a file or the environment; a `*Guard` holds something
+until it drops; an `*Error` is a refusal. A marker type is an adjective or a
+role, `Editing`, `Sealed`, `Shared`. No struct is a catch-all `*Options` or
+`*Params`: `std`'s `OpenOptions` is a builder, a different shape, and no model
+for a struct of parameters.
 
 ```rust
-// Bad: `Options`, where every other door's parameters are a `Spec`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+// Bad: a catch-all name, which says neither whose parameters these are nor
+// where they come from.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GridOptions {
     pub cols: u16,
     pub rows: u16,
+    pub theme: String,
 }
 ```
 
 ```rust
+use std::env;
+
+/// What a grid is laid with: the parameters of `Grid::new`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GridSpec {
     pub cols: u16,
     pub rows: u16,
+}
+
+/// The editor's settings, as its environment gives them.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EditorConfig {
+    pub theme: String,
+}
+
+impl EditorConfig {
+    #[must_use]
+    pub fn from_env() -> Self {
+        Self { theme: env::var("TILES_THEME").unwrap_or_else(|_unset| String::from("plain")) }
+    }
 }
 ```
 
