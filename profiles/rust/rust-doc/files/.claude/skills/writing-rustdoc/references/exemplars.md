@@ -12,7 +12,7 @@ Re-exports and omissions
 
 ## 1 Crate Pages
 
-````rust
+````text
 //! In-place initialization: build a value where it will live, never moved there.
 //!
 //! Filling a location usually builds the value first, then moves it in:
@@ -71,7 +71,7 @@ Re-exports and omissions
 - `# Types` groups by role with a bold lead; three bullets cover eight exports.
   Each clause says what the type *buys*, not what it is made of.
 
-````rust
+````text
 //! # Building many
 //! [`run::each`] builds each of `n` elements from an initializer, in its slot; [`run::copied`] and
 //! [`run::cloned`] are the bulk slice sources.
@@ -86,7 +86,7 @@ Re-exports and omissions
 - Gerund task heading; blank line before, none after; the one-sentence lead
   links the entry points; guidance is `Prefer …, so …` with the cost stated.
 
-````rust
+````text
 //! # What it compiles to
 //! `raw_try_init(dst, init!(Order { id, near <- init!(Leg { px, qty }), tag: [0; 32] }))` from the
 //! example above, release build, aarch64:
@@ -118,7 +118,7 @@ Re-exports and omissions
 //! An address held as an integer, with no right to reach it.
 ```
 
-````rust
+````text
 //! Building `n` values where they will live: a [`RunInit`] into a caller's buffer.
 //!
 //! A run reports its [`len`](RunInit::len) before it writes any element, so a container can make
@@ -140,7 +140,7 @@ Re-exports and omissions
 
 ## 3 Types and Fields
 
-````rust
+````text
 /// The exclusive right to initialize a span of raw bytes, and the provenance to reach it.
 ///
 /// - **Move-only.** Laying a structure into a region consumes it, so a second writer over the same
@@ -173,6 +173,8 @@ pub struct Region<S: PtrStore> {
   restated.
 
 ```rust
+use core::num::NonZeroU64;
+
 /// A byte distance from the process reservation's first byte: what a [`Shared`] region stores in
 /// place of an address, so the same word names the same byte in every peer.
 ///
@@ -185,7 +187,7 @@ pub type Offset = NonZeroU64;
 - A design decision stated as fact + what decides it; bold on the load-bearing
   word.
 
-```rust
+```text
 /// The recorded mapping's first byte, or the sentinel.
 ///
 /// **Plain, not atomic, and that is the point**: an atomic load is not CSE-able, so a resolve that
@@ -197,7 +199,7 @@ static ROOT: Root = Root(SyncUnsafeCell::new(UNSET));
 - A static's doc: what it holds, then why it is shaped this way, with the
   measured cost.
 
-```rust
+```text
 /// Drops the prefix a run wrote, unless the run completes.
 struct Guard<T> { … }
 
@@ -218,7 +220,7 @@ pub struct Each<T, E, F> {
 
 ## 4 Traits
 
-```rust
+```text
 /// How to build a run of `T` at a destination that already exists.
 ///
 /// # Safety
@@ -249,7 +251,7 @@ pub unsafe trait RunInit<T, E = Infallible>: Sized {
 - `# Safety` is a comma list of preconditions; `# Errors` names the
   destination's state.
 
-```rust
+```text
 /// An allocator laid into a region once and found there by every peer afterwards.
 ///
 /// The doors [`Rooted`] cannot carry, because a forwarding `&A` implements that and can lay
@@ -272,7 +274,7 @@ pub trait Root: Rooted + Sized {
 - Why a trait and not inherent methods, with the compiler fact that decides it.
 - An associated type's doc says what it is in each impl.
 
-```rust
+```text
 /// Bytes returned to this allocator become available again.
 ///
 /// # Safety
@@ -288,7 +290,7 @@ pub unsafe trait Reclaiming: Allocator {}
 
 ## 5 Functions
 
-````rust
+````text
 /// Writes `init`'s value at `dst`.
 ///
 /// # Safety
@@ -331,7 +333,7 @@ pub unsafe fn raw_try_init<…>(dst: *mut T, init: I) -> Result<(), E> {
   `use` blocks, domain type, `// SAFETY:` lines, and closing `assert_eq!`; the
   twin delegates with `As [`…`].`
 
-````rust
+````text
 /// The base, once `layout` is known to fit it.
 ///
 /// The one check every structure runs before writing a header; the two ways to get it wrong
@@ -361,7 +363,7 @@ pub fn fit(&self, layout: Layout) -> Result<NonNull<u8>, RegionError> {
 - The summary names the value; the body says why this fn exists (one check,
   named once); the list-form `# Errors`; assertion messages that read as a pair.
 
-````rust
+````text
 /// The first `layout`-shaped sub-region, or `None` when the range cannot hold one.
 ///
 /// Aligns the address, so a weakly aligned base still yields one at the alignment asked for.
@@ -386,7 +388,7 @@ pub fn cut(self, layout: Layout) -> Option<Self> { … }
   consequence (`Consumes, as every division does`). `?` closed by the trailing
   `# Ok::<(), E>(())`; `expect` with a fragment.
 
-```rust
+```text
 /// The address `bytes` further on, wrapping: how a caller walks a range it has already
 /// bounded.
 pub const fn wrapping_add(self, bytes: usize) -> Self { … }
@@ -407,7 +409,7 @@ pub const fn from_slice(bytes: &'a mut [u8]) -> Self { … }
 
 ## 6 Errors
 
-```rust
+```text
 //! Why a placement did not work out: for a layout that will not fit, or for the mapping a caller
 //! resolves its shared addresses against.
 
@@ -428,7 +430,7 @@ pub enum RegionError {
 }
 ```
 
-```rust
+```text
 //! Why an allocator refused.
 //!
 //! Nothing aborts: a bounded allocator running out is routine, so every verb needing bytes returns
@@ -449,7 +451,7 @@ pub enum ReserveError {
 
 ## 7 Private Items
 
-```rust
+```text
 /// Counts one more written element.
 ///
 /// # Safety
@@ -471,7 +473,7 @@ fn record(self) -> &'static Header { … }
 
 ## 8 `// SAFETY:` and `// ORDERING:`
 
-```rust
+```text
 // SAFETY: the guard counts what landed, so a refusal at `index` drops exactly the slots below it.
 unsafe impl<…> RunInit<T, E> for Each<T, E, F> {
     unsafe fn __init(mut self, dst: *mut T) -> Result<(), E> {
@@ -489,7 +491,7 @@ unsafe impl<…> RunInit<T, E> for Each<T, E, F> {
 }
 ```
 
-```rust
+```text
 loop {
     // ORDERING: Relaxed throughout. The word hands out disjoint ranges and publishes
     // nothing; whatever a caller lays in the bytes it took, it releases itself.
@@ -498,7 +500,7 @@ loop {
 }
 ```
 
-```rust
+```text
 // SAFETY: a slice's base is never null.
 let base = unsafe { NonNull::new_unchecked(bytes.as_mut_ptr()) };
 
@@ -518,7 +520,7 @@ let tail = unsafe { Self::from_raw_parts(after, self.len.wrapping_sub(mid)) };
 
 ## 9 `#[expect]` and Messages
 
-```rust
+```text
 #![expect(
     unsafe_code,
     reason = "re-deriving a pointer from an address and writing raw byte spans is this crate's whole purpose"
@@ -533,7 +535,7 @@ let tail = unsafe { Self::from_raw_parts(after, self.len.wrapping_sub(mid)) };
 )]
 ```
 
-```rust
+```text
 #[assert(
     size == size_of::<usize>() => "an address, and nothing else",
     size_of::<Atomic<VirtAddr>>() == size_of::<usize>() => "no wrapper overhead in a shared word",
@@ -549,7 +551,7 @@ debug_assert!(chunk.word().is_inuse(), "a block given back twice, or never serve
 
 ## 10 Tests
 
-```rust
+```text
 /// Slots the run writes into, and the one that refuses.
 const SLOTS: usize = 32;
 /// See [`SLOTS`].
@@ -569,7 +571,7 @@ fn an_each_that_gives_up_drops_the_prefix_exactly_once() {
 }
 ```
 
-```rust
+```text
 #[test]
 fn an_offset_is_only_measured_forwards() {
     let base = VirtAddr::new(0x1000);
@@ -604,7 +606,7 @@ fn only_a_free_chunk_opens_its_links() { … }
 //! A region borrows the bytes it covers, so a structure built inside one cannot escape them.
 ```
 
-```rust
+```text
 //! UI tests pinning the properties the type system carries. Regenerate snapshots with
 //! `TRYBUILD=overwrite cargo test -p mem-region --test trybuild`.
 
@@ -621,7 +623,7 @@ mod tests {
 }
 ```
 
-```rust
+```text
 //! What the arena's cursor costs: the exchange a shared handle pays, against the register bump an
 //! exclusive one could.
 //!
@@ -633,7 +635,7 @@ mod tests {
 const CORE: u32 = 6;
 ```
 
-```rust
+```text
 //! What the vocabulary is for: one buffer becomes a partition, and the type system holds the line.
 //!
 //! Run with `cargo run -p mem-region --example region-tour`.
@@ -641,7 +643,7 @@ const CORE: u32 = 6;
 #![expect(clippy::print_stdout, reason = "a demo binary reports its result on stdout")]
 ```
 
-```rust
+```text
 //! Cross-process proof for [`Heap`]: two processes share one heap's free-lists and lock, and each
 //! stamps its own identity into that lock.
 //!
@@ -669,7 +671,7 @@ zerocopy     = { workspace = true } # `FromZeros`, the one marker for "a zeroed 
 
 ## 13 Re-Exports and Omissions
 
-```rust
+```text
 /// What this crate takes from `pin-init` unchanged, globbed so an explicit import can shadow one
 /// of its names.
 mod borrowed {

@@ -48,7 +48,7 @@ yet; the API documentation holds the item-by-item detail.
   comments in the source file mark the lines, and the page includes them by the
   name the comments give:
 
-  ```rust
+  ```text
   // ANCHOR: neighbours
   pub fn neighbours(&self, at: Point) -> impl Iterator<Item = Point> {
   // ANCHOR_END: neighbours

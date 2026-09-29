@@ -16,7 +16,7 @@ links; both keep `lib.rs` to docs, `#![…]` attributes, `mod`, and `pub use`.
 
 ### 1.1 Problem-First (A Facade or a Mechanism with a Story)
 
-````rust
+````text
 //! <Topic>: <pitch, the manifest `description`>.
 //!
 //! <The problem, shown before it is named: a short example with one-line comments naming the
@@ -55,7 +55,7 @@ links; both keep `lib.rs` to docs, `#![…]` attributes, `mod`, and `pub use`.
 
 ### 1.2 Shape-First (A Vocabulary Crate: Several Types That Fit Together)
 
-````rust
+````text
 //! <Pitch.>
 //!
 //! <One paragraph: the central noun and what choosing it buys. A `text` shape diagram (§7.1) if
@@ -79,7 +79,7 @@ restates an item's own docs.
 
 ### 1.3 Attributes That Follow
 
-```rust
+```text
 #![no_std]
 #![feature(non_exhaustive_omitted_patterns_lint, strict_provenance_lints)]
 #![expect(
@@ -96,7 +96,7 @@ plural or advanced one.
 
 The default is one line:
 
-```rust
+```text
 //! <Noun or gerund phrase, naming the key item>.
 ```
 
@@ -106,7 +106,7 @@ it carves, and never takes a cut back.`
 
 A module that is itself a surface adds a contract paragraph and one example:
 
-````rust
+````text
 //! <Gerund phrase>: <what it gives, naming the key item>.
 //!
 //! <Contract: what is guaranteed, in what order, what remains on failure; the general entry
@@ -129,7 +129,7 @@ always plural.
 
 ### 3.1 Function or Method
 
-````rust
+````text
 /// <Verb> <object> <at/into/from> <target>[, or `None` when <condition>].
 ///
 /// <Why or when; the reason for a non-obvious choice; the cost.>
@@ -151,7 +151,7 @@ holds.`, `/// The range of `len`bytes at`start`.`, `/// Wraps a raw address.`
 
 ### 3.2 Unsafe Function
 
-````rust
+````text
 /// <Verb> ….
 ///
 /// # Safety
@@ -176,7 +176,7 @@ summary and links the front door: `/// Writes them at `dst`. Prefer
 
 ### 3.3 Trait
 
-```rust
+```text
 /// How to <capability> [at/for <context>].            ← or the role, for a shape trait
 ///
 /// <Why a trait; what implementors promise beyond the signatures; the one reason for its shape.>
@@ -212,7 +212,7 @@ included**: …`.
 
 ### 3.4 Struct and Fields
 
-````rust
+````text
 /// <Role: noun phrase, or verb phrase for an active object>[: <the pitch clause>].
 ///
 /// - **<Property.>** <Consequence, one sentence.>        ← three bullets, or prose for fewer
@@ -239,7 +239,7 @@ Field docs are one line, private fields included
 
 ### 3.5 Enum and Variants
 
-```rust
+```text
 /// <Role>.
 ///
 /// <If variants form a state machine or an ordering: the rule, or a diagram (§7.4).>
@@ -251,7 +251,7 @@ pub enum Name {
 
 ### 3.6 Type Alias and Constant
 
-```rust
+```text
 /// <The role>.
 ///
 /// An **alias**, not a newtype: <the fact that decides it>.
@@ -263,7 +263,7 @@ pub const MIN_ALIGN: usize = 16;
 
 ### 3.7 Macro
 
-````rust
+````text
 /// <Verb> ….
 ///
 /// <Grammar in one sentence: `name: value` writes a value, `name <- init` runs a nested
@@ -280,7 +280,7 @@ macro_rules! name { … }
 
 ### 3.8 `#[doc(hidden)]`, Re-Exports, Deliberate Absences
 
-```rust
+```text
 #[doc(hidden)]
 pub use ::pin_init as __pin_init;       // no doc; the `__` says "not yours"
 
@@ -304,7 +304,7 @@ same way.`
 `# Errors` names the variant, links it, and states the condition as a fact; the
 destination's state when it matters. Four forms:
 
-```rust
+```text
 /// # Errors
 /// [`RootError::Conflict`], a mapping is already recorded.                 ← one variant
 
@@ -325,7 +325,7 @@ destination's state when it matters. Four forms:
 
 The error enum itself:
 
-```rust
+```text
 //! Why <the thing> did not work out[: <case>, or <case>].
 
 /// Why <what could not happen>.
@@ -346,7 +346,7 @@ fields by name. Variant docs are one line stating what it *is*; no value trivia.
 
 ## 5 Test, Bench, Example Files
 
-```rust
+```text
 //! <The proof, as a claim>: <what two parties share and what crosses between them>.
 //!
 //! <One paragraph on the one datum that crosses, or the shape the test exercises.>
@@ -359,7 +359,7 @@ fields by name. Variant docs are one line stating what it *is*; no value trivia.
 )]
 ```
 
-```rust
+```text
 //! UI tests pinning the properties the type system carries. Regenerate snapshots with
 //! `TRYBUILD=overwrite cargo test -p <crate> --test trybuild`.
 
@@ -378,11 +378,11 @@ mod tests {
 }
 ```
 
-```rust
+```text
 //! <The property, and the unsoundness forgetting it would allow, in one or two lines.>   ← compile_fail fixture
 ```
 
-```rust
+```text
 //! What <the thing> costs: <arm one>, against <arm two>.
 //!
 //! <What the gap between the arms measures, and what the figures do and do not say.>
@@ -391,7 +391,7 @@ mod tests {
 const CORE: u32 = 6;
 ```
 
-```rust
+```text
 //! <What the walk-through shows: one sentence.>
 //!
 //! Run with `cargo run -p <crate> --example <name>`.

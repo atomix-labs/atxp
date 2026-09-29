@@ -44,7 +44,7 @@ cites an external source.
 8. **No process residue**: no `TODO`, no ticket or phase names, no rule ids, no
    lint narration, no em dash.
 
-```rust
+```text
 /// Parses `input` as a port number.
 ///
 /// # Errors
