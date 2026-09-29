@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.17.0](#v0170)
+  - [A skill is a guide or a pass, and gates what it names](#a-skill-is-a-guide-or-a-pass-and-gates-what-it-names)
 - [v0.16.0](#v0160)
   - [Labels are code, and kind is not a label](#labels-are-code-and-kind-is-not-a-label)
 - [v0.15.0](#v0150)
@@ -45,6 +47,56 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.17.0
+
+### A Skill Is a Guide or a Pass, and Gates What It Names
+
+**What changed.** `check-devset-collection` holds every skill a collection's
+profiles ship to a stricter form. A guide's front matter holds `name`, a gerund
+phrase, and `description` alone. A pass, `context: fork`, also holds
+`argument-hint`, `agent` (`Explore` or `general-purpose`), `model: inherit` and
+`background: false`, may hold `allowed-tools`, and is named for its command, an
+imperative such as `review-rust`. A description starts "Use when", and a body
+stays within 18,000 characters. Every file under a skill's directory is an entry
+of its profile, the SKILL.md names each of its references, by a link or in code,
+and a relative link leads only to a file the profile ships. A recipe that a
+skill, AGENTS.md or CLAUDE.md names sits under a condition on the profile that
+defines it, unless the profile requires that one; a skill it names, under the
+feature that ships it, through `devset.layers` for another profile's and
+`devset.features` for its own. Only a template's conditions count, and none
+inside `{% raw %}` or a comment. A Rust block is `rust` or `rust,compile_fail`,
+a failing one opens `// fails: <lint or error code>`, and none in a template
+holds template syntax outside `{% raw %}`. atxp's own skills keep the form
+already.
+
+**What to do.** In a collection of your own, run `just check-devset-collection`
+and fix what it names:
+
+- Mark a payload that names another profile's recipe `template = true`, and gate
+  the recipe on that profile:
+
+  ```text
+  {%- if "rust-clippy" in devset.profiles %}
+  - `just check-rust-clippy`: every lint, on every target.
+  {%- endif %}
+  ```
+
+- Gate another profile's skill on the feature it ships with, through
+  `devset.layers`:
+
+  ```text
+  {%- set manifests = devset.layers | selectattr("profile", "equalto", "cargo-manifest") | map(attribute="features") | first | default([]) -%}
+  {%- if "agents" in manifests %}
+  Everything else about a manifest is `editing-cargo-manifests`.
+  {%- endif %}
+  ```
+
+- Declare every file of a skill in `profile.toml`, and name each reference in
+  its SKILL.md.
+- Mark each Rust block `rust`, or `rust,compile_fail` with `// fails: <lint or
+  error code>` as its first line; one that shows a fragment, not a whole file,
+  is `text`.
 
 ## V0.16.0
 

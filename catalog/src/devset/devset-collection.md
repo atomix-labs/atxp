@@ -35,10 +35,22 @@ with `collection_description`.
   `.just/<name>.<ext>` or under `.just/<name>/`, and its pins are in
   `.config/mise/conf.d/devset-<name>.toml`. A variable several profiles declare,
   each declares alike; and every workflow a profile ships runs one mise. A skill
-  a profile ships, `.claude/skills/<skill>/SKILL.md`, opens with front matter of
-  `name` and `description` alone: the name its directory's, a gerund phrase, and
-  the description under 1024 characters. No file of a skill runs a recipe, `just
-  <recipe>` in its code, that no profile of the collection defines.
+  a profile ships, `.claude/skills/<skill>/SKILL.md`, is a guide or a pass. A
+  guide's front matter holds `name`, its directory's and a gerund phrase, and
+  `description` alone; a pass's, which runs forked, also `argument-hint`,
+  `context: fork`, `agent`, `model: inherit` and `background: false`, and may
+  hold `allowed-tools`, its name an imperative. The description starts "Use
+  when", under 1024 characters, and the body stays within 18,000. Every file of
+  a skill is an entry of the profile, its SKILL.md names each reference, and a
+  relative link leads to a file the profile ships. A recipe that a skill,
+  AGENTS.md or CLAUDE.md names is one the collection defines, and sits under a
+  condition on the profile that defines it, unless the profile requires that
+  one; a skill it names sits under the feature that ships it, through
+  `devset.layers` for another profile's and `devset.features` for its own. Only
+  a template's conditions count, and none inside `{% raw %}` or a comment. A
+  Rust block is `rust` or `rust,compile_fail`, a `rust,compile_fail` block opens
+  `// fails: <lint or error code>`, and none in a template holds template syntax
+  outside `{% raw %}`. The rules are skill_form.py's.
 - `just test-devset-collection` runs the suite, with the devset that
   [`devset`](devset.md) pins. Every profile alone, with its default features and
   with every feature, applies without drift. Then on each fixture in
@@ -111,6 +123,7 @@ A collection others may take is easiest to find tagged: the GitHub topic
 | `.just/devset-collection/catalog.py`                | whole | owned  |                                              |
 | `.just/devset-collection/suite.sh`                  | whole | owned  |                                              |
 | `.just/devset-collection/site_pages.py`             | whole | owned  |                                              |
+| `.just/devset-collection/skill_form.py`             | whole | owned  |                                              |
 | `.just/devset-collection/pins.py`                   | whole | owned  | feature `pins`                               |
 | `catalog/book.toml`                                 | whole | once   | template, scaffold `catalog`, feature `site` |
 | `catalog/theme/palette.css`                         | whole | merge  | feature `site`                               |

@@ -20,19 +20,19 @@ agent writes documentation as the repository wants it.
 
 ## Owns
 
-| File                                                      | Part  | Policy | Notes            |
-| --------------------------------------------------------- | ----- | ------ | ---------------- |
-| `.just/rust-doc.just`                                     | whole | owned  | template         |
-| `.just/rust-doc.py`                                       | whole | owned  |                  |
-| `.claude/skills/writing-rustdoc/SKILL.md`                 | whole | owned  | feature `agents` |
-| `.claude/skills/writing-rustdoc/references/comments.md`   | whole | owned  | feature `agents` |
-| `.claude/skills/writing-rustdoc/references/exemplars.md`  | whole | owned  | feature `agents` |
-| `.claude/skills/writing-rustdoc/references/sources.md`    | whole | owned  | feature `agents` |
-| `.claude/skills/writing-rustdoc/references/style.md`      | whole | owned  | feature `agents` |
-| `.claude/skills/writing-rustdoc/references/templates.md`  | whole | owned  | feature `agents` |
-| `.claude/skills/writing-rustdoc/references/tooling.md`    | whole | owned  | feature `agents` |
-| `.claude/skills/writing-rustdoc/scripts/doc-audit.sh`     | whole | owned  | feature `agents` |
-| `.claude/skills/writing-rustdoc/scripts/doc-inventory.py` | whole | owned  | feature `agents` |
+| File                                                      | Part  | Policy | Notes                      |
+| --------------------------------------------------------- | ----- | ------ | -------------------------- |
+| `.just/rust-doc.just`                                     | whole | owned  | template                   |
+| `.just/rust-doc.py`                                       | whole | owned  |                            |
+| `.claude/skills/writing-rustdoc/SKILL.md`                 | whole | owned  | feature `agents`           |
+| `.claude/skills/writing-rustdoc/references/comments.md`   | whole | owned  | template, feature `agents` |
+| `.claude/skills/writing-rustdoc/references/exemplars.md`  | whole | owned  | feature `agents`           |
+| `.claude/skills/writing-rustdoc/references/sources.md`    | whole | owned  | feature `agents`           |
+| `.claude/skills/writing-rustdoc/references/style.md`      | whole | owned  | feature `agents`           |
+| `.claude/skills/writing-rustdoc/references/templates.md`  | whole | owned  | template, feature `agents` |
+| `.claude/skills/writing-rustdoc/references/tooling.md`    | whole | owned  | template, feature `agents` |
+| `.claude/skills/writing-rustdoc/scripts/doc-audit.sh`     | whole | owned  | feature `agents`           |
+| `.claude/skills/writing-rustdoc/scripts/doc-inventory.py` | whole | owned  | feature `agents`           |
 
 ## Features
 

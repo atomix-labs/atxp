@@ -13,7 +13,8 @@ content.
 Load `references/style.md` and `references/templates.md` before writing;
 `references/comments.md` before a `//` comment, an `#[expect]`, a test or a
 manifest; `references/exemplars.md` to see a rule on the page;
-`references/tooling.md` before the checks.
+`references/tooling.md` before the checks; `references/sources.md` before a doc
+cites an external source.
 
 ## Rules
 
