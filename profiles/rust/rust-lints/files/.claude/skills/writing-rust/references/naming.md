@@ -487,7 +487,7 @@ impl Grid {
         self.squares.get(at).copied()
     }
 
-        #[must_use]
+    #[must_use]
     pub const fn cell_count(&self) -> usize {
         self.squares.len()
     }
@@ -506,7 +506,7 @@ impl Grid {
         self.squares.get(at).copied()
     }
 
-        #[must_use]
+    #[must_use]
     pub const fn square_count(&self) -> usize {
         self.squares.len()
     }

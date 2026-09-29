@@ -107,8 +107,10 @@ Held by review. A builder that is right has `#[must_use]` on each method that
 returns `Self`: `clippy::return_self_not_must_use` asks for it.
 
 In a published crate, a new field on a spec that callers build as a literal
-breaks each of them. A spec there that will grow is `#[non_exhaustive]`, with a
-constructor callers start from, as the rule on exhaustive types below says.
+breaks each of them. A spec there that will grow is `#[non_exhaustive]`, as the
+rule on exhaustive types below says. Outside its crate such a spec cannot be
+built as a literal at all, not even with `..GridSpec::square(8)`, so callers
+start from its constructor and assign the fields they change.
 
 ## A Newtype Has a Private Field, `new` and `get`
 

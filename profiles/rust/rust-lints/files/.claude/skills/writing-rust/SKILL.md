@@ -89,10 +89,10 @@ Under `strict`, real code also documents every item.
 
 ### API
 
-1. **A call that creates or opens something, with three parameters or more,
-   takes a `*Spec` of public fields, built as a literal, not a builder**, so
-   every field is written where it is used; one or two plain values stay
-   arguments.
+1. **A call that creates or opens something, with three parameters or more, or
+   one a caller may leave at its usual value, takes a `*Spec` of public fields,
+   built as a literal, not a builder**, so every field is written where it is
+   used; one or two plain values stay arguments.
 2. **A newtype has a private field and `const fn new` and `get`**, so two
    meanings of one primitive cannot be swapped; an alias only where the name is
    worth having and a second type is not.

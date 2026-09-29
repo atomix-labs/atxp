@@ -88,8 +88,8 @@ A clone is a copy of everything the value owns, so it appears where two owners
 need the value, not to quiet the borrow checker or to save a caller a borrow.
 Before one, the code is shaped so a borrow lasts long enough: a shorter scope, a
 reference kept instead of a value, a value moved rather than copied. A method
-that reads a field returns a borrow of it, and a caller that keeps it clones it
-there.
+that reads a field that is not `Copy` returns a borrow of it, and a caller that
+keeps it clones it there.
 
 ```rust
 #[derive(Debug, Default)]
