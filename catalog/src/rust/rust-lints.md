@@ -31,7 +31,8 @@ nightly [`rust-toolchain`](rust-toolchain.md) pins, their features switched on
 by `-Zcrate-attr`, so no source needs a `#![feature]` and
 [`rust-msrv`](rust-msrv.md) can still prove a crate builds on stable. A crate
 that enables them itself, as one built on nightly alone may, is no fault: the
-check allows the feature enabled twice.
+check allows the feature enabled twice. It goes on past a crate that fails, so
+one run names every crate to fix.
 
 ## Owns
 
@@ -49,7 +50,8 @@ check allows the feature enabled twice.
 
 ## Recipes
 
-- `check-rust-lints`: Checks the lints only nightly has.
+- `check-rust-lints`: Checks the lints only nightly has, reporting every crate
+  that fails.
 
 ## Requires
 
