@@ -54,15 +54,17 @@ Under `strict`, `clippy::as_conversions` refuses every `as`.
 
 ## Rebuild a Pointer from One Whose Provenance Covers the Place
 
-A pointer made from a reference reaches what that reference covers and no
-further: one from `&squares[3]` reaches one square, and a read of the square
-after it is undefined behaviour however the address checks out. A pointer that
-must reach around the place a handle names takes the handle's address and the
-owner's provenance, `base.with_addr(handle.addr())`, where `base` is the owner's
-own pointer; `add` and `byte_add` then offset within the owner. Where the owner
-is a slice, `get(offset)` does the same with no unsafe at all; `with_addr` is
-for an owner that is itself a pointer: a mapping, an allocation, a header before
-its payload.
+A pointer made from a reference reaches at least what that reference covers, and
+whether it reaches further Rust has not settled: Stacked Borrows, Miri's default
+model, refuses a read of the square after one from `&squares[3]`, and Tree
+Borrows accepts it. The workspace treats the read as undefined behaviour,
+however the address checks out, which is sound under either. A pointer that must
+reach around the place a handle names takes the handle's address and the owner's
+provenance, `base.with_addr(handle.addr())`, where `base` is the owner's own
+pointer; `add` and `byte_add` then offset within the owner. Where the owner is a
+slice, `get(offset)` does the same with no unsafe at all; `with_addr` is for an
+owner that is itself a pointer: a mapping, an allocation, a header before its
+payload.
 
 ```rust
 use core::ptr::NonNull;
@@ -88,7 +90,7 @@ impl Grid {
         // SAFETY: the caller promises a square of this grid that is not its last, so the square
         // after it is one too.
         let next = unsafe { square.add(1) };
-        // Bad: `square` came from a `&u8`, whose provenance covers that square alone.
+        // Bad: `square` came from a `&u8`, whose provenance may cover that square alone.
         // SAFETY: as above.
         unsafe { next.read() }
     }
@@ -128,7 +130,8 @@ impl Grid {
 Held by review.
 {%- if "miri" in toolchain %}
 
-Miri refuses the read, under the tests that reach it, as `verifying.md` shows.
+Miri, under its default Stacked Borrows, refuses the read in a test that reaches
+it.
 {%- endif %}
 
 ## Exposed Provenance Is for an Address from Outside the Program
@@ -261,8 +264,9 @@ aligned and points at a valid, initialized value; a `&T` that nothing writes the
 value outside an `UnsafeCell`, and a `&mut T` that nothing else reads or writes
 it. So a reference made from a pointer gets its lifetime from a borrow the
 signature shows, `&self` giving `&'_ T`, never an unbounded `'a` a caller picks,
-and a `&mut` comes only from a `&mut`: a `&mut` from `&self` lets two callers
-hold one each.
+and a `&mut` comes from a `&mut`, from an owner, or from an `UnsafeCell` whose
+exclusive access the module proves, as a lock's guard does: a `&mut` from
+`&self` with no such proof lets two callers hold one each.
 
 ```rust,compile_fail
 // fails: clippy::mut_from_ref

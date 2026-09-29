@@ -285,8 +285,8 @@ argument is another unsafe call. Each goes in a block of its own, with its own
 /// The square `at` squares past `squares`.
 ///
 /// # Safety
-/// `squares` and the `at` squares after it lie inside one live row that nothing writes during
-/// the call.
+/// `squares` and the `at` squares after it lie inside one live, initialized row that nothing
+/// writes during the call.
 #[expect(unsafe_code, reason = "an unchecked read inside a row the caller holds")]
 #[must_use]
 pub const unsafe fn square_at(squares: *const u8, at: usize) -> u8 {
@@ -301,16 +301,16 @@ pub const unsafe fn square_at(squares: *const u8, at: usize) -> u8 {
 /// The square `at` squares past `squares`.
 ///
 /// # Safety
-/// `squares` and the `at` squares after it lie inside one live row that nothing writes during
-/// the call.
+/// `squares` and the `at` squares after it lie inside one live, initialized row that nothing
+/// writes during the call.
 #[expect(unsafe_code, reason = "an unchecked read inside a row the caller holds")]
 #[must_use]
 pub const unsafe fn square_at(squares: *const u8, at: usize) -> u8 {
     // SAFETY: the caller promises the `at` squares after `squares` lie in one row, so the offset
     // stays inside it.
     let square = unsafe { squares.add(at) };
-    // SAFETY: `square` is inside that live row, which nothing writes, and a `u8` is aligned
-    // anywhere.
+    // SAFETY: `square` is inside that live row, whose squares are initialized and which nothing
+    // writes, and a `u8` is aligned anywhere.
     unsafe { square.read() }
 }
 ```
@@ -533,9 +533,10 @@ Held by review.
 {%- if "strict" in devset.features %}
 
 Under `strict`, `clippy::undocumented_unsafe_blocks` refuses an `unsafe impl`
-with no `// SAFETY:`, and `clippy::non_send_fields_in_send_ty` a `Send` impl for
-a type with a field that is not `Send`; neither sees a type parameter left
-unbounded, as above.
+with no `// SAFETY:`, and `clippy::non_send_fields_in_send_ty` a `Send` impl
+over a field that is not `Send`, a bare `T` included. It lets through a field
+behind a raw pointer, a `NonNull<T>` or a `NonNull<Rc<u8>>`, as above, which is
+held by review.
 {%- endif %}
 
 ## A Marker Field, Not a Doc, Keeps a Type on One Thread

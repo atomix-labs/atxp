@@ -60,10 +60,13 @@ pub fn tileset() -> Option<&'static [char]> {
 }
 ```
 
-Held by `static_mut_refs`, which edition 2024 denies.
+Held by `static_mut_refs`, which edition 2024 denies, for a reference to a
+`static mut`. A read or write by value, `COUNT = COUNT.wrapping_add(1)`,
+compiles, and only its `unsafe` block marks it, so it is held by review.
 {%- if "strict" in devset.features %}
 
-Under `strict`, `clippy::mutex_atomic` and `clippy::mutex_integer` refuse a
+Under `strict`, `unsafe_code` makes that block name its reason in an
+`#[expect]`, and `clippy::mutex_atomic` and `clippy::mutex_integer` refuse a
 `Mutex` around what an atomic holds.
 {%- endif %}
 
@@ -74,8 +77,9 @@ its own. So a crate with an atomic protocol takes its atomics, `fence`,
 `UnsafeCell` and `spin_loop` from one module of its own, which re-exports
 `core`'s and, under `--cfg loom`, loom's, and the same body is both the
 production code and the model. Loom's types differ in small ways the module
-covers: its atomics have no `const fn new`, so a `static` atomic has no model,
-and its `UnsafeCell` is reached through `with` and `with_mut`.
+covers: its atomics have no `const fn new`, so a `static` atomic is modelled
+through `loom::lazy_static!`, and its `UnsafeCell` is reached through `with` and
+`with_mut`.
 
 ```text
 // grid.rs

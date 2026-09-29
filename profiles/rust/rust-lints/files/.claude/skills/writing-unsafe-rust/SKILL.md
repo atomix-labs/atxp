@@ -79,9 +79,11 @@ Under `strict`, real code also documents every item.
 1. **An address is `addr()`, never `as usize`**, which exposes the provenance;
    `map_addr` changes an address and keeps it, `without_provenance` makes a
    pointer never dereferenced.
-2. **A pointer comes from one whose provenance covers the place it reaches**: a
-   pointer from `&squares[3]` reaches one square, so reaching around a handle is
-   `base.with_addr(handle.addr())` from the owner's pointer.
+2. **A pointer comes from one whose provenance covers the place it reaches**:
+   one from `&squares[3]` may reach that square alone, which Rust has not
+   settled, so the workspace treats a read past it as undefined and reaches
+   around a handle with `base.with_addr(handle.addr())` from the owner's
+   pointer.
 3. **Exposed provenance, `expose_provenance` and `with_exposed_provenance`, only
    for an address from outside the program**, a device register or a foreign
    interface's integer; inside it, a pointer stays a pointer.
@@ -90,7 +92,8 @@ Under `strict`, real code also documents every item.
    which of type, mutability and provenance it changed.
 5. **A reference made from a pointer holds for all of its lifetime**, aligned,
    initialized and unaliased as its kind demands, with a lifetime from a borrow
-   the signature shows, and a `&mut` only from a `&mut`.
+   the signature shows, and a `&mut` from a `&mut`, an owner, or an `UnsafeCell`
+   whose exclusive access the module proves, as a lock's guard does.
 6. **No `transmute`: name the conversion**, `from_le_bytes`, `from_bits`,
    `cast`, a `TryFrom`, since a transmute checks only sizes; one that remains
    names both types and proves the rest.
@@ -141,11 +144,12 @@ Under `strict`, the lints hold more:
 
 - **`unsafe_code` is denied**, so no unsafe compiles without its `#[expect]`.
 - **Every unsafe block and `unsafe impl` has its `// SAFETY:`**, one operation a
-  block, and none sits on safe code; a safe function has no `# Safety`.
+  block, and none sits on safe code; a safe function the crate exports has no `#
+  Safety`.
 - **No `as`**, pointers included, and `mem::forget` only under an `#[expect]`
   with its reason.
-- **A `Send` impl over a field that is not `Send` is refused**, where the
-  field's type is concrete.
+- **A `Send` impl over a field that is not `Send` is refused**, a bare `T`
+  included; a field behind a raw pointer, as `NonNull<T>`, is held by review.
 {%- endif %}
 {%- if "nightly" in devset.features %}
 

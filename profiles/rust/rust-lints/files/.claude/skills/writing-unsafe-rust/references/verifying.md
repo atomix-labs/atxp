@@ -244,10 +244,11 @@ loom = "0.7"
 unexpected_cfgs = { level = "warn", check-cfg = ["cfg(loom)"] }
 ```
 
-A model runs one crate at a time, since `--cfg loom` reaches every dependency
-built with it and one that reads the cfg itself changes with it, and passes the
-cfg through `--config`, which adds to the rustflags Cargo's configuration sets,
-where `RUSTFLAGS` replaces them:
+A crate with a model is named, `-p`, so its models run, and the cfg passes
+through `--config`, which adds to the rustflags Cargo's configuration sets,
+where `RUSTFLAGS` replaces them. Either reaches every crate the build compiles,
+dependencies included, so a dependency that reads `cfg(loom)` itself builds its
+loom variant too:
 
 ```text
 cargo test -p tiles --lib --release --config 'target."cfg(all())".rustflags=["--cfg","loom"]'

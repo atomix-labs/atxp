@@ -55,11 +55,15 @@ cannot run, `-Zmiri-strict-provenance`, `-Zmiri-many-seeds`, and `cfg(miri)`.
 | rust-skills `unsafe-send-sync-manual`: a `Send` justified by how callers use the type, behind their `Mutex` | a proof that holds for every safe use, and a generic impl bounded as its fields need                           |
 | rust-skills `conc-atomic-ordering`: `SeqCst` for one order across several atomics                           | `SeqCst` only as a fence between a store and a load a protocol rests on, with its reason; every ordering named |
 | rust-skills `lint-unsafe-doc`: one `// SAFETY:` for the invariants of several operations                    | one comment for one operation, each precondition proved from a fact in scope                                   |
+| `impl !Sync`, nightly's `negative_impls`, as a workspace built on nightly may write it                      | a marker field, `PhantomData<Cell<()>>` or `PhantomData<*const ()>`, so the crate builds on stable             |
 
 {%- if "agents" in rustdoc %}
 
 `writing-rustdoc` reads a `// SAFETY:` best below the `#[expect]` it sits under;
-clippy accepts it above the attribute too, and the examples write it there.
+clippy accepts it above the attribute too, and the examples write it there. It
+asks for an `// ORDERING:` only where the ordering is not the obvious one; here
+every atomic operation has one, or its function says once that one ordering
+holds throughout, so each pairing is written at both of its ends.
 {%- endif %}
 
 ## Corrected Here
