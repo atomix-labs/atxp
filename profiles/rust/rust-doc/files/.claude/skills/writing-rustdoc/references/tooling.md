@@ -11,7 +11,19 @@ ladder and then the heuristic lint; the raw steps, in order, each clean before
 the next:
 
 ```sh
-just fix-rust-fmt fix-dprint fix-toml fix-markdown            # rewraps, never tightens
+# The formatters the workspace has: each rewraps, never tightens.
+{%- if "rust-fmt" in devset.profiles %}
+just fix-rust-fmt
+{%- endif %}
+{%- if "dprint" in devset.profiles %}
+just fix-dprint
+{%- endif %}
+{%- if "toml" in devset.profiles %}
+just fix-toml
+{%- endif %}
+{%- if "markdown" in devset.profiles %}
+just fix-markdown
+{%- endif %}
 host=$(rustc -vV | sed -n 's/^host: //p')                  # every `just` recipe builds under --target, so share its cache
 RUSTDOCFLAGS="-D warnings" cargo doc -p <crate> --no-deps --target "$host" [--all-features] --document-private-items
 cargo test -p <crate> --doc --target "$host" [--all-features]
@@ -28,14 +40,19 @@ private doc's ``[`SLOTS`]`` link is checked, and it surfaces link hygiene a
 public build never sees (a private `mod init` making ``[`init!`](crate::init)``
 ambiguous, or an explicit target on a private field's link being redundant).
 
+{%- if "rust-fmt" in devset.profiles and "toml" in devset.profiles %}
+
 `just fix-rust-fmt fix-toml` format the whole tree; when only one crate changed,
 `cargo fmt -p <crate>` and `taplo fmt <crate>/Cargo.toml` are the same two
-formatters scoped down. What `rustfmt` does to docs (`rustfmt.toml`:
-`wrap_comments`, `comment_width = 100`, `format_code_in_doc_comments`): it wraps
-a line over 100 columns and pushes the tail down, which is where widows come
-from; it never joins a short line to the next, so a paragraph rebalanced by hand
-stays as written while every line is under 100; and it reformats the Rust inside
-a doc fence, so write examples as `rustfmt` would.
+formatters scoped down.
+{%- endif %}
+
+What `rustfmt` does to docs (`rustfmt.toml`: `wrap_comments`, `comment_width =
+100`, `format_code_in_doc_comments`): it wraps a line over 100 columns and
+pushes the tail down, which is where widows come from; it never joins a short
+line to the next, so a paragraph rebalanced by hand stays as written while every
+line is under 100; and it reformats the Rust inside a doc fence, so write
+examples as `rustfmt` would.
 
 For a crate the repository also builds under loom or Miri, its docs must also
 compile on that axis, since a `cfg`-gated item a doc links may vanish there:
@@ -46,9 +63,15 @@ cargo clippy -p <crate> --lib --tests --config 'target."cfg(all())".rustflags=["
 
 Snapshots a doc change can move: `TRYBUILD=overwrite cargo test -p <crate>
 --test trybuild` regenerates `tests/compile_fail/*.stderr`; never hand-edit one.
+{%- if "rust-clippy" in devset.profiles %}
 
 `just check-rust-clippy` and `just check-rust-doc`, and `just check` over
 everything, are the whole-tree gates; run them before a PR, not per edit.
+{%- else %}
+
+`just check-rust-doc`, and `just check` over everything, are the whole-tree
+gates; run them before a PR, not per edit.
+{%- endif %}
 
 ## 2 Workspace Lints That Shape Docs
 
@@ -85,8 +108,12 @@ not only for errors, or a dead `#[expect]` ships.
 
 Twenty crates carry `[features]`. Features are explained once, in the crate
 docs' `# Crate features` table; never in item prose (the item is either there or
-not for the reader's build). `cargo hack --each-feature clippy` (`just
-nightly-cargo-hack`) is the nightly per-feature pass.
+not for the reader's build).
+{%- if "cargo-hack" in devset.profiles %}
+
+`cargo hack --each-feature clippy` (`just nightly-cargo-hack`) is the nightly
+per-feature pass.
+{%- endif %}
 
 An item behind `#[cfg(target_os = …)]` is named in plain backticks on shared
 surfaces; an intra-doc link to it breaks on the other target. An item behind

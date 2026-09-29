@@ -1,3 +1,4 @@
+{%- set manifests = devset.layers | selectattr("profile", "equalto", "cargo-manifest") | map(attribute="features") | first | default([]) -%}
 # Templates: Crate, Module, Item, File, Diagram, Table
 
 Skeletons in the exemplar crates' shape. *Fixed* sections keep their exact name
@@ -399,9 +400,14 @@ const CORE: u32 = 6;
 ```
 
 ## 6 Manifest
+{%- if "agents" in manifests %}
 
 Only the `description` is this skill's; the rest of the shape is
 `editing-cargo-manifests`.
+{%- else %}
+
+Only the `description` is this skill's.
+{%- endif %}
 
 ```toml
 [package]
