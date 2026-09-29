@@ -46,12 +46,14 @@ blocking work, `JoinSet`, cancellation, `select!`, async traits and tests, and
 
 The `agents` feature also adds the `writing-unsafe-rust` skill: where unsafe
 code goes and how each site is marked, what a `// SAFETY:` proof must establish,
-`// INVARIANT:` fields, `unsafe impl Send` and `Sync` with their bounds,
-pointers that keep their provenance, `transmute`, `MaybeUninit` and FFI, atomics
-whose every `// ORDERING:` names what it pairs with, and how the proofs are
-tested: edge cases, loom models, compile-fail tests, and Miri where
-[`rust-toolchain`](rust-toolchain.md) has its `miri` feature. Each bad example a
-lint catches fails with that lint, and each good one compiles under this wall.
+`// INVARIANT:` fields, `unsafe impl Send` and `Sync` with the bounds their
+access needs, pointers that keep their provenance and alignment, layout,
+`transmute`, `MaybeUninit`, `Pin` and FFI, atomics whose every `// ORDERING:`
+names what it pairs with, locks over an `UnsafeCell`, freeing a node no reader
+holds, and how the proofs are tested: edge cases, loom models, compile-fail
+tests, and Miri where [`rust-toolchain`](rust-toolchain.md) has its `miri`
+feature. Each bad example a lint catches fails with that lint, and each good one
+compiles under this wall.
 
 ## Owns
 

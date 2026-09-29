@@ -1,6 +1,6 @@
 ---
 name: writing-unsafe-rust
-description: Use when writing, changing or reviewing unsafe Rust, whether an `unsafe` block, `unsafe fn`, `unsafe trait` or `unsafe impl Send` or `Sync`; a raw pointer, a pointer cast or an address; FFI and `extern` blocks; `MaybeUninit`, `mem::zeroed` or `transmute`; atomics, memory orderings, fences or `static mut`; when a `// SAFETY:`, `// INVARIANT:` or `// ORDERING:` comment or a `# Safety` section must be written; when a loom model{% if "miri" in (devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([])) %} or a Miri run{% endif %} is due. Covers where unsafe code goes, what a safety proof must establish, pointer provenance, atomic orderings, and how unsafe code is tested.
+description: Use when writing, changing or reviewing unsafe Rust, whether an `unsafe` block, `unsafe fn`, `unsafe trait` or `unsafe impl Send` or `Sync`; a raw pointer, `NonNull`, a pointer cast or an address; `UnsafeCell`, `ManuallyDrop`, `MaybeUninit`, `mem::zeroed`, `transmute` or `Pin::new_unchecked`; FFI and `extern` blocks; atomics, memory orderings, fences, `static mut` or a lock-free structure; when a `// SAFETY:`, `// INVARIANT:` or `// ORDERING:` comment or a `# Safety` section must be written; when a loom model{% if "miri" in (devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([])) %} or a Miri run{% endif %} is due. Covers where unsafe code goes, what a safety proof must establish, pointer provenance, atomic orderings, and how unsafe code is tested.
 ---
 
 # Writing Unsafe Rust
@@ -54,7 +54,8 @@ Under `strict`, real code also documents every item.
 ### Proofs
 
 1. **One unsafe operation a block**, so each `// SAFETY:` proves one thing;
-   `ptr.add(at).read()` is two.
+   `ptr.add(at).read()` is two, and `add` lands in bounds even where nothing is
+   read.
 2. **A `// SAFETY:` proves each precondition the operation's `# Safety` lists,
    from a fact in scope**: a check above, a field's invariant, the caller's
    contract, the step before. Restating the operation proves nothing.
@@ -62,55 +63,75 @@ Under `strict`, real code also documents every item.
    declared, naming its writers**, since every writer keeps it, safe ones
    included; each `// SAFETY:` that relies on it cites the field INVARIANT.
 4. **Every `unsafe impl` proves its trait, and `Send` and `Sync` carry the
-   bounds their fields need**, `T: Send` and `T: Sync`, so a board of `Rc`s
-   never crosses a thread; a type that owns `T` through a pointer holds
+   bounds its access needs**: `Send` needs `T: Send`, and `T: Sync` too where
+   the `T` is shared, as in an `Arc`; `Sync` needs `T: Sync` where `&self` hands
+   out `&T`, `T: Send` where it hands out `&mut T` or a `T`, as a lock does, and
+   both where it does both. A type that owns `T` through a pointer holds
    `PhantomData<T>`.
 5. **A marker field keeps a type on one thread**, `PhantomData<*const ()>` for
    neither trait and `PhantomData<Cell<()>>` for `Send` alone, since a doc binds
-   no caller and `impl !Sync` is nightly's.
-6. **`debug_assert!` checks a caller's contract, with a message naming the
-   violation, and proves nothing**: a release build skips it, so a safe function
-   never rests on one.
+   no caller and `impl !Sync` needs nightly's `negative_impls`.
+6. **`debug_assert!` checks an `unsafe fn`'s contract, with a message naming the
+   violation, and proves nothing**: a build without debug assertions skips it,
+   so a safe function never rests on one.
 7. **A panic midway leaves nothing a drop would misread**: write, then count;
    allocate before freeing; a guard counts what a partial build wrote.
+8. **A value moved out with `ptr::read` is not dropped again where it lay**:
+   `ManuallyDrop::new(self)` first, or `mem::take` with no unsafe.
 
 ### Pointers
 
 1. **An address is `addr()`, never `as usize`**, which exposes the provenance;
-   `map_addr` changes an address and keeps it, `without_provenance` makes a
-   pointer never dereferenced.
+   `map_addr` changes an address and keeps it, and `without_provenance` makes a
+   pointer that is never dereferenced.
 2. **A pointer comes from one whose provenance covers the place it reaches**:
    one from `&squares[3]` may reach that square alone, which Rust has not
-   settled, so the workspace treats a read past it as undefined and reaches
-   around a handle with `base.with_addr(handle.addr())` from the owner's
-   pointer.
+   settled, so a read past it counts as undefined; reach around a handle with
+   `base.with_addr(handle.addr())`.
 3. **Exposed provenance, `expose_provenance` and `with_exposed_provenance`, only
    for an address from outside the program**, a device register or a foreign
    interface's integer; inside it, a pointer stays a pointer.
 4. **Cast with `cast`, `cast_mut`, `ptr::from_ref` and `&raw`, never `as`, and
    write only through a pointer from a `&mut` or an owner**, since `as` hides
    which of type, mutability and provenance it changed.
-5. **A reference made from a pointer holds for all of its lifetime**, aligned,
+5. **A read is aligned for its type**: bytes read as a wider value go through
+   `from_le_bytes` or `read_unaligned`, since a misaligned read is undefined
+   wherever it runs.
+6. **A reference made from a pointer holds for all of its lifetime**, aligned,
    initialized and unaliased as its kind demands, with a lifetime from a borrow
    the signature shows, and a `&mut` from a `&mut`, an owner, or an `UnsafeCell`
    whose exclusive access the module proves, as a lock's guard does.
-6. **No `transmute`: name the conversion**, `from_le_bytes`, `from_bits`,
+7. **No `transmute`: name the conversion**, `from_le_bytes`, `from_bits`,
    `cast`, a `TryFrom`, since a transmute checks only sizes; one that remains
    names both types and proves the rest.
-7. **Uninitialized memory is `MaybeUninit`, read only once it is whole**, since
+8. **A type read as another has a `repr` that says so**, `#[repr(transparent)]`
+   or `#[repr(C)]`, since Rust's own layout is its choice.
+9. **Uninitialized memory is `MaybeUninit`, read only once it is whole**, since
    unwritten memory is no value of any type, a `u8` included; `mem::zeroed` only
    where all-zero is a valid value.
-8. **An `extern` block is `unsafe extern`, an item `safe` only when no argument
-   can make it unsound, and a wrapper passes pointers it holds for the call**, a
-   `CString` bound to a name; an exported symbol is `#[unsafe(no_mangle)]`.
+10. **Pin with `pin!` or `Box::pin`**; `Pin::new_unchecked`, `get_unchecked_mut`
+    or a projection proves the value never moves again, its `Drop` included, and
+    names a structurally pinned field in an `// INVARIANT:`; `PhantomPinned`
+    keeps a type that must not move from being `Unpin`.
+11. **An `extern` block is `unsafe extern`, an item `safe` only when no argument
+    can make it unsound, and a wrapper passes pointers it holds for the call**,
+    a `CString` bound to a name; an exported symbol is `#[unsafe(no_mangle)]`.
+12. **A C enum arrives as its integer and becomes a Rust enum through
+    `TryFrom`**, since an enum with no variant for its value is undefined.
+13. **A foreign `(ptr, 0)` becomes `&[]` before `slice::from_raw_parts`**, which
+    takes no null pointer, even for no elements.
+14. **A callback handed to C catches its panics and returns a code**, since a
+    panic out of `extern "C"` aborts; `"C-unwind"` only where both sides unwind,
+    and a foreign exception through a `"C"` import is undefined.
 
 ### Atomics
 
 1. **Shared state is a lock, a `OnceLock` or an atomic, never `static mut`**,
    and an atomic protocol only where a lock is measured too slow, since a lock's
    proof is the standard library's.
-2. **Atomics come from one module of the crate's own**, which swaps in loom's
-   under `--cfg loom`, so the code and its model are one body.
+2. **A crate with an atomic protocol takes its atomics and cells from one module
+   of its own**, which swaps in loom's under `--cfg loom`, so the code and its
+   model are one body; a lone `Relaxed` flag or statistic needs none.
 3. **Every atomic operation has an `// ORDERING:` naming its ordering and what
    it pairs with**, a `Release` store with the `Acquire` loads that read it, or
    "Relaxed throughout" once where a function shares one.
@@ -119,10 +140,16 @@ Under `strict`, real code also documents every item.
 5. **`SeqCst` only as a fence between a store and a load a protocol rests on**,
    with an `// ORDERING:` paragraph saying why, since `Release` and `Acquire`
    never order a store before a later load; loom models the fence.
-6. **A `compare_exchange` chooses both orderings**, the failure one reading
-   only, `Relaxed` where it acts on nothing; `compare_exchange_weak` in a loop.
-7. **A pointer shared across threads is an `AtomicPtr`**, never an
+6. **A `compare_exchange` chooses both orderings**, the failure one a load's,
+   `Relaxed` or `Acquire`; `compare_exchange_weak` in a loop.
+7. **A type over an `UnsafeCell` is `Sync` with the bound its access needs**: a
+   lock lends `&mut T`, so it needs `T: Send`, as `Mutex` does.
+8. **A pointer shared across threads is an `AtomicPtr`**, never an
    `AtomicUsize`, which drops the provenance.
+9. **A node another thread may read is freed only through a reclamation scheme,
+   epochs or hazard pointers, or once the structure drops**, since freeing it
+   early is a use after free, and its reused address fools a `compare_exchange`,
+   the ABA problem.
 
 ### Verifying
 
@@ -167,25 +194,33 @@ Read each reference a step names, whole, before writing the code.
 2. **A new unsafe block**: `references/safety-comments.md`. Try the safe form;
    mark the site; one operation a block; a `// SAFETY:` for each precondition; a
    test at each edge it names.
-3. **A new `unsafe fn` or `unsafe trait`**: `references/safety-comments.md`: its
-   `# Safety`, blocks in its body, a `debug_assert!` of what a check can see, a
-   safe twin where one fits, and a test that pins it stays unsafe.
-4. **A type over raw pointers, or an `unsafe impl Send` or `Sync`**:
-   `references/safety-comments.md` and `references/pointers.md`: private fields
-   with their `// INVARIANT:`, `PhantomData<T>`, bounded impls with proofs, a
-   marker for a type bound to one thread, a compile-fail test.
-5. **Pointer arithmetic, casts, uninitialized memory or `transmute`**:
-   `references/pointers.md`, whole.
+3. **A new `unsafe fn` or `unsafe trait`**: `references/safety-comments.md` and
+   `references/verifying.md`: its `# Safety`, blocks in its body, a
+   `debug_assert!` of what a check can see, a safe twin where one fits, and a
+   test that pins it stays unsafe.
+4. **A type over raw pointers or an `UnsafeCell`, or an `unsafe impl Send` or
+   `Sync`**: `references/safety-comments.md`, `references/pointers.md`,
+   `references/atomics.md` for a lock, and `references/verifying.md`: private
+   fields with their `// INVARIANT:`, `PhantomData<T>`, impls bounded as their
+   access needs, with proofs, a marker for a type bound to one thread, a
+   compile-fail test.
+5. **Pointer arithmetic, casts, alignment, layout, uninitialized memory,
+   `transmute` or `Pin`**: `references/pointers.md`, whole.
 6. **FFI**: `references/pointers.md`: an `unsafe extern` block, a safe wrapper
-   that proves each call, `core::ffi` types.
-7. **Shared state or an atomic protocol**: `references/atomics.md`, whole, and
-   `references/verifying.md` for its loom model.
+   that proves each call, C enums as integers, empty slices before null,
+   callbacks that catch their panics, `core::ffi` types.
+7. **Shared state, a lock, an atomic protocol or a lock-free structure**:
+   `references/atomics.md`, whole, and `references/verifying.md` for its loom
+   model.
 8. **Before finishing**: `references/verifying.md`, then the checks below, until
    they pass.
 {%- if "agents" in rustdoc %}
 
-How a `// SAFETY:`, `// INVARIANT:` or `// ORDERING:` comment and a `# Safety`
-section are worded is `writing-rustdoc`'s; this skill says what they prove.
+How a `// SAFETY:` or `// ORDERING:` comment and a `# Safety` section are worded
+is `writing-rustdoc`'s; this skill says what they prove, and teaches `//
+INVARIANT:`. Where they differ, this skill holds: an `// ORDERING:` on every
+atomic operation, and a `// SAFETY:` above its `#[expect]`, as long as its
+preconditions need.
 {%- endif %}
 
 ## Checks
@@ -204,36 +239,42 @@ section are worded is `writing-rustdoc`'s; this skill says what they prove.
 - `cargo miri test -p <crate>`: every test of a crate with unsafe code, under
   Miri; no recipe runs it.
 {%- endif %}
-- `cargo test -p <crate> --lib --release --config
-  'target."cfg(all())".rustflags=["--cfg","loom"]'`: a crate's loom models; no
-  recipe runs them.
+- A crate's loom models, which no recipe runs:
+
+  ```sh
+  cargo test -p <crate> --lib --release --config 'target."cfg(all())".rustflags=["--cfg","loom"]'
+  ```
 
 ## What Not to Do
 
-| Thought                                                     | Instead                                                                     |
-| ----------------------------------------------------------- | --------------------------------------------------------------------------- |
-| "One `unsafe` block around the loop is tidier"              | One operation a block, each with its proof.                                 |
-| "`// SAFETY: the pointer is valid`"                         | Each precondition the operation lists, and the fact that meets it.          |
-| "The caller will pass a valid pointer"                      | An `unsafe fn` with `# Safety`, or a reference and a check.                 |
-| "The `debug_assert!` checks the index"                      | A real check in a safe function, or an `unsafe fn`.                         |
-| "`len()` said the tiles fit"                                | A bound the module holds; a safe trait's impl may lie.                      |
-| "`unsafe impl<T> Send`, the pointer is ours"                | `unsafe impl<T: Send> Send`, with the proof above it.                       |
-| "`ptr as usize`, then back"                                 | `addr()`, and `with_addr` from a pointer that has the provenance.           |
-| "The address is right, so the read is fine"                 | The provenance must cover it: rebuild from the owner's pointer.             |
-| "`transmute` is shortest"                                   | `from_le_bytes`, `from_bits`, `cast`, `TryFrom`.                            |
-| "A `u8` has no invalid bit pattern, so `assume_init` early" | Write every slot first: unwritten memory is no `u8`.                        |
-| "`static mut` for the global"                               | `OnceLock`, a `Mutex`, or an atomic.                                        |
-| "`SeqCst`, to be safe"                                      | The ordering that pairs, `Relaxed` where none does, `SeqCst` with a reason. |
-| "The threaded test passes a thousand times"                 | A loom model, which runs every interleaving.                                |
+| Thought                                                     | Instead                                                                           |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| "One `unsafe` block around the loop is tidier"              | One operation a block, each with its proof.                                       |
+| "`// SAFETY: the pointer is valid`"                         | Each precondition the operation lists, and the fact that meets it.                |
+| "The caller will pass a valid pointer"                      | An `unsafe fn` with `# Safety`, or a reference and a check.                       |
+| "The `debug_assert!` checks the index"                      | A real check in a safe function, or an `unsafe fn`.                               |
+| "`len()` said the tiles fit"                                | A bound the module holds; a safe trait's impl may lie.                            |
+| "`unsafe impl<T> Send`, the pointer is ours"                | `unsafe impl<T: Send> Send`, with the proof above it.                             |
+| "`T: Sync` is enough for the lock to be `Sync`"             | `T: Send`: a lock lends `&mut T`, through which a `T` moves.                      |
+| "`#![expect(unsafe_code)]` on the crate"                    | On the statement or item that holds the unsafe.                                   |
+| "`ptr as usize`, then back"                                 | `addr()`, and `with_addr` from a pointer that has the provenance.                 |
+| "`as *mut u8` is clearer than `cast_mut`"                   | `cast_mut`, from a pointer that may be written.                                   |
+| "The address is right, so the read is fine"                 | The provenance must cover it: rebuild from the owner's pointer.                   |
+| "Read the `u32` straight from the bytes"                    | `from_le_bytes` on a copied chunk, or `read_unaligned`.                           |
+| "`ptr::read` the field out of `self`"                       | `ManuallyDrop::new(self)` first, or `mem::take`.                                  |
+| "`transmute` is shortest"                                   | `from_le_bytes`, `from_bits`, `cast`, `TryFrom`.                                  |
+| "A `u8` has no invalid bit pattern, so `assume_init` early" | Write every slot first: unwritten memory is no `u8`.                              |
+| "`static mut` for the global"                               | `OnceLock`, a `Mutex`, or an atomic.                                              |
+| "`SeqCst`, to be safe"                                      | The ordering that pairs; `SeqCst` only as a store-load fence, with its paragraph. |
+| "Free the node once it is unlinked"                         | A reclamation scheme, or not before the structure drops.                          |
+| "The threaded test passes a thousand times"                 | A loom model, which runs every interleaving.                                      |
 {%- if "strict" in devset.features %}
 
 Under `strict`, also:
 
-| Thought                                   | Instead                                            |
-| ----------------------------------------- | -------------------------------------------------- |
-| "`#![expect(unsafe_code)]` on the crate"  | On the statement or item that holds the unsafe.    |
-| "`// SAFETY:` above this safe call too"   | Only above unsafe code; the lint refuses the rest. |
-| "`as *mut u8` is clearer than `cast_mut`" | `cast_mut`, from a pointer that may be written.    |
+| Thought                                 | Instead                                            |
+| --------------------------------------- | -------------------------------------------------- |
+| "`// SAFETY:` above this safe call too" | Only above unsafe code; the lint refuses the rest. |
 {%- endif %}
 
 ## References

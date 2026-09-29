@@ -1,3 +1,4 @@
+{%- set toolchain = devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([]) -%}
 # Atomics
 
 Read this before a value is shared between threads through anything but a lock
@@ -78,8 +79,8 @@ its own. So a crate with an atomic protocol takes its atomics, `fence`,
 `core`'s and, under `--cfg loom`, loom's, and the same body is both the
 production code and the model. Loom's types differ in small ways the module
 covers: its atomics have no `const fn new`, so a `static` atomic is modelled
-through `loom::lazy_static!`, and its `UnsafeCell` is reached through `with` and
-`with_mut`.
+through `loom::lazy_static!`, nor `get_mut`, so a `&mut self` reads them with a
+`Relaxed` load, and its `UnsafeCell` is reached through `with` and `with_mut`.
 
 ```text
 // grid.rs
@@ -396,6 +397,101 @@ impl Claim {
 Held by `invalid_atomic_ordering`, which refuses a failure ordering that writes,
 a load that releases and a store that acquires.
 
+## A Type Over an `UnsafeCell` Is `Sync` with the Bound Its Access Needs
+
+An `UnsafeCell` field takes `Sync` away, and the `unsafe impl` that gives it
+back takes the bound that matches what `&self` lets a thread do with the `T`
+inside. A lock lends one thread at a time a `&mut T`, through which it can swap
+a `T` in or out, so a `T` crosses threads: its `Sync` needs `T: Send`, as
+`Mutex`'s does, not `T: Sync`, which would let a thread swap out a `MutexGuard`
+that must stay on the thread that took it. A type that lends `&T` to several
+threads at once needs `T: Sync`, and one that does both, as `RwLock` and
+`OnceLock` do, needs both. The cell comes from the crate's atomics module too,
+reached through `with_mut` as loom's is, so a model sees every access to it.
+
+```text
+// Bad: `with` lends `&mut T`, so a `T` that is `Sync` but not `Send`, a `MutexGuard`, can be
+// swapped out onto another thread.
+// SAFETY: sharing the lock shares `&T`s, which `T: Sync` allows.
+#[expect(unsafe_code, reason = "an `UnsafeCell` field takes away the auto `Sync`")]
+unsafe impl<T: Sync> Sync for SpinLock<T> {}
+```
+
+```rust
+mod sync {
+    // Loom's under `--cfg loom`, whose `UnsafeCell` is reached through `with_mut`, as this is.
+    pub(crate) use core::hint::spin_loop;
+    pub(crate) use core::sync::atomic::AtomicBool;
+    pub(crate) use core::sync::atomic::Ordering::{Acquire, Relaxed, Release};
+
+    use core::cell;
+
+    #[derive(Debug)]
+    pub(crate) struct UnsafeCell<T>(cell::UnsafeCell<T>);
+
+    impl<T> UnsafeCell<T> {
+        pub(crate) const fn new(value: T) -> Self {
+            Self(cell::UnsafeCell::new(value))
+        }
+
+        pub(crate) fn with_mut<R, F: FnOnce(*mut T) -> R>(&self, f: F) -> R {
+            f(self.0.get())
+        }
+    }
+}
+
+use crate::sync::{Acquire, AtomicBool, Relaxed, Release, UnsafeCell, spin_loop};
+
+#[derive(Debug)]
+pub struct SpinLock<T> {
+    held: AtomicBool,
+    // INVARIANT: reached only inside `with`, by the thread whose exchange set `held`.
+    value: UnsafeCell<T>,
+}
+
+// SAFETY: `with` lends `&mut T` to one thread at a time, through which it may move a `T` in or
+// out, so sharing the lock moves `T`s between threads, which `T: Send` allows; it never lends two
+// threads a `&T` at once, so it needs no `T: Sync`.
+#[expect(unsafe_code, reason = "an `UnsafeCell` field takes away the auto `Sync`")]
+unsafe impl<T: Send> Sync for SpinLock<T> {}
+
+impl<T> SpinLock<T> {
+    #[expect(
+        clippy::missing_const_for_fn,
+        reason = "loom's atomics, which a model swaps in, have no `const fn new`"
+    )]
+    pub fn new(value: T) -> Self {
+        Self { held: AtomicBool::new(false), value: UnsafeCell::new(value) }
+    }
+
+    pub fn with<R, F: FnOnce(&mut T) -> R>(&self, f: F) -> R {
+        // ORDERING: Acquire on success, pairing with the Release store in `Unlock::drop`, so this
+        // thread sees what the last holder wrote; Relaxed on failure, which only retries.
+        while self.held.compare_exchange_weak(false, true, Acquire, Relaxed).is_err() {
+            spin_loop();
+        }
+        let _unlock = Unlock(&self.held);
+        // SAFETY: by the field INVARIANT only the holder reaches the value, and the exchange above
+        // made this thread the holder until `_unlock` drops, after `f` returns or unwinds.
+        #[expect(unsafe_code, reason = "the holder's exclusive borrow of the value")]
+        self.value.with_mut(|value| f(unsafe { &mut *value }))
+    }
+}
+
+struct Unlock<'a>(&'a AtomicBool);
+
+impl Drop for Unlock<'_> {
+    fn drop(&mut self) {
+        // ORDERING: Release, pairing with the Acquire exchange in `with`, so the next holder sees
+        // what this one wrote.
+        self.0.store(false, Release);
+    }
+}
+```
+
+Held by review, and by a loom model, which reports two threads in the cell at
+once when the lock's orderings are too weak.
+
 ## A Pointer Shared Across Threads Is an `AtomicPtr`
 
 An `AtomicUsize` holds an address, and an address has no provenance, so a
@@ -474,4 +570,162 @@ Held by review.
 
 Under `nightly`, `implicit_provenance_casts` refuses the `as` casts an
 `AtomicUsize` of pointers would otherwise need.
+{%- endif %}
+
+## A Node Another Thread May Read Is Freed Only Through a Reclamation Scheme
+
+In a structure without a lock, a thread that has loaded a pointer to a node may
+read the node after another thread unlinks it, so freeing it then is a use after
+free. Its address, reused by a new node, also lets a `compare_exchange` that
+expects the old node succeed on the new one and link in a `next` long gone, the
+ABA problem. So a node another thread may still read is freed only once none
+can: through a reclamation scheme, epochs or hazard pointers, as
+`crossbeam-epoch` provides, or not before the whole structure drops, when `&mut
+self` proves no reader is left.
+
+```rust
+extern crate alloc;
+
+use alloc::boxed::Box;
+use core::ptr;
+use core::sync::atomic::AtomicPtr;
+use core::sync::atomic::Ordering::{Acquire, Relaxed, Release};
+
+#[derive(Debug)]
+struct Node {
+    tile: u8,
+    next: *mut Self,
+}
+
+#[derive(Debug, Default)]
+pub struct Stack {
+    // INVARIANT: null, or a node from `Box::into_raw` in `push`, heading a list of such nodes.
+    head: AtomicPtr<Node>,
+}
+
+impl Stack {
+    #[expect(unsafe_code, reason = "a node linked in front of the head")]
+    pub fn push(&self, tile: u8) {
+        let node = Box::into_raw(Box::new(Node { tile, next: ptr::null_mut() }));
+        // ORDERING: Relaxed; the exchange below publishes the node.
+        let mut head = self.head.load(Relaxed);
+        loop {
+            // SAFETY: `node` is this thread's alone until the exchange below publishes it.
+            unsafe {
+                (*node).next = head;
+            }
+            // ORDERING: Release on success, pairing with the Acquire loads in `pop`; Relaxed on
+            // failure, which retries.
+            match self.head.compare_exchange_weak(head, node, Release, Relaxed) {
+                Ok(_) => return,
+                Err(now) => head = now,
+            }
+        }
+    }
+
+    #[must_use]
+    #[expect(unsafe_code, reason = "a node unlinked from the head, and freed")]
+    pub fn pop(&self) -> Option<u8> {
+        // ORDERING: Acquire, pairing with the Release exchange in `push`.
+        let mut head = self.head.load(Acquire);
+        while !head.is_null() {
+            // Bad: another thread may have popped and freed `head` since it was loaded.
+            // SAFETY: by the field INVARIANT `head` is a node of the list.
+            let next = unsafe { (*head).next };
+            // ORDERING: Acquire both ways, pairing with the Release exchange in `push`.
+            match self.head.compare_exchange_weak(head, next, Acquire, Acquire) {
+                Ok(_) => {
+                    // SAFETY: the exchange unlinked `head`, so this thread alone holds it.
+                    let node = unsafe { Box::from_raw(head) };
+                    return Some(node.tile);
+                },
+                Err(now) => head = now,
+            }
+        }
+        None
+    }
+}
+```
+
+```rust
+extern crate alloc;
+
+use alloc::boxed::Box;
+use core::ptr;
+use core::sync::atomic::AtomicPtr;
+use core::sync::atomic::Ordering::{Acquire, Relaxed, Release};
+
+#[derive(Debug)]
+struct Node {
+    tile: u8,
+    next: *mut Self,
+}
+
+#[derive(Debug, Default)]
+pub struct Log {
+    // INVARIANT: null, or a node from `Box::into_raw` in `push`, heading a list of such nodes,
+    // none freed before the log drops.
+    head: AtomicPtr<Node>,
+}
+
+impl Log {
+    #[expect(unsafe_code, reason = "a node linked in front of the head")]
+    pub fn push(&self, tile: u8) {
+        let node = Box::into_raw(Box::new(Node { tile, next: ptr::null_mut() }));
+        // ORDERING: Relaxed; the exchange below publishes the node.
+        let mut head = self.head.load(Relaxed);
+        loop {
+            // SAFETY: `node` is this thread's alone until the exchange below publishes it.
+            unsafe {
+                (*node).next = head;
+            }
+            // ORDERING: Release on success, pairing with the Acquire load in `contains`; Relaxed
+            // on failure, which retries.
+            match self.head.compare_exchange_weak(head, node, Release, Relaxed) {
+                Ok(_) => return,
+                Err(now) => head = now,
+            }
+        }
+    }
+
+    #[must_use]
+    #[expect(unsafe_code, reason = "a walk over nodes that live until the log drops")]
+    pub fn contains(&self, tile: u8) -> bool {
+        // ORDERING: Acquire, pairing with the Release exchange that published the head, and,
+        // since each later exchange carries the earlier ones along, with those of the nodes below.
+        let mut at = self.head.load(Acquire);
+        while !at.is_null() {
+            // SAFETY: by the field INVARIANT `at` is a live node, freed only once the log drops.
+            let node = unsafe { &*at };
+            if node.tile == tile {
+                return true;
+            }
+            at = node.next;
+        }
+        false
+    }
+}
+
+impl Drop for Log {
+    #[expect(unsafe_code, reason = "the log frees its nodes once no reader is left")]
+    fn drop(&mut self) {
+        // ORDERING: Relaxed; `&mut self` means every push has happened before this.
+        let mut at = self.head.load(Relaxed);
+        while !at.is_null() {
+            // SAFETY: `&mut self` leaves no reader, and by the field INVARIANT each node came from
+            // `Box::into_raw` and is freed only here.
+            let node = unsafe { Box::from_raw(at) };
+            at = node.next;
+        }
+    }
+}
+```
+
+Held by review. A loom model of a push beside a walk checks the orderings on the
+head, and not the nodes' fields, which are not loom's cells; a reclamation
+scheme's own proofs are its crate's.
+{%- if "miri" in toolchain %}
+
+Miri, over several seeds, finds a push that publishes too weakly, as a data race
+on a node.
 {%- endif %}

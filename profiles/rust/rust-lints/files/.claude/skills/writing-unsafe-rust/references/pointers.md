@@ -32,6 +32,12 @@ pub fn aligned(squares: &[u8]) -> bool {
     (squares.as_ptr() as usize).is_multiple_of(64)
 }
 ```
+{%- else %}
+
+```text
+// Bad: the cast exposes the pointer's provenance, to read an address.
+(squares.as_ptr() as usize).is_multiple_of(64)
+```
 {%- endif %}
 
 ```rust
@@ -225,7 +231,8 @@ pub fn clear_first(row: &[u8]) {
     if row.is_empty() {
         return;
     }
-    // Bad: a pointer from a shared borrow, which may never be written through.
+    // Bad: `as` hides that it casts `const` away, and a pointer from a shared borrow may never
+    // be written through.
     let base = row.as_ptr() as *mut u8;
     // SAFETY: the row is not empty.
     unsafe {
@@ -256,6 +263,41 @@ pointer, spelled with `cast_mut`, is held by review.
 Under `strict`, `clippy::as_ptr_cast_mut` refuses `as_ptr() as *mut`, and
 `clippy::as_conversions` every `as`.
 {%- endif %}
+
+## A Read Is Aligned for Its Type
+
+A read or write through a `*const T` needs an address aligned for `T`, and bytes
+from a buffer are aligned for nothing wider than a byte: a `u32` read from a row
+of squares at any offset may be misaligned, which is undefined behaviour even
+where the hardware allows it. Bytes read as a wider value go through
+`from_le_bytes` on a copied chunk, or `read_unaligned`, which takes any address;
+a pointer cast to a wider type is aligned first, or checked with `is_aligned`.
+
+```rust,compile_fail
+// fails: clippy::cast_ptr_alignment
+/// The first four squares, as one word.
+///
+/// # Safety
+/// `squares` holds at least four bytes.
+#[expect(unsafe_code, reason = "four squares read as one word")]
+#[must_use]
+pub const unsafe fn word(squares: &[u8]) -> u32 {
+    // Bad: a slice of bytes is aligned for a byte, not for a `u32`.
+    // SAFETY: the caller promises four bytes.
+    unsafe { squares.as_ptr().cast::<u32>().read() }
+}
+```
+
+```rust
+#[must_use]
+pub fn word(squares: &[u8]) -> Option<u32> {
+    squares.first_chunk::<4>().copied().map(u32::from_le_bytes)
+}
+```
+
+Held by `clippy::cast_ptr_alignment`, which refuses a cast to a more strictly
+aligned pointer unless `read_unaligned` or `write_unaligned` uses it, and by
+review.
 
 ## A Reference Made from a Pointer Holds for All of Its Lifetime
 
@@ -342,6 +384,47 @@ does, and by clippy's `transmute_ptr_to_ref`, `transmute_ptr_to_ptr`,
 `transmute_int_to_bool` and `missing_transmute_annotations`, each for the form
 it names; the rest is held by review.
 
+## A Type Read as Another Has a Layout That Says So
+
+Rust lays out a struct or an enum as it chooses, and may choose differently for
+two types with the same fields, so a pointer to one read as the other is sound
+only where a `repr` fixes both layouts: `#[repr(transparent)]` for a newtype
+read as its one field, `#[repr(C)]` for a struct whose fields are read in C's
+order.
+
+```rust
+use core::slice;
+
+// Bad: no `repr`, so nothing promises a `Glyph` is laid out as its `u8`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Glyph(u8);
+
+#[expect(unsafe_code, reason = "a row of squares read as a row of glyphs")]
+#[must_use]
+pub const fn glyphs(squares: &[u8]) -> &[Glyph] {
+    // SAFETY: a `Glyph` holds one `u8`.
+    unsafe { slice::from_raw_parts(squares.as_ptr().cast::<Glyph>(), squares.len()) }
+}
+```
+
+```rust
+use core::slice;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(transparent)]
+pub struct Glyph(u8);
+
+#[expect(unsafe_code, reason = "a row of squares read as a row of glyphs")]
+#[must_use]
+pub const fn glyphs(squares: &[u8]) -> &[Glyph] {
+    // SAFETY: `Glyph` is `repr(transparent)` over a `u8`, so the squares' pointer, length and
+    // borrow are a valid `[Glyph]`'s.
+    unsafe { slice::from_raw_parts(squares.as_ptr().cast::<Glyph>(), squares.len()) }
+}
+```
+
+Held by review.
+
 ## Uninitialized Memory Is `MaybeUninit`, Read Only Once It Is Whole
 
 Memory never written holds no value at all, not even an arbitrary one, so
@@ -395,6 +478,77 @@ pub fn row(label: &str) -> [Tile; 8] {
 Held by `clippy::uninit_assumed_init` and `clippy::uninit_vec`, and by rustc's
 `invalid_value`, which refuses `mem::zeroed` or `mem::uninitialized` of a type
 it can see they are wrong for; the rest is held by review.
+
+## Pin with `pin!` or `Box::pin`; an Unchecked Pin Proves the Value Never Moves
+
+A pinned value promises that it stays at its address until it is dropped, which
+a type that holds its own address, or hands it out, rests on. `pin!` and
+`Box::pin` keep that promise by construction. `Pin::new_unchecked`,
+`get_unchecked_mut` and a hand-written projection are unsafe because the code
+keeps it instead: its `// SAFETY:` proves the value is never moved again, its
+`Drop` included, and a field the projection pins is named, as structurally
+pinned, in an `// INVARIANT:`. A type that must not move once pinned holds a
+`PhantomPinned`, so it is not `Unpin`.
+
+```rust
+use core::marker::PhantomPinned;
+use core::pin::Pin;
+
+#[derive(Debug, Default)]
+pub struct Cursor {
+    at: usize,
+    _pinned: PhantomPinned,
+}
+
+impl Cursor {
+    #[expect(unsafe_code, reason = "a field of a pinned cursor changed in place")]
+    pub const fn advance(self: Pin<&mut Self>) {
+        // SAFETY: `at` is not structurally pinned, and nothing here moves the cursor.
+        let this = unsafe { self.get_unchecked_mut() };
+        this.at = this.at.wrapping_add(1);
+    }
+}
+
+#[expect(unsafe_code, reason = "a cursor pinned in place")]
+#[must_use]
+pub fn walk() -> usize {
+    let mut cursor = Cursor::default();
+    // Bad: the pin lasts one call, and `cursor` moves on the next line.
+    // SAFETY: the cursor stays put while it is pinned.
+    unsafe { Pin::new_unchecked(&mut cursor) }.advance();
+    let moved = cursor;
+    moved.at
+}
+```
+
+```rust
+use core::marker::PhantomPinned;
+use core::pin::{Pin, pin};
+
+#[derive(Debug, Default)]
+pub struct Cursor {
+    at: usize,
+    _pinned: PhantomPinned,
+}
+
+impl Cursor {
+    #[expect(unsafe_code, reason = "a field of a pinned cursor changed in place")]
+    pub const fn advance(self: Pin<&mut Self>) {
+        // SAFETY: `at` is not structurally pinned, and nothing here moves the cursor.
+        let this = unsafe { self.get_unchecked_mut() };
+        this.at = this.at.wrapping_add(1);
+    }
+}
+
+#[must_use]
+pub fn walk() -> usize {
+    let mut cursor = pin!(Cursor::default());
+    cursor.as_mut().advance();
+    cursor.at
+}
+```
+
+Held by review.
 
 ## An `extern` Block Is `unsafe extern`, and Each Call Proves What C Asks
 
@@ -455,3 +609,156 @@ Held by `dangling_pointers_from_temporaries`, which refuses a pointer taken from
 a temporary that is dropped at once, by the compiler, which refuses a bare
 `extern` block, `#[no_mangle]` or `#[export_name]` in edition 2024, and by
 review for a `safe fn` and for what each call proves.
+
+## A C Enum Arrives as an Integer, and `TryFrom` Checks It
+
+C lets an enum hold any value of its integer type, and a Rust enum holding a
+discriminant it has no variant for is undefined behaviour, however it got there.
+So a foreign function that returns a C enum, or a field that holds one, is
+declared with the integer, and the value becomes a Rust enum through `TryFrom`,
+which refuses what has no variant.
+
+```rust
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum Kind {
+    Blank = 0,
+    Wall = 1,
+}
+
+#[expect(unsafe_code, reason = "the tile library's C interface")]
+unsafe extern "C" {
+    // Bad: a library that returns 7 hands Rust a `Kind` with no variant.
+    safe fn tiles_kind(at: u32) -> Kind;
+}
+
+#[must_use]
+pub fn kind(at: u32) -> Kind {
+    tiles_kind(at)
+}
+```
+
+```rust
+use thiserror::Error;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum Kind {
+    Blank = 0,
+    Wall = 1,
+}
+
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+#[error("kind error: {held} names no kind of tile")]
+pub struct KindError {
+    pub held: u8,
+}
+
+impl TryFrom<u8> for Kind {
+    type Error = KindError;
+
+    fn try_from(held: u8) -> Result<Self, KindError> {
+        match held {
+            0 => Ok(Self::Blank),
+            1 => Ok(Self::Wall),
+            _ => Err(KindError { held }),
+        }
+    }
+}
+
+#[expect(unsafe_code, reason = "the tile library's C interface")]
+unsafe extern "C" {
+    // Safe for any square: it reads the library's own table, and writes nothing.
+    safe fn tiles_kind(at: u32) -> u8;
+}
+
+pub fn kind(at: u32) -> Result<Kind, KindError> {
+    Kind::try_from(tiles_kind(at))
+}
+```
+
+Held by review.
+
+## A Foreign Slice Is Empty Before It Is Null
+
+A foreign interface passes a slice as a pointer and a length, and an empty one
+may come with a null pointer. `slice::from_raw_parts` takes no null pointer,
+even for no elements, so a length of zero becomes `&[]` before any pointer is
+read.
+
+```rust
+use core::slice;
+
+/// The squares C passed.
+///
+/// # Safety
+/// `squares` points at `len` initialized squares that live and stay unwritten for `'a`.
+#[expect(unsafe_code, reason = "a slice from the pointer and length C passed")]
+#[must_use]
+pub const unsafe fn squares<'a>(squares: *const u8, len: usize) -> &'a [u8] {
+    // Bad: C may pass a null pointer with a length of zero.
+    // SAFETY: the caller promises `len` squares at `squares`.
+    unsafe { slice::from_raw_parts(squares, len) }
+}
+```
+
+```rust
+use core::slice;
+
+/// The squares C passed.
+///
+/// # Safety
+/// Where `len` is not zero, `squares` points at `len` initialized squares that live and stay
+/// unwritten for `'a`.
+#[expect(unsafe_code, reason = "a slice from the pointer and length C passed")]
+#[must_use]
+pub const unsafe fn squares<'a>(squares: *const u8, len: usize) -> &'a [u8] {
+    if len == 0 {
+        return &[];
+    }
+    // SAFETY: `len` is not zero, so the caller promises `len` squares at `squares`.
+    unsafe { slice::from_raw_parts(squares, len) }
+}
+```
+
+Held by review.
+
+## A Callback Handed to C Catches Its Panics
+
+A panic cannot unwind out of an `extern "C"` function: it aborts the process
+there. So a Rust function C calls back runs its body under `catch_unwind` and
+turns a panic into the error code C reads; `extern "C-unwind"` is for a boundary
+where both sides unwind. The other way, a C++ exception thrown into Rust through
+an `extern "C"` import is undefined behaviour, so a foreign function that may
+throw is declared `"C-unwind"`, or wrapped on its own side.
+
+```rust
+fn place(at: u32) {
+    assert!(at < 81, "a square of the nine-by-nine board");
+}
+
+// Bad: a panic in `place` aborts the program C is running.
+#[must_use]
+pub extern "C" fn tiles_on_place(at: u32) -> i32 {
+    place(at);
+    0
+}
+```
+
+```rust
+use std::panic::catch_unwind;
+
+fn place(at: u32) {
+    assert!(at < 81, "a square of the nine-by-nine board");
+}
+
+#[must_use]
+pub extern "C" fn tiles_on_place(at: u32) -> i32 {
+    match catch_unwind(|| place(at)) {
+        Ok(()) => 0,
+        Err(_panic) => -1,
+    }
+}
+```
+
+Held by review.

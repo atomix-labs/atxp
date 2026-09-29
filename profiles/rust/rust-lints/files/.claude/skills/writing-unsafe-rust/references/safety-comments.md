@@ -7,8 +7,8 @@ to a module that holds unsafe code. It says where unsafe code may sit, what each
 proof must establish, and what holds each rule.
 {%- if "agents" in rustdoc %}
 
-How a `// SAFETY:`, a `// INVARIANT:` or a `# Safety` section is worded is
-`writing-rustdoc`'s; this says what it must prove.
+How a `// SAFETY:` or a `# Safety` section is worded is `writing-rustdoc`'s;
+this says what each must prove, and how an `// INVARIANT:` is written.
 {%- endif %}
 
 Each example is small enough that a safe form would serve it; it shows the shape
@@ -79,7 +79,7 @@ Under `strict`, `unsafe_code` makes each unsafe site say in its `#[expect]` why
 it needs unsafe, which is where a reviewer asks whether a safe form serves.
 {%- endif %}
 
-## Allow `unsafe_code` at the Narrowest Scope, with Its Reason
+## Mark Each Unsafe Site with `#[expect(unsafe_code)]` at the Narrowest Scope
 
 Each unsafe site is allowed where it stands, with `#[expect(unsafe_code,
 reason = "…")]` on the statement, the item, the `impl` block or the module that
@@ -275,9 +275,11 @@ Held by review.
 
 Each unsafe operation has preconditions of its own, and a block that holds two
 has one comment for both, so no reader can tell which fact proves which. An
-offset and a read, `ptr.add(at).read()`, are two operations; so is a call whose
-argument is another unsafe call. Each goes in a block of its own, with its own
-`// SAFETY:`, and a proof one line up is cited, "as above", not repeated.
+offset and a read, `ptr.add(at).read()`, are two operations, and the offset has
+a precondition of its own: `add` lands inside the allocation, or one past its
+end, even where nothing is read through it. A call whose argument is another
+unsafe call is two as well. Each goes in a block of its own, with its own `//
+SAFETY:`, and a proof one line up is cited, "as above", not repeated.
 {%- if "strict" in devset.features %}
 
 ```rust,compile_fail
@@ -294,6 +296,13 @@ pub const unsafe fn square_at(squares: *const u8, at: usize) -> u8 {
     // SAFETY: the caller promises the row reaches past `at`.
     unsafe { squares.add(at).read() }
 }
+```
+{%- else %}
+
+```text
+// Bad: an offset and a read, and one proof for both.
+// SAFETY: the caller promises the row reaches past `at`.
+unsafe { squares.add(at).read() }
 ```
 {%- endif %}
 
@@ -436,12 +445,16 @@ Held by review.
 
 An `unsafe impl` promises what the trait's `# Safety` asks, and its `// SAFETY:`
 says why each obligation holds. `Send` says that moving the value to another
-thread is sound, `Sync` that sharing `&self` across threads is; a raw pointer or
-`NonNull` field takes both away, and an impl gives them back only with the
-bounds the fields would have needed: a type that owns `T`s is `Send` only where
-`T: Send`, and `Sync` only where `T: Sync`. A type that owns `T` through a
-pointer holds `PhantomData<T>`, so drop check and the auto traits see the `T`s
-it owns.
+thread is sound, and `Sync` that sharing `&self` across threads is; a raw
+pointer or `NonNull` field takes both away, an `UnsafeCell` takes `Sync`, and an
+impl gives them back only with the bounds its access needs. A type that owns its
+`T`s alone is `Send` only where `T: Send`, and a handle that shares them, as
+`Arc` does, only where `T: Send + Sync`, since each thread that holds one
+reaches the same `T`. It is `Sync` where `T: Sync` if `&self` hands out `&T`,
+where `T: Send` if `&self` hands out a `&mut T` or moves a `T` in or out, as a
+lock does, and where both hold if it does both, as `RwLock` and `OnceLock` do;
+`atomics.md` shows the lock. A type that owns `T` through a pointer holds
+`PhantomData<T>`, so drop check and the auto traits see the `T`s it owns.
 
 ```rust
 extern crate alloc;
@@ -545,8 +558,8 @@ The auto traits follow a type's fields, so a type whose meaning ties it to one
 thread, a slot in a `thread_local!` table or a handle bound to the thread that
 made it, is `Send` and `Sync` unless a field says otherwise. A marker says so,
 where the compiler holds it: `PhantomData<*const ()>` takes both away, and
-`PhantomData<Cell<()>>` takes `Sync` alone. `impl !Sync` is nightly's
-`negative_impls`, which a crate built on stable cannot write.
+`PhantomData<Cell<()>>` takes `Sync` alone. `impl !Sync` needs nightly's
+`negative_impls`, so a crate that builds on stable writes the marker.
 
 ```rust
 // Bad: a doc that says "one thread only" binds no caller; this is `Send` and `Sync`.
@@ -584,7 +597,7 @@ impl Brush {
 Held by the compiler, which refuses to send or share the type, `E0277`, and by a
 compile-fail test that pins it, as `verifying.md` shows.
 
-## `debug_assert!` Checks a Caller's Contract, and Proves Nothing
+## `debug_assert!` Checks the Contract of an `unsafe fn`, and Proves Nothing
 
 An `unsafe fn`'s caller keeps its contract; a `debug_assert!` of the part a
 check can see catches a broken one in the tests, at no cost to a release build.
@@ -679,5 +692,121 @@ pub fn repeat(tile: &Tile, times: usize) -> Vec<Tile> {
 }
 ```
 
+Where a run is built in place and no length counts it, a guard does: it drops
+what the build wrote if the build stops early, and is told to drop nothing once
+the run is whole.
+
+```rust
+use core::mem::MaybeUninit;
+
+#[derive(Debug, Clone)]
+pub struct Tile {
+    pub label: String,
+}
+
+struct Written<'a> {
+    row: &'a mut [MaybeUninit<Tile>],
+    // INVARIANT: the first `written` slots of `row` hold tiles that nothing else drops.
+    written: usize,
+}
+
+impl Drop for Written<'_> {
+    fn drop(&mut self) {
+        for slot in self.row.iter_mut().take(self.written) {
+            // SAFETY: by the field INVARIANT the slot holds a tile that nothing else drops.
+            #[expect(unsafe_code, reason = "drops the tiles a stopped build wrote")]
+            unsafe {
+                slot.assume_init_drop();
+            }
+        }
+    }
+}
+
+#[must_use]
+pub fn fill(tile: &Tile) -> [Tile; 4] {
+    let mut row = [const { MaybeUninit::<Tile>::uninit() }; 4];
+    let mut guard = Written { row: &mut row, written: 0 };
+    while let Some(slot) = guard.row.get_mut(guard.written) {
+        slot.write(tile.clone());
+        guard.written = guard.written.wrapping_add(1);
+    }
+    // The row owns its tiles from here, so the guard drops none.
+    guard.written = 0;
+    drop(guard);
+    // SAFETY: the loop wrote every slot before the guard let go of them.
+    #[expect(unsafe_code, reason = "a row whose every slot the loop above wrote")]
+    unsafe {
+        MaybeUninit::<[Tile; 4]>::from(row).assume_init()
+    }
+}
+```
+
 Held by `clippy::uninit_vec`, which refuses a `set_len` straight after a
 `with_capacity` or a `reserve`, and by review.
+
+## A Value Moved Out with `ptr::read` Is Not Dropped Again Where It Lay
+
+`ptr::read` copies a value's bytes out and leaves them where they were, so two
+places now own the value, and the second drop frees what the first freed. A
+field moved out of a type that has its own `Drop`, which the compiler refuses to
+move from, is read out of a `ManuallyDrop` of the whole, which never drops;
+where the field has a cheap empty value, `mem::take` does it with no unsafe.
+
+```rust
+use core::ptr;
+
+#[derive(Debug)]
+pub struct Draft {
+    squares: Vec<u8>,
+}
+
+impl Drop for Draft {
+    fn drop(&mut self) {
+        self.squares.fill(0);
+    }
+}
+
+impl Draft {
+    #[must_use]
+    pub fn commit(self) -> Vec<u8> {
+        // Bad: `self` still drops its squares at the end of this call, and the caller drops them
+        // again.
+        // SAFETY: `squares` is a live field of `self`.
+        #[expect(unsafe_code, reason = "the squares moved out of a draft with its own `Drop`")]
+        unsafe {
+            ptr::read(&raw const self.squares)
+        }
+    }
+}
+```
+
+```rust
+use core::mem::ManuallyDrop;
+use core::ptr;
+
+#[derive(Debug)]
+pub struct Draft {
+    squares: Vec<u8>,
+}
+
+impl Drop for Draft {
+    fn drop(&mut self) {
+        self.squares.fill(0);
+    }
+}
+
+impl Draft {
+    #[must_use]
+    pub fn commit(self) -> Vec<u8> {
+        let this = ManuallyDrop::new(self);
+        // SAFETY: `this` is never dropped, so the squares read out here have one owner, the
+        // caller.
+        #[expect(unsafe_code, reason = "the squares moved out of a draft with its own `Drop`")]
+        unsafe {
+            ptr::read(&raw const this.squares)
+        }
+    }
+}
+```
+
+Held by review.

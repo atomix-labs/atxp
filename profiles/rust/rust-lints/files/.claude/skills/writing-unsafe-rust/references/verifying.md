@@ -244,9 +244,9 @@ loom = "0.7"
 unexpected_cfgs = { level = "warn", check-cfg = ["cfg(loom)"] }
 ```
 
-A crate with a model is named, `-p`, so its models run, and the cfg passes
-through `--config`, which adds to the rustflags Cargo's configuration sets,
-where `RUSTFLAGS` replaces them. Either reaches every crate the build compiles,
+Name the crate with `-p`, so its models run, and pass the cfg through
+`--config`, which adds to the rustflags Cargo's configuration sets, where
+`RUSTFLAGS` replaces them. Either reaches every crate the build compiles,
 dependencies included, so a dependency that reads `cfg(loom)` itself builds its
 loom variant too:
 
@@ -258,6 +258,9 @@ Loom does not model everything, and a model is written within what it does:
 
 - It treats a `SeqCst` access as `AcqRel`, and models a `SeqCst` fence, so a
   protocol that needs `SeqCst` uses the fence.
+- It sees only its own atomics and cells: a plain field a protocol publishes is
+  invisible to it, so the data it guards sits in its `UnsafeCell`, or a test of
+  it runs under a checker that sees memory.
 - It does not explore every reordering `Relaxed` allows within a thread, such as
   a load buffered past a later store, so a model that passes is not a proof of a
   `Relaxed` protocol.

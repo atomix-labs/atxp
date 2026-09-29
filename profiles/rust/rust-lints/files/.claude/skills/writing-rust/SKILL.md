@@ -32,7 +32,8 @@ Under `strict`, real code also documents every item.
    broken invariant**, since a library cannot know whether its caller can
    recover. A function that panics carries `#[track_caller]`, a `# Panics`
    section and an `expect` whose message states the invariant; a `debug_assert!`
-   checks what the type's own code keeps, never a caller's input.
+   checks what the type's own code keeps, or an `unsafe fn`'s contract, never a
+   safe function's input.
 2. **One private `errors.rs` a crate, its types re-exported flat from
    `lib.rs`**, so one file says every way the crate refuses. A public module
    with refusals of its own has its own.
