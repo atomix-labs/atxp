@@ -199,17 +199,32 @@ rest as optional requirements its features turn on.
 
 A skill ships with the profile whose concern it serves, in
 `.claude/skills/<skill>/`, each of its files gated by that profile's `agents`
-feature. `check-devset-collection` holds each to its form. A guide teaches while
-the agent works, and is named for the task, as a gerund, `writing-rustdoc`; a
-pass runs forked on finished work and reports, and is named for its command, an
-imperative, `review-rust`. Its `SKILL.md` names it the same in its front matter,
-which holds `name` and `description`, and for a pass also `argument-hint`,
-`context: fork`, `agent`, `model: inherit` and `background: false`; the
-description starts "Use when", under 1024 characters, and the body stays within
-18,000. Every file of the skill is an entry of its profile, and the `SKILL.md`
-names each reference. A recipe or another profile's skill it names sits under a
-condition on the profile that provides it, and a Rust block is `rust` or
-`rust,compile_fail`.
+feature. It is a guide, which teaches while the agent works, or a pass, which
+runs forked on finished work and reports. `check-devset-collection` holds each
+to its form:
+
+- **Front matter.** A guide's holds `name` and `description` alone, the name its
+  directory's and a gerund phrase for the task, `writing-rustdoc`. A pass's also
+  holds `argument-hint`, `context: fork`, `agent`, which is `Explore` or
+  `general-purpose`, `model: inherit` and `background: false`, and may hold
+  `allowed-tools`; its name is an imperative for its command, `review-rust`. A
+  description starts "Use when", under 1024 characters.
+- **The body** stays within 18,000 characters.
+- **Files.** Every file under the skill's directory is an entry of its profile;
+  the `SKILL.md` names each reference, by a link or in code; and each relative
+  link outside code leads to a file the profile ships, so a skill of another
+  profile is named, never linked.
+- **Gates**, in a skill's files, AGENTS.md and CLAUDE.md. A recipe of a profile
+  this one does not require sits under a condition on the profile that defines
+  it: `"<profile>" in devset.profiles`, or a `devset.layers` variable for it. A
+  skill of another profile sits under the feature that ships it, through a
+  `devset.layers` variable; a skill of the same profile, under its feature
+  through `devset.features`, unless the file ships with that feature too. Only a
+  file marked `template = true` has conditions, and a condition with `or` or
+  `not`, or an `else`, holds nothing it names.
+- **Fences.** A Rust block is `rust` or `rust,compile_fail`, a
+  `rust,compile_fail` block opens `// fails: <lint or error code>`, and no Rust
+  block holds template syntax.
 
 What the check cannot hold a skill to, its author does:
 
@@ -219,9 +234,7 @@ What the check cannot hold a skill to, its author does:
 - Its body is about 150 lines at most: the rules first, then the steps, then the
   checks, then what not to do. Longer material goes in `references/`, one level
   deep, each named where the body needs it.
-- It names a recipe only where the profile that provides it is applied, so a
-  skill that names another profile's recipe is a template; anything that is
-  itself template language sits inside `{% raw %}`.
+- In a template, template language meant as text sits inside `{% raw %}`.
 - It is written against what an agent does without it. An agent does a task the
   skill is for, in a repository the bundle writes, first without the skill and
   then with it; the skill says what the first run got wrong, and its examples

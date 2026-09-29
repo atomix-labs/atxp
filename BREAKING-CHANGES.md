@@ -60,12 +60,13 @@ phrase, and `description` alone. A pass, `context: fork`, also holds
 imperative such as `review-rust`. A description starts "Use when", and a body
 stays within 18,000 characters. Every file under a skill's directory is an entry
 of its profile, the SKILL.md names each of its references, by a link or in code,
-and a relative link leads only to a file the profile ships. A recipe or skill
-that a skill, AGENTS.md or CLAUDE.md names sits under a condition on the profile
-that provides it, unless the profile requires that one; a skill ships with a
-feature, so the condition is on the feature. A Rust block is `rust` or
-`rust,compile_fail`, a failing one opens `// fails: <lint or error code>`, and
-none holds template syntax. atxp's own skills keep the form already.
+and a relative link leads only to a file the profile ships. A recipe that a
+skill, AGENTS.md or CLAUDE.md names sits under a condition on the profile that
+defines it, unless the profile requires that one; a skill it names, under the
+feature that ships it, through `devset.layers` for another profile's and
+`devset.features` for its own. Only a template's conditions count. A Rust block
+is `rust` or `rust,compile_fail`, a failing one opens `// fails: <lint or error
+code>`, and none holds template syntax. atxp's own skills keep the form already.
 
 **What to do.** In a collection of your own, run `just check-devset-collection`
 and fix what it names:

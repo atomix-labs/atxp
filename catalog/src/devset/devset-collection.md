@@ -42,11 +42,14 @@ with `collection_description`.
   hold `allowed-tools`, its name an imperative. The description starts "Use
   when", under 1024 characters, and the body stays within 18,000. Every file of
   a skill is an entry of the profile, its SKILL.md names each reference, and a
-  relative link leads to a file the profile ships. A recipe or skill that a
-  skill, AGENTS.md or CLAUDE.md names is one the collection has, under a
-  condition on the profile or the feature that provides it, unless the profile
-  requires that one. A Rust block is `rust` or `rust,compile_fail`, a failing
-  one says what it fails with, and none holds template syntax.
+  relative link leads to a file the profile ships. A recipe that a skill,
+  AGENTS.md or CLAUDE.md names is one the collection defines, and sits under a
+  condition on the profile that defines it, unless the profile requires that
+  one; a skill it names sits under the feature that ships it, through
+  `devset.layers` for another profile's and `devset.features` for its own. Only
+  a template's conditions count. A Rust block is `rust` or `rust,compile_fail`,
+  a `rust,compile_fail` block opens `// fails: <lint or error code>`, and none
+  holds template syntax.
 - `just test-devset-collection` runs the suite, with the devset that
   [`devset`](devset.md) pins. Every profile alone, with its default features and
   with every feature, applies without drift. Then on each fixture in
