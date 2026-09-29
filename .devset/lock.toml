@@ -30,7 +30,7 @@ path = "profiles"
 
 [[profiles]]
 name = "just"
-digest = "8b67af6f63e8b75b0cfaf62c88408acbcd091a2d8b8b57d095e11e35edb95f54"
+digest = "7b3687051e2c7037f0a19201d20e343d995e51114cc5bea4843fa34fd762f703"
 
 [profiles.source]
 path = "profiles"
@@ -44,7 +44,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-automation"
-digest = "dbbaf8f427f9adb5a4ca5cac0b8c0334ee085fec9e593455b43179e67c91b486"
+digest = "ab25bf0bd93f88ff58a746c145b080605c01c771f9bf23cafc34aa0aa13199b6"
 
 [profiles.source]
 path = "profiles"
@@ -79,7 +79,14 @@ merge = ["target"]
 
 [[profiles]]
 name = "github-dependabot"
-digest = "eeb8a388383dcd88a0b29b8516a07bbed4ee955476f69b4bf19c5b5340556722"
+digest = "df32896fabb84915f67f384a6653c4bce6c863ccceb70c977db0aacf6ee2ff3e"
+
+[profiles.source]
+path = "profiles"
+
+[[profiles]]
+name = "github-labels"
+digest = "7d2b5a51d9c59ef9a78730211a44c3cad17dfb6aaf9a54ee3ed75b69d0fcf63a"
 
 [profiles.source]
 path = "profiles"
@@ -194,7 +201,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "1d646b0551786ca81f7ebde535a91d9f79f810e5bd918ef50c4189520603338f"
+digest = "786c781fd1c06b74c253bc445113badf96352d7ff705a68f59a828bca7d84bdf"
 
 [profiles.source]
 path = "profiles"
@@ -231,6 +238,17 @@ agents = ["target"]
 pins = ["target"]
 schemas = ["default"]
 site = ["target"]
+
+[[profiles]]
+name = "project"
+digest = "4ac9390027cbc99f057440f9623aed4add00ece1327ccf47564195a933af673b"
+
+[profiles.source]
+path = "profiles"
+
+[profiles.features]
+conduct = ["target"]
+support = ["target"]
 
 [[profiles]]
 name = "agents"

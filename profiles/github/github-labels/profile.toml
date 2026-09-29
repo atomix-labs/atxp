@@ -1,0 +1,25 @@
+[profile]
+name        = "github-labels"
+description = "Labels as code: a few, kept on GitHub from one file, and set on pull requests from their files and title"
+devset      = ">=0.5.0"
+
+[requires]
+just = {}
+
+[vars.repository]
+prompt = "The GitHub repository, owner/name"
+
+[files.".github/labels.toml"]
+scope  = "keys"
+policy = "merge"
+
+[files.".github/workflows/labels.yml"]
+
+[files.".just/github-labels.just"]
+
+[files.".just/github-labels/labels.py"]
+
+[files."CONTRIBUTING.md"]
+scope    = "block"
+template = true
+when     = { exists = ["CONTRIBUTING.md"] }

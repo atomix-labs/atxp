@@ -8,9 +8,9 @@
 const fs = require("fs");
 
 const DEFAULTS = {
-  broken: { labels: ["bug"] },
-  chore: { labels: ["dependencies"] },
-  docs: { labels: ["documentation"] },
+  broken: { labels: ["automation"] },
+  chore: { labels: ["dependencies", "automation"] },
+  docs: { labels: ["automation"] },
   assignees: [],
 };
 

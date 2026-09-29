@@ -120,8 +120,8 @@ exact = "badcb39b58a8dae35da9f2a8daa9f11ff3e1a78db95f9571ca76df5626d682cc"
 canonical = "badcb39b58a8dae35da9f2a8daa9f11ff3e1a78db95f9571ca76df5626d682cc"
 
 [files.".github/dependabot.yml"]
-exact = "631e5ee108f3631eb853b1d6845020dad44d0ee3ab9bba162f8c23344de38058"
-canonical = "631e5ee108f3631eb853b1d6845020dad44d0ee3ab9bba162f8c23344de38058"
+exact = "5e49639373b3eed0c95187ce66f6d71e1bce0e6b69771467958487002c263d4c"
+canonical = "5e49639373b3eed0c95187ce66f6d71e1bce0e6b69771467958487002c263d4c"
 policy = "merge"
 
 [files.".github/release-notes.md"]
@@ -130,8 +130,8 @@ canonical = "a38a61a3d1c789c6bfdd48d6335f091b2893b618b4d677c4aabb18b0184b9a50"
 policy = "once"
 
 [files.".github/scripts/automation.js"]
-exact = "7350adf2485726a4425def98ea49ad525c4ee1d9f304defcf346d84f21416c30"
-canonical = "7350adf2485726a4425def98ea49ad525c4ee1d9f304defcf346d84f21416c30"
+exact = "2b6176f20f7aea656ac88f194fef2a83047f7cd7ad76bb5d8313fe1b8d876f73"
+canonical = "2b6176f20f7aea656ac88f194fef2a83047f7cd7ad76bb5d8313fe1b8d876f73"
 
 [files.".github/scripts/bump.js"]
 exact = "18cbf82f94e1feb6f81afd1b10a16712449cb4ffaa830ce0a8cc9477023f33be"
@@ -156,6 +156,10 @@ canonical = "a0a3ef511b25ec1ccb0019bf0b6f6c6be9d0a00287e73fa15c80a4cafd2dd47a"
 [files.".github/workflows/demo.yml"]
 exact = "f8b4198d005b9b9a01b23223966e151180a3aa3e2c5324fa2b2dbd9f00dc640d"
 canonical = "f8b4198d005b9b9a01b23223966e151180a3aa3e2c5324fa2b2dbd9f00dc640d"
+
+[files.".github/workflows/labels.yml"]
+exact = "3b09611ae913272ce0f0efd481b67c53106acb54fc0f0d6b1fa1d2536da83351"
+canonical = "3b09611ae913272ce0f0efd481b67c53106acb54fc0f0d6b1fa1d2536da83351"
 
 [files.".github/workflows/release.yml"]
 exact = "5df1e6f56c780f23df398117b67444159a38e8d4db39f1abe35720f810fe12bd"
@@ -213,13 +217,21 @@ canonical = "0393ca20a05e6a7f6089b05a892c62d464ba40579649faa0f99ee6560eef4a59"
 exact = "60d03daee633864b3a0a620178bd99d2c68bcc5613856a362a1e5a75ae662dc5"
 canonical = "60d03daee633864b3a0a620178bd99d2c68bcc5613856a362a1e5a75ae662dc5"
 
+[files.".just/github-labels.just"]
+exact = "f6a3d38d8e54a4c0fbed7e55e21b35cea8a779667ae0dc3a8df903f6489f7688"
+canonical = "f6a3d38d8e54a4c0fbed7e55e21b35cea8a779667ae0dc3a8df903f6489f7688"
+
+[files.".just/github-labels/labels.py"]
+exact = "f9dee32782301f360249102f64d486b7852059fc9e0e4afb7d4db5fc7dde4265"
+canonical = "f9dee32782301f360249102f64d486b7852059fc9e0e4afb7d4db5fc7dde4265"
+
 [files.".just/github-release.just"]
 exact = "3afe236f858c969192126d46394d036089e89309edd77140abe6a1a914e43d8a"
 canonical = "3afe236f858c969192126d46394d036089e89309edd77140abe6a1a914e43d8a"
 
 [files.".just/github-release/notes.py"]
-exact = "61f1f9a755f9c573ada8866033ed3c1298e48d748f754b86d4452446caed80a3"
-canonical = "61f1f9a755f9c573ada8866033ed3c1298e48d748f754b86d4452446caed80a3"
+exact = "865a90d1ed704c6d7eba9b32a4cafd9d6414a94fbdbd61af569356502fa82dd9"
+canonical = "865a90d1ed704c6d7eba9b32a4cafd9d6414a94fbdbd61af569356502fa82dd9"
 
 [files.".just/github-workflow-lint.just"]
 exact = "0c2d08e020c16a193f7536edb88e8d3505a204aec849a061573d30d4902209cf"
@@ -268,6 +280,16 @@ canonical = "93b6fa782273ac07d7e3f53bf7da277b8c2166e8610adf6f81ac87ed67259520"
 [files."CLAUDE.md"]
 exact = "d2333294b52059b6353e1c57c7695fff8833504c99c6257bd2adc8549db9c9e9"
 canonical = "d2333294b52059b6353e1c57c7695fff8833504c99c6257bd2adc8549db9c9e9"
+policy = "once"
+
+[files."CODE_OF_CONDUCT.md"]
+exact = "b66ff309de0183cf1568b81a61c1f09e18a7a8e176214b9e6dec23dfdf3e1043"
+canonical = "b66ff309de0183cf1568b81a61c1f09e18a7a8e176214b9e6dec23dfdf3e1043"
+policy = "once"
+
+[files."SUPPORT.md"]
+exact = "b288ee059dca07006e3583cf0978e9d6a62db30ad95639eb5bd9dc84c3168f1e"
+canonical = "b288ee059dca07006e3583cf0978e9d6a62db30ad95639eb5bd9dc84c3168f1e"
 policy = "once"
 
 [files."catalog/book.toml"]
@@ -387,8 +409,14 @@ canonical = "101c66ee41425f624b75e0d8e0417a28c93be54fef7bd97514a51195d077ddf4"
 
 [parts.".github/automation.json".github-automation]
 scope = "keys"
-exact = "ec5e0df8a74ad9ad7f204e8f7b98ee27cb6af8f22dd73904ef68c33d7de062e9"
-canonical = "ec5e0df8a74ad9ad7f204e8f7b98ee27cb6af8f22dd73904ef68c33d7de062e9"
+exact = "952da396be893c11ec9bf64558fb4c024331021c8d447a46e1763cab03fc0697"
+canonical = "952da396be893c11ec9bf64558fb4c024331021c8d447a46e1763cab03fc0697"
+policy = "merge"
+
+[parts.".github/labels.toml".github-labels]
+scope = "keys"
+exact = "f7611bbea3230467eef827b7e9584943baf3508750625cfe8082d762836a7529"
+canonical = "f7611bbea3230467eef827b7e9584943baf3508750625cfe8082d762836a7529"
 policy = "merge"
 
 [parts.".gitignore".devset-collection]
@@ -438,6 +466,11 @@ scope = "block"
 exact = "ddf288444f8d4a664c49fcdd34889f82cd5ba9897cfe00c0522db656bf7da0f8"
 canonical = "8370f539a11c7b96fad133ea2d16c668b014b3312c0c83eb4a539b356f697362"
 
+[parts."CONTRIBUTING.md".github-labels]
+scope = "block"
+exact = "f9cdda527b877a1f2a24c0951d071a33d005be3a8080c4d7d4a57ec071d9d39e"
+canonical = "b8137d01b1e12c9f95d2e32c08b92444ab31a160a61ac4f9b14bf1e0cb86d407"
+
 [parts."CONTRIBUTING.md".setup]
 scope = "block"
 exact = "ba276f37c14c8cb649b2672464e29af5d192680512972654ef440661c65d1f10"
@@ -469,8 +502,8 @@ policy = "merge"
 
 [parts.justfile.just]
 scope = "block"
-exact = "97412a1fd3fe4123c3aa803d5aa5a515d786ee96f3b11fc5010e0aa7c0457148"
-canonical = "6a6dbfd1b50f49a626a2c5fc8f691d344326257035923cb8389dd499a6c8bde1"
+exact = "77a4c6ebf5a7ee64e537728474e5f3822f896d15835ef8e9fca9879e53881297"
+canonical = "cf3d9e030afc40cd36c64eb13e00e3dbb92e794510b605ae9f81b3d6b30a594a"
 
 [parts."ruff.toml".python]
 scope = "keys"

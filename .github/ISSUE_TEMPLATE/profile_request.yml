@@ -1,6 +1,6 @@
 name: Profile request
 description: A tool or a concern a profile should own
-labels: [enhancement]
+labels: [triage]
 type: Feature
 body:
   - type: textarea

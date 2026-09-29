@@ -1,6 +1,6 @@
 name: Feature request
 description: Something the project should do
-labels: [enhancement]
+labels: [triage]
 type: Feature
 body:
   - type: textarea

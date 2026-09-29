@@ -6,11 +6,16 @@ and pull request the automation opens carries its kind's labels and type and is
 assigned to `assignees`, who are told in a comment what it holds and what is
 theirs to do:
 
-| Kind     | Labels          | Type | Opened for                                  |
-| -------- | --------------- | ---- | ------------------------------------------- |
-| `broken` | `bug`           | Bug  | a failing or stalled workflow, a red bump   |
-| `chore`  | `dependencies`  | Task | the weekly bump                             |
-| `docs`   | `documentation` | Task | the demo, recorded again at a release's tag |
+| Kind     | Labels                       | Type | Opened for                                  |
+| -------- | ---------------------------- | ---- | ------------------------------------------- |
+| `broken` | `automation`                 | Bug  | a failing or stalled workflow, a red bump   |
+| `chore`  | `dependencies`, `automation` | Task | the weekly bump                             |
+| `docs`   | `automation`                 | Task | the demo, recorded again at a release's tag |
+
+[`github-labels`](../../github/github-labels/README.md) keeps these labels on
+GitHub, and checks that each kind names one it holds. An open issue is found by
+its kind's labels and its title, so a repository that changes a kind's labels
+closes that kind's open issues first.
 
 The bump goes as far as `bump_mode` says, a branch or a pull request; each
 automation merges its own pull requests only where the repository turns on its

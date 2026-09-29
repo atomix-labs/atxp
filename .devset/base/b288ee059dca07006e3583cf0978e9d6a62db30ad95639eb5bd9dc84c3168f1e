@@ -1,0 +1,9 @@
+# Support
+
+Where to take what you have, so it reaches the right place:
+
+- **A bug, or a feature to request:**
+  [an issue](https://github.com/atomix-labs/atxp/issues/new/choose), whose form
+  asks for what a maintainer needs.
+- **A vulnerability:** never an issue.
+  [Report it privately](https://github.com/atomix-labs/atxp/security/advisories/new).

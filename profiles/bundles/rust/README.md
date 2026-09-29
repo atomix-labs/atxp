@@ -11,15 +11,15 @@ bump.
 A bundle owns nothing itself: each profile it requires is a layer of its own,
 and its features describe the kind of project:
 
-| Feature    | Adds                                                                                                             |
-| ---------- | ---------------------------------------------------------------------------------------------------------------- |
-| `docs`     | a book, with [`mdbook`](../../docs/mdbook/README.md)                                                             |
-| `agents`   | the agent layer, with [`agents`](../../agents/agents/README.md), and the skill of every profile applied          |
-| `publish`  | crates.io, with [`cargo-publish`](../../cargo/cargo-publish/README.md), the release, and the project's documents |
-| `binaries` | release archives, with [`cargo-binaries`](../../cargo/cargo-binaries/README.md)                                  |
-| `oss`      | an open-source project's documents with its code of conduct, and the issue and pull request templates            |
-| `nightly`  | nightly's own lints, cargo-hack's feature matrix, and the nightly run                                            |
-| `strict`   | the house policy: cargo-deny's bans, the full lint wall, the doc lint, `panic = "abort"`                         |
+| Feature    | Adds                                                                                                                   |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `docs`     | a book, with [`mdbook`](../../docs/mdbook/README.md)                                                                   |
+| `agents`   | the agent layer, with [`agents`](../../agents/agents/README.md), and the skill of every profile applied                |
+| `publish`  | crates.io, with [`cargo-publish`](../../cargo/cargo-publish/README.md), the release, and the project's documents       |
+| `binaries` | release archives, with [`cargo-binaries`](../../cargo/cargo-binaries/README.md)                                        |
+| `oss`      | an open-source project's documents with its code of conduct and support page, and the issue and pull request templates |
+| `nightly`  | nightly's own lints, cargo-hack's feature matrix, and the nightly run                                                  |
+| `strict`   | the house policy: cargo-deny's bans, the full lint wall, the doc lint, `panic = "abort"`                               |
 
 None is on by default. Outside it are
 [`rust-msrv`](../../rust/rust-msrv/README.md), for crates that build on stable;
@@ -38,7 +38,7 @@ None is on by default. Outside it are
 | `docs`     |         | `dep:mdbook`                                                                                                                                                                         |
 | `publish`  |         | `dep:cargo-publish`, `dep:github-release`, `dep:project`                                                                                                                             |
 | `binaries` |         | `dep:cargo-binaries`, `dep:github-release`                                                                                                                                           |
-| `oss`      |         | `dep:project`, `project/conduct`, `dep:github-templates`                                                                                                                             |
+| `oss`      |         | `dep:project`, `project/conduct`, `project/support`, `dep:github-templates`                                                                                                          |
 | `nightly`  |         | `rust-lints/nightly`, `dep:cargo-hack`, `dep:github-nightly`                                                                                                                         |
 | `strict`   |         | `cargo-deny/strict`, `rust-lints/strict`, `cargo-profiles/strict`, `rust-doc/strict`                                                                                                 |
 | `agents`   |         | `dep:agents`, `cargo-deny/agents`, `cargo-manifest/agents`, `devset/agents`, `git-commits/agents`, `github-ci/agents`, `rust-doc/agents`, `github-release?/agents`, `mdbook?/agents` |
@@ -65,6 +65,7 @@ None is on by default. Outside it are
 - [`github-bump`](../../github/github-bump/README.md)
 - [`github-watch`](../../github/github-watch/README.md)
 - [`github-dependabot`](../../github/github-dependabot/README.md)
+- [`github-labels`](../../github/github-labels/README.md)
 - [`github-workflow-lint`](../../github/github-workflow-lint/README.md)
 - [`markdown`](../../lang/markdown/README.md)
 - [`toml`](../../lang/toml/README.md)

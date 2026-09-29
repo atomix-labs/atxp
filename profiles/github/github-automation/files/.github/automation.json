@@ -2,9 +2,9 @@
 {%- set bump = devset.layers | selectattr("profile", "equalto", "github-bump") | map(attribute="features") | first | default([]) -%}
 {%- set demo = devset.layers | selectattr("profile", "equalto", "vhs") | map(attribute="features") | first | default([]) -%}
 {
-  "broken": { "labels": ["bug"], "type": "Bug" },
-  "chore": { "labels": ["dependencies"], "type": "Task" },
-  "docs": { "labels": ["documentation"], "type": "Task" },
+  "broken": { "labels": ["automation"], "type": "Bug" },
+  "chore": { "labels": ["dependencies", "automation"], "type": "Task" },
+  "docs": { "labels": ["automation"], "type": "Task" },
   "assignees": [{% if logins %}"{{ logins | join('", "') }}"{% endif %}],
   "bump": { "mode": "{{ bump_mode }}"{% if "merge" in bump %}, "merge": true{% endif %} },
 {%- if "merge" in demo %}

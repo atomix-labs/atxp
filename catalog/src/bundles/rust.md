@@ -20,15 +20,15 @@ bump.
 A bundle owns nothing itself: each profile it requires is a layer of its own,
 and its features describe the kind of project:
 
-| Feature    | Adds                                                                                                   |
-| ---------- | ------------------------------------------------------------------------------------------------------ |
-| `docs`     | a book, with [`mdbook`](../docs/mdbook.md)                                                             |
-| `agents`   | the agent layer, with [`agents`](../agents/agents.md), and the skill of every profile applied          |
-| `publish`  | crates.io, with [`cargo-publish`](../cargo/cargo-publish.md), the release, and the project's documents |
-| `binaries` | release archives, with [`cargo-binaries`](../cargo/cargo-binaries.md)                                  |
-| `oss`      | an open-source project's documents with its code of conduct, and the issue and pull request templates  |
-| `nightly`  | nightly's own lints, cargo-hack's feature matrix, and the nightly run                                  |
-| `strict`   | the house policy: cargo-deny's bans, the full lint wall, the doc lint, `panic = "abort"`               |
+| Feature    | Adds                                                                                                                   |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `docs`     | a book, with [`mdbook`](../docs/mdbook.md)                                                                             |
+| `agents`   | the agent layer, with [`agents`](../agents/agents.md), and the skill of every profile applied                          |
+| `publish`  | crates.io, with [`cargo-publish`](../cargo/cargo-publish.md), the release, and the project's documents                 |
+| `binaries` | release archives, with [`cargo-binaries`](../cargo/cargo-binaries.md)                                                  |
+| `oss`      | an open-source project's documents with its code of conduct and support page, and the issue and pull request templates |
+| `nightly`  | nightly's own lints, cargo-hack's feature matrix, and the nightly run                                                  |
+| `strict`   | the house policy: cargo-deny's bans, the full lint wall, the doc lint, `panic = "abort"`                               |
 
 None is on by default. Outside it are [`rust-msrv`](../rust/rust-msrv.md), for
 crates that build on stable; [`python`](../lang/python.md),
@@ -43,7 +43,7 @@ crates that build on stable; [`python`](../lang/python.md),
 | `docs`     |         | `dep:mdbook`                                                                                                                                                                         |
 | `publish`  |         | `dep:cargo-publish`, `dep:github-release`, `dep:project`                                                                                                                             |
 | `binaries` |         | `dep:cargo-binaries`, `dep:github-release`                                                                                                                                           |
-| `oss`      |         | `dep:project`, `project/conduct`, `dep:github-templates`                                                                                                                             |
+| `oss`      |         | `dep:project`, `project/conduct`, `project/support`, `dep:github-templates`                                                                                                          |
 | `nightly`  |         | `rust-lints/nightly`, `dep:cargo-hack`, `dep:github-nightly`                                                                                                                         |
 | `strict`   |         | `cargo-deny/strict`, `rust-lints/strict`, `cargo-profiles/strict`, `rust-doc/strict`                                                                                                 |
 | `agents`   |         | `dep:agents`, `cargo-deny/agents`, `cargo-manifest/agents`, `devset/agents`, `git-commits/agents`, `github-ci/agents`, `rust-doc/agents`, `github-release?/agents`, `mdbook?/agents` |
@@ -70,6 +70,7 @@ crates that build on stable; [`python`](../lang/python.md),
 - [`github-bump`](../github/github-bump.md)
 - [`github-watch`](../github/github-watch.md)
 - [`github-dependabot`](../github/github-dependabot.md)
+- [`github-labels`](../github/github-labels.md)
 - [`github-workflow-lint`](../github/github-workflow-lint.md)
 - [`markdown`](../lang/markdown.md)
 - [`toml`](../lang/toml.md)
@@ -125,6 +126,7 @@ Every file its profiles may write, each under the gates its entry sets:
 | `.github/actionlint.yaml`                                               | [`github-workflow-lint`](../github/github-workflow-lint.md)                                                                                                                                                                                              |
 | `.github/automation.json`                                               | [`mdbook`](../docs/mdbook.md), [`github-automation`](../github/github-automation.md)                                                                                                                                                                     |
 | `.github/dependabot.yml`                                                | [`github-dependabot`](../github/github-dependabot.md)                                                                                                                                                                                                    |
+| `.github/labels.toml`                                                   | [`github-labels`](../github/github-labels.md)                                                                                                                                                                                                            |
 | `.github/pull_request_template.md`                                      | [`github-templates`](../github/github-templates.md)                                                                                                                                                                                                      |
 | `.github/release-notes.md`                                              | [`github-release`](../github/github-release.md)                                                                                                                                                                                                          |
 | `.github/scripts/automation.js`                                         | [`github-automation`](../github/github-automation.md)                                                                                                                                                                                                    |
@@ -132,6 +134,7 @@ Every file its profiles may write, each under the gates its entry sets:
 | `.github/scripts/watch.js`                                              | [`github-watch`](../github/github-watch.md)                                                                                                                                                                                                              |
 | `.github/workflows/bump.yml`                                            | [`github-bump`](../github/github-bump.md)                                                                                                                                                                                                                |
 | `.github/workflows/check.yml`                                           | [`github-ci`](../github/github-ci.md)                                                                                                                                                                                                                    |
+| `.github/workflows/labels.yml`                                          | [`github-labels`](../github/github-labels.md)                                                                                                                                                                                                            |
 | `.github/workflows/nightly.yml`                                         | [`github-nightly`](../github/github-nightly.md)                                                                                                                                                                                                          |
 | `.github/workflows/release.yml`                                         | [`github-release`](../github/github-release.md)                                                                                                                                                                                                          |
 | `.github/workflows/title.yml`                                           | [`git-commits`](../git/git-commits.md)                                                                                                                                                                                                                   |
@@ -146,7 +149,7 @@ Every file its profiles may write, each under the gates its entry sets:
 | `CHANGELOG.md`                                                          | [`git-changelog`](../git/git-changelog.md)                                                                                                                                                                                                               |
 | `CLAUDE.md`                                                             | [`agents`](../agents/agents.md)                                                                                                                                                                                                                          |
 | `CODE_OF_CONDUCT.md`                                                    | [`project`](../project/project.md)                                                                                                                                                                                                                       |
-| `CONTRIBUTING.md`                                                       | [`git-commits`](../git/git-commits.md), [`setup`](../tooling/setup.md), [`project`](../project/project.md)                                                                                                                                               |
+| `CONTRIBUTING.md`                                                       | [`git-commits`](../git/git-commits.md), [`github-labels`](../github/github-labels.md), [`setup`](../tooling/setup.md), [`project`](../project/project.md)                                                                                                |
 | `Cargo.toml`                                                            | [`rust-lints`](../rust/rust-lints.md), [`cargo-workspace`](../cargo/cargo-workspace.md), [`cargo-profiles`](../cargo/cargo-profiles.md)                                                                                                                  |
 | `LICENSE`                                                               | [`project`](../project/project.md)                                                                                                                                                                                                                       |
 | `LICENSE-APACHE`                                                        | [`project`](../project/project.md)                                                                                                                                                                                                                       |
@@ -154,6 +157,7 @@ Every file its profiles may write, each under the gates its entry sets:
 | `README.md`                                                             | [`project`](../project/project.md)                                                                                                                                                                                                                       |
 | `RELEASE.md`                                                            | [`github-release`](../github/github-release.md)                                                                                                                                                                                                          |
 | `SECURITY.md`                                                           | [`project`](../project/project.md)                                                                                                                                                                                                                       |
+| `SUPPORT.md`                                                            | [`project`](../project/project.md)                                                                                                                                                                                                                       |
 | `cliff.toml`                                                            | [`git-changelog`](../git/git-changelog.md)                                                                                                                                                                                                               |
 | `clippy.toml`                                                           | [`rust-clippy`](../rust/rust-clippy.md)                                                                                                                                                                                                                  |
 | `committed.toml`                                                        | [`git-commits`](../git/git-commits.md)                                                                                                                                                                                                                   |

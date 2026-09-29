@@ -87,6 +87,31 @@ fails a build it passed; a higher minimum version of a tool. A breaking change
 also adds its entry to [BREAKING-CHANGES.md](BREAKING-CHANGES.md), under the
 release that will carry it.
 
+<!-- >>> devset: github-labels >>> -->
+
+## Labels
+
+An issue's kind is its type, Bug, Feature or Task, and a pull request's is its
+title's. Labels say the rest, and most are set for you:
+
+| Label              | Means                                       | Set by               |
+| ------------------ | ------------------------------------------- | -------------------- |
+| `triage`           | new, and yet to be looked at                | the issue forms      |
+| `waiting`          | on someone else: the reporter, or upstream  | a maintainer         |
+| `good first issue` | a small change, well described, to start on | a maintainer         |
+| `help wanted`      | accepted, and open to anyone                | a maintainer         |
+| `breaking`         | changes what users rely on                  | a title's `!`        |
+| `dependencies`     | moves a pinned tool, action or crate        | the bump, Dependabot |
+| `automation`       | opened by a workflow                        | the workflow         |
+| `area: <name>`     | where a change lands                        | the files it changes |
+
+A maintainer takes `triage` off once an issue is understood. See
+[what awaits triage](https://github.com/atomix-labs/atxp/issues?q=is%3Aopen+label%3Atriage),
+and the [good first issues](https://github.com/atomix-labs/atxp/contribute).
+`.github/labels.toml` holds the labels, and each area's paths.
+
+<!-- <<< devset: github-labels <<< -->
+
 ## Designing Profiles
 
 A profile is to a repository what a crate is to a program: a unit it adopts,

@@ -13,8 +13,14 @@ Group `project` · In [`rust`](../bundles/rust.md): with `publish` · In
 The documents every project keeps, each scaffolded where the repository has none
 and the repository's once written: a README, the licence, how to contribute, how
 to report a vulnerability, and how to move across a breaking change; with
-`conduct`, the Contributor Covenant 2.1, and with `architecture`, a page for how
-the project is built.
+`conduct`, the Contributor Covenant 2.1; with `support`, a SUPPORT.md, which
+GitHub links beside a new issue, saying where a question, a bug and a
+vulnerability go; and with `architecture`, a page for how the project is built.
+
+Conduct is reported to `conduct_contact`, an address; left empty, the code of
+conduct sends it privately through GitHub's Report content, which reaches the
+maintainers once the repository accepts reported content (Settings, Moderation
+options).
 
 Two of them keep a managed block:
 
@@ -55,7 +61,8 @@ contact is left for the project to fill in.
 | `LICENSE`             | whole | once   | template, feature `license`, `license` one of `MIT`, `Apache-2.0` |
 | `SECURITY.md`         | whole | once   | template, feature `security`                                      |
 | `BREAKING-CHANGES.md` | whole | once   | template, feature `breaking-changes`                              |
-| `CODE_OF_CONDUCT.md`  | whole | once   | feature `conduct`                                                 |
+| `CODE_OF_CONDUCT.md`  | whole | once   | template, feature `conduct`                                       |
+| `SUPPORT.md`          | whole | once   | template, feature `support`                                       |
 | `ARCHITECTURE.md`     | whole | once   | feature `architecture`                                            |
 
 ## Features
@@ -68,20 +75,22 @@ contact is left for the project to fill in.
 | `security`         | yes     |                                   |
 | `breaking-changes` | yes     | `git-changelog?/breaking-changes` |
 | `conduct`          |         |                                   |
+| `support`          |         |                                   |
 | `architecture`     |         |                                   |
 | `devset-badge`     |         |                                   |
 
 ## Variables
 
-| Variable      | Default             | Asks                                                                            |
-| ------------- | ------------------- | ------------------------------------------------------------------------------- |
-| `name`        | empty               | The project's name, and its first crate's; empty takes the directory's          |
-| `crate`       | empty               | The crate the crates.io and docs.rs badges show; empty takes the project's name |
-| `description` | empty               | One line: what the project is                                                   |
-| `logo`        | empty               | The README's logo: its path or URL before `-light.svg` or `-dark.svg`           |
-| `authors`     | empty               | Authors, comma-separated                                                        |
-| `license`     | `MIT OR Apache-2.0` | The licence, an SPDX expression                                                 |
-| `repository`  | none                | The GitHub repository, owner/name                                               |
+| Variable          | Default             | Asks                                                                                            |
+| ----------------- | ------------------- | ----------------------------------------------------------------------------------------------- |
+| `name`            | empty               | The project's name, and its first crate's; empty takes the directory's                          |
+| `crate`           | empty               | The crate the crates.io and docs.rs badges show; empty takes the project's name                 |
+| `description`     | empty               | One line: what the project is                                                                   |
+| `logo`            | empty               | The README's logo: its path or URL before `-light.svg` or `-dark.svg`                           |
+| `authors`         | empty               | Authors, comma-separated                                                                        |
+| `license`         | `MIT OR Apache-2.0` | The licence, an SPDX expression                                                                 |
+| `repository`      | none                | The GitHub repository, owner/name                                                               |
+| `conduct_contact` | empty               | Where conduct is reported privately, an address; empty sends it through GitHub's Report content |
 
 ## Requires
 

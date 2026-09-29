@@ -48,6 +48,9 @@ features = ["merge"]
 profile = "atxp/github-dependabot"
 
 [[layers]]
+profile = "atxp/github-labels"
+
+[[layers]]
 profile  = "atxp/git-commits"
 features = ["agents"]
 
@@ -93,6 +96,11 @@ features = ["agents"]
 [[layers]]
 profile  = "atxp/devset-collection"
 features = ["pins", "agents", "site"]
+
+[[layers]]
+profile          = "atxp/project"
+default-features = false
+features         = ["conduct", "support"]
 
 [[layers]]
 profile = "atxp/agents"

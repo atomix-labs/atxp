@@ -3,6 +3,10 @@ name        = "github-templates"
 description = "GitHub's issue forms and pull request checklist, the repository's once written"
 devset      = ">=0.5.0"
 
+[features]
+# The forms offer the repository's Discussions for questions; GitHub's setting turns them on.
+discussions = []
+
 [vars.repository]
 prompt = "The GitHub repository, owner/name"
 
