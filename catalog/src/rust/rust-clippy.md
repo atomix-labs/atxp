@@ -10,7 +10,8 @@ devset add atxp/rust-clippy --git https://github.com/atomix-labs/atxp --tag <rel
 Group `rust` · In [`rust`](../bundles/rust.md): always
 
 Clippy over every crate, target and feature, with warnings denied; in tests,
-`unwrap`, `expect`, panics, printing, `dbg!` and indexing are allowed.
+`unwrap`, `expect`, panics, printing, `dbg!` and indexing are allowed. It goes
+on past a crate that fails, so one run names every crate to fix.
 
 It owns those keys of `clippy.toml`; the repository's own, such as a
 `disallowed-methods` list, stay its own. Which lints are denied is the
@@ -25,7 +26,8 @@ workspace's `[lints]` table, which [`rust-lints`](rust-lints.md) owns.
 
 ## Recipes
 
-- `check-rust-clippy`: Lints every crate, target and feature; a warning fails.
+- `check-rust-clippy`: Lints every crate, target and feature, reporting every
+  crate that fails; a warning fails.
 - `fix-rust-clippy`: Applies clippy's suggestions.
 
 ## Requires
