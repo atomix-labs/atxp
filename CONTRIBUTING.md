@@ -106,9 +106,11 @@ title's. Labels say the rest, and most are set for you:
 | `area: <name>`     | where a change lands                        | the files it changes |
 
 A maintainer takes `triage` off once an issue is understood. See
-[what awaits triage](https://github.com/atomix-labs/atxp/issues?q=is%3Aopen+label%3Atriage),
-and the [good first issues](https://github.com/atomix-labs/atxp/contribute).
+[what awaits triage][triage], and the [good first issues][first].
 `.github/labels.toml` holds the labels, and each area's paths.
+
+[triage]: https://github.com/atomix-labs/atxp/issues?q=is%3Aopen+label%3Atriage
+[first]: https://github.com/atomix-labs/atxp/contribute
 
 <!-- <<< devset: github-labels <<< -->
 

@@ -283,8 +283,8 @@ canonical = "d2333294b52059b6353e1c57c7695fff8833504c99c6257bd2adc8549db9c9e9"
 policy = "once"
 
 [files."CODE_OF_CONDUCT.md"]
-exact = "b66ff309de0183cf1568b81a61c1f09e18a7a8e176214b9e6dec23dfdf3e1043"
-canonical = "b66ff309de0183cf1568b81a61c1f09e18a7a8e176214b9e6dec23dfdf3e1043"
+exact = "30f91b89e874822b749987977a371b2fa8ae0f292c92baa8d83abbcf3b4bf63f"
+canonical = "30f91b89e874822b749987977a371b2fa8ae0f292c92baa8d83abbcf3b4bf63f"
 policy = "once"
 
 [files."SUPPORT.md"]
@@ -468,8 +468,8 @@ canonical = "8370f539a11c7b96fad133ea2d16c668b014b3312c0c83eb4a539b356f697362"
 
 [parts."CONTRIBUTING.md".github-labels]
 scope = "block"
-exact = "f9cdda527b877a1f2a24c0951d071a33d005be3a8080c4d7d4a57ec071d9d39e"
-canonical = "b8137d01b1e12c9f95d2e32c08b92444ab31a160a61ac4f9b14bf1e0cb86d407"
+exact = "69980c10295ff8616a1fde1d3d182c23b0e01dfee4cdf6c5145aebf1143fb2a6"
+canonical = "5b1d6eaaf61e43cbb651401a445545bd306565f69cd4993e785c2878b332c063"
 
 [parts."CONTRIBUTING.md".setup]
 scope = "block"

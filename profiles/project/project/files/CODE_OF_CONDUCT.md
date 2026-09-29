@@ -58,18 +58,17 @@ representative at an online or offline event.
 
 ## Enforcement
 
+Instances of abusive, harassing, or otherwise unacceptable behavior may be
+reported privately to the community leaders responsible for enforcement:
+
 {% if conduct_contact -%}
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-{{ conduct_contact }}. All complaints will be reviewed and investigated promptly
-and fairly.
+- <{{ conduct_contact }}>
 {%- else -%}
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported privately to the community leaders responsible for enforcement, with
-GitHub's [Report content][report] on the issue, pull request or comment, sent to
-the repository's maintainers. All complaints will be reviewed and investigated
-promptly and fairly.
+- with GitHub's [Report content][report] on the issue, pull request or comment,
+  sent to the repository's maintainers.
 {%- endif %}
+
+All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
 reporter of any incident.

@@ -63,8 +63,8 @@ Empty by default · Declared by
 
 ## `conduct_contact`
 
-Where conduct is reported privately, an address; empty sends it through GitHub's
-Report content.
+Where conduct is reported privately, an email address or URL; empty sends it
+through GitHub's Report content.
 
 Empty by default · Declared by [`project`](project/project.md)
 

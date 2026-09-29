@@ -74,16 +74,16 @@ contact is left for the project to fill in.
 
 ## Variables
 
-| Variable          | Default             | Asks                                                                                            |
-| ----------------- | ------------------- | ----------------------------------------------------------------------------------------------- |
-| `name`            | empty               | The project's name, and its first crate's; empty takes the directory's                          |
-| `crate`           | empty               | The crate the crates.io and docs.rs badges show; empty takes the project's name                 |
-| `description`     | empty               | One line: what the project is                                                                   |
-| `logo`            | empty               | The README's logo: its path or URL before `-light.svg` or `-dark.svg`                           |
-| `authors`         | empty               | Authors, comma-separated                                                                        |
-| `license`         | `MIT OR Apache-2.0` | The licence, an SPDX expression                                                                 |
-| `repository`      | none                | The GitHub repository, owner/name                                                               |
-| `conduct_contact` | empty               | Where conduct is reported privately, an address; empty sends it through GitHub's Report content |
+| Variable          | Default             | Asks                                                                                                         |
+| ----------------- | ------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `name`            | empty               | The project's name, and its first crate's; empty takes the directory's                                       |
+| `crate`           | empty               | The crate the crates.io and docs.rs badges show; empty takes the project's name                              |
+| `description`     | empty               | One line: what the project is                                                                                |
+| `logo`            | empty               | The README's logo: its path or URL before `-light.svg` or `-dark.svg`                                        |
+| `authors`         | empty               | Authors, comma-separated                                                                                     |
+| `license`         | `MIT OR Apache-2.0` | The licence, an SPDX expression                                                                              |
+| `repository`      | none                | The GitHub repository, owner/name                                                                            |
+| `conduct_contact` | empty               | Where conduct is reported privately, an email address or URL; empty sends it through GitHub's Report content |
 
 ## Requires
 

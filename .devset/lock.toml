@@ -86,7 +86,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-labels"
-digest = "56ec205943a25ac1bba6da3d6695d9c1a1315537c5d1a277a95b5d1d8063f33d"
+digest = "953cb52fc5bdc3747e4f1e505fc28d3113f4e9a20c7442e1905de3a23a7e30b2"
 
 [profiles.source]
 path = "profiles"
@@ -241,7 +241,7 @@ site = ["target"]
 
 [[profiles]]
 name = "project"
-digest = "4ac9390027cbc99f057440f9623aed4add00ece1327ccf47564195a933af673b"
+digest = "3d89ed45c05c593bd76c11421cc2fa82f6a6c8d358bf3698c7b09a9c9a29f7c5"
 
 [profiles.source]
 path = "profiles"

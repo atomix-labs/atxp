@@ -6,15 +6,19 @@
 
 Where to take what you have, so it reaches the right place:
 {% if book %}
-- **The documentation first:** the
-  [book](https://{{ owner }}.github.io/{{ repo }}/) may answer it already.
+- **The documentation first:** the [book][book] may answer it already.
 {%- endif %}
 {%- if "discussions" in templates %}
-- **A question**, or an idea to talk over:
-  [Discussions](https://github.com/{{ repository }}/discussions).
+- **A question**, or an idea to talk over: [Discussions][discussions].
 {%- endif %}
-- **A bug, or a feature to request:**
-  [an issue](https://github.com/{{ repository }}/issues/new/choose), whose form
-  asks for what a maintainer needs.
-- **A vulnerability:** never an issue.
-  [Report it privately](https://github.com/{{ repository }}/security/advisories/new).
+- **A bug, or a feature to request:** [an issue][issue], whose form asks for
+  what a maintainer needs.
+- **A vulnerability:** never an issue. [Report it privately][advisory].
+{% if book %}
+[book]: https://{{ owner }}.github.io/{{ repo }}/
+{%- endif %}
+{%- if "discussions" in templates %}
+[discussions]: https://github.com/{{ repository }}/discussions
+{%- endif %}
+[issue]: https://github.com/{{ repository }}/issues/new/choose
+[advisory]: https://github.com/{{ repository }}/security/advisories/new
