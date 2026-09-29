@@ -194,8 +194,8 @@ exact = "43a2aaa3aadece5e31ad3a2fbb7a5003e4cc55822657cacc15c0687f1094afd4"
 canonical = "43a2aaa3aadece5e31ad3a2fbb7a5003e4cc55822657cacc15c0687f1094afd4"
 
 [files.".just/devset-collection/skill_form.py"]
-exact = "68c12b6d6fcceac273554c3fc5e51da2ab6a34230829cd3d5a0f535b9eecea06"
-canonical = "68c12b6d6fcceac273554c3fc5e51da2ab6a34230829cd3d5a0f535b9eecea06"
+exact = "4d0c926dbb67e828398e3036125d11a7b568466a31e43001e28b743c399b2f9e"
+canonical = "4d0c926dbb67e828398e3036125d11a7b568466a31e43001e28b743c399b2f9e"
 
 [files.".just/devset-collection/suite.sh"]
 exact = "2c15db8edcf7864bbe5e0d973c5815900e1da68916a4291a605117352f30f074"

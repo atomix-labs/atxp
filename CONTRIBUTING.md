@@ -231,7 +231,8 @@ to its form:
     names, nor does an `else`: nest an `if` instead.
 - **Fences.** A Rust block is `rust` or `rust,compile_fail`, a
   `rust,compile_fail` block opens `// fails: <lint or error code>`, and no Rust
-  block in a template holds template syntax outside `{% raw %}`.
+  block in a template holds template syntax, unless `{% raw %}` wraps the whole
+  block.
 
 What the check cannot hold a skill to, its author does:
 
