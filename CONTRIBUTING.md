@@ -249,10 +249,26 @@ What the check cannot hold a skill to, its author does:
   checks, then what not to do. Longer material goes in `references/`, one level
   deep, each named where the body needs it.
 - In a template, template language meant as text sits inside `{% raw %}`.
-- It is written against what an agent does without it. An agent does a task the
-  skill is for, in a repository the bundle writes, first without the skill and
-  then with it; the skill says what the first run got wrong, and its examples
-  come from a domain the task does not use.
+
+Whether a skill works, only an agent shows, so its author validates it with one,
+and CI never does: a model's pass rate is noisy, each run costs, and a fork's
+pull request gets no secrets. No check calls a model or holds an API key.
+
+1. **Without the skill first.** Write two or three cases, each a task the skill
+   is for, asked as a user would ask it, never by the skill's name, and one near
+   miss, close to those, that must not load it. Run each three times in a
+   repository the bundle writes, each run a fresh `claude -p` session or
+   subagent, never the session that wrote the skill. What the runs get wrong,
+   verbatim, is what the skill says.
+2. **Then with it**, three runs of each case at least. Read a failing transcript
+   before changing a word, and write the fix as a rule, never as the case's
+   answer: the skill's examples come from a domain the cases do not use. A pass
+   also runs on a change seeded with faults, to see that it finds them and
+   invents none. `claude plugin eval` can drive the runs; it loads the skill as
+   a plugin skill, where a repository loads it as a project skill.
+3. **The evidence, in the pull request**: the model, Claude Code's version, the
+   runs, what failed without the skill and what holds with it. A change of
+   wording alone says so instead.
 
 ## Writing
 

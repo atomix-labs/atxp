@@ -35,8 +35,8 @@ exact = "9ccdf435877abe0b89c73c81ff6f3b32ec371f502eaef1e62dd71bd1e1286e2b"
 canonical = "9ccdf435877abe0b89c73c81ff6f3b32ec371f502eaef1e62dd71bd1e1286e2b"
 
 [files.".claude/skills/authoring-devset-profiles/SKILL.md"]
-exact = "a11b6cfc4b862fa1a56d1f5705251faed6d248276861e7e0389ee90bd8a042dd"
-canonical = "a11b6cfc4b862fa1a56d1f5705251faed6d248276861e7e0389ee90bd8a042dd"
+exact = "2e191b419358e87c0653b5fa26c132385a1bd48071214b95de905bab9256d7d3"
+canonical = "2e191b419358e87c0653b5fa26c132385a1bd48071214b95de905bab9256d7d3"
 
 [files.".claude/skills/cutting-releases/SKILL.md"]
 exact = "b0a1b90b3b64e6b2bb6a930d9011c4c078567175b8b79e8cfa2162ea43f8d063"

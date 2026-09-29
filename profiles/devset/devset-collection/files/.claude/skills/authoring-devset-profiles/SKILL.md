@@ -63,22 +63,41 @@ cannot check.
    `devset`: `devset.profiles` and `devset.layers` for the graph,
    `devset.features` for the profile's own features, `devset.target` for the
    directory's name.
+
+4. **Validate a skill** the profile ships, with an agent, as no check can:
+
+   - **Cases**: two or three tasks the skill is for, each asked as a user would
+     ask it, never by the skill's name, and one near miss, close to those, that
+     must not load it.
+   - **Without it first**, before writing it: run each case three times in a
+     repository the profile is applied to, each run a fresh `claude -p` session
+     or subagent, never the session that writes the skill. What the runs get
+     wrong, verbatim, is what the skill says.
+   - **Then with it**, three runs of each case at least. Read a failing
+     transcript before changing a word, and write the fix as a rule, never as
+     the case's answer, with examples from a domain the cases do not use. For a
+     pass, also run it on a change seeded with faults: it finds them and invents
+     none. `claude plugin eval` can drive the runs; it loads the skill as a
+     plugin skill, where a repository loads it as a project skill.
+   - **The evidence**, in the pull request: the model, Claude Code's version,
+     the runs, what failed without the skill and what holds with it. A change of
+     wording alone says so instead.
 {%- if "pins" in devset.features %}
 
-4. **Pin the tools**, then lock them for every platform:
+5. **Pin the tools**, then lock them for every platform:
 
    ```sh
    python3 .just/devset-collection/pins.py lock <name>
    ```
 {%- else %}
 
-4. **Pin the tools**, in the profile's own mise file.
+5. **Pin the tools**, in the profile's own mise file.
 {%- endif %}
 
-5. **Write the README**'s prose, then `just fix-devset-collection`, which writes
+6. **Write the README**'s prose, then `just fix-devset-collection`, which writes
    the catalog and every profile's facts.
 
-6. **Check**, below. A change to a payload is checked only when the suite
+7. **Check**, below. A change to a payload is checked only when the suite
    renders it.
 
 ## Checks
@@ -96,6 +115,8 @@ cannot check.
 - Do not add a feature that removes or replaces what another adds.
 - Do not copy another profile's file into a new one: require that profile.
 - Do not skip `just test` after changing a payload because `just check` passed.
+- Do not add a check that calls a model, or an API key to CI: a skill's
+  validation is its author's.
 
 [designing]: https://atomix-labs.github.io/devset/designing.html
 [gates]: https://atomix-labs.github.io/devset/gates.html
