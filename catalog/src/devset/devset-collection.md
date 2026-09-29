@@ -47,9 +47,10 @@ with `collection_description`.
   condition on the profile that defines it, unless the profile requires that
   one; a skill it names sits under the feature that ships it, through
   `devset.layers` for another profile's and `devset.features` for its own. Only
-  a template's conditions count. A Rust block is `rust` or `rust,compile_fail`,
-  a `rust,compile_fail` block opens `// fails: <lint or error code>`, and none
-  holds template syntax.
+  a template's conditions count, and none inside `{% raw %}` or a comment. A
+  Rust block is `rust` or `rust,compile_fail`, a `rust,compile_fail` block opens
+  `// fails: <lint or error code>`, and none in a template holds template syntax
+  outside `{% raw %}`. The rules are skill_form.py's.
 - `just test-devset-collection` runs the suite, with the devset that
   [`devset`](devset.md) pins. Every profile alone, with its default features and
   with every feature, applies without drift. Then on each fixture in
@@ -122,6 +123,7 @@ A collection others may take is easiest to find tagged: the GitHub topic
 | `.just/devset-collection/catalog.py`                | whole | owned  |                                              |
 | `.just/devset-collection/suite.sh`                  | whole | owned  |                                              |
 | `.just/devset-collection/site_pages.py`             | whole | owned  |                                              |
+| `.just/devset-collection/skill_form.py`             | whole | owned  |                                              |
 | `.just/devset-collection/pins.py`                   | whole | owned  | feature `pins`                               |
 | `catalog/book.toml`                                 | whole | once   | template, scaffold `catalog`, feature `site` |
 | `catalog/theme/palette.css`                         | whole | merge  | feature `site`                               |

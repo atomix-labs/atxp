@@ -49,6 +49,8 @@ template = true
 
 [files.".just/devset-collection/site_pages.py"]
 
+[files.".just/devset-collection/skill_form.py"]
+
 [files.".just/devset-collection/pins.py"]
 when = { features = ["pins"] }
 

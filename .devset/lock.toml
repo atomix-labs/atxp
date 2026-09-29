@@ -228,7 +228,7 @@ path = "profiles"
 
 [[profiles]]
 name = "devset-collection"
-digest = "6bb589363271e8465d001edef5ddcba0456379b603f03059e0b06ae2303877ff"
+digest = "b548b17292228dcaeed96ac873cc5a1267a6dff0dd3810c0ac3868198d91b6af"
 
 [profiles.source]
 path = "profiles"
