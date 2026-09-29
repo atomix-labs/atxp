@@ -52,7 +52,8 @@ Under `strict`, real code also documents every item.
    the same conditions.
 7. **A doc that claims a speed cites its number and its committed run**, and a
    claim about generated code, a call inlined or a check gone, is read in the
-   release assembly, since a benchmark says how fast and not why.
+   disassembled binary that ships, since a benchmark says how fast and not why,
+   and under fat LTO the library's `--emit asm` is the code before LTO.
 
 ### Allocation
 
@@ -69,9 +70,10 @@ Under `strict`, real code also documents every item.
    derived `Clone`'s `clone_from` does not, so clone its fields.
 6. **Borrow from the input rather than copy it**: a parsed value holds `&'a str`
    or `&'a [u8]` of its buffer, since copying each field allocates each field.
-7. **Make a large value where it lives, `vec![0; n].into_boxed_slice()` or
-   `Box::new_zeroed()`**, since `Box::new([0; N])` builds the array on the stack
-   first, and overflows it in a build that does not optimize the copy away.
+7. **Make a large value where it lives, `vec![0; n].into_boxed_slice()`**, since
+   `Box::new([0; N])` builds the array on the stack first, and overflows it in a
+   build that does not optimize the copy away; `Box::new_zeroed()` serves one
+   value, with an unsafe `assume_init`.
 8. **A crate that must not allocate lists what allocates in its own
    `clippy.toml`, each with a reason**, which replaces the workspace's, so it
    repeats every key of it.
@@ -85,9 +87,11 @@ cannot allocate at all.
 
 ### Code Generation
 
-1. **Mark a small public function `#[inline]`**, since another crate reaches a
-   non-generic body only through it, LTO, or rustc's own offer of a small
-   function that calls nothing; a generic body each caller compiles already.
+1. **Mark `#[inline]` a small public function that calls another**, since
+   without LTO another crate reaches its body only so, in an incremental build
+   or a published crate's user's; rustc offers one that calls nothing on its own
+   outside incremental builds, each caller compiles a generic body, and the
+   workspace's fat-LTO builds need none.
 2. **`#[inline(always)]` only where a call would defeat the function, under an
    `#[expect(clippy::inline_always, reason = "…")]`**, since every forced copy
    grows the code around it.
@@ -163,7 +167,9 @@ The workspace's `.cargo/config.toml` sets a CPU floor for each architecture:
 ### Threads
 
 1. **Values written by different threads live on different cache lines,
-   `#[repr(align(64))]`**, since a line moves between cores on each write.
+   `#[repr(align(128))]` where the code runs on more than one kind of machine**,
+   since a line moves between cores on each write, and a line is the target's,
+   fetched in pairs on x86-64.
 2. **A count many threads add to is added once a thread**, since threads take
    turns at one atomic's line whatever they write.
 3. **A spin calls `core::hint::spin_loop()` each turn, and yields after a
@@ -244,7 +250,7 @@ A test that counts allocations, or asserts a size, follows `writing-rust-tests`.
 | "`target-cpu=native` in `.cargo/config.toml`" | A floor every machine meets, and a machine's CPU added for its own build.      |
 | "`lto = false` turns LTO off"                 | `lto = "off"`; `false` is thin LTO within each crate.                          |
 | "Change the release profile for this crate"   | `[profile.release.package.<crate>]`, or a profile that `inherits`.             |
-| "Two counters side by side, one per thread"   | A cache line each, asserted.                                                   |
+| "Two counters side by side, one per thread"   | A 128-byte line each, asserted.                                                |
 | "Spin until it's ready"                       | `spin_loop` for a bounded while, then yield or block.                          |
 
 ## References

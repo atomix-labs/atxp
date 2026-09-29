@@ -5,7 +5,9 @@ Read this before changing code to make it faster, before a benchmark or a
 profile, and before a claim about speed in a doc, a commit or a review. Code is
 made faster here by measuring it, and a claim of speed is a number someone else
 can run again: what was measured, on what machine, with what build, and where
-the run is kept.
+the run is kept. The numbers in these examples were measured, by the benchmark
+shown below, on the machine its manifest names; the `<commit>` in each path is
+the example's placeholder.
 
 ## Measure Before a Change and After, and Keep It Only If the Number Moved
 
@@ -17,15 +19,16 @@ not only costs its reader.
 
 ```text
 # Bad: a change for speed, and a claim with nothing behind it.
-perf(tiles): paint rows faster with a lookup table
+perf(tiles): sum a row's brightness faster
 ```
 
 ```text
-perf(tiles): paint a row from a lookup table
+perf(tiles): sum a row's brightness over eight lanes
 
-`cargo bench -p tiles --bench paint`, a 4,096-tile row, core 6:
-p50 1,840 ns before, 610 ns after; p99 2,100 ns before, 740 ns after.
-Results: crates/tiles/benches/results/2026-09-29T10-00Z-3f2a1c9-paint/
+`taskset -c 8 cargo bench -p tiles --bench brightness`, 4,096 values, on a
+Graviton4: p50 2,958 ns before, 404 ns after; p99 2,960 ns before, 407 ns
+after; an empty round 32 ns.
+Results: crates/tiles/benches/results/2026-09-29T21-10Z-<commit>-brightness/
 ```
 
 Held by review.
@@ -88,12 +91,12 @@ mod tests {
 ```toml
 # crates/tiles/Cargo.toml
 [[bench]]
-name    = "paint"
+name    = "brightness"
 harness = false
 ```
 
 ```rust
-//! What painting a row of tiles costs, per call.
+//! What a row's brightness costs, summed in order and over eight lanes, per call.
 
 use core::error::Error;
 use core::hint::black_box;
@@ -106,8 +109,21 @@ type BoxError = Box<dyn Error + Send + Sync>;
 const WARM_UP: usize = 1_000;
 const ROUNDS: usize = 100_000;
 
-fn paint(row: &mut [u32], tile: u32) {
-    row.fill(tile);
+#[inline(never)]
+fn in_order(row: &[f32]) -> f32 {
+    row.iter().sum()
+}
+
+#[inline(never)]
+fn over_lanes(row: &[f32]) -> f32 {
+    let (chunks, rest) = row.as_chunks::<8>();
+    let mut lanes = [0.0_f32; 8];
+    for chunk in chunks {
+        for (lane, value) in lanes.iter_mut().zip(chunk) {
+            *lane += value;
+        }
+    }
+    lanes.iter().sum::<f32>() + rest.iter().sum::<f32>()
 }
 
 fn nearest_rank(took: &[Duration], per_mille: usize) -> Duration {
@@ -115,12 +131,11 @@ fn nearest_rank(took: &[Duration], per_mille: usize) -> Duration {
     took.get(rank.min(took.len().saturating_sub(1))).copied().unwrap_or_default()
 }
 
-fn main() -> Result<(), BoxError> {
-    let mut row = vec![0_u32; 4_096];
+fn time<F: FnMut()>(name: &str, mut op: F) -> Result<(), BoxError> {
     let mut took = Vec::with_capacity(ROUNDS);
     for round in 0..WARM_UP.saturating_add(ROUNDS) {
         let start = Instant::now();
-        paint(black_box(&mut row), black_box(7));
+        op();
         let elapsed = start.elapsed();
         if round >= WARM_UP {
             took.push(elapsed);
@@ -129,13 +144,25 @@ fn main() -> Result<(), BoxError> {
     took.sort_unstable();
     let (p50, p99) = (nearest_rank(&took, 500), nearest_rank(&took, 990));
     let max = took.last().copied().unwrap_or_default();
-    writeln!(io::stdout().lock(), "paint, 4,096 tiles: p50 {p50:?}, p99 {p99:?}, max {max:?}")?;
+    writeln!(io::stdout().lock(), "{name}: p50 {p50:?}, p99 {p99:?}, max {max:?}")?;
+    Ok(())
+}
+
+fn main() -> Result<(), BoxError> {
+    let row: Vec<f32> = (0..4_096_u16).map(|at| f32::from(at) * 0.5).collect();
+    time("an empty round", || {})?;
+    time("in order, 4,096 values", || {
+        black_box(in_order(black_box(&row)));
+    })?;
+    time("over eight lanes, 4,096 values", || {
+        black_box(over_lanes(black_box(&row)));
+    })?;
     Ok(())
 }
 ```
 
-Held by review. No recipe runs a benchmark: `cargo bench -p tiles --bench paint`
-runs one by hand.
+Held by review. No recipe runs a benchmark: `cargo bench -p tiles --bench
+brightness` runs one by hand.
 {%- if "strict" in lints %}
 
 Under `strict`, a benchmark is no test to clippy, so the allowances for tests do
@@ -208,11 +235,11 @@ pins each thread itself.
 
 ```text
 # Bad: one run, on whatever core is free, reported as a mean.
-cargo bench -p tiles --bench paint
+cargo bench -p tiles --bench brightness
 ```
 
 ```text
-taskset -c 6 cargo bench -p tiles --bench paint
+taskset -c 8 cargo bench -p tiles --bench brightness
 ```
 
 Held by review.
@@ -228,13 +255,13 @@ of a run is never committed; its summary is.
 
 ```text
 # Bad: the numbers in a pull request's comment, and nowhere else.
-p50 went from 1.8 us to 0.6 us on my laptop.
+p50 went from 3 us to 0.4 us on my machine.
 ```
 
 ```toml
-# crates/tiles/benches/results/2026-09-29T10-00Z-3f2a1c9-paint/manifest.toml
-run-id  = "2026-09-29T10-00Z-3f2a1c9-paint"
-purpose = "what painting a row costs, before and after the lookup table"
+# crates/tiles/benches/results/2026-09-29T21-10Z-<commit>-brightness/manifest.toml
+run-id  = "2026-09-29T21-10Z-<commit>-brightness"
+purpose = "what a row's brightness costs, summed in order and over eight lanes"
 
 [hardware]
 cpu        = "AWS Graviton4 (Arm Neoverse V2)"
@@ -242,23 +269,24 @@ cores      = 32
 cache-line = 64
 
 [environment]
-kernel        = "Linux 6.12"
+kernel        = "Linux 6.12.53-69.119.amzn2023.aarch64"
 isolated-cpus = "6-31"
-placement     = "taskset -c 6"
+placement     = "taskset -c 8"
 
 [toolchain]
-rustc   = "1.101.0-nightly (2026-09-27)"
+rustc   = "1.101.0-nightly (d080e7dff 2026-09-27)"
 profile = "bench: release, fat LTO, one codegen unit"
 flags   = "the workspace's floor, +crc"
 
 [parameters]
-rows    = "4,096 tiles"
+values  = 4_096
 rounds  = 100_000
 warm-up = 1_000
 
-[results.paint-ns]
-before = { p50 = 1_840, p99 = 2_100, max = 9_800 }
-after  = { p50 = 610, p99 = 740, max = 7_900 }
+[results.ns]
+empty-round = { p50 = 32, p99 = 34, max = 39 }
+in-order    = { p50 = 2_958, p99 = 2_960, max = 10_957 }
+over-lanes  = { p50 = 404, p99 = 407, max = 5_240 }
 ```
 
 Held by review.
@@ -271,49 +299,72 @@ committed, so a reader can run it again, and a later change can see when the
 claim stopped holding.
 
 ```rust
-/// Paints `row` from a lookup table.
+/// A row's brightness, summed over eight lanes.
 ///
 // Bad: a claim of speed that nobody can check.
-/// Much faster than painting tile by tile.
-pub fn paint(row: &mut [u8], table: &[u8; 256]) {
-    for tile in row {
-        *tile = table.get(usize::from(*tile)).copied().unwrap_or(0);
+/// Much faster than an ordered sum.
+#[must_use]
+pub fn brightness(row: &[f32]) -> f32 {
+    let (chunks, rest) = row.as_chunks::<8>();
+    let mut lanes = [0.0_f32; 8];
+    for chunk in chunks {
+        for (lane, value) in lanes.iter_mut().zip(chunk) {
+            *lane += value;
+        }
     }
+    lanes.iter().sum::<f32>() + rest.iter().sum::<f32>()
 }
 ```
 
 ```rust
-/// Paints `row` from a lookup table.
+/// A row's brightness, summed over eight lanes.
 ///
-/// Three times as fast as painting tile by tile over a 4,096-tile row, p50 610 ns
-/// against 1,840 ns, measured under `benches/results/2026-09-29T10-00Z-3f2a1c9-paint`.
-pub fn paint(row: &mut [u8], table: &[u8; 256]) {
-    for tile in row {
-        *tile = table.get(usize::from(*tile)).copied().unwrap_or(0);
+/// Seven times as fast as an ordered sum over 4,096 values on a Graviton4, p50
+/// 404 ns against 2,958 ns, measured under
+/// `benches/results/2026-09-29T21-10Z-<commit>-brightness`; the sum may differ
+/// from an ordered one in its last bits.
+#[must_use]
+pub fn brightness(row: &[f32]) -> f32 {
+    let (chunks, rest) = row.as_chunks::<8>();
+    let mut lanes = [0.0_f32; 8];
+    for chunk in chunks {
+        for (lane, value) in lanes.iter_mut().zip(chunk) {
+            *lane += value;
+        }
     }
+    lanes.iter().sum::<f32>() + rest.iter().sum::<f32>()
 }
 ```
 
 Held by review.
 
-## A Claim About Generated Code Is Read in the Assembly
+## A Claim About Generated Code Is Read in the Binary That Ships
 
 A benchmark says how fast code is, not why: whether a call was inlined, a bounds
-check removed or a loop vectorized is read in the assembly of the build that
-ships. `cargo rustc -p tiles --release --lib -- --emit asm=target/tiles.s`
-writes it, one file since `release` has one codegen unit; cargo-show-asm's
-`cargo asm` shows one function, where it is installed. A call is a `call` or
-`bl`, a bounds check a branch to `panic_bounds_check`, and a vectorized loop
-works in vector registers, `xmm` and `ymm` on x86-64, `v0.4s` on Arm.
+check removed or a loop vectorized is read in the machine code of the binary
+that ships. Under fat LTO, as `release` and `bench` build, Cargo compiles a
+library with `-C linker-plugin-lto`, as bitcode the binary's LTO optimizes
+again, and much of the inlining and vectorizing happens there, so `--emit asm`
+on the library shows the code before it: a loop that ships vectorized reads as
+scalar. So the binary is read: `cargo bench --no-run` prints each benchmark
+binary's path, and on Linux `objdump -d -C --disassemble='tiles::brightness'
+<path>` shows one function as it ships; a function inlined into every caller has
+no symbol of its own, so the one read is `#[inline(never)]`, as a benchmark's
+are, or is read in its caller. With `--config 'profile.release.lto="off"'`,
+`--emit asm` shows a crate's own code optimized without LTO, which is close to
+what ships and is not it. A call is a `call` or `bl`; a bounds check, a branch
+to `panic_bounds_check`; a vectorized loop, packed instructions, `paddd` or
+`addps` on x86-64 and `add v0.4s` or `fadd v0.4s` on Arm, where a scalar float
+addition is `addss`, in an `xmm` register all the same, or `fadd s0`.
 
 ```text
-# Bad: a benchmark that got faster, read as proof that the call was inlined.
-cargo bench -p tiles --bench paint
+# Bad: the library's code before LTO, where the loop that ships vectorized reads as scalar.
+cargo rustc -p tiles --release --lib -- --emit asm=target/tiles.s
 ```
 
 ```text
-cargo rustc -p tiles --release --lib -- --emit asm=target/tiles.s
-grep -n 'panic_bounds_check' target/tiles.s
+cargo bench -p tiles --bench brightness --no-run
+objdump -d -C --disassemble='tiles::brightness' <the benchmark's path>
 ```
 
 Held by review.

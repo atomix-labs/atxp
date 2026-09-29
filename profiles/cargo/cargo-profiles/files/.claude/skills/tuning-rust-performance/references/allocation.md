@@ -251,11 +251,17 @@ Held by review.
 
 `Box::new(value)` builds `value` first, then moves it into the allocation, and
 Rust promises no elision of that copy, so a large array is built on the stack:
-`Box::new([0_u8; 16 << 20])` overflows an 8 MiB stack in a build that does not
-optimize the copy away, as the `test` profile does not. `vec![0; n]` asks the
-allocator for zeroed memory directly, and `.into_boxed_slice()` keeps it;
-`Box::new_zeroed()` does the same for a type whose zero is valid, and
-`Box::new_uninit()` for one written in place.
+`Box::new([0_u8; 16 << 20])` overflows any stack smaller than its 16 MiB, as a
+main thread's usually is, in a build that does not optimize the copy away, as
+the `test` profile does not. `vec![0; n]` asks the allocator for zeroed memory
+directly, and `.into_boxed_slice()` keeps it, all in safe code.
+`Box::new_zeroed()` and `Box::new_uninit()` make one value in place too, but
+hand back a `MaybeUninit`, and its `assume_init` is `unsafe`: a proof that every
+byte of the value is valid for its type.
+{%- if "agents" in lints %}
+
+That proof is `writing-unsafe-rust`'s.
+{%- endif %}
 
 ```rust,compile_fail
 // fails: clippy::large_stack_arrays

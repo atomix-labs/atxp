@@ -9,56 +9,69 @@ what it cannot see is which calls cross a crate, which paths are rare, what a
 float sum may reorder and which machine runs the code. Those are told here, and
 nothing else.
 
-## Mark a Small Public Function `#[inline]`
+## Mark `#[inline]` a Small Public Function That Calls Another
 
 A caller in another crate reaches a non-generic function's body only if it is
-offered: by `#[inline]`, by LTO, which `release`, `bench` and `profiling` build
-with, or by rustc itself, which offers the body of a small function that calls
-nothing, but not in an incremental build. Without it, the call stays a call, and
-nothing around it can be optimized through it. A generic function is compiled by
-each caller already, so there the attribute is a hint alone. `#[inline]` makes
-sure for a small function a caller's hot loop runs: an accessor, a conversion, a
-check. It does not reach through a call: a function inlined still calls what it
-calls, unless that is offered too.
+offered: by `#[inline]`, by LTO, or by rustc itself. rustc offers a function
+that, once its own calls are inlined, calls nothing and is small, but only in a
+build that is not incremental; a generic function each caller compiles already.
+So `#[inline]` matters for a small function that still calls another, a rare
+path kept out of line or a function too large to inline, for every function in
+an incremental build, and for the users of a published crate, who build without
+this workspace's profiles. The workspace's own `release`, `bench` and
+`profiling` builds inline across crates by fat LTO without it. It does not reach
+through a call: a function inlined still calls what it calls, unless that is
+offered too.
 
 ```rust
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Board {
-    cols: u16,
-    rows: u16,
+#[derive(Debug, Default)]
+pub struct Row {
+    tiles: Vec<u8>,
 }
 
-impl Board {
-    // Bad: another crate's loop calls this, unless LTO inlines it.
-    #[must_use]
-    pub fn squares(&self) -> u32 {
-        area(self.cols, self.rows)
+impl Row {
+    // Bad: it calls `spill`, so another crate's call stays a call in a build without LTO.
+    pub fn paint(&mut self, at: usize, tile: u8) {
+        match self.tiles.get_mut(at) {
+            Some(slot) => *slot = tile,
+            None => self.spill(at, tile),
+        }
     }
-}
 
-fn area(cols: u16, rows: u16) -> u32 {
-    u32::from(cols).saturating_mul(u32::from(rows))
+    #[cold]
+    #[inline(never)]
+    fn spill(&mut self, at: usize, tile: u8) {
+        self.tiles.resize(at.saturating_add(1), 0);
+        if let Some(slot) = self.tiles.get_mut(at) {
+            *slot = tile;
+        }
+    }
 }
 ```
 
 ```rust
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Board {
-    cols: u16,
-    rows: u16,
+#[derive(Debug, Default)]
+pub struct Row {
+    tiles: Vec<u8>,
 }
 
-impl Board {
+impl Row {
     #[inline]
-    #[must_use]
-    pub fn squares(&self) -> u32 {
-        area(self.cols, self.rows)
+    pub fn paint(&mut self, at: usize, tile: u8) {
+        match self.tiles.get_mut(at) {
+            Some(slot) => *slot = tile,
+            None => self.spill(at, tile),
+        }
     }
-}
 
-#[inline]
-fn area(cols: u16, rows: u16) -> u32 {
-    u32::from(cols).saturating_mul(u32::from(rows))
+    #[cold]
+    #[inline(never)]
+    fn spill(&mut self, at: usize, tile: u8) {
+        self.tiles.resize(at.saturating_add(1), 0);
+        if let Some(slot) = self.tiles.get_mut(at) {
+            *slot = tile;
+        }
+    }
 }
 ```
 
@@ -226,7 +239,8 @@ pub fn blend(under: &[u32], over: &[u32]) -> u32 {
 }
 ```
 
-Held by review, and by the assembly.
+Held by review, and by the disassembly of the binary that ships, as
+`measuring.md` shows.
 
 ## A Float Sum Keeps Its Order, and Does Not Vectorize
 

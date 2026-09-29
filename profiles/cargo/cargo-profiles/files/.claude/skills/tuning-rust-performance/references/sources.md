@@ -23,18 +23,20 @@ says what it costs.
 | [`GlobalAlloc`](https://doc.rust-lang.org/std/alloc/trait.GlobalAlloc.html)                                      | the global allocator's contract                                                                                                                                                                                                             | `allocation.md`: the counting test         |
 | [clippy's lint list](https://rust-lang.github.io/rust-clippy/master/index.html)                                  | `inline_always`, `format_push_string`, `assigning_clones`, `large_stack_arrays`, `large_enum_variant`, `linkedlist`, `vec_box`, `disallowed_methods`, `disallowed_macros`                                                                   | each rule "held by" one                    |
 | [clippy's configuration](https://doc.rust-lang.org/clippy/lint_configuration.html)                               | `disallowed-methods` and `disallowed-macros`; `array-size-threshold` 16384; `enum-variant-size-threshold` 200; `stack-size-threshold` 512000                                                                                                | `allocation.md`, `data-layout.md`          |
-| [crossbeam-utils, `CachePadded`](https://docs.rs/crossbeam-utils/latest/crossbeam_utils/struct.CachePadded.html) | 128 bytes on x86-64, aarch64 and powerpc64, since Intel's "spatial prefetcher is pulling pairs of 64-byte cache lines at a time"                                                                                                            | `threads.md`                               |
+| [crossbeam-utils, `CachePadded`](https://docs.rs/crossbeam-utils/latest/crossbeam_utils/struct.CachePadded.html) | 128 bytes on x86-64, since Intel's "spatial prefetcher is pulling pairs of 64-byte cache lines at a time"; on aarch64, since big.LITTLE's "big" cores have 128-byte lines; on powerpc64, its line                                           | `threads.md`                               |
 
 ## Measured Here
 
 Each claim of cost or code these references state was checked on
-nightly-2026-09-28, run on an AWS Graviton4, and compiled for x86-64 where it
-names x86-64: the assembly at `opt-level = 3` for the inlining, bounds,
-vectorization, `#[cold]`, `spin_loop` and atomic claims; a counting allocator
-for every allocation count; `size_of` for every size; a run for the stack
-overflow, `panic = "abort"`, the scheduler on isolated cores and the flags Cargo
-passes. Where a cost is the machine's, a reference says to measure it rather
-than state it.
+nightly-2026-09-28, run on an AWS Graviton4, and compiled for x86-64 with that
+nightly's `x86_64-unknown-linux-gnu` target where it names x86-64: the
+disassembly of a benchmark built by the workspace's `bench` profile, and
+assembly at `opt-level = 3`, for the inlining, bounds, vectorization, `#[cold]`,
+`spin_loop` and atomic claims; a counting allocator for every allocation count;
+`size_of` for every size; a run for the stack overflow, `panic = "abort"`, the
+scheduler on isolated cores and the flags Cargo passes; and the benchmark
+`measuring.md` shows, for its numbers. Where a cost is the machine's, a
+reference says to measure it rather than state it.
 
 ## Where the Workspace Departs
 
@@ -47,7 +49,7 @@ than state it.
 | rust-skills `perf-profile-first`: `cargo flamegraph`                                           | a profiler on the `profiling` build, whichever the machine has                                                         |
 | rust-skills `perf-black-box-bench`, `opt-inline-always-rare`: criterion                        | a `harness = false` benchmark of the crate's own; criterion or divan where the repository has them                     |
 | rust-skills `opt-inline-always-rare`: `#[inline(always)]` "proven by profiling"                | only where a call would defeat the function, under an `#[expect(clippy::inline_always, …)]` naming why                 |
-| rust-skills `opt-likely-hint`: an early return and the order of match arms as hints            | no hint the compiler keeps to: a rare branch written first compiled to the same code as one marked `cold_path`         |
+| rust-skills `opt-likely-hint`: an early return and the order of match arms as hints            | no hint to rely on: reordering left one function's code as it was, and changed another's where `cold_path` did not     |
 | rust-skills `opt-pgo-profile`, `opt-simd-portable`: profile-guided optimization, portable SIMD | not taught                                                                                                             |
 | rust-skills `mem-write-over-format`: `write!(out, "…\n").unwrap()`                             | `writeln!`, since `clippy::write_with_newline` refuses the first, and `?`                                              |
 
@@ -59,9 +61,10 @@ above, and what this skill says instead:
 - A generic function needs no `#[inline]` to be inlined across crates, as
   `opt-inline-small` and `opt-inline-always-rare` say it does: each caller
   compiles its own copy, and inlined `widen::<u16>` from another crate with no
-  attribute, in an incremental build too. rustc also offers a small function
-  that calls nothing to other crates on its own, in a build that is not
-  incremental.
+  attribute, in an incremental build too. rustc also offers other crates a small
+  function that, once its own calls are inlined, calls nothing, in a build that
+  is not incremental; one that still calls another stays a call without
+  `#[inline]` or LTO.
 - `core::hint::cold_path` is stable since Rust 1.95, which `opt-cold-unlikely`
   leaves out; `likely` and `unlikely` are unstable (E0658 on the pinned
   nightly).
@@ -77,9 +80,10 @@ above, and what this skill says instead:
 - In Cargo, `lto = false` is thin local LTO and `lto = "off"` disables it;
   `opt-lto-release` labels `"off"` thin local.
 - The default x86-64 target is SSE2, the first x86-64 level: `rustc --print cfg`
-  lists `fxsr`, `sse` and `sse2` alone. `opt-target-cpu` calls it "roughly Sandy
-  Bridge era", and its `[target.x86_64-unknown-linux-gnu.deployment]` table
-  makes Cargo refuse the configuration.
+  lists `fxsr`, `sse`, `sse2` and `x87` alone. `opt-target-cpu` calls it
+  "roughly Sandy Bridge era", and its
+  `[target.x86_64-unknown-linux-gnu.deployment]` table makes Cargo refuse the
+  configuration.
 - `target-cpu=native` in a checked-in `.cargo/config.toml`, `opt-target-cpu`'s
   good example, builds each machine's binary for that machine alone, CI's
   included.

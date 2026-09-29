@@ -19,12 +19,15 @@ A core writes a whole cache line, never a word of it: two values that different
 threads write, side by side on one line, move that line between the two cores on
 every write, though neither thread reads the other's value. That is false
 sharing, and it runs both threads at the speed of the line crossing between
-them. A line is 64 bytes on x86-64 and on Arm's server cores, so a value written
-by one thread and read or written by others sits on a line of its own:
-`#[repr(align(64))]` on a wrapper, asserted. crossbeam's `CachePadded` aligns to
-128 bytes on x86-64 and aarch64, since Intel's cores fetch lines in pairs, and
-serves where the repository has crossbeam. Measure it: the cost depends on the
-machine and on how often each thread writes.
+them. So a value written by one thread and read or written by others sits on a
+line of its own, and the line is the target's: 64 bytes on x86-64 and on a
+Graviton4's Neoverse V2, but Intel's cores since Sandy Bridge fetch lines in
+pairs, and the big cores of Arm's big.LITTLE designs have 128-byte lines.
+crossbeam's `CachePadded` pads to 128 bytes on x86-64 and aarch64 for those
+reasons, and code that runs on more than one kind of machine does the same:
+`#[repr(align(128))]` on a wrapper, its size asserted, or `CachePadded` where
+the repository has crossbeam. Measure it: the cost depends on the machine and on
+how often each thread writes.
 
 ```rust
 use core::sync::atomic::AtomicU64;
@@ -55,7 +58,7 @@ use core::sync::atomic::AtomicU64;
 use core::sync::atomic::Ordering::Relaxed;
 
 #[derive(Debug, Default)]
-#[repr(align(64))]
+#[repr(align(128))]
 pub struct Line<T>(T);
 
 #[derive(Debug, Default)]
@@ -64,8 +67,8 @@ pub struct Tally {
     erased: Line<AtomicU64>,
 }
 
-// Each count is written by its own thread, so each has a cache line to itself.
-const _: () = assert!(size_of::<Tally>() == 128, "two counts, a line each");
+// Each count is written by its own thread, so each has a line to itself, a pair on x86-64.
+const _: () = assert!(size_of::<Tally>() == 256, "two counts, 128 bytes each");
 
 impl Tally {
     pub fn paint(&self) {

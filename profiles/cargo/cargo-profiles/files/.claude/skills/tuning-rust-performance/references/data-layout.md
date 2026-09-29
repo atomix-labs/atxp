@@ -120,12 +120,12 @@ Held by review, and by the size assertion.
 ## An `Option` Costs Nothing Where Its Type Has a Spare Value
 
 An `Option` needs somewhere to say `None`. A type with a value it never holds, a
-niche, lends it: a reference, a `Box`, a `Vec`, a `String`, a `NonZeroU32`, a
-`char` and a `bool` never hold zero or a value past their range, so an `Option`
-of one is the same size as it, and `Option<Vec<T>>` is as large as `Vec<T>`, 24
-bytes. A plain integer has no such value, so `Option<u32>` is 8 bytes and
-`Option<u64>` 16. An id that is never zero is a `NonZeroU32`, so an optional id
-costs nothing.
+niche, lends it: a reference, a `Box`, a `Vec`, a `String` and a `NonZeroU32`
+never hold zero, and a `char` or a `bool` never holds a value past its range, so
+an `Option` of one is the same size as it, and `Option<Vec<T>>` is as large as
+`Vec<T>`, 24 bytes. A plain integer has no such value, so `Option<u32>` is 8
+bytes and `Option<u64>` 16. An id that is never zero is a `NonZeroU32`, so an
+optional id costs nothing.
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -270,7 +270,8 @@ impl Queue {
 ```
 
 Held by `clippy::linkedlist`, and by `clippy::vec_box` for a `Vec<Box<T>>` whose
-`T` has a size; neither reads a type in the crate's exported signatures.
+`T` is sized and under 4,096 bytes; neither reads a type in the crate's exported
+signatures.
 
 ## What a Hot Loop Reads Together Is Stored Together
 
