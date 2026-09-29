@@ -24,6 +24,7 @@ Under `strict`, real code also documents every item.
 {%- set manifests = devset.layers | selectattr("profile", "equalto", "cargo-manifest") | map(attribute="features") | first | default([]) %}
 {%- set tooling = devset.layers | selectattr("profile", "equalto", "devset") | map(attribute="features") | first | default([]) %}
 {%- set tests = devset.layers | selectattr("profile", "equalto", "cargo-nextest") | map(attribute="features") | first | default([]) %}
+{%- set tuning = devset.layers | selectattr("profile", "equalto", "cargo-profiles") | map(attribute="features") | first | default([]) %}
 
 ## Rules
 
@@ -206,6 +207,11 @@ Every manifest follows `editing-cargo-manifests`.
 {%- if "agents" in tests %}
 
 Every test, its fixtures and its messages follow `writing-rust-tests`.
+{%- endif %}
+{%- if "agents" in tuning %}
+
+Code made faster, a benchmark, and a build profile follow
+`tuning-rust-performance`.
 {%- endif %}
 
 ## Checks
