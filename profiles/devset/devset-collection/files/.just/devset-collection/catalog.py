@@ -85,11 +85,11 @@ DESCRIPTION = 1024
 # Claude re-attaches the first 5,000 tokens of each skill after compaction: a body within this
 # survives whole.
 BODY = 18_000
-# Code in Markdown: a block fenced by backticks or tildes, closed by a fence as long, or a span,
-# which may wrap, closed by as many backticks as open it.
+# Code in Markdown: a block fenced by backticks or tildes, at any indent, closed by a fence as
+# long, or a span, which may wrap, closed by as many backticks as open it.
 CODE = re.compile(
-    r"^(?P<ticks>`{3,}).*?^(?P=ticks)`*[ \t]*$"
-    r"|^(?P<tildes>~{3,}).*?^(?P=tildes)~*[ \t]*$"
+    r"^ *(?P<ticks>`{3,}).*?^ *(?P=ticks)`*[ \t]*$"
+    r"|^ *(?P<tildes>~{3,}).*?^ *(?P=tildes)~*[ \t]*$"
     r"|(?P<span>`+)(?!`).+?(?<!`)(?P=span)(?!`)",
     re.DOTALL | re.MULTILINE,
 )
