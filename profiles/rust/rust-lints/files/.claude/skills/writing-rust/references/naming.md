@@ -414,13 +414,13 @@ Held by `clippy::iter_without_into_iter`.
 ## A Type's Name Says Its Role: `Spec`, `Config`, `Guard`, `Error`
 
 The last word of a type's name says what it is for. A `*Spec` holds the
-parameters of one call that creates or opens something, `Grid::new(&GridSpec { …
-})`, built as a literal and passed by reference; a `*Config` holds a program's
-settings, as loaded from a file or the environment; a `*Guard` holds something
-until it drops; an `*Error` is a refusal. A marker type is an adjective or a
-role, `Editing`, `Sealed`, `Shared`. No struct is a catch-all `*Options` or
-`*Params`: `std`'s `OpenOptions` is a builder, a different shape, and no model
-for a struct of parameters.
+parameters of one call that creates or opens something, `Grid::new(GridSpec { …
+})`, built as a literal; a `*Config` holds a program's settings, as loaded from
+a file or the environment; a `*Guard` holds something until it drops; an
+`*Error` is a refusal. A marker type is an adjective or a role, `Editing`,
+`Sealed`, `Shared`. No struct is a catch-all `*Options` or `*Params`: `std`'s
+`OpenOptions` is a builder, a different shape, and no model for a struct of
+parameters.
 
 ```rust
 // Bad: a catch-all name, which says neither whose parameters these are nor

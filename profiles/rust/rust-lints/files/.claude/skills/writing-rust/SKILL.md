@@ -90,7 +90,7 @@ Under `strict`, real code also documents every item.
 ### API
 
 1. **A call that creates or opens something, with three parameters or more,
-   takes a `*Spec` of public fields, passed by reference, not a builder**, so
+   takes a `*Spec` of public fields, built as a literal, not a builder**, so
    every field is written where it is used; one or two plain values stay
    arguments.
 2. **A newtype has a private field and `const fn new` and `get`**, so two
@@ -118,9 +118,9 @@ Under `strict`, real code also documents every item.
 
 ### Ownership
 
-1. **Take a value only where it is kept, pass a small `Copy` value by value, and
-   a `*Spec` by reference**, so a caller never gives up what the function only
-   reads.
+1. **Take a value only where it is kept, and pass a small `Copy` value by
+   value**, a spec included, so a caller never gives up what the function only
+   reads, and nothing that costs nothing to copy is read through a reference.
 2. **Clone only what must be owned twice, and an `Arc` as
    `Arc::clone(&board)`**; `Arc` across threads, `Rc` within one; `Cow` where
    the input usually comes back unchanged.
@@ -224,7 +224,7 @@ Every manifest follows `editing-cargo-manifests`.
 | "`#[error("load error: {0}")]` on a `#[from]`"           | `#[error(transparent)]`, or render the cause and expose nothing.               |
 | "Clamp the index to the last square"                     | Refuse it with the index and the length; clamping hides the caller's mistake.  |
 | "`get_cols()` reads clearly"                             | `cols()`.                                                                      |
-| "A builder for these three fields"                       | A `*Spec` literal, passed by reference.                                        |
+| "A builder for these three fields"                       | A `*Spec` literal.                                                             |
 | "`impl Trait` in this public argument"                   | A named generic, `fn fill_with<F: FnMut() -> u8>`.                             |
 | "`pub` is simpler than `pub(crate)`"                     | `pub(crate)` inside a private module.                                          |
 | "`.clone()` to quiet the borrow checker"                 | Shape the borrow: a shorter scope, a reference kept, a move.                   |

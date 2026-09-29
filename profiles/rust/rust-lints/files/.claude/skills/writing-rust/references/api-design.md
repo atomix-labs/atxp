@@ -9,10 +9,11 @@ compile and right ones read plainly.
 
 A call that creates or opens something, and takes three parameters or more, or
 one a caller may leave at its usual value, takes them as one `*Spec` struct with
-public fields, built as a literal and passed by reference; one or two plain
-values stay arguments, `Board::create(path)`, `Grid::new(cols, rows)`. Every
-field is written at the call site, so nothing is configured by a default nobody
-wrote down, a missing field is a compile error, and a reader sees the whole
+public fields, built as a literal and passed as any value is, by value where it
+is small and `Copy` and by reference where it is not; one or two plain values
+stay arguments, `Board::create(path)`, `Grid::new(cols, rows)`. Every field is
+written at the call site, so nothing is configured by a default nobody wrote
+down, a missing field is a compile error, and a reader sees the whole
 configuration in one place. A usual value is a named constructor or constant of
 the spec, `GridSpec::square(8)`, never a `Default` nobody sees. A program's
 settings, loaded from a file or the environment, are a `*Config`. A builder is
@@ -81,24 +82,24 @@ pub struct Grid {
 
 impl Grid {
     #[must_use]
-    pub const fn new(spec: &GridSpec) -> Self {
-        Self { spec: *spec }
+    pub const fn new(spec: GridSpec) -> Self {
+        Self { spec }
     }
 
     #[must_use]
-    pub const fn spec(&self) -> &GridSpec {
-        &self.spec
+    pub const fn spec(&self) -> GridSpec {
+        self.spec
     }
 }
 
 #[must_use]
 pub const fn board() -> Grid {
-    Grid::new(&GridSpec { cols: 12, rows: 8, wrap: Wrap::Torus })
+    Grid::new(GridSpec { cols: 12, rows: 8, wrap: Wrap::Torus })
 }
 
 #[must_use]
 pub const fn chessboard() -> Grid {
-    Grid::new(&GridSpec::square(8))
+    Grid::new(GridSpec::square(8))
 }
 ```
 

@@ -43,17 +43,17 @@ source; open the page before linking it.
 
 ## Where the Workspace Departs
 
-| a source says                                                                     | here                                                                                                                                                       |
-| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| C-BUILDER: a builder for a complex value                                          | a `*Spec` with public fields, passed by reference, for a call that creates or opens something; a builder only for construction that is a sequence of steps |
-| rust-skills `api-non-exhaustive`: `#[non_exhaustive]` on public enums and structs | exhaustive by default; `#[non_exhaustive]` only on a published crate's type meant to grow, judged type by type                                             |
-| rust-skills `err-anyhow-app`: anyhow in an application                            | no anyhow anywhere: a binary returns `Box<dyn Error + Send + Sync>`, and a one-off failure is `io::Error::other`                                           |
-| rust-skills `err-context-chain`: `.context("…")` strings                          | context is a type with a `Display`                                                                                                                         |
-| rust-skills `err-custom-type`: errors grouped by domain, a crate-wide `Error`     | one type for each question a verb can be asked; no type named `Error`                                                                                      |
-| rust-skills `err-source-chain`: a `source` field beside a message                 | a cause is rendered or exposed, never both                                                                                                                 |
-| rust-skills `err-expect-bugs-only`: `expect` messages that start "BUG:"           | the message states the precondition, or why the call cannot fail                                                                                           |
-| rust-skills `proj-prelude-module`: a prelude                                      | no prelude; a caller imports the names it uses                                                                                                             |
-| a `Result` alias per crate, as `io::Result`                                       | an alias of an error type, never of `Result`                                                                                                               |
+| a source says                                                                     | here                                                                                                                                                      |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C-BUILDER: a builder for a complex value                                          | a `*Spec` with public fields, built as a literal, for a call that creates or opens something; a builder only for construction that is a sequence of steps |
+| rust-skills `api-non-exhaustive`: `#[non_exhaustive]` on public enums and structs | exhaustive by default; `#[non_exhaustive]` only on a published crate's type meant to grow, judged type by type                                            |
+| rust-skills `err-anyhow-app`: anyhow in an application                            | no anyhow anywhere: a binary returns `Box<dyn Error + Send + Sync>`, and a one-off failure is `io::Error::other`                                          |
+| rust-skills `err-context-chain`: `.context("…")` strings                          | context is a type with a `Display`                                                                                                                        |
+| rust-skills `err-custom-type`: errors grouped by domain, a crate-wide `Error`     | one type for each question a verb can be asked; no type named `Error`                                                                                     |
+| rust-skills `err-source-chain`: a `source` field beside a message                 | a cause is rendered or exposed, never both                                                                                                                |
+| rust-skills `err-expect-bugs-only`: `expect` messages that start "BUG:"           | the message states the precondition, or why the call cannot fail                                                                                          |
+| rust-skills `proj-prelude-module`: a prelude                                      | no prelude; a caller imports the names it uses                                                                                                            |
+| a `Result` alias per crate, as `io::Result`                                       | an alias of an error type, never of `Result`                                                                                                              |
 
 ## Corrected Here
 

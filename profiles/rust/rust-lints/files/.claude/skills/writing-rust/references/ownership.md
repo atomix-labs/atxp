@@ -48,9 +48,9 @@ Held by `clippy::needless_pass_by_value`.
 
 A value that is `Copy` and a few words wide costs nothing to copy, and a
 reference to it costs an indirection and a lifetime to read; it is taken by
-value. A large value is borrowed, or boxed where it moves often. A `*Spec` is
-the exception: it is always passed by reference, `Grid::new(&spec)`, `Copy` or
-not, so a spec that later gains a field that is not `Copy` changes no call site.
+value. A large value is borrowed, or boxed where it moves often. A `*Spec` is no
+exception: a small `Copy` one goes by value, `Grid::new(spec)`, and one that is
+large or not `Copy`, as a spec that holds a path, by reference.
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
