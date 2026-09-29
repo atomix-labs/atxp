@@ -39,7 +39,7 @@ dependency or a feature within it.
 | `.config/mise/conf.d/devset-cargo-manifest.toml`               | whole | owned  |                            |
 | `.config/mise/mise.lock`                                       | keys  | owned  |                            |
 | `.claude/skills/editing-cargo-manifests/SKILL.md`              | whole | owned  | template, feature `agents` |
-| `.claude/skills/editing-cargo-manifests/references/sources.md` | whole | owned  | feature `agents`           |
+| `.claude/skills/editing-cargo-manifests/references/sources.md` | whole | owned  | template, feature `agents` |
 
 ## Features
 
