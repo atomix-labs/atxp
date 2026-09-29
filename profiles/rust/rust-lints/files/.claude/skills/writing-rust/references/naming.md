@@ -5,26 +5,33 @@ method, a constant or a field, and before renaming one. The names follow the
 Rust API Guidelines, and the workspace adds families of its own, so that a name
 says what a call costs and how it can refuse before anyone reads its body.
 
-## Casing Follows RFC 430
+## A Type Parameter Is One Capital Letter
 
-Types, traits and enum variants are `UpperCamelCase`; functions, methods,
-modules, fields and locals are `snake_case`; constants and statics are
-`SCREAMING_SNAKE_CASE`. A type parameter is one capital letter, `T`, `E`, or a
-short word where there are several; a lifetime is short, `'a`, or names what it
-borrows, `'grid`, where two meet.
+Each type parameter is one capital letter, however many a type has, so a
+parameter never reads as a type: `T` for the value, `E` for an error, `N` and
+`F` for a refusal that is not fatal and one that is, `A` for an attempt, `I` for
+an initializer. A lifetime is short, `'a`, or names what it borrows where two
+meet, `'grid`. Casing itself, RFC 430's, is rustc's to hold: `lints.md` lists
+the lints.
 
-```rust,compile_fail
-// fails: non_upper_case_globals
-// Bad: a constant cased as a local.
-pub const default_cols: u16 = 8;
+```rust
+// Bad: a parameter that reads as a type, and could be taken for one.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TryError<Refusal, Fault> {
+    NonFatal(Refusal),
+    Fatal(Fault),
+}
 ```
 
 ```rust
-pub const DEFAULT_COLS: u16 = 8;
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TryError<N, F> {
+    NonFatal(N),
+    Fatal(F),
+}
 ```
 
-Held by rustc's `non_camel_case_types`, `non_snake_case` and
-`non_upper_case_globals`.
+Held by review.
 
 ## An Acronym Is One Word
 
@@ -201,7 +208,7 @@ own.
 
 ## `try_` Can Refuse, `_with` Takes a Closure, `_in` Takes an Allocator
 
-A family of doors over one operation reads by its affixes. `try_` is the door
+A family of functions over one operation reads by its affixes. `try_` is the one
 that refuses at once where the plain one waits, grows or panics: `claim` waits
 for the board, `try_claim` refuses when another editor holds it. `_with` runs a
 closure the caller passes, `fill_with`, `read_with`; `_in` takes an allocator,
@@ -215,7 +222,7 @@ pub struct Grid {
 }
 
 impl Grid {
-    // Bad: a closure door with a name of its own, so the pair does not read as
+    // Bad: a closure version with a name of its own, so the pair does not read as
     // one operation.
     pub fn fill(&mut self, tile: u8) {
         self.squares.fill(tile);
@@ -250,9 +257,9 @@ Held by review.
 
 `new` builds a value from its parts and `from_` converts one, `from_raw` and
 `into_raw` going both ways; `with_capacity` sizes one. A resource that outlives
-the process, a file or a shared segment, has three doors: `create` lays a new
-one and refuses if one is there, `open` binds to one that exists and refuses if
-none is, and `open_or_create` does either. `install` sets a value the whole
+the process, a file or a shared segment, has three constructors: `create` lays a
+new one and refuses if one is there, `open` binds to one that exists and refuses
+if none is, and `open_or_create` does either. `install` sets a value the whole
 process shares, once.
 
 ```rust
@@ -266,7 +273,7 @@ pub struct Board {
 }
 
 impl Board {
-    // Bad: `new` for a door that may lay a file or bind to one, which a caller
+    // Bad: `new` for a constructor that may lay a file or bind to one, which a caller
     // cannot tell from the name, and which clobbers what it finds.
     pub fn new(path: &Path) -> io::Result<Self> {
         Ok(Self { file: File::create(path)? })
@@ -434,6 +441,14 @@ use std::env;
 pub struct GridSpec {
     pub cols: u16,
     pub rows: u16,
+    pub wrap: Wrap,
+}
+
+/// Whether a move off one edge comes back on the other.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Wrap {
+    Edges,
+    Torus,
 }
 
 /// The editor's settings, as its environment gives them.
@@ -472,7 +487,7 @@ impl Grid {
         self.squares.get(at).copied()
     }
 
-    #[must_use]
+        #[must_use]
     pub const fn cell_count(&self) -> usize {
         self.squares.len()
     }
@@ -491,8 +506,8 @@ impl Grid {
         self.squares.get(at).copied()
     }
 
-    #[must_use]
-    pub const fn squares(&self) -> usize {
+        #[must_use]
+    pub const fn square_count(&self) -> usize {
         self.squares.len()
     }
 }

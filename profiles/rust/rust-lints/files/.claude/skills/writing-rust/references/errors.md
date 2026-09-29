@@ -248,7 +248,8 @@ pub enum PlaceError {
 ```
 
 Held by review: `clippy::enum_variant_names` sees a shared prefix or suffix only
-on an enum the crate does not export, and only on one of three variants or more.
+on an enum the crate does not export, and only on an enum of three variants or
+more.
 
 ## Errors Are `Copy` and `Eq` Where the Payload Allows
 
@@ -345,14 +346,15 @@ Held by review.
 The fields of every error read alike, so a reader knows a field's side before
 its type: `want` is what was asked for and `held` what was found instead; `need`
 is what the operation requires and `have` what there was; `at` is an index and
-`len` the length it overshot. A message puts them in the same order.
+`len` the length it overshot. Fields are declared in that order, `want` before
+`held` and `need` before `have`.
 
 ```rust
 use thiserror::Error;
 
 // Bad: words of this type's own, so each error reads differently.
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("board error: expected {expected_rows} rows, got {actual_rows}")]
+#[error("rows error: the grid expects {expected_rows} rows, the board has {actual_rows}")]
 pub struct RowsError {
     pub expected_rows: u16,
     pub actual_rows: u16,
@@ -363,7 +365,7 @@ pub struct RowsError {
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("rows error: the board has {have} rows, the grid needs {need}")]
+#[error("rows error: the grid needs {need} rows, the board has {have}")]
 pub struct RowsError {
     pub need: u16,
     pub have: u16,
@@ -546,8 +548,11 @@ impl Grid {
 }
 ```
 
-Held by review. Where thiserror cannot flatten one error into another, `From` is
-written by hand, one arm for each variant.
+Held by review. Where one error's arms each belong to another, thiserror cannot
+flatten it, and `From` is written by hand, one arm for each: where a fill's
+`FillError` has a `Past` and an `Occupied` arm of its own, `impl
+From<PlaceError> for FillError` sends `PlaceError::Past` to `FillError::Past`
+and `PlaceError::Occupied` to `FillError::Occupied`.
 
 ## A Refused Value Goes Back to the Caller
 
@@ -716,11 +721,11 @@ Held by review.
 ## Retry Semantics Live in the Types
 
 Whether another attempt could succeed is the first thing a caller asks, so the
-type answers it, not the caller's reading of a message. A door whose refusals
-split by permanence returns `TryError<N, F>`: `NonFatal` another attempt could
-beat, `Fatal` none would, so a retry loop is total and has no verdict of its own
-to get wrong. Where one variant alone is transient, its doc says so: "a caller
-may retry".
+type answers it, not the caller's reading of a message. A function whose
+refusals split by permanence returns `TryError<N, F>`, defined once in the
+crate's `errors.rs`: `NonFatal` another attempt could beat, `Fatal` none would,
+so a retry loop has no verdict of its own to get wrong. Where one variant alone
+is transient, its doc says so: "a caller may retry".
 
 ```rust
 use thiserror::Error;
@@ -758,16 +763,20 @@ pub struct HeldError;
 #[error("corrupt error: the board's header names no board")]
 pub struct CorruptError;
 
-/// Attempts until an answer no further attempt would change.
-pub fn waited<T, N, F, A>(mut attempt: A) -> Result<T, F>
+/// Attempts up to `attempts` times, waiting out each refusal another attempt
+/// could beat; the last refusal comes back once they are spent.
+pub fn waited<T, N, F, A>(attempts: u32, mut attempt: A) -> Result<T, TryError<N, F>>
 where
     A: FnMut() -> Result<T, TryError<N, F>>,
 {
+    let mut left = attempts;
     loop {
         match attempt() {
-            Ok(done) => return Ok(done),
-            Err(TryError::NonFatal(_held)) => hint::spin_loop(),
-            Err(TryError::Fatal(fault)) => return Err(fault),
+            Err(TryError::NonFatal(_held)) if left > 1 => {
+                left = left.saturating_sub(1);
+                hint::spin_loop();
+            },
+            done => return done,
         }
     }
 }
@@ -927,15 +936,17 @@ The workspace's `clippy.toml` lets a test unwrap, expect, panic and index.
 
 ## Panic Only for a Broken Invariant, and Say Which
 
-A panic is for a state the code promised could not happen: a precondition of the
-process, or a door that mirrors a `core` name, `expect` or `unwrap`, whose
-callers asked for the panic. Such a function carries `#[track_caller]`, so the
-report points at the caller that broke the promise, and a `# Panics` section
-saying when; its `expect` message states the precondition as an instruction. A
-check a release build need not pay for, of an invariant the type's own code
-keeps, or of the contract an `unsafe` function states, which is out of scope
-here, is a `debug_assert!` whose message states the fact. A caller's input is
-never such a check: it is refused with an error, as above.
+A panic is for a state the code promised could not happen. Two kinds of function
+may panic: one whose precondition the process sets up at startup, and one that
+mirrors a `core` name, `expect` or `unwrap`, whose caller asked for the panic.
+Such a function carries `#[track_caller]`, so the report points at the caller
+that broke the promise, and a `# Panics` section saying when; its `expect`
+message states the precondition as an instruction.
+
+A check a release build need not pay for is a `debug_assert!` whose message
+states the fact it checks: an invariant the type's own code keeps, or the
+contract an `unsafe` function states, which is out of scope here. A caller's
+input is never such a check: it is refused with an error, as above.
 
 ```rust
 use core::num::NonZeroU16;
@@ -968,7 +979,8 @@ impl Grid {
 ```
 {%- if "strict" in devset.features %}
 
-Under `strict`, a panicking door states why the lint is wrong here:
+Under `strict`, a function that panics says in an `#[expect]` why the lint is
+wrong there:
 
 ```rust,compile_fail
 // fails: clippy::expect_used
@@ -1005,8 +1017,8 @@ pub fn tileset() -> &'static [char] {
 Held by review.
 {%- if "strict" in devset.features %}
 
-Under `strict`, `clippy::expect_used` and `clippy::panic` make each panicking
-door state its reason in an `#[expect]`.
+Under `strict`, `clippy::expect_used` and `clippy::panic` make each function
+that panics state its reason in an `#[expect]`.
 {%- endif %}
 
 ## An `expect` Says Why It Cannot Fail
@@ -1056,9 +1068,15 @@ mod tests {
 Held by review.
 {%- if "strict" in devset.features %}
 
-A file that uses `expect` throughout, an example or a test, says so once at its
-top: `#![expect(clippy::expect_used, reason = "an example reports a broken
-invariant by dying loudly")]`.
+An example that uses `expect` throughout says so once at its top:
+`#![expect(clippy::expect_used, reason = "an example reports a broken invariant
+by dying loudly")]`.
+{%- if "rust-clippy" in devset.profiles %}
+
+A test needs no such attribute: the workspace's `clippy.toml` lets a `#[test]`
+function expect, so a file-wide `#[expect]` there goes unfulfilled and fails the
+build. Only a shared helper outside any `#[test]` needs one, on the helper.
+{%- endif %}
 {%- endif %}
 
 ## An Error Is Handled, or Dropped by Name
@@ -1079,11 +1097,17 @@ pub fn announce(tiles: &Sender<u8>) {
 ```
 
 ```rust
-use std::io;
 use std::sync::mpsc::Sender;
 
-pub fn announce(tiles: &Sender<u8>) -> io::Result<()> {
-    tiles.send(7).map_err(|_gone| io::Error::other("the render thread ended"))
+use thiserror::Error;
+
+/// The render thread has ended, so a tile sent to it would never be drawn.
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+#[error("render gone error: the render thread ended before the tile was sent")]
+pub struct RenderGoneError;
+
+pub fn announce(tiles: &Sender<u8>) -> Result<(), RenderGoneError> {
+    tiles.send(7).map_err(|_gone| RenderGoneError)
 }
 ```
 

@@ -21,7 +21,8 @@ build once the lint stops firing there, so a suppression cannot outlive its
 cause. `#[allow]` stays silent after its cause is gone, and hides the next
 finding at that site too. The one `#[allow]` a workspace has is where an
 `#[expect]` cannot hold: a module shared by several test binaries, each of which
-uses part of it.
+uses part of it, which says so once at its top: `#![allow(dead_code, reason =
+"each test binary uses part of this module")]`.
 {%- if "strict" in devset.features %}
 
 ```rust,compile_fail
@@ -78,8 +79,9 @@ Held by `unfulfilled_lint_expectations`, which fails an `#[expect]` whose lint
 no longer fires, and by review.
 {%- if "strict" in devset.features %}
 
-Under `strict`, `clippy::allow_attributes` refuses `#[allow]`, and
-`clippy::allow_attributes_without_reason` an `#[expect]` with no `reason`.
+Under `strict`, `clippy::allow_attributes` refuses an outer `#[allow]` and
+passes that inner `#![allow]`, and `clippy::allow_attributes_without_reason`
+refuses a suppression with no `reason`.
 {%- endif %}
 
 ## Delete an `#[expect]` Once Its Lint Stops Firing
@@ -106,6 +108,59 @@ pub fn longest(labels: &[String]) -> usize {
 
 Held by `unfulfilled_lint_expectations`.
 
+## An `#[expect]` Holds in Every Build
+
+The checks build every target with every feature: the library, its tests, its
+examples, its benches. An `#[expect]` fulfilled in one of those builds and not
+in another fails the one where its lint is quiet. An `#[expect(dead_code)]` on a
+helper only tests call fails the test build, where the helper is used. An item
+only tests use goes under `#[cfg(test)]`, in `testing.rs`; one that must exist
+in every build carries the expectation only where it holds,
+`#[cfg_attr(not(test), expect(dead_code, reason = "…"))]`, or `not(feature =
+"…")` for a feature.
+
+```rust,compile_fail
+// fails: unfulfilled_lint_expectations
+// Bad: dead in the library build, and used in the test build, which fails.
+#[expect(dead_code, reason = "only the tests lay a blank grid")]
+fn blank(squares: usize) -> Vec<u8> {
+    vec![0; squares]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::blank;
+
+    #[test]
+    fn a_blank_grid_holds_no_tiles() {
+        assert!(blank(9).iter().all(|&tile| tile == 0), "every square empty");
+    }
+}
+```
+
+```rust
+// src/testing.rs, under `#[cfg(test)] mod testing;`
+#[cfg(test)]
+mod testing {
+    /// A grid of `squares` squares, every one blank.
+    pub(crate) fn blank(squares: usize) -> Vec<u8> {
+        vec![0; squares]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::testing::blank;
+
+    #[test]
+    fn a_blank_grid_holds_no_tiles() {
+        assert!(blank(9).iter().all(|&tile| tile == 0), "every square empty");
+    }
+}
+```
+
+Held by `unfulfilled_lint_expectations`, in the build where the lint is quiet.
+
 ## The Reason Says Why the Lint Is Wrong Here
 
 A reason is read by the next person to meet the suppression, who needs the fact
@@ -115,45 +170,49 @@ thing, never the lint's name, never "clippy is wrong", never what would happen
 without it.
 
 ```rust
+use std::time::Instant;
+
 #[derive(Debug)]
-pub struct Cursor {
-    squares: Vec<u8>,
+pub struct Timer {
+    started: Instant,
 }
 
-impl Cursor {
+impl Timer {
     // Bad: says nothing a reader could check.
     #[must_use]
     #[expect(clippy::new_without_default, reason = "needed")]
-    pub const fn new() -> Self {
-        Self { squares: Vec::new() }
+    pub fn new() -> Self {
+        Self { started: Instant::now() }
     }
 
     #[must_use]
-    pub const fn squares(&self) -> &[u8] {
-        self.squares.as_slice()
+    pub const fn started(&self) -> Instant {
+        self.started
     }
 }
 ```
 
 ```rust
+use std::time::Instant;
+
 #[derive(Debug)]
-pub struct Cursor {
-    squares: Vec<u8>,
+pub struct Timer {
+    started: Instant,
 }
 
-impl Cursor {
+impl Timer {
     #[must_use]
     #[expect(
         clippy::new_without_default,
-        reason = "a cursor starts before the first square, which no default spells"
+        reason = "a timer reads the clock when made, which a default would not say"
     )]
-    pub const fn new() -> Self {
-        Self { squares: Vec::new() }
+    pub fn new() -> Self {
+        Self { started: Instant::now() }
     }
 
     #[must_use]
-    pub const fn squares(&self) -> &[u8] {
-        self.squares.as_slice()
+    pub const fn started(&self) -> Instant {
+        self.started
     }
 }
 ```
@@ -218,10 +277,10 @@ Held by review.
 
 ## A File Whose Role Excuses a Lint Suppresses It Once, at Its Top
 
-An example prints its result, an integration test's functions sit outside any
-`mod tests`, and an example or a test dies loudly on a broken assumption. A file
-whose role excuses a lint throughout says so once, with an inner `#![expect]` at
-its top, rather than on each item.
+An example prints its result and dies loudly on a broken assumption, and an
+integration test's functions sit outside any `mod tests`. A file whose role
+excuses a lint throughout says so once, with an inner `#![expect]` at its top,
+rather than on each item.
 
 ```text
 // Bad: tests/moves.rs, one `#[expect]` for each test.
@@ -258,6 +317,13 @@ fn main() {
 ```
 
 Held by review.
+{%- if "rust-clippy" in devset.profiles %}
+
+A test file never says so for `expect`, `unwrap`, `panic!` or printing: the
+workspace's `clippy.toml` lets a `#[test]` function use them, so a file-wide
+`#[expect]` for one goes unfulfilled and fails the build. A shared helper
+outside any `#[test]` that uses one carries its own `#[expect]`.
+{%- endif %}
 {%- endif %}
 
 ## A Crate Inherits the Table Whole
@@ -266,9 +332,9 @@ Every crate's manifest has `[lints] workspace = true` and nothing else under
 `[lints]`: Cargo refuses a crate's own lint levels beside it, and a crate that
 left the table would leave it without anyone deciding it should. A lint wrong
 for one site is answered at that site. The table's keys are the rust-lints
-profile's, which devset keeps: a level wrong for the whole repository is changed
-in the profile. `unexpected_cfgs`, whose `check-cfg` lists the repository's own
-cfgs, is the repository's key to set.
+profile's, and devset manages them: they are never edited by hand.
+`unexpected_cfgs`, whose `check-cfg` lists the repository's own cfgs, is the
+repository's key to set.
 
 ```toml
 # Bad: Cargo refuses a crate's own levels beside the workspace's.
@@ -286,6 +352,12 @@ workspace = true
 
 Held by Cargo, which refuses the first. In the table, each group is set at
 `priority = -1`, so a lint named on its own overrides its group.
+{%- set tooling = devset.layers | selectattr("profile", "equalto", "devset") | map(attribute="features") | first | default([]) %}
+{%- if "agents" in tooling %}
+
+How a managed key is changed, for this repository or for every one the profile
+serves, is `using-devset`'s.
+{%- endif %}
 {%- if "rust-clippy" in devset.profiles %}
 
 ## `clippy.toml` Configures Lints, and the Nearest One Wins
@@ -460,8 +532,18 @@ Held by `clippy::print_stdout`, `print_stderr`, `dbg_macro` and `exit`.
 ## Every Lint Beyond the Defaults
 
 Clippy's `all`, its default groups (`correctness`, `suspicious`, `style`,
-`complexity`, `perf`), is on at `deny`. These are the lints the table adds, what
-each refuses, and what to write instead.
+`complexity`, `perf`), is on at `deny`. Four of the defaults, rustc's and
+clippy's, stand for rules this skill would otherwise spell out:
+
+| default                                                            | refuses                                        | write instead                                                                                                                                     |
+| ------------------------------------------------------------------ | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `non_camel_case_types`, `non_snake_case`, `non_upper_case_globals` | a name cased against RFC 430                   | `UpperCamelCase` for types, traits and variants; `snake_case` for functions, modules and fields; `SCREAMING_SNAKE_CASE` for constants and statics |
+| `clippy::ptr_arg`                                                  | a `&String`, `&Vec<T>` or `&PathBuf` parameter | `&str`, `&[T]`, `&Path`; a `&Path` takes a `&PathBuf` but not a `&str`, which `P: AsRef<Path>` takes                                              |
+| `clippy::clone_on_copy`                                            | `.clone()` on a `Copy` value                   | the value itself                                                                                                                                  |
+| `clippy::needless_lifetimes`                                       | a lifetime named where elision would supply it | elision; a lifetime is named only to tie an output to one input of several                                                                        |
+
+Beyond the defaults, these are the lints the table adds, what each refuses, and
+what to write instead:
 
 | rustc                           | refuses                                                                      | write instead                             |
 | ------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------- |
@@ -509,55 +591,55 @@ The `strict` feature adds:
 | `unused_lifetimes`              | a lifetime declared and never used                                                         | delete it                                                                                          |
 | `variant_size_differences`      | an enum whose largest variant is over three times the next                                 | box the large payload                                                                              |
 
-| clippy (`strict`)                                                                                                     | refuses                                                                                                                                                                                      | write instead                                                     |
-| --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `nursery`                                                                                                             | the group still being settled: `missing_const_for_fn`, `use_self`, `derive_partial_eq_without_eq`, `redundant_clone`, `option_if_let_else`, `future_not_send`, `significant_drop_tightening` | what each names: a `const fn`, `Self`, the `Eq`                   |
-| `redundant_pub_crate`                                                                                                 | allowed: `pub(crate)` inside a private module, which says how far an item reaches                                                                                                            |                                                                   |
-| `self_named_module_files`                                                                                             | `grid.rs` beside a `grid/` directory                                                                                                                                                         | `grid/mod.rs`                                                     |
-| `allow_attributes`                                                                                                    | `#[allow]`                                                                                                                                                                                   | `#[expect]`                                                       |
-| `allow_attributes_without_reason`                                                                                     | an `#[expect]` with no `reason`                                                                                                                                                              | a `reason` that says why the lint is wrong here                   |
-| `unwrap_used`, `expect_used`                                                                                          | `unwrap` and `expect`                                                                                                                                                                        | `?`, `ok_or`, a `match`; an `#[expect]` on a broken invariant     |
-| `panic`, `todo`, `unimplemented`, `unreachable`                                                                       | the panicking macros                                                                                                                                                                         | an error; `match never {}` for an uninhabited arm                 |
-| `panic_in_result_fn`, `unwrap_in_result`                                                                              | a panic, an assertion or an `unwrap` in a function that returns a `Result`                                                                                                                   | the error the function already returns                            |
-| `indexing_slicing`                                                                                                    | `squares[at]` and `squares[a..b]`                                                                                                                                                            | `get`, an iterator, a slice pattern                               |
-| `string_slice`                                                                                                        | `text[a..b]` on a `str`, which panics off a character boundary                                                                                                                               | `text.get(a..b)`                                                  |
-| `get_unwrap`                                                                                                          | `.get(at).unwrap()`                                                                                                                                                                          | `.get(at)` and an answer to `None`                                |
-| `arithmetic_side_effects`                                                                                             | `+`, `-`, `*`, `/`, `%` and `<<` on integers                                                                                                                                                 | `checked_`, `saturating_`, `wrapping_`                            |
-| `as_conversions`                                                                                                      | `as`                                                                                                                                                                                         | `From`, `TryFrom`                                                 |
-| `lossy_float_literal`                                                                                                 | a float literal its type cannot hold exactly                                                                                                                                                 | one it can                                                        |
-| `error_impl_error`                                                                                                    | a type named `Error` that implements `Error`                                                                                                                                                 | `<Question>Error`                                                 |
-| `map_err_ignore`                                                                                                      | `map_err(\|_\| …)`                                                                                                                                                                           | `map_err(\|_gone\| …)`, naming what is dropped                    |
-| `unused_result_ok`                                                                                                    | `.ok();` as a statement                                                                                                                                                                      | an answer to the error, or a named drop                           |
-| `let_underscore_must_use`                                                                                             | `let _ = ` on a `#[must_use]` value                                                                                                                                                          | an answer, or `let _held = `                                      |
-| `mem_forget`                                                                                                          | `mem::forget` on a value with a destructor                                                                                                                                                   | let it drop, or `ManuallyDrop` with a reason                      |
-| `dbg_macro`                                                                                                           | `dbg!`                                                                                                                                                                                       | delete it                                                         |
-| `print_stdout`, `print_stderr`                                                                                        | `print!` and `eprint!`                                                                                                                                                                       | return the text; in a binary, an `#[expect]` with a reason        |
-| `exit`                                                                                                                | `process::exit` outside `main`                                                                                                                                                               | return an error to `main`                                         |
-| `absolute_paths`                                                                                                      | a path of more than two segments written inline, `core::fmt::Display`                                                                                                                        | a `use`                                                           |
-| `std_instead_of_core`, `std_instead_of_alloc`                                                                         | `std::` for what `core` or `alloc` has                                                                                                                                                       | `core::`, then `alloc::` with `extern crate alloc`                |
-| `clone_on_ref_ptr`                                                                                                    | `.clone()` on an `Arc` or `Rc`                                                                                                                                                               | `Arc::clone(&board)`                                              |
-| `mutex_atomic`, `mutex_integer`                                                                                       | a `Mutex` around a `bool` or an integer                                                                                                                                                      | an atomic                                                         |
-| `rc_buffer`, `rc_mutex`                                                                                               | `Rc<String>`, `Rc<Vec<T>>`, `Rc<Mutex<T>>`                                                                                                                                                   | `Rc<str>`, `Rc<[T]>`, `Rc<RefCell<T>>`                            |
-| `wildcard_enum_match_arm`                                                                                             | `_ =>` on an enum                                                                                                                                                                            | every variant by name                                             |
-| `same_name_method`                                                                                                    | an inherent method and a trait method of one name on a type                                                                                                                                  | one of them renamed, or an `#[expect]` where both doors are meant |
-| `mixed_read_write_in_expression`                                                                                      | a read and a write of one variable whose order depends on evaluation order                                                                                                                   | two statements                                                    |
-| `suspicious_xor_used_as_pow`                                                                                          | `2 ^ 8` written as a power                                                                                                                                                                   | `2_u32.pow(8)`, `1 << 8`                                          |
-| `redundant_type_annotations`                                                                                          | `let grid: Grid = Grid::new(…)`                                                                                                                                                              | `let grid = Grid::new(…)`                                         |
-| `unnecessary_self_imports`                                                                                            | `use core::fmt::{self};`                                                                                                                                                                     | `use core::fmt;`                                                  |
-| `str_to_string`                                                                                                       | `"t42".to_string()`                                                                                                                                                                          | `"t42".to_owned()`                                                |
-| `empty_structs_with_brackets`                                                                                         | `struct Blank {}`                                                                                                                                                                            | `struct Blank;`                                                   |
-| `empty_enum_variants_with_brackets`                                                                                   | `Blank {}` or `Blank()` as a variant                                                                                                                                                         | `Blank`                                                           |
-| `create_dir`                                                                                                          | `fs::create_dir`, which fails when a parent is missing                                                                                                                                       | `fs::create_dir_all`                                              |
-| `verbose_file_reads`                                                                                                  | `File::open` and then `read_to_end` or `read_to_string`                                                                                                                                      | `fs::read`, `fs::read_to_string`                                  |
-| `filetype_is_file`                                                                                                    | `file_type().is_file()` to mean readable, which a fifo or a symlink is not                                                                                                                   | `!file_type().is_dir()`                                           |
-| `semicolon_inside_block`                                                                                              | `{ grid.clear() };`                                                                                                                                                                          | `{ grid.clear(); }`                                               |
-| `tests_outside_test_module`                                                                                           | a `#[test]` outside a `#[cfg(test)]` module                                                                                                                                                  | `mod tests`; an integration test file says so once at its top     |
-| `unseparated_literal_suffix`                                                                                          | `0u8`                                                                                                                                                                                        | `0_u8`                                                            |
-| `pub_without_shorthand`                                                                                               | `pub(in super)`                                                                                                                                                                              | `pub(super)`                                                      |
-| `missing_assert_message`                                                                                              | an assertion with no message                                                                                                                                                                 | a message that states the property                                |
-| `impl_trait_in_params`                                                                                                | `impl Trait` in a public function's arguments                                                                                                                                                | a named generic                                                   |
-| `missing_docs_in_private_items`                                                                                       | a private item, field or test helper with no doc                                                                                                                                             | its doc                                                           |
-| `undocumented_unsafe_blocks`, `multiple_unsafe_ops_per_block`, `unnecessary_safety_comment`, `unnecessary_safety_doc` | the unsafe lints                                                                                                                                                                             | out of scope for this skill                                       |
+| clippy (`strict`)                                                                                                     | refuses                                                                                                                                                                                      | write instead                                                 |
+| --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `nursery`                                                                                                             | the group still being settled: `missing_const_for_fn`, `use_self`, `derive_partial_eq_without_eq`, `redundant_clone`, `option_if_let_else`, `future_not_send`, `significant_drop_tightening` | what each names: a `const fn`, `Self`, the `Eq`               |
+| `redundant_pub_crate`                                                                                                 | allowed: `pub(crate)` inside a private module, which says how far an item reaches                                                                                                            |                                                               |
+| `self_named_module_files`                                                                                             | `grid.rs` beside a `grid/` directory                                                                                                                                                         | `grid/mod.rs`                                                 |
+| `allow_attributes`                                                                                                    | `#[allow]`                                                                                                                                                                                   | `#[expect]`                                                   |
+| `allow_attributes_without_reason`                                                                                     | an `#[expect]` with no `reason`                                                                                                                                                              | a `reason` that says why the lint is wrong here               |
+| `unwrap_used`, `expect_used`                                                                                          | `unwrap` and `expect`                                                                                                                                                                        | `?`, `ok_or`, a `match`; an `#[expect]` on a broken invariant |
+| `panic`, `todo`, `unimplemented`, `unreachable`                                                                       | the panicking macros                                                                                                                                                                         | an error; `match never {}` for an uninhabited arm             |
+| `panic_in_result_fn`, `unwrap_in_result`                                                                              | a panic, an assertion or an `unwrap` in a function that returns a `Result`                                                                                                                   | the error the function already returns                        |
+| `indexing_slicing`                                                                                                    | `squares[at]` and `squares[a..b]`                                                                                                                                                            | `get`, an iterator, a slice pattern                           |
+| `string_slice`                                                                                                        | `text[a..b]` on a `str`, which panics off a character boundary                                                                                                                               | `text.get(a..b)`                                              |
+| `get_unwrap`                                                                                                          | `.get(at).unwrap()`                                                                                                                                                                          | `.get(at)` and an answer to `None`                            |
+| `arithmetic_side_effects`                                                                                             | `+`, `-`, `*`, `/`, `%` and `<<` on integers                                                                                                                                                 | `checked_`, `saturating_`, `wrapping_`                        |
+| `as_conversions`                                                                                                      | `as`                                                                                                                                                                                         | `From`, `TryFrom`                                             |
+| `lossy_float_literal`                                                                                                 | a float literal its type cannot hold exactly                                                                                                                                                 | one it can                                                    |
+| `error_impl_error`                                                                                                    | a type named `Error` that implements `Error`                                                                                                                                                 | `<Question>Error`                                             |
+| `map_err_ignore`                                                                                                      | `map_err(\|_\| …)`                                                                                                                                                                           | `map_err(\|_gone\| …)`, naming what is dropped                |
+| `unused_result_ok`                                                                                                    | `.ok();` as a statement                                                                                                                                                                      | an answer to the error, or a named drop                       |
+| `let_underscore_must_use`                                                                                             | `let _ = ` on a `#[must_use]` value                                                                                                                                                          | an answer, or `let _held = `                                  |
+| `mem_forget`                                                                                                          | `mem::forget` on a value with a destructor                                                                                                                                                   | let it drop, or `ManuallyDrop` with a reason                  |
+| `dbg_macro`                                                                                                           | `dbg!`                                                                                                                                                                                       | delete it                                                     |
+| `print_stdout`, `print_stderr`                                                                                        | `print!` and `eprint!`                                                                                                                                                                       | return the text; in a binary, an `#[expect]` with a reason    |
+| `exit`                                                                                                                | `process::exit` outside `main`                                                                                                                                                               | return an error to `main`                                     |
+| `absolute_paths`                                                                                                      | a path of more than two segments written inline, `core::fmt::Display`                                                                                                                        | a `use`                                                       |
+| `std_instead_of_core`, `std_instead_of_alloc`                                                                         | `std::` for what `core` or `alloc` has                                                                                                                                                       | `core::`, then `alloc::` with `extern crate alloc`            |
+| `clone_on_ref_ptr`                                                                                                    | `.clone()` on an `Arc` or `Rc`                                                                                                                                                               | `Arc::clone(&board)`                                          |
+| `mutex_atomic`, `mutex_integer`                                                                                       | a `Mutex` around a `bool` or an integer                                                                                                                                                      | an atomic                                                     |
+| `rc_buffer`, `rc_mutex`                                                                                               | `Rc<String>`, `Rc<Vec<T>>`, `Rc<Mutex<T>>`                                                                                                                                                   | `Rc<str>`, `Rc<[T]>`, `Rc<RefCell<T>>`                        |
+| `wildcard_enum_match_arm`                                                                                             | `_ =>` on an enum                                                                                                                                                                            | every variant by name                                         |
+| `same_name_method`                                                                                                    | an inherent method and a trait method of one name on a type                                                                                                                                  | one of them renamed, or an `#[expect]` where both are meant   |
+| `mixed_read_write_in_expression`                                                                                      | a read and a write of one variable whose order depends on evaluation order                                                                                                                   | two statements                                                |
+| `suspicious_xor_used_as_pow`                                                                                          | `2 ^ 8` written as a power                                                                                                                                                                   | `2_u32.pow(8)`, `1 << 8`                                      |
+| `redundant_type_annotations`                                                                                          | `let grid: Grid = Grid::new(…)`                                                                                                                                                              | `let grid = Grid::new(…)`                                     |
+| `unnecessary_self_imports`                                                                                            | `use core::fmt::{self};`                                                                                                                                                                     | `use core::fmt;`                                              |
+| `str_to_string`                                                                                                       | `"t42".to_string()`                                                                                                                                                                          | `"t42".to_owned()`                                            |
+| `empty_structs_with_brackets`                                                                                         | `struct Blank {}`                                                                                                                                                                            | `struct Blank;`                                               |
+| `empty_enum_variants_with_brackets`                                                                                   | `Blank {}` or `Blank()` as a variant                                                                                                                                                         | `Blank`                                                       |
+| `create_dir`                                                                                                          | `fs::create_dir`, which fails when a parent is missing                                                                                                                                       | `fs::create_dir_all`                                          |
+| `verbose_file_reads`                                                                                                  | `File::open` and then `read_to_end` or `read_to_string`                                                                                                                                      | `fs::read`, `fs::read_to_string`                              |
+| `filetype_is_file`                                                                                                    | `file_type().is_file()` to mean readable, which a fifo or a symlink is not                                                                                                                   | `!file_type().is_dir()`                                       |
+| `semicolon_inside_block`                                                                                              | `{ grid.clear() };`                                                                                                                                                                          | `{ grid.clear(); }`                                           |
+| `tests_outside_test_module`                                                                                           | a `#[test]` outside a `#[cfg(test)]` module                                                                                                                                                  | `mod tests`; an integration test file says so once at its top |
+| `unseparated_literal_suffix`                                                                                          | `0u8`                                                                                                                                                                                        | `0_u8`                                                        |
+| `pub_without_shorthand`                                                                                               | `pub(in super)`                                                                                                                                                                              | `pub(super)`                                                  |
+| `missing_assert_message`                                                                                              | an assertion with no message                                                                                                                                                                 | a message that states the property                            |
+| `impl_trait_in_params`                                                                                                | `impl Trait` in a public function's arguments                                                                                                                                                | a named generic                                               |
+| `missing_docs_in_private_items`                                                                                       | a private item, field or test helper with no doc                                                                                                                                             | its doc                                                       |
+| `undocumented_unsafe_blocks`, `multiple_unsafe_ops_per_block`, `unnecessary_safety_comment`, `unnecessary_safety_doc` | the unsafe lints                                                                                                                                                                             | out of scope for this skill                                   |
 
 `strict` also names three lints the groups above already deny:
 `await_holding_lock`, in `suspicious`, which refuses a `std` lock's guard held

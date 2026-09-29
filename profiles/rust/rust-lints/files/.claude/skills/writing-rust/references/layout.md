@@ -26,11 +26,13 @@ mod errors;
 //!
 //! # Crate features
 //! ...
+{%- if "strict" in devset.features %}
 
 #![no_std]
 
 #[cfg(feature = "std")]
 extern crate std;
+{%- endif %}
 
 mod errors;
 mod grid;
@@ -225,9 +227,10 @@ A module is a short singular noun for the thing it holds: `grid`, `tile`,
 `board`, `walk`. A few names are fixed, so a reader knows each on sight:
 `errors.rs`, plural, for the crate's refusals; `testing.rs`, under
 `#[cfg(test)]`, for fixtures the crate's tests share, its items `pub(crate)`;
-`consts.rs` for constants several modules use; and `tests/common/mod.rs`, as
-Cargo names it, for what integration tests share. No other module is `utils`,
-`helpers` or `common`, which say nothing of what is inside.
+`consts.rs` for constants several modules use; and `tests/testing/mod.rs` for
+what integration tests share, a directory Cargo compiles into no test of its
+own. No module is `utils`, `helpers` or `common`, which say nothing of what is
+inside.
 
 ```text
 // Bad: names that say nothing of what the module holds.
@@ -244,6 +247,7 @@ src/grid/mod.rs
 src/grid/walk.rs
 src/consts.rs
 src/testing.rs
+tests/testing/mod.rs
 ```
 
 Held by review.

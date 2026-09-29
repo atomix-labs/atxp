@@ -1,19 +1,23 @@
 # API Design
 
 Read this before adding or changing a public type, trait, constructor,
-conversion or signature: a type a caller builds, a door it calls, a trait it
+conversion or signature: a type a caller builds, a function it calls, a trait it
 implements or uses. It says how the surface is shaped so that wrong calls do not
 compile and right ones read plainly.
 
 ## Configure with a Spec Struct, Not a Builder
 
-A call that creates or opens something takes its parameters as one `*Spec`
-struct with public fields, built as a literal and passed by reference. Every
+A call that creates or opens something, and takes three parameters or more, or
+one a caller may leave at its usual value, takes them as one `*Spec` struct with
+public fields, built as a literal and passed by reference; one or two plain
+values stay arguments, `Board::create(path)`, `Grid::new(cols, rows)`. Every
 field is written at the call site, so nothing is configured by a default nobody
 wrote down, a missing field is a compile error, and a reader sees the whole
-configuration in one place. A program's settings, loaded from a file or the
-environment, are a `*Config`. A builder is for construction that is a sequence
-of steps, as a message encoded field by field, not for a set of values.
+configuration in one place. A usual value is a named constructor or constant of
+the spec, `GridSpec::square(8)`, never a `Default` nobody sees. A program's
+settings, loaded from a file or the environment, are a `*Config`. A builder is
+for construction that is a sequence of steps, as a message encoded field by
+field, not for a set of values.
 
 ```rust
 // Bad: three fields behind a builder, so a forgotten setter is a silent
@@ -62,6 +66,14 @@ pub enum Wrap {
     Torus,
 }
 
+impl GridSpec {
+    /// A square grid of `side` squares a side, whose edges stop a move.
+    #[must_use]
+    pub const fn square(side: u16) -> Self {
+        Self { cols: side, rows: side, wrap: Wrap::Edges }
+    }
+}
+
 #[derive(Debug)]
 pub struct Grid {
     spec: GridSpec,
@@ -81,12 +93,21 @@ impl Grid {
 
 #[must_use]
 pub const fn board() -> Grid {
-    Grid::new(&GridSpec { cols: 8, rows: 8, wrap: Wrap::Edges })
+    Grid::new(&GridSpec { cols: 12, rows: 8, wrap: Wrap::Torus })
+}
+
+#[must_use]
+pub const fn chessboard() -> Grid {
+    Grid::new(&GridSpec::square(8))
 }
 ```
 
 Held by review. A builder that is right has `#[must_use]` on each method that
 returns `Self`: `clippy::return_self_not_must_use` asks for it.
+
+In a published crate, a new field on a spec that callers build as a literal
+breaks each of them. A spec there that will grow is `#[non_exhaustive]`, with a
+constructor callers start from, as the rule on exhaustive types below says.
 
 ## A Newtype Has a Private Field, `new` and `get`
 
@@ -197,7 +218,7 @@ Held by review.
 ## Check at the Boundary, and Let the Type Carry the Proof
 
 Input is checked once, where it enters, by a constructor that returns a typed
-refusal: `FromStr`, `TryFrom`, or a `parse` door. Past that point a function
+refusal: `FromStr`, `TryFrom`, or a `parse` function. Past that point a function
 takes the checked type and never checks again, because holding one is the proof.
 A string or an integer that stands for something checked is not passed around as
 itself.
@@ -406,9 +427,10 @@ Under `strict`, `missing_debug_implementations` refuses a public type with no
 
 A type whose natural empty value needs no arguments implements `Default`, and a
 `new()` beside it returns `Self::default()`, so the two cannot drift. Where a
-default would mislead, a `new()` that panics without a precondition, the type
-has no `Default`, and the `#[expect]` on `new` says why. A spec has no
-`Default`: its fields are written at every call site.
+default would mislead, the type has none, and an `#[expect]` on its `new` says
+why: a `new` that reads the clock, or one that panics until a startup
+precondition holds, is no value a caller could assume. A spec has no `Default`:
+its fields are written at every call site.
 
 ```rust,compile_fail
 // fails: clippy::new_without_default
@@ -606,8 +628,8 @@ Held by review.
 ## State Lives in the Type
 
 Where a call is valid only in some states, the state is a type parameter, a
-marker type such as `Editing` or `Sealed`, and each state's doors sit on its own
-`impl`, so a wrong call does not compile. A value that must be used once is
+marker type such as `Editing` or `Sealed`, and each state's methods sit on its
+own `impl`, so a wrong call does not compile. A value that must be used once is
 taken by value, so after it is spent nothing can use it.
 
 ```rust,compile_fail

@@ -72,12 +72,13 @@ impl Tally {
 ```rust
 use std::io;
 
+use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 use tokio::sync::Mutex;
 
-/// Appends one move to the log; the guard spans both writes, so two moves
+/// Appends one move to the log file; the guard spans both writes, so two moves
 /// never interleave.
-pub async fn log_move(log: &Mutex<Vec<u8>>, line: &[u8]) -> io::Result<()> {
+pub async fn log_move(log: &Mutex<File>, line: &[u8]) -> io::Result<()> {
     let mut log = log.lock().await;
     log.write_all(line).await?;
     log.write_all(b"\n").await
@@ -474,22 +475,28 @@ Held by review.
 A service, and async code generally, logs through `tracing`, whose events carry
 fields a collector can filter on. The message is a stable lowercase phrase with
 no final period, and every value is a field, never text in the message, so each
-line of one kind reads alike and can be searched. Every error path logs its
-error as `error = %e` before it drops or converts it; an `Err(_)` or an
-`is_err()` that logs nothing hides the failure. A library emits events and never
-installs a subscriber, which is the binary's. A secret, a token or a user's data
-is never a field. Code that takes no logging crate reports through what it
-returns, and only a binary prints, where an operator watches.
+line of one kind reads alike and can be searched. An error is logged once, where
+it is handled, dropped, retried or answered, as `error = %e`: code that passes
+it on with `?` or `map_err` does not log it, or the one failure is logged at
+every level it crosses. An `Err(_)` or an `is_err()` that logs nothing hides the
+failure. A library emits events and never installs a subscriber, which is the
+binary's. A secret, a token or a user's data is never a field. Code that takes
+no logging crate reports through what it returns, and only a binary prints,
+where an operator watches.
 
 ```rust
 use std::path::Path;
 
 use tokio::fs;
+use tokio::sync::mpsc;
 
-pub async fn save(board: &[u8], path: &Path) -> bool {
-    // Bad: the values are in the message, and a failed save is dropped unlogged.
-    tracing::info!("Saving {} squares to {}.", board.len(), path.display());
-    fs::write(path, board).await.is_ok()
+pub async fn autosave(mut boards: mpsc::Receiver<Vec<u8>>, path: &Path) {
+    while let Some(board) = boards.recv().await {
+        // Bad: the values are in the message, and a failed save goes unlogged.
+        if fs::write(path, &board).await.is_ok() {
+            tracing::info!("Saved {} squares to {}.", board.len(), path.display());
+        }
+    }
 }
 ```
 
@@ -497,17 +504,17 @@ pub async fn save(board: &[u8], path: &Path) -> bool {
 use std::path::Path;
 
 use tokio::fs;
+use tokio::sync::mpsc;
 
-pub async fn save(board: &[u8], path: &Path) -> bool {
-    match fs::write(path, board).await {
-        Ok(()) => {
-            tracing::info!(squares = board.len(), path = %path.display(), "board saved");
-            true
-        },
-        Err(e) => {
-            tracing::warn!(error = %e, path = %path.display(), "board save failed");
-            false
-        },
+/// Saves each board it is sent, until the senders are gone.
+pub async fn autosave(mut boards: mpsc::Receiver<Vec<u8>>, path: &Path) {
+    while let Some(board) = boards.recv().await {
+        match fs::write(path, &board).await {
+            Ok(()) => tracing::debug!(squares = board.len(), "board saved"),
+            // Handled here: the next board tries again, so the error is logged
+            // and dropped.
+            Err(e) => tracing::warn!(error = %e, path = %path.display(), "board save failed"),
+        }
     }
 }
 ```

@@ -1,6 +1,6 @@
 ---
 name: writing-rust
-description: Use when writing, changing or reviewing Rust code, whether a crate, module, type, trait, function or error type; when choosing between an error and a panic, a newtype and an alias, a spec struct and a builder, a borrow and a clone; when a rustc or clippy lint fires or an `#[expect]` needs a reason. Covers errors, crate and module layout, naming, API design, ownership and lints. Not for unsafe code or atomics.
+description: Use when writing, changing or reviewing Rust code, whether a crate, module, type, trait, function or error type; when choosing between an error and a panic, a newtype and an alias, a spec struct and a builder, a borrow and a clone; when a rustc or clippy lint fires or an `#[expect]` needs a reason. Covers errors, crate and module layout, naming, API design, ownership and lints{% if "async" in devset.features %}, and async Rust on tokio{% endif %}.
 ---
 
 # Writing Rust
@@ -13,14 +13,26 @@ it, each with its reason. The references hold each rule's why, a bad and a good
 example that compile under the workspace's lints, and what holds the rule.
 Unsafe code is out of scope for this skill.
 
+The examples leave their docs out to stay short, and compile with the lints that
+ask for docs off; real code writes them: `# Errors` on a public function that
+returns a `Result`, and `# Panics` on one that can panic.
+{%- if "strict" in devset.features %}
+
+Under `strict`, real code also documents every item.
+{%- endif %}
+{%- set rustdoc = devset.layers | selectattr("profile", "equalto", "rust-doc") | map(attribute="features") | first | default([]) %}
+{%- set manifests = devset.layers | selectattr("profile", "equalto", "cargo-manifest") | map(attribute="features") | first | default([]) %}
+{%- set tooling = devset.layers | selectattr("profile", "equalto", "devset") | map(attribute="features") | first | default([]) %}
+
 ## Rules
 
 ### Errors
 
 1. **Return an error for anything a caller can cause, and panic only for a
    broken invariant**, since a library cannot know whether its caller can
-   recover. A panicking door carries `#[track_caller]`, a `# Panics` section and
-   an `expect` whose message states the invariant.
+   recover. A function that panics carries `#[track_caller]`, a `# Panics`
+   section and an `expect` whose message states the invariant; a `debug_assert!`
+   checks what the type's own code keeps, never a caller's input.
 2. **One private `errors.rs` a crate, its types re-exported flat from
    `lib.rs`**, so one file says every way the crate refuses. A public module
    with refusals of its own has its own.
@@ -39,8 +51,8 @@ Unsafe code is out of scope for this skill.
    happen. Whether a retry could succeed is in the type: `TryError`, or a
    variant documented as transient.
 7. **Alias an error type, never `Result`**, so each signature names its error. A
-   binary returns a boxed `Error + Send + Sync` and fails once with
-   `io::Error::other`; nothing uses anyhow.
+   binary returns `Result<(), BoxError>`, and a failure only an operator reads
+   is `io::Error::other("…")`; nothing uses anyhow.
 8. **A dropped error is named, `|_gone|`**, so a reader sees the drop was
    chosen.
 
@@ -53,61 +65,87 @@ Unsafe code is out of scope for this skill.
 2. **Inside a private module, what the crate does not export is `pub(crate)` or
    `pub(super)`**, so an item says how far it reaches.
 3. **A module with children is `mod.rs`, and every module is a singular noun for
-   what it holds**: `errors.rs`, `testing.rs` and `consts.rs` are fixed, and
-   none is `utils`, `helpers` or `common`.
+   what it holds**: `errors.rs`, `testing.rs` and `consts.rs` are fixed, what
+   integration tests share is `tests/testing/mod.rs`, and none is `utils`,
+   `helpers` or `common`.
+4. **What a macro calls is `#[doc(hidden)] pub`, named with `__`**, so no caller
+   takes it for the API.
 
-### Names, API and Ownership
+### Names
 
 1. **Names follow `references/naming.md`**: no `get_`; `as_`, `to_` and `into_`
    by cost; `try_` refuses, `_with` takes a closure, `_in` an allocator; `new`
    builds, `create` lays, `open` binds, `open_or_create` does either; `*Spec`
    for one call's parameters, `*Config` for a program's settings, `*Guard` and
-   `*Error` by role, never `*Options`; an acronym is one word.
-2. **A call that creates or opens something takes a `*Spec` of public fields,
-   passed by reference, not a builder**, so every field is written where it is
-   used.
-3. **A newtype has a private field and `const fn new` and `get`**, so two
+   `*Error` by role, never `*Options`; an acronym is one word; a type parameter
+   is one capital letter.
+2. **A type's one value is an associated constant, `Pos::ORIGIN`, and a
+   yes-or-no method starts `is_` or `has_`**, with `is_empty` beside every
+   `len`.
+3. **A collection's iterators are `iter` and `iter_mut`, each with its
+   `IntoIterator` impl**, so `for` works on it as on a slice.
+4. **One word for one thing**, in names, docs, messages and tests, so a second
+   word never reads as a second thing.
+
+### API
+
+1. **A call that creates or opens something, with three parameters or more,
+   takes a `*Spec` of public fields, passed by reference, not a builder**, so
+   every field is written where it is used; one or two plain values stay
+   arguments.
+2. **A newtype has a private field and `const fn new` and `get`**, so two
    meanings of one primitive cannot be swapped; an alias only where the name is
    worth having and a second type is not.
-4. **Check input once, at the boundary, with `FromStr` or `TryFrom` and a typed
+3. **Check input once, at the boundary, with `FromStr` or `TryFrom` and a typed
    error**, so holding the type is the proof; `From` only for what cannot fail,
    and never `Into`.
+4. **`Display` and `FromStr` agree on one spelling**, pinned by a round-trip
+   test, so what a program prints a user can type.
 5. **State lives in the type, as a marker parameter or a value spent by value**,
    so a wrong call does not compile; a trait callers must not implement is
    sealed.
-6. **`#[must_use]` on a pure function, with a reason on a guard, and never on a
-   `Result`**, which has it already.
+6. **`#[must_use]` on a pure function, with a reason on a guard, one in an
+   `Option` too, and never on a `Result`**, which has it already.
 7. **Derive `Debug` always, and each common trait the type's meaning supports**;
    `Default` where one value is obvious, with `new` delegating to it; bounds on
    the `impl`, not the type.
-8. **Enums and structs are exhaustive; `#[non_exhaustive]` goes only on a
+8. **A public signature names its generics, and dispatch is static**, `dyn` only
+   at an edge, a boxed error or a `&mut dyn fmt::Write`, so a caller can name
+   each type and pays for no call it did not need.
+9. **Enums and structs are exhaustive; `#[non_exhaustive]` goes only on a
    published crate's type that is meant to grow, judged type by type**, since it
    costs every caller its exhaustive match.
-9. **Borrow `&str` and `&[T]`, take a value only where it is kept, and pass a
-   small `Copy` value by value**, so a caller never builds or gives up what the
-   function only reads.
-10. **Clone only what must be owned twice, and an `Arc` as
-    `Arc::clone(&board)`**; `Arc` across threads, `Rc` within one; `Cow` where
-    the input usually comes back unchanged.
-11. **Let lifetimes elide, and name one only to tie two together**; write `'_`
-    in a path, and `use<>` on a returned `impl Trait` that borrows nothing.
+
+### Ownership
+
+1. **Take a value only where it is kept, pass a small `Copy` value by value, and
+   a `*Spec` by reference**, so a caller never gives up what the function only
+   reads.
+2. **Clone only what must be owned twice, and an `Arc` as
+   `Arc::clone(&board)`**; `Arc` across threads, `Rc` within one; `Cow` where
+   the input usually comes back unchanged.
+3. **Write `'_` in a path, and `use<>` on a returned `impl Trait` that borrows
+   nothing**, so a signature shows what it borrows.
 
 ### Lints
 
 1. **Answer a lint by fixing the code; where it misreads, write `#[expect(lint,
    reason = "…")]` at the narrowest scope, never `#[allow]`**, since an
-   `#[expect]` fails once its cause is gone. The reason is one lowercase clause
-   saying why the lint is wrong here.
+   `#[expect]` fails once its cause is gone, in every build it must hold in. The
+   reason is one lowercase clause saying why the lint is wrong here.
 2. **A crate inherits the lint table whole, `[lints] workspace = true`**: the
-   table is devset's, and a level wrong for the repository is changed in the
-   profile.
+   table is devset's to manage, and never edited by hand.
+{%- if "agents" in tooling %}
+
+How a managed key is changed is `using-devset`'s.
+{%- endif %}
 {%- if "strict" in devset.features %}
 
 Under `strict`, the lints hold more:
 
 - **No panics in library code**: `unwrap`, `expect`, `panic!`, indexing and
-  their kin are refused, and a broken invariant's door names its reason in an
-  `#[expect]`.
+  their kin are refused, and a function that panics on a broken invariant names
+  its reason in an `#[expect]`.
 - **No `as`**: `From` for a widening, `TryFrom` for the rest.
 - **Arithmetic says how it overflows**: `checked_`, `saturating_` or
   `wrapping_`, whichever it means.
@@ -115,36 +153,38 @@ Under `strict`, the lints hold more:
   `std`, with `std` a feature that only adds.
 - **Every item is documented**, private ones and fields included.
 - **`print_stdout` only in a binary, with a reason**, and `dbg!` never.
-- **A match names every variant, and a public signature names its generics**,
-  never `impl Trait` in an argument.
+- **A match names every variant**, never a wildcard on an enum the crate owns.
 {%- endif %}
-{%- set rustdoc = devset.layers | selectattr("profile", "equalto", "rust-doc") | map(attribute="features") | first | default([]) %}
-{%- set manifests = devset.layers | selectattr("profile", "equalto", "cargo-manifest") | map(attribute="features") | first | default([]) %}
 
 ## Steps
 
 Read each reference a step names, whole, before writing the code.
 
-1. **A new crate**: `references/layout.md` for `lib.rs` and its modules, and
+1. **Changing existing code**: read the module and its neighbours first, and
+   match their names, error types and shape; a rule here that they break is
+   named in the change's description, not fixed in passing.
+2. **A new crate**: `references/layout.md` for `lib.rs` and its modules, and
    `references/errors.md` for its `errors.rs`. Its manifest has `[lints]
    workspace = true` and nothing else under `[lints]`.
-2. **A new module**: `references/layout.md` and `references/naming.md`: private,
+3. **A new module**: `references/layout.md` and `references/naming.md`: private,
    `mod.rs` if it will have children, its items `pub(crate)` unless the root
    re-exports them by name.
-3. **A new error type**: `references/errors.md`, whole. Name the question it
+4. **A new error type**: `references/errors.md`, whole. Name the question it
    answers; put it in the crate's `errors.rs` and re-export it; derive `Debug,
    Error, Clone, Copy, PartialEq, Eq` where the payload allows; write the
    message; choose `#[from]` or a prefix; hand a refused value back; pin
    impossible arms to `Infallible`; add a test that pins how it renders.
-4. **A new public type or function**: `references/api-design.md`,
+5. **A new public type or function**: `references/api-design.md`,
    `references/naming.md` and `references/ownership.md`: a spec, a newtype or a
    typestate; its derives; constructors and conversions by name; `#[must_use]`;
    borrowed parameters; named generics.
-5. **A lint that fires**: find it in `references/lints.md` and write what it
+6. **A binary**: `references/errors.md`, for a `main` that returns `Result<(),
+   BoxError>` and failures only an operator reads, which are `io::Error::other`.
+7. **A lint that fires**: find it in `references/lints.md` and write what it
    asks. Only where the lint misreads the code, `#[expect]` it at the narrowest
    scope with a reason; never edit the lint table or give a crate its own
    `[lints.clippy]`.
-6. **Before finishing**: the checks below, until they pass.
+8. **Before finishing**: the checks below, until they pass.
 {%- if "async" in devset.features %}
 
 Async code on tokio also reads `references/async.md`, whole: its locks,
@@ -175,27 +215,27 @@ Every manifest follows `editing-cargo-manifests`.
 
 ## What Not to Do
 
-| Thought                                        | Instead                                                                        |
-| ---------------------------------------------- | ------------------------------------------------------------------------------ |
-| "`#[allow]`, just this once"                   | `#[expect(lint, reason = "…")]` at the site: it fails once the cause is gone.  |
-| "A `String` error is enough here"              | A type for the question, its facts as fields; in a binary, `io::Error::other`. |
-| "`anyhow` keeps the library simple"            | thiserror types a caller can match; `anyhow` erases them.                      |
-| "One `Error` enum for the whole crate"         | One type for each question a verb can be asked.                                |
-| "`#[error("load error: {0}")]` on a `#[from]`" | `#[error(transparent)]`, or render the cause and expose nothing.               |
-| "Clamp the index to the last square"           | Refuse it with the index and the length; clamping hides the caller's mistake.  |
-| "`get_cols()` reads clearly"                   | `cols()`.                                                                      |
-| "A builder for these three fields"             | A `*Spec` literal, passed by reference.                                        |
-| "`pub` is simpler than `pub(crate)`"           | `pub(crate)` inside a private module.                                          |
-| "`.clone()` to quiet the borrow checker"       | Shape the borrow: a shorter scope, a reference kept, a move.                   |
-| "`#[non_exhaustive]`, for the future"          | Exhaustive; only a published type meant to grow, judged one by one.            |
-| "`[lints.clippy]` in this crate's manifest"    | Cargo refuses it; `#[expect]` at the site.                                     |
+| Thought                                                  | Instead                                                                        |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| "`#[allow]`, just this once"                             | `#[expect(lint, reason = "…")]` at the site: it fails once the cause is gone.  |
+| "A `String` error is enough here"                        | A type for the question, its facts as fields; in a binary, `io::Error::other`. |
+| "`anyhow` keeps the library simple"                      | thiserror types a caller can match; `anyhow` erases them.                      |
+| "One `Error` enum for the whole crate"                   | One type for each question a verb can be asked.                                |
+| "`#[error("load error: {0}")]` on a `#[from]`"           | `#[error(transparent)]`, or render the cause and expose nothing.               |
+| "Clamp the index to the last square"                     | Refuse it with the index and the length; clamping hides the caller's mistake.  |
+| "`get_cols()` reads clearly"                             | `cols()`.                                                                      |
+| "A builder for these three fields"                       | A `*Spec` literal, passed by reference.                                        |
+| "`impl Trait` in this public argument"                   | A named generic, `fn fill_with<F: FnMut() -> u8>`.                             |
+| "`pub` is simpler than `pub(crate)`"                     | `pub(crate)` inside a private module.                                          |
+| "`.clone()` to quiet the borrow checker"                 | Shape the borrow: a shorter scope, a reference kept, a move.                   |
+| "`#[non_exhaustive]`, for the future"                    | Exhaustive; only a published type meant to grow, judged one by one.            |
+| "`[lints.clippy]` here, or a level changed in the table" | Cargo refuses the first, devset reports the second; `#[expect]` at the site.   |
 {%- if "strict" in devset.features %}
 
 Under `strict`, also:
 
 | Thought                                 | Instead                                                                |
 | --------------------------------------- | ---------------------------------------------------------------------- |
-| "`impl Trait` in this public argument"  | A named generic, `fn fill_with<F: FnMut() -> u8>`.                     |
 | "`unwrap()`, it cannot fail"            | `?` or `ok_or`; for a broken invariant, `expect` under an `#[expect]`. |
 | "`as u16` is fine, it fits"             | `u16::try_from`, or `u32::from` for a widening.                        |
 | "`row + 1` cannot overflow here"        | `checked_add`, `saturating_add` or `wrapping_add`, as it means.        |
@@ -210,8 +250,7 @@ after compaction: this body is the summary, and the examples are there.
 
 - `references/errors.md`: before an error type, a public `Result`, a `?` that
   crosses a module, a panic, an `expect`, or a binary's `main`.
-- `references/layout.md`: before a crate, a module, a file, a re-export or a
-  binary.
+- `references/layout.md`: before a crate, a module, a file or a re-export.
 - `references/naming.md`: before naming or renaming anything a caller sees.
 - `references/api-design.md`: before a public type, trait, constructor,
   conversion or signature.

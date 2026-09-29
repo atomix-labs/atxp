@@ -2,40 +2,17 @@
 
 Read this before choosing how a function takes or returns a value, before a
 `.clone()`, an `Arc`, an `Rc`, a `Cow` or a named lifetime, and when the borrow
-checker refuses a call. It says who owns what, and how a signature says so.
-
-## Borrow `&str` and `&[T]`, Never `&String` or `&Vec<T>`
-
-A `&String` or `&Vec<T>` parameter asks the caller for an allocation it may not
-have, a literal or an array, and offers the function nothing more than the
-slice. A path the function only reads is `&Path`, which takes a `&PathBuf` but
-not a `&str`; one that takes any spelling of a path is generic over `P:
-AsRef<Path>`.
-
-```rust,compile_fail
-// fails: clippy::ptr_arg
-// Bad: a caller with an array must build a `Vec` to ask.
-#[must_use]
-pub fn count(squares: &Vec<u8>) -> usize {
-    squares.iter().filter(|&&tile| tile != 0).count()
-}
-```
-
-```rust
-#[must_use]
-pub fn count(squares: &[u8]) -> usize {
-    squares.iter().filter(|&&tile| tile != 0).count()
-}
-```
-
-Held by `clippy::ptr_arg`.
+checker refuses a call. Slices over owned parameters, `.clone()` on a `Copy`
+value and needless lifetimes are clippy's defaults, in `lints.md`'s table. It
+says who owns what, and how a signature says so.
 
 ## Take a Value Only Where the Function Keeps It
 
 A parameter taken by value is a value the caller gives up, which is right when
 the function stores it or hands it on, and a needless move or clone otherwise. A
 function that keeps what it is given takes it by value, so a caller that has one
-to spare moves it in rather than the function cloning a borrow.
+to spare moves it in rather than the function cloning a borrow. One that only
+reads takes a slice, `&str` or `&[T]`, which `clippy::ptr_arg` holds.
 
 ```rust,compile_fail
 // fails: clippy::needless_pass_by_value
@@ -71,7 +48,9 @@ Held by `clippy::needless_pass_by_value`.
 
 A value that is `Copy` and a few words wide costs nothing to copy, and a
 reference to it costs an indirection and a lifetime to read; it is taken by
-value. A large value is borrowed, or boxed where it moves often.
+value. A large value is borrowed, or boxed where it moves often. A `*Spec` is
+the exception: it is always passed by reference, `Grid::new(&spec)`, `Copy` or
+not, so a spec that later gains a field that is not `Copy` changes no call site.
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -106,41 +85,43 @@ Held by review: `clippy::trivially_copy_pass_by_ref` and
 ## Clone Only What Must Be Owned Twice
 
 A clone is a copy of everything the value owns, so it appears where two owners
-need the value, not to quiet the borrow checker. Before one, the code is shaped
-so a borrow lasts long enough: a shorter scope, a reference kept instead of a
-value, a value moved rather than copied. A `Copy` value is never cloned: it is
-copied by naming it.
+need the value, not to quiet the borrow checker or to save a caller a borrow.
+Before one, the code is shaped so a borrow lasts long enough: a shorter scope, a
+reference kept instead of a value, a value moved rather than copied. A method
+that reads a field returns a borrow of it, and a caller that keeps it clones it
+there.
 
-```rust,compile_fail
-// fails: clippy::clone_on_copy
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
-    pub row: u16,
+```rust
+#[derive(Debug, Default)]
+pub struct Legend {
+    labels: Vec<String>,
 }
 
-#[must_use]
-pub fn start(path: &[Pos]) -> Option<Pos> {
-    // Bad: `clone` on a `Copy` value.
-    path.first().map(|at| at.clone())
+impl Legend {
+    // Bad: a new `String` for every caller, though most only read it.
+    #[must_use]
+    pub fn first(&self) -> Option<String> {
+        self.labels.first().cloned()
+    }
 }
 ```
 
 ```rust
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
-    pub row: u16,
+#[derive(Debug, Default)]
+pub struct Legend {
+    labels: Vec<String>,
 }
 
-#[must_use]
-pub const fn start(path: &[Pos]) -> Option<Pos> {
-    path.first().copied()
+impl Legend {
+    #[must_use]
+    pub fn first(&self) -> Option<&str> {
+        self.labels.first().map(String::as_str)
+    }
 }
 ```
 
-Held by `clippy::clone_on_copy`, and `clippy::implicit_clone` for a `to_owned`
-that is a clone.
+Held by review, and by `clippy::implicit_clone` for a `to_owned` that is a
+clone.
 {%- if "strict" in devset.features %}
 
 Under `strict`, `clippy::redundant_clone` refuses a clone whose original is
@@ -278,46 +259,12 @@ pub fn label(name: &str) -> Cow<'_, str> {
 
 Held by review.
 
-## Let Lifetimes Elide, and Name One Only to Tie Two Together
-
-The elision rules give a function with one borrowed input, or a method on
-`&self`, the lifetime it needs, so a named lifetime there is noise. A lifetime
-is named where it says something the rules cannot: that the result borrows from
-one input of several, or that two inputs live as long as each other.
-
-```rust,compile_fail
-// fails: clippy::needless_lifetimes
-// Bad: `'a` says what elision already says.
-#[must_use]
-pub const fn first<'a>(squares: &'a [u8]) -> Option<&'a u8> {
-    squares.first()
-}
-```
-
-```rust
-#[must_use]
-pub const fn first(squares: &[u8]) -> Option<&u8> {
-    squares.first()
-}
-
-/// The longer of two rows: the result borrows from either, so both carry `'a`.
-#[must_use]
-pub const fn longer<'a>(top: &'a [u8], bottom: &'a [u8]) -> &'a [u8] {
-    if top.len() >= bottom.len() { top } else { bottom }
-}
-```
-
-Held by `clippy::needless_lifetimes`.
-{%- if "strict" in devset.features %}
-
-Under `strict`, `single_use_lifetimes` refuses a lifetime named once, where `'_`
-would do, and `unused_lifetimes` one named and never used.
-{%- endif %}
-
 ## A Type That Borrows Shows It: `Formatter<'_>`
 
 A type with a lifetime parameter is written with it, `'_` where elision fills it
-in, so a reader sees at the signature that the value borrows.
+in, so a reader sees at the signature that the value borrows. A lifetime is
+named only to tie an output to one input of several, as `fn longer<'a>(top: &'a
+[u8], bottom: &'a [u8]) -> &'a [u8]`; elsewhere elision supplies it.
 
 ```rust,compile_fail
 // fails: elided_lifetimes_in_paths
