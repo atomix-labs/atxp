@@ -7,6 +7,10 @@ devset      = ">=0.5.0"
 rust-toolchain = {}
 
 [features]
+# The writing-rust skill, in .claude/skills/.
+agents = []
+# writing-rust's reference for async Rust on tokio.
+async   = []
 nightly = []
 strict  = []
 
@@ -16,3 +20,37 @@ template = true
 
 [files.".just/rust-lints.just"]
 when = { features = ["nightly"] }
+
+[files.".claude/skills/writing-rust/SKILL.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust/references/api-design.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust/references/async.md"]
+when = { features = ["agents", "async"] }
+
+[files.".claude/skills/writing-rust/references/errors.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust/references/layout.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust/references/lints.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust/references/naming.md"]
+when = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust/references/ownership.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust/references/sources.md"]
+template = true
+when     = { features = ["agents"] }

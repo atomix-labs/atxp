@@ -25,19 +25,40 @@ stable. A crate that enables them itself, as one built on nightly alone may, is
 no fault: the check allows the feature enabled twice. It goes on past a crate
 that fails, so one run names every crate to fix.
 
+The `agents` feature adds the `writing-rust` skill in `.claude/skills/`: how
+Rust is written here, in errors, crate and module layout, naming, API design,
+ownership and lints, each rule with a bad and a good example that compile under
+this wall, and what holds the rule. Where `strict` is on, it teaches the house
+policy the wall holds; it explains each lint the wall turns on, and how to
+answer one that misreads the code. The `async` feature adds the skill's
+reference for async Rust on tokio: locks across `.await`, bounded channels,
+blocking work, `JoinSet`, cancellation, `select!`, async traits and tests, and
+`tracing`.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                    | Part  | Policy | Notes             |
-| ----------------------- | ----- | ------ | ----------------- |
-| `Cargo.toml`            | keys  | owned  | template          |
-| `.just/rust-lints.just` | whole | owned  | feature `nightly` |
+| File                                                   | Part  | Policy | Notes                             |
+| ------------------------------------------------------ | ----- | ------ | --------------------------------- |
+| `Cargo.toml`                                           | keys  | owned  | template                          |
+| `.just/rust-lints.just`                                | whole | owned  | feature `nightly`                 |
+| `.claude/skills/writing-rust/SKILL.md`                 | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/api-design.md` | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/async.md`      | whole | owned  | feature `agents`, feature `async` |
+| `.claude/skills/writing-rust/references/errors.md`     | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/layout.md`     | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/lints.md`      | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/naming.md`     | whole | owned  | feature `agents`                  |
+| `.claude/skills/writing-rust/references/ownership.md`  | whole | owned  | template, feature `agents`        |
+| `.claude/skills/writing-rust/references/sources.md`    | whole | owned  | template, feature `agents`        |
 
 ## Features
 
 | Feature   | Default | Enables |
 | --------- | ------- | ------- |
+| `agents`  |         |         |
+| `async`   |         |         |
 | `nightly` |         |         |
 | `strict`  |         |         |
 

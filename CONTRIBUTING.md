@@ -245,9 +245,9 @@ What the check cannot hold a skill to, its author does:
 - Its description says when to use it, in the third person, in the words a task
   is asked in, and what it covers; never its steps, which an agent would follow
   instead of the body.
-- Its body is about 150 lines at most: the rules first, then the steps, then the
-  checks, then what not to do. Longer material goes in `references/`, one level
-  deep, each named where the body needs it.
+- Its body keeps its order: the rules first, then the steps, then the checks,
+  then what not to do. Longer material goes in `references/`, one level deep,
+  each named where the body needs it.
 - In a template, template language meant as text sits inside `{% raw %}`.
 
 Whether a skill works, only an agent shows, so its author validates it with one,

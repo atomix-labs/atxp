@@ -45,6 +45,7 @@ DEPENDENCIES = {
     "thiserror": 'thiserror = { version = "2", default-features = false }',
     "derive_more": 'derive_more = { version = "2", features = ["debug", "display"] }',
     "tokio": 'tokio = { version = "1", features = ["full"] }',
+    "tracing": 'tracing = "0.1"',
 }
 # An example's manifest: the workspace's package fields and lints, and the crates it names.
 MANIFEST = """\

@@ -164,12 +164,12 @@ and devset's commands that only read, and deny publishing; the hooks keep the
 agent at work until `just check` passes on what its turn changed.
 
 A profile whose concern an agent needs taught ships a skill, in
-`.claude/skills/<skill>/`, under its own `agents` feature: `rust-doc`,
-`cargo-manifest`, `devset`, `devset-collection`, `github-ci`, `github-release`
-and `mdbook` do. `git-commits`, `cargo-deny` and `mdbook` add a block to
-AGENTS.md where there is one. The bundle's `agents` turns on the layer and every
-one of them. A skill is a template like any payload, so it names a recipe only
-where the profile that provides it is applied.
+`.claude/skills/<skill>/`, under its own `agents` feature: `rust-lints`,
+`rust-doc`, `cargo-manifest`, `devset`, `devset-collection`, `github-ci`,
+`github-release` and `mdbook` do. `git-commits`, `cargo-deny` and `mdbook` add a
+block to AGENTS.md where there is one. The bundle's `agents` turns on the layer
+and every one of them. A skill is a template like any payload, so it names a
+recipe only where the profile that provides it is applied.
 
 ## The Repository
 
