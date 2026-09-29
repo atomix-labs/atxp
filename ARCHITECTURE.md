@@ -199,7 +199,8 @@ applies it with `pins`:
   rule of CONTRIBUTING.md: a name unique and its directory's, requirements the
   collection resolves, recipes named `<verb>-<name>`, helpers beside them, one
   declaration of each variable, one mise across every workflow, and skills in
-  the house form that run only the collection's recipes.
+  the house form, guides and passes, each recipe and skill they name gated on
+  the profile that provides it.
 - **The pins**: every profile's lock entries match its pins, for every platform,
   gated as its pins are; `bump-devset-collection` moves them.
 - **The suite**, `test-devset-collection`: every profile alone, with its default

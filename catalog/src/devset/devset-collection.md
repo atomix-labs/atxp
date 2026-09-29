@@ -35,10 +35,18 @@ with `collection_description`.
   `.just/<name>.<ext>` or under `.just/<name>/`, and its pins are in
   `.config/mise/conf.d/devset-<name>.toml`. A variable several profiles declare,
   each declares alike; and every workflow a profile ships runs one mise. A skill
-  a profile ships, `.claude/skills/<skill>/SKILL.md`, opens with front matter of
-  `name` and `description` alone: the name its directory's, a gerund phrase, and
-  the description under 1024 characters. No file of a skill runs a recipe, `just
-  <recipe>` in its code, that no profile of the collection defines.
+  a profile ships, `.claude/skills/<skill>/SKILL.md`, is a guide or a pass. A
+  guide's front matter holds `name`, its directory's and a gerund phrase, and
+  `description` alone; a pass's, which runs forked, also `argument-hint`,
+  `context: fork`, `agent`, `model: inherit` and `background: false`, and may
+  hold `allowed-tools`, its name an imperative. The description starts "Use
+  when", under 1024 characters, and the body stays within 18,000. Every file of
+  a skill is an entry of the profile, its SKILL.md names each reference, and a
+  relative link leads to a file the profile ships. A recipe or skill that a
+  skill, AGENTS.md or CLAUDE.md names is one the collection has, under a
+  condition on the profile or the feature that provides it, unless the profile
+  requires that one. A Rust block is `rust` or `rust,compile_fail`, a failing
+  one says what it fails with, and none holds template syntax.
 - `just test-devset-collection` runs the suite, with the devset that
   [`devset`](devset.md) pins. Every profile alone, with its default features and
   with every feature, applies without drift. Then on each fixture in

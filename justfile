@@ -53,6 +53,10 @@ test-setup-stub:
 test-agents-hook:
     mise exec -- bash tests/agents-hook.sh
 
+# Tests the catalog check's skill form against skills that break it.
+test-skill-form:
+    mise exec -- bash tests/skill-form.sh
+
 # The nightly takes each feature alone.
 
 # Applies the rust bundle to an empty repository, with no features and with all, then checks it.

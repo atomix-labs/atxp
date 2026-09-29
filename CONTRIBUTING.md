@@ -199,10 +199,17 @@ rest as optional requirements its features turn on.
 
 A skill ships with the profile whose concern it serves, in
 `.claude/skills/<skill>/`, each of its files gated by that profile's `agents`
-feature. `check-devset-collection` holds each to its form: its name is the task
-it does, as a gerund, `writing-rustdoc`, and its `SKILL.md` names it the same in
-its front matter, which holds `name` and `description` alone, the description
-under 1024 characters. A recipe a skill runs is one a profile of atxp defines.
+feature. `check-devset-collection` holds each to its form. A guide teaches while
+the agent works, and is named for the task, as a gerund, `writing-rustdoc`; a
+pass runs forked on finished work and reports, and is named for its command, an
+imperative, `review-rust`. Its `SKILL.md` names it the same in its front matter,
+which holds `name` and `description`, and for a pass also `argument-hint`,
+`context: fork`, `agent`, `model: inherit` and `background: false`; the
+description starts "Use when", under 1024 characters, and the body stays within
+18,000. Every file of the skill is an entry of its profile, and the `SKILL.md`
+names each reference. A recipe or another profile's skill it names sits under a
+condition on the profile that provides it, and a Rust block is `rust` or
+`rust,compile_fail`.
 
 What the check cannot hold a skill to, its author does:
 

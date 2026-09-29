@@ -12,6 +12,7 @@ as site_pages.py says, and the README's tables then name the groups and link to 
 directory with no profiles has no catalog.
 """
 
+import bisect
 import itertools
 import json
 import os
@@ -67,22 +68,39 @@ GROUPED = 3
 # A skill a profile ships: its entry point, in the directory that names it.
 SKILLS = ".claude/skills/"
 SKILL = re.compile(rf"^{re.escape(SKILLS)}([^/]+)/SKILL\.md$")
-# A skill's name is the task it does, a gerund phrase: `writing-rustdoc`.
+# A skill's name is what it does: a guide's a gerund phrase, `writing-rustdoc`; a pass's an
+# imperative, `review-rust`, the command a person types.
 GERUND = re.compile(r"[a-z]+ing(?:-[a-z0-9]+)*")
-# A skill's front matter holds only the fields every agent that reads the format knows.
+IMPERATIVE = re.compile(r"(?![a-z]+ing(?:-|$))[a-z]+(?:-[a-z0-9]+)*")
+# A skill's front matter, between its two `---` lines, one field to a line.
 FRONT_MATTER = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
-FIELDS = ("name", "description")
+# A guide says what it is for; a pass also says how it runs: forked, with the session's model,
+# while the agent waits for its report.
+GUIDE = {"name", "description"}
+PASS = GUIDE | {"argument-hint", "context", "agent", "model", "background"}
+PASS_MAY = {"allowed-tools"}
+PASS_RUNS = {"context": "fork", "model": "inherit", "background": "false"}
+PASS_AGENTS = {"Explore", "general-purpose"}
 DESCRIPTION = 1024
-# Code in Markdown: a fenced block, or a span, which may wrap.
-CODE = re.compile(r"^```.*?^```|`[^`]+`", re.DOTALL | re.MULTILINE)
-# A recipe run in code: `just` opening a command, after any variables it sets; a placeholder, as
-# `just check-<name>`, names none.
+# Claude re-attaches the first 5,000 tokens of each skill after compaction: a body within this
+# survives whole.
+BODY = 18_000
+# Code in Markdown: a fenced block, closed by a fence as long, or a span, which may wrap, closed by
+# as many backticks as open it.
+CODE = re.compile(r"^(`{3,}).*?^\1`*[ \t]*$|(`+)(?!`).+?(?<!`)\2(?!`)", re.DOTALL | re.MULTILINE)
+# A link to a file beside it: relative, not a URL or an anchor.
+LINK = re.compile(r"\]\((?![a-z]+:|#)([^)#\s]+)")
+# The recipes run in code: `just` opening a command, after any variables it sets, then each recipe
+# it runs, the first a word and the rest `<verb>-<name>`; a placeholder, as `just check-<name>`,
+# names none.
 JUST = re.compile(
-    r"(?:^|&&|\|\||;)\s*(?:[A-Z_][A-Z0-9_]*=\S*\s+)*just\s+([a-z][a-z0-9-]*[a-z0-9])(?![\w<-])",
+    r"(?:^|&&|\|\||;)\s*(?:[A-Z_][A-Z0-9_]*=\S*\s+)*just\s+"
+    r"([a-z][a-z0-9-]*[a-z0-9](?![\w<-])(?:[ \t]+[a-z][a-z0-9]*-[a-z0-9-]*[a-z0-9](?![\w<-]))*)",
     re.M,
 )
-# A template's line that is only a tag or a comment, which renders to nothing.
-TAG = re.compile(r"^\s*\{[%#].*[%#]\}\s*$")
+# A template's line that is only a tag or a comment, which renders to nothing: one, so a line that
+# holds text between two tags is not.
+TAG = re.compile(r"^\s*(?:\{%(?:(?!%\}).)*%\}|\{#(?:(?!#\}).)*#\})\s*$")
 # What a recipe's comment says only with a feature on, which its facts mark with the feature.
 WITH = re.compile(
     r'\{%-?\s*if\s+"([a-z0-9-]+)"\s+in\s+devset\.features\s*-?%\}(.*?)\{%-?\s*endif\s*-?%\}',
@@ -90,6 +108,24 @@ WITH = re.compile(
 )
 # What a template renders: a tag, a comment or an expression.
 TEMPLATED = re.compile(r"\{[%#{]")
+# A template's conditions: what opens, turns and closes one, what a condition names, and a
+# variable that holds another layer's features.
+TAGS = re.compile(r"\{%-?\s*(if|elif|else|endif|set)\b(.*?)-?%\}", re.DOTALL)
+ACTIVE = re.compile(r'"([a-z0-9-]+)"\s+in\s+devset\.profiles')
+OWN = re.compile(r'"([a-z0-9-]+)"\s+in\s+devset\.features')
+ON = re.compile(r'"([a-z0-9-]+)"\s+in\s+([a-z_]+)\b')
+LAYER = re.compile(
+    r'([a-z_]+)\s*=\s*devset\.layers\s*\|\s*selectattr\(\s*"profile",\s*"equalto",\s*"([a-z0-9-]+)"'
+)
+# A condition that holds nothing it names: one of several alternatives, or a negation.
+EITHER = re.compile(r"(?<![\w-])(?:or|not)(?![\w-])")
+# What an agent reads: every recipe or skill it names must be there when it reads it.
+READ = (SKILLS, "AGENTS.md", "CLAUDE.md")
+# A code block, at any indent, closed by a fence as long: its info string and its body; how a Rust
+# block is marked; what a failing one says it fails with.
+FENCE = re.compile(r"^ *(`{3,})([^\n`]*)\n(.*?)^ *\1`*[ \t]*$", re.DOTALL | re.MULTILINE)
+RUST = {"rust", "rust,compile_fail"}
+FAILS = re.compile(r"\A *// fails: (?:clippy::[a-z_]+|[a-z_]+|E\d{4})\n")
 
 
 @dataclass(frozen=True)
@@ -228,9 +264,15 @@ def problems(found):
         for name, same in named.items()
         if len(same) > 1
     ]
-    known = set(VERBS) | {recipe for profile in found for recipe, _ in recipes(profile)}
+    definers = {recipe: profile.name for profile in found for recipe, _ in recipes(profile)}
+    shipped = {
+        skill.group(1): (profile.name, set(entry.get("when", {}).get("features", [])))
+        for profile in found
+        for path, entry in profile.files.items()
+        if (skill := SKILL.match(path))
+    }
     for profile in found:
-        out += profile_problems(profile, named) + skill_problems(profile, known)
+        out += profile_problems(profile, named) + skill_problems(profile, definers, shipped)
     return out + variable_problems(found) + mise_problems(found)
 
 
@@ -284,39 +326,210 @@ def profile_problems(profile, named):
     return out
 
 
-def skill_problems(profile, known):
-    """Each way a skill `profile` ships breaks the house form, or runs a recipe outside `known`."""
+def skill_problems(profile, definers, shipped):
+    """Each way what `profile` gives an agent to read breaks the form: a skill's front matter,
+    files and fences, and a recipe or skill it names where that one may be absent. `definers`
+    gives the profile that defines each recipe, `shipped` the profile that ships each skill, with
+    the features it ships with."""
     where, out = profile.path, []
-    for path in profile.files:
-        if not path.startswith(SKILLS):
+    for path, entry in profile.files.items():
+        if not path.startswith(READ):
             continue
         text = (profile.path / "files" / path).read_text()
         if skill := SKILL.match(path):
-            out += [f"{where}: {path}: {problem}" for problem in front_matter(skill.group(1), text)]
-        rendered = "\n".join(line for line in text.splitlines() if not TAG.match(line))
-        out += [
-            f"{where}: {path} runs `just {recipe}`, which no profile of the collection defines"
-            for code in CODE.findall(rendered)
-            for recipe in JUST.findall(code.strip("`"))
-            if recipe not in known
-        ]
+            name = skill.group(1)
+            out += [f"{where}: {path}: {problem}" for problem in front_matter(name, text)]
+            out += [f"{where}: {problem}" for problem in reference_problems(profile, name)]
+        out += [f"{where}: {path}: {problem}" for problem in fence_problems(text)]
+        gates = gate_problems(profile, path, entry, text, definers, shipped)
+        out += [f"{where}: {path} {problem}" for problem in gates]
+    return out
+
+
+def gate_problems(profile, path, entry, text, definers, shipped):
+    """Each recipe or skill that `text`, the file at `path` that `profile` ships as `entry`, names
+    where that one may be absent: another profile's, with no condition in force on that profile,
+    or a skill with no condition on the feature it ships with. A skill may name itself."""
+    when = entry.get("when", {})
+    mine = set(when.get("features", []))
+    present = {profile.name, *when.get("profiles", [])}
+    present |= {required for required, spec in profile.requires.items() if not spec.get("optional")}
+    own = path.removeprefix(SKILLS).split("/")[0] if path.startswith(SKILLS) else None
+    events, out = conditions(text), []
+    for span in CODE.finditer(masked(text)):
+        inner = span.group(0).strip("`")
+        start = span.start() + len(span.group(0)) - len(span.group(0).lstrip("`"))
+        for match in JUST.finditer(inner):
+            for recipe in match.group(1).split():
+                owner = definers.get(recipe)
+                if recipe in VERBS or owner in present:
+                    continue
+                if owner is None:
+                    out.append(f"names `just {recipe}`, which no profile of the collection defines")
+                elif not active(owner, at(events, start + match.start(1))):
+                    out.append(
+                        f"names `just {recipe}`, which {owner} defines: gate it on"
+                        f' `"{owner}" in devset.profiles`'
+                    )
+        name = inner.removeprefix("/")
+        if name not in shipped or name == own:
+            continue
+        owner, features = shipped[name]
+        held = at(events, span.start())
+        if owner == profile.name:
+            lacking = features - mine - {c[1] for c in held if c[0] == "feature"}
+            if lacking:
+                out.append(
+                    f"names `{name}`, which ships only with its {code(sorted(lacking))}: gate it on"
+                    " that feature, through `devset.features`"
+                )
+            continue
+        lacking = {feature for feature in features if ("layer", owner, feature) not in held}
+        if lacking:
+            out.append(
+                f"names `{name}`, which ships only with {owner}'s {code(sorted(lacking))}: gate it"
+                " on that feature, through `devset.layers`"
+            )
+        elif owner not in present and not active(owner, held):
+            out.append(
+                f'names `{name}`, which {owner} ships: gate it on `"{owner}" in devset.profiles`'
+            )
+    return out
+
+
+def active(owner, held):
+    """Whether the conditions `held` hold the profile `owner` active: by name, or by a feature."""
+    return any(condition[0] in ("profile", "layer") and condition[1] == owner for condition in held)
+
+
+def masked(text):
+    """`text` with each line that is only a template's tag or comment blanked, which renders to
+    nothing: what it says is not the file's. Each offset stays where it was."""
+    return "".join(
+        re.sub(r"[^\n]", " ", line) if TAG.match(line) else line
+        for line in text.splitlines(keepends=True)
+    )
+
+
+def conditions(text):
+    """The conditions in force from each offset of `text` on: `("profile", p)` where the profile
+    `p` is active, `("layer", p, f)` where its feature `f` is on, `("feature", f)` where this
+    profile's is. An `else` holds nothing its `if` did, and an `or` or a `not` nothing it names."""
+    layers, stack, events = {}, [], [(0, frozenset())]
+    for tag in TAGS.finditer(text):
+        kind, rest = tag.group(1), tag.group(2)
+        if kind == "set":
+            if layer := LAYER.search(rest):
+                layers[layer.group(1)] = layer.group(2)
+            continue
+        held = frozenset()
+        if not EITHER.search(rest):
+            held = frozenset(
+                {("profile", p) for p in ACTIVE.findall(rest)}
+                | {("feature", f) for f in OWN.findall(rest)}
+                | {("layer", layers[v], f) for f, v in ON.findall(rest) if v in layers}
+            )
+        if kind == "if":
+            stack.append(held)
+        elif kind in ("elif", "else") and stack:
+            stack[-1] = held if kind == "elif" else frozenset()
+        elif kind == "endif" and stack:
+            stack.pop()
+        events.append((tag.end(), frozenset().union(*stack)))
+    return events
+
+
+def at(events, offset):
+    """The conditions in force at `offset`, of the `events` `conditions()` gives."""
+    return events[bisect.bisect_right([start for start, _ in events], offset) - 1][1]
+
+
+def fence_problems(text):
+    """Each Rust block of `text` marked other than `rust` or `rust,compile_fail`, a failing block
+    that does not say what it fails with, and a Rust block that holds template syntax: each is
+    compiled as it stands."""
+    out = []
+    for fence in FENCE.finditer(text):
+        info, body = fence.group(2).strip(), fence.group(3)
+        line = text.count("\n", 0, fence.start()) + 1
+        if (info.startswith("rust") or info.split(",")[0] == "rs") and info not in RUST:
+            out.append(
+                f"line {line}: a Rust block is `rust` or `rust,compile_fail`, never `{info}`"
+            )
+        if info == "rust,compile_fail" and not FAILS.match(body):
+            out.append(f"line {line}: a failing block opens `// fails: <lint or error code>`")
+        if info in RUST and TEMPLATED.search(body):
+            out.append(f"line {line}: a Rust block holds no template syntax")
     return out
 
 
 def front_matter(name, text):
-    """Each way the front matter of the skill `name`'s SKILL.md, `text`, breaks the house form."""
+    """Each way the front matter and body of the skill `name`'s SKILL.md, `text`, break the form: a
+    guide's, or a pass's where it runs forked."""
     block = FRONT_MATTER.match(text)
-    fields = (
-        dict(line.partition(": ")[::2] for line in block.group(1).splitlines()) if block else {}
-    )
-    if set(fields) != set(FIELDS):
-        return [f"front matter holds {code(FIELDS)}, each on one line, and nothing else"]
+    pairs = (line.partition(": ")[::2] for line in block.group(1).splitlines()) if block else ()
+    fields = {key: value.strip('"') for key, value in pairs}
+    if "context" in fields:
+        missing, extra = PASS - set(fields), set(fields) - PASS - PASS_MAY
+        if missing or extra or any(fields[k] != v for k, v in PASS_RUNS.items()):
+            return [
+                f"a pass runs forked: its front matter holds {code(sorted(PASS))}, with "
+                "`context: fork`, `model: inherit` and `background: false`, and may hold "
+                "`allowed-tools`"
+            ]
+        if fields["agent"] not in PASS_AGENTS:
+            return [f"a pass runs on {code(sorted(PASS_AGENTS))}"]
+        shape, example = IMPERATIVE, "an imperative such as `review-rust`"
+    else:
+        if set(fields) != GUIDE:
+            return [
+                f"a guide's front matter holds {code(sorted(GUIDE))}, each on one line, and"
+                " nothing else"
+            ]
+        shape, example = GERUND, "a gerund phrase such as `writing-rustdoc`"
     out = []
-    if fields["name"] != name or not GERUND.fullmatch(name):
-        out.append(f"`name` is `{name}`, its directory, a gerund phrase such as `writing-rustdoc`")
-    if not 0 < len(fields["description"]) < DESCRIPTION:
-        out.append(f"`description` says what it does and when, in under {DESCRIPTION} characters")
+    if fields["name"] != name or not shape.fullmatch(name):
+        out.append(f"`name` is `{name}`, its directory, {example}")
+    description = fields["description"]
+    if not description.startswith("Use when") or len(description) >= DESCRIPTION:
+        out.append(f"`description` starts `Use when`, under {DESCRIPTION} characters")
+    if len(text) - block.end() > BODY:
+        out.append(f"the body is over {BODY} characters: move depth into `references/`")
     return out
+
+
+def reference_problems(profile, skill):
+    """Each file of the skill that the profile does not declare, each reference its SKILL.md does
+    not name, by a link or in code, and each relative link in the skill that leads outside what its
+    profile ships: a skill of another profile is named, never linked."""
+    root = f"{SKILLS}{skill}/"
+    declared = {path for path in profile.files if path.startswith(root)}
+    base = profile.path / "files"
+    on_disk = {p.relative_to(base).as_posix() for p in (base / root).rglob("*") if p.is_file()}
+    out = [f"{path} is not an entry of profile.toml" for path in sorted(on_disk - declared)]
+    body = (base / root / "SKILL.md").read_text()
+    spans = [span.group(0).strip("`") for span in CODE.finditer(body) if not span.group(1)]
+    named = {os.path.normpath(root + target) for target in links(body) + spans}
+    out += [
+        f"{path} is named nowhere in its SKILL.md, so no agent reads it"
+        for path in sorted(declared)
+        if path.startswith(root + "references/") and path.endswith(".md") and path not in named
+    ]
+    for path in sorted(declared & on_disk):
+        if not path.endswith(".md"):
+            continue
+        here = os.path.dirname(path)
+        for target in links((base / path).read_text()):
+            resolved = os.path.normpath(os.path.join(here, target))
+            if resolved not in profile.files:
+                out.append(f"{path} links `{target}`, which its profile does not ship")
+    return out
+
+
+def links(text):
+    """The target of each relative link in `text`, outside its code: a link in a Rust example is
+    rustdoc's, not the skill's."""
+    return LINK.findall(CODE.sub("", text))
 
 
 def helper(name, path):
