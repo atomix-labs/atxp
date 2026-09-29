@@ -1,7 +1,7 @@
 # Runs every `test-*` recipe, with the devset release atxp pins: the collection's suite, every profile
-# alone, then the bundle and every profile at once on each fixture; the setup stub's test; and the
-# bundle from nothing, with no features and with every feature. Require the job `profiles` beside
-# `check`.
+# alone, then the bundle and every profile at once on each fixture; the setup stub's test; the skill
+# form's test, and every Rust example the skills show, compiled; and the bundle from nothing, with
+# no features and with every feature. Require the job `profiles` beside `check`.
 name: profiles
 
 on:
