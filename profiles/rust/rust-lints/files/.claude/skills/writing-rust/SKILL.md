@@ -23,6 +23,7 @@ Under `strict`, real code also documents every item.
 {%- set rustdoc = devset.layers | selectattr("profile", "equalto", "rust-doc") | map(attribute="features") | first | default([]) %}
 {%- set manifests = devset.layers | selectattr("profile", "equalto", "cargo-manifest") | map(attribute="features") | first | default([]) %}
 {%- set tooling = devset.layers | selectattr("profile", "equalto", "devset") | map(attribute="features") | first | default([]) %}
+{%- set tests = devset.layers | selectattr("profile", "equalto", "cargo-nextest") | map(attribute="features") | first | default([]) %}
 
 ## Rules
 
@@ -201,6 +202,10 @@ Every doc comment, `// SAFETY:` comment and `#[expect]` reason also follows
 {%- if "agents" in manifests %}
 
 Every manifest follows `editing-cargo-manifests`.
+{%- endif %}
+{%- if "agents" in tests %}
+
+Every test, its fixtures and its messages follow `writing-rust-tests`.
 {%- endif %}
 
 ## Checks

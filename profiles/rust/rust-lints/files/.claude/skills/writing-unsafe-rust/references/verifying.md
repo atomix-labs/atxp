@@ -1,4 +1,5 @@
 {%- set toolchain = devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([]) -%}
+{%- set tests = devset.layers | selectattr("profile", "equalto", "cargo-nextest") | map(attribute="features") | first | default([]) -%}
 # Verifying
 
 Read this before a test of unsafe code or of an atomic protocol, before a loom
@@ -12,6 +13,12 @@ and a compile-fail test that a misuse stays refused.
 
 Loom checks each interleaving a model allows, and a compile-fail test that a
 misuse stays refused.
+{%- endif %}
+{%- if "agents" in tests %}
+
+The tests themselves, their names and messages, their files, and a fixture's
+committed message, follow `writing-rust-tests`; this says what unsafe code needs
+of them.
 {%- endif %}
 
 ## A Test for Each Edge a Proof Names
@@ -308,22 +315,36 @@ fn main() {
 }
 
 // tests/trybuild.rs, beside `a_brush_stays_on_its_thread.stderr`, which holds its E0277.
-#[test]
-fn ui() {
-    trybuild::TestCases::new().compile_fail("tests/compile_fail/*.rs");
+//! The misuses the types refuse, each a fixture that must not compile.
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn each_misuse_fails_to_compile() {
+        trybuild::TestCases::new().compile_fail("tests/compile_fail/*.rs");
+    }
 }
 ```
+{%- if "cargo-nextest" in devset.profiles %}
+
+A fixture's message is written, and rewritten after a change, with
+`TRYBUILD=overwrite cargo nextest run -p tiles --test trybuild`, and the new
+message is read before it is committed.
+{%- else %}
 
 A fixture's message is written, and rewritten after a change, with
 `TRYBUILD=overwrite cargo test -p tiles --test trybuild`, and the new message is
 read before it is committed.
+{%- endif %}
 {%- if "miri" in toolchain %}
 
-The file carries `#![cfg(not(any(loom, miri)))]`, since neither a loom model nor
-Miri drives a compiler.
+In a crate with loom models the file carries `#![cfg(not(any(loom, miri)))]`,
+since neither a loom model nor Miri drives a compiler, and `#![cfg(not(miri))]`
+in one without.
 {%- else %}
 
-The file carries `#![cfg(not(loom))]`, since a loom model drives no compiler.
+In a crate with loom models the file carries `#![cfg(not(loom))]`, since a loom
+model drives no compiler.
 {%- endif %}
 
 ```rust

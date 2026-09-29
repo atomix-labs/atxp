@@ -60,6 +60,7 @@ agents = [
     "dep:agents",
     "cargo-deny/agents",
     "cargo-manifest/agents",
+    "cargo-nextest/agents",
     "devset/agents",
     "git-commits/agents",
     "github-ci/agents",

@@ -1075,8 +1075,9 @@ by dying loudly")]`.
 {%- if "rust-clippy" in devset.profiles %}
 
 A test needs no such attribute: the workspace's `clippy.toml` lets a `#[test]`
-function expect, so a file-wide `#[expect]` there goes unfulfilled and fails the
-build. Only a shared helper outside any `#[test]` needs one, on the helper.
+function and a `#[cfg(test)]` module expect, so a file-wide `#[expect]` there
+goes unfulfilled and fails the build. Only a shared helper outside both needs
+one, on the helper.
 {%- endif %}
 {%- endif %}
 

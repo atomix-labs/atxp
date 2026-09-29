@@ -6,6 +6,10 @@ devset      = ">=0.5.0"
 [requires]
 rust-toolchain = {}
 
+[features]
+# The writing-rust-tests skill, in .claude/skills/.
+agents = []
+
 [files.".config/nextest.toml"]
 scope = "keys"
 
@@ -15,3 +19,31 @@ scope = "keys"
 
 [files.".config/mise/mise.lock"]
 scope = "keys"
+
+[files.".claude/skills/writing-rust-tests/SKILL.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust-tests/references/compile-fail.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust-tests/references/layout.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust-tests/references/properties.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust-tests/references/running.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust-tests/references/sources.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-rust-tests/references/writing-tests.md"]
+template = true
+when     = { features = ["agents"] }

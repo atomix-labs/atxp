@@ -277,52 +277,56 @@ Held by review.
 
 ## A File Whose Role Excuses a Lint Suppresses It Once, at Its Top
 
-An example prints its result and dies loudly on a broken assumption, and an
-integration test's functions sit outside any `mod tests`. A file whose role
-excuses a lint throughout says so once, with an inner `#![expect]` at its top,
-rather than on each item.
-
-```text
-// Bad: tests/moves.rs, one `#[expect]` for each test.
-#[test]
-#[expect(clippy::tests_outside_test_module, reason = "an integration test")]
-fn a_tile_moves_right() {}
-
-#[test]
-#[expect(clippy::tests_outside_test_module, reason = "an integration test")]
-fn a_tile_moves_down() {}
-```
-
-```text
-//! Moves across a grid, as a caller of the crate makes them.
-
-#![expect(
-    clippy::tests_outside_test_module,
-    reason = "an integration test's functions are top-level by construction"
-)]
-
-#[test]
-fn a_tile_moves_right() {}
-```
+An example prints its result and dies loudly on a broken assumption. A file
+whose role excuses a lint throughout says so once, with an inner `#![expect]` at
+its top, rather than on each item.
 
 ```rust
-//! Lays a 3 by 3 grid and prints how many squares it has.
+//! Lays a 3 by 3 grid and prints it.
 
-#![expect(clippy::print_stdout, reason = "an example's whole output is what it shows")]
-
-fn main() {
-    let squares = 3_u32.saturating_mul(3);
+// Bad: one `#[expect]` for each function that prints, where the file's role is to print.
+#[expect(clippy::print_stdout, reason = "an example's output is what it shows")]
+fn show(squares: u32) {
     println!("a 3 by 3 grid holds {squares} squares");
+}
+
+#[expect(clippy::print_stdout, reason = "an example's output is what it shows")]
+fn main() {
+    show(3_u32.saturating_mul(3));
+    println!("and every one is blank");
 }
 ```
 
-Held by review.
+```rust
+//! Lays a 3 by 3 grid and prints it.
+
+#![expect(clippy::print_stdout, reason = "an example's whole output is what it shows")]
+
+fn show(squares: u32) {
+    println!("a 3 by 3 grid holds {squares} squares");
+}
+
+fn main() {
+    show(3_u32.saturating_mul(3));
+    println!("and every one is blank");
+}
+```
+
+Held by review. An integration test needs no such attribute: it holds its tests
+in a `#[cfg(test)] mod tests`, as a unit test does, so
+`clippy::tests_outside_test_module` never fires there.
+{%- set tests = devset.layers | selectattr("profile", "equalto", "cargo-nextest") | map(attribute="features") | first | default([]) %}
+{%- if "agents" in tests %}
+
+How an integration test is laid out is `writing-rust-tests`'s.
+{%- endif %}
 {%- if "rust-clippy" in devset.profiles %}
 
-A test file never says so for `expect`, `unwrap`, `panic!` or printing: the
-workspace's `clippy.toml` lets a `#[test]` function use them, so a file-wide
-`#[expect]` for one goes unfulfilled and fails the build. A shared helper
-outside any `#[test]` that uses one carries its own `#[expect]`.
+A test file never says so for `expect`, `unwrap`, `panic!` or printing either:
+the workspace's `clippy.toml` lets a `#[test]` function and a `#[cfg(test)]`
+module use them, so a file-wide `#[expect]` for one goes unfulfilled and fails
+the build. A shared helper outside both that uses one carries its own
+`#[expect]`.
 {%- endif %}
 {%- endif %}
 
@@ -633,7 +637,7 @@ The `strict` feature adds:
 | `verbose_file_reads`                                                                                                  | `File::open` and then `read_to_end` or `read_to_string`                                                                                                                                      | `fs::read`, `fs::read_to_string`                              |
 | `filetype_is_file`                                                                                                    | `file_type().is_file()` to mean readable, which a fifo or a symlink is not                                                                                                                   | `!file_type().is_dir()`                                       |
 | `semicolon_inside_block`                                                                                              | `{ grid.clear() };`                                                                                                                                                                          | `{ grid.clear(); }`                                           |
-| `tests_outside_test_module`                                                                                           | a `#[test]` outside a `#[cfg(test)]` module                                                                                                                                                  | `mod tests`; an integration test file says so once at its top |
+| `tests_outside_test_module`                                                                                           | a `#[test]` outside a `#[cfg(test)]` module                                                                                                                                                  | `mod tests`, in an integration test too                       |
 | `unseparated_literal_suffix`                                                                                          | `0u8`                                                                                                                                                                                        | `0_u8`                                                        |
 | `pub_without_shorthand`                                                                                               | `pub(in super)`                                                                                                                                                                              | `pub(super)`                                                  |
 | `missing_assert_message`                                                                                              | an assertion with no message                                                                                                                                                                 | a message that states the property                            |

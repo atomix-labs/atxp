@@ -251,6 +251,12 @@ tests/testing/mod.rs
 ```
 
 Held by review.
+{%- set tests = devset.layers | selectattr("profile", "equalto", "cargo-nextest") | map(attribute="features") | first | default([]) %}
+{%- if "agents" in tests %}
+
+What goes in `testing.rs` and `tests/testing/mod.rs`, and how each is declared,
+is `writing-rust-tests`'s.
+{%- endif %}
 {%- if "strict" in devset.features %}
 
 ## A Library Is `no_std`, with `std` the Opt-In
