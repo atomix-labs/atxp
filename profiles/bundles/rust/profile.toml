@@ -64,6 +64,7 @@ agents = [
     "git-commits/agents",
     "github-ci/agents",
     "rust-doc/agents",
+    "rust-lints/agents",
     "github-release?/agents",
     "mdbook?/agents",
 ]
