@@ -1,0 +1,171 @@
+{%- set toolchain = devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([]) -%}
+# Running
+
+Read this before running tests by hand, when a test fails, hangs or passes only
+sometimes, before ignoring a test or making tests run one at a time, and before
+touching `.config/nextest.toml`. It says what runs the tests here, what each
+runner does and does not run, and how to reach one test.
+
+## `just check-cargo-nextest` Runs Every Test, Then the Doctests
+
+The recipe runs `cargo nextest run --workspace --all-features`, then `cargo test
+--workspace --all-features --doc`, since nextest cannot run doctests: its
+documentation says so, and a doctest is left to Cargo. `just check` runs the
+recipe with every other check. Under CI, nextest's `ci` profile runs every test
+however many fail, prints each failure as it happens and again at the end, and
+writes a JUnit report to `target/nextest/ci/junit.xml`.
+
+```text
+# Bad: a doctest is never run, and a documented example that no longer compiles passes.
+cargo nextest run --workspace
+```
+
+```text
+just check-cargo-nextest
+```
+
+Held by the recipe, which `just check` and CI run.
+
+## Reach One Test by Its Name
+
+A filter after the options runs the tests whose names hold it, across the
+workspace or one crate; `-E` takes nextest's filter expressions for more, such
+as one test by its exact name or every test in a module. A failing test is run
+alone first, so its output is its own.
+
+```text
+# Bad: every test in the workspace, to watch one.
+cargo nextest run --workspace --no-capture
+```
+
+```text
+cargo nextest run -p tiles a_step_past_the_last_column
+cargo nextest run -p tiles -E 'test(=board::tests::a_step_past_the_last_column_is_refused)'
+cargo nextest run -p tiles -E 'test(/^board::/)' --no-capture
+```
+
+Held by review. `--no-capture` shows what a test prints as it runs, and runs the
+tests one at a time to keep their output apart.
+
+## Each Test Runs in a Process of Its Own
+
+nextest starts a process for each test, so a test's globals, its environment and
+its working directory end with it, and a crash takes down that test alone.
+`cargo test` runs each binary's tests as threads of one process, and so does a
+loom model's run. A test that passes under nextest and fails under `cargo test`
+shares something with another test, which `writing-tests.md` says how to remove.
+
+```text
+# Bad: nextest alone, where a test touches a global, so one that leans on another's leftovers passes.
+cargo nextest run -p tiles
+```
+
+```text
+cargo nextest run -p tiles
+cargo test -p tiles
+```
+
+Held by review.
+
+## An Ignored Test Runs Where What It Needs Is
+
+An `#[ignore = "…"]` test is skipped by every run the checks make. It runs by
+hand, where what its reason names is there: `--run-ignored only` runs the
+ignored tests alone, and `--run-ignored all` runs them beside the rest. No
+recipe runs them, so a change to what one tests runs it before it is done.
+
+```text
+# Bad: the ignored test that pins the change never ran.
+just check-cargo-nextest
+```
+
+```text
+cargo nextest run -p tiles --run-ignored only
+```
+
+Held by review.
+
+## Tests That Cannot Share the Machine Run in a Test Group
+
+Tests that contend for one thing outside the process, a fixed port, a core they
+pin, the build directory trybuild compiles its fixtures in, run one at a time in
+a nextest test group, in `.config/nextest.toml`, whose `[test-groups]` and
+`[profile.default]` keys are the repository's: the cargo-nextest profile owns
+only the `ci` profile's. An override in `profile.default` holds under `ci` too.
+Tests outside the group run as before.
+
+```text
+# Bad: every test in the workspace one at a time, for the two that share a port.
+cargo nextest run --workspace --test-threads 1
+```
+
+```toml
+[test-groups.tile-server]
+max-threads = 1
+
+[[profile.default.overrides]]
+filter      = 'test(/tile_server/)'
+test-group  = 'tile-server'
+```
+
+Held by review.
+
+## A Flaky Test Is Found and Fixed, Not Retried
+
+A test that fails one run in fifty has a race, a sleep or a shared global, and
+retrying it hides the bug from everyone but the next person it fails for.
+`--stress-count` runs it until it fails, which is how it is found and how its
+fix is shown. Where a repository sets `retries` in its profile, nextest reports
+a pass on a retry as FLAKY, and `flaky-result = "fail"` fails the run on one.
+
+```text
+# Bad: a pass that proves nothing, and a race left for the next run.
+cargo nextest run -p tiles --retries 3
+```
+
+```text
+cargo nextest run -p tiles --stress-count 200 a_painter_reports_its_tile
+```
+
+Held by review.
+
+## A Test That Hangs Is Stopped, and Says Where
+
+nextest marks a test SLOW once it runs past a period, 60 seconds by default, and
+stops nothing on its own, so a test that deadlocks holds the run until CI's job
+times out. A repository whose tests can hang sets `slow-timeout` with a
+`terminate-after`, so nextest ends the test and names it; the test's own waits
+have deadlines, as `writing-tests.md` says, so it fails with a message first.
+
+```text
+# Bad: in `.config/nextest.toml`, nothing ever ends a hung test.
+[profile.default]
+slow-timeout = "60s"
+```
+
+```toml
+[profile.default]
+slow-timeout = { period = "60s", terminate-after = 3 }
+```
+
+Held by review.
+{%- if "miri" in toolchain %}
+
+## Miri Runs the Tests of a Crate with Unsafe Code
+
+`cargo miri test -p <crate>` runs a crate's tests under Miri, which checks each
+operation for undefined behaviour; it runs as `cargo test` does, one process for
+each binary, and runs the doctests too. No recipe runs it. A test Miri cannot
+run carries `#[cfg_attr(miri, ignore = "…")]` naming what it cannot do.
+
+```text
+# Bad: every crate, most of which call what Miri has no shim for.
+cargo miri test --workspace
+```
+
+```text
+cargo miri test -p tiles
+```
+
+Held by review.
+{%- endif %}

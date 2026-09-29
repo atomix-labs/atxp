@@ -320,9 +320,15 @@ Held by review.
 {%- if "rust-clippy" in devset.profiles %}
 
 A test file never says so for `expect`, `unwrap`, `panic!` or printing: the
-workspace's `clippy.toml` lets a `#[test]` function use them, so a file-wide
-`#[expect]` for one goes unfulfilled and fails the build. A shared helper
-outside any `#[test]` that uses one carries its own `#[expect]`.
+workspace's `clippy.toml` lets a `#[test]` function and a `#[cfg(test)]` module
+use them, so a file-wide `#[expect]` for one goes unfulfilled and fails the
+build. A shared helper outside both that uses one carries its own `#[expect]`.
+{%- endif %}
+{%- set tests = devset.layers | selectattr("profile", "equalto", "cargo-nextest") | map(attribute="features") | first | default([]) %}
+{%- if "agents" in tests %}
+
+An integration test may instead hold its tests in a `#[cfg(test)] mod tests`, as
+`writing-rust-tests` lays one out, where the lint does not fire.
 {%- endif %}
 {%- endif %}
 

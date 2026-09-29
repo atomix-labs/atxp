@@ -1,4 +1,5 @@
 {%- set toolchain = devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([]) -%}
+{%- set tests = devset.layers | selectattr("profile", "equalto", "cargo-nextest") | map(attribute="features") | first | default([]) -%}
 # Verifying
 
 Read this before a test of unsafe code or of an atomic protocol, before a loom
@@ -12,6 +13,12 @@ and a compile-fail test that a misuse stays refused.
 
 Loom checks each interleaving a model allows, and a compile-fail test that a
 misuse stays refused.
+{%- endif %}
+{%- if "agents" in tests %}
+
+The tests themselves, their names and messages, their files, and a fixture's
+committed message, follow `writing-rust-tests`; this says what unsafe code needs
+of them.
 {%- endif %}
 
 ## A Test for Each Edge a Proof Names
