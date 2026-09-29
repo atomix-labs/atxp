@@ -7,7 +7,7 @@ devset      = ">=0.5.0"
 rust-toolchain = {}
 
 [features]
-# The writing-rust skill, in .claude/skills/.
+# The writing-rust and writing-unsafe-rust skills, in .claude/skills/.
 agents = []
 # writing-rust's reference for async Rust on tokio.
 async   = []
@@ -52,5 +52,29 @@ template = true
 when     = { features = ["agents"] }
 
 [files.".claude/skills/writing-rust/references/sources.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-unsafe-rust/SKILL.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-unsafe-rust/references/atomics.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-unsafe-rust/references/pointers.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-unsafe-rust/references/safety-comments.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-unsafe-rust/references/sources.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-unsafe-rust/references/verifying.md"]
 template = true
 when     = { features = ["agents"] }

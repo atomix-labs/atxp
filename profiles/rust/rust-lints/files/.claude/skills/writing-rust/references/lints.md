@@ -580,16 +580,16 @@ what to write instead:
 
 The `strict` feature adds:
 
-| rustc (`strict`)                | refuses                                                                                    | write instead                                                                                      |
-| ------------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| `unsafe_code`                   | any `unsafe`                                                                               | an `#[expect]` at the narrowest scope, with its reason; unsafe code is out of scope for this skill |
-| `missing_docs`                  | a public item with no doc                                                                  | its doc                                                                                            |
-| `missing_debug_implementations` | a public type with no `Debug`                                                              | `#[derive(Debug)]`, or a hand-written one                                                          |
-| `unreachable_pub`               | a `pub` item no path outside the crate reaches                                             | `pub(crate)` or `pub(super)`                                                                       |
-| `unused`                        | dead code, and unused imports, variables, assignments, `mut`, labels and macros, at `deny` | delete it; a leading `_` for what is kept on purpose                                               |
-| `single_use_lifetimes`          | a lifetime named where it is used once                                                     | `'_`                                                                                               |
-| `unused_lifetimes`              | a lifetime declared and never used                                                         | delete it                                                                                          |
-| `variant_size_differences`      | an enum whose largest variant is over three times the next                                 | box the large payload                                                                              |
+| rustc (`strict`)                | refuses                                                                                    | write instead                                                                            |
+| ------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `unsafe_code`                   | any `unsafe`                                                                               | an `#[expect]` at the narrowest scope, with its reason, as `writing-unsafe-rust` teaches |
+| `missing_docs`                  | a public item with no doc                                                                  | its doc                                                                                  |
+| `missing_debug_implementations` | a public type with no `Debug`                                                              | `#[derive(Debug)]`, or a hand-written one                                                |
+| `unreachable_pub`               | a `pub` item no path outside the crate reaches                                             | `pub(crate)` or `pub(super)`                                                             |
+| `unused`                        | dead code, and unused imports, variables, assignments, `mut`, labels and macros, at `deny` | delete it; a leading `_` for what is kept on purpose                                     |
+| `single_use_lifetimes`          | a lifetime named where it is used once                                                     | `'_`                                                                                     |
+| `unused_lifetimes`              | a lifetime declared and never used                                                         | delete it                                                                                |
+| `variant_size_differences`      | an enum whose largest variant is over three times the next                                 | box the large payload                                                                    |
 
 | clippy (`strict`)                                                                                                     | refuses                                                                                                                                                                                      | write instead                                                 |
 | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
@@ -639,7 +639,7 @@ The `strict` feature adds:
 | `missing_assert_message`                                                                                              | an assertion with no message                                                                                                                                                                 | a message that states the property                            |
 | `impl_trait_in_params`                                                                                                | `impl Trait` in a public function's arguments                                                                                                                                                | a named generic                                               |
 | `missing_docs_in_private_items`                                                                                       | a private item, field or test helper with no doc                                                                                                                                             | its doc                                                       |
-| `undocumented_unsafe_blocks`, `multiple_unsafe_ops_per_block`, `unnecessary_safety_comment`, `unnecessary_safety_doc` | the unsafe lints                                                                                                                                                                             | out of scope for this skill                                   |
+| `undocumented_unsafe_blocks`, `multiple_unsafe_ops_per_block`, `unnecessary_safety_comment`, `unnecessary_safety_doc` | the unsafe lints                                                                                                                                                                             | what `writing-unsafe-rust` teaches                            |
 
 `strict` also names three lints the groups above already deny:
 `await_holding_lock`, in `suspicious`, which refuses a `std` lock's guard held
@@ -650,8 +650,8 @@ across an `.await`, and `float_cmp` and `wildcard_imports`, in `pedantic`.
 The `nightly` feature adds the two lints only nightly rustc has, which
 `check-rust-lints` runs:
 
-| rustc (`nightly`)                 | refuses                                                                                      | write instead                                  |
-| --------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `non_exhaustive_omitted_patterns` | a wildcard on another crate's `#[non_exhaustive]` enum that swallows a variant it could name | the variant by name, then the wildcard         |
-| `implicit_provenance_casts`       | a pointer cast to an integer with `as`, which exposes its provenance                         | `.addr()`, or `expose_provenance()` on purpose |
+| rustc (`nightly`)                 | refuses                                                                                          | write instead                                                  |
+| --------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| `non_exhaustive_omitted_patterns` | a wildcard on another crate's `#[non_exhaustive]` enum that swallows a variant it could name     | the variant by name, then the wildcard                         |
+| `implicit_provenance_casts`       | an `as` cast between a pointer and an integer, either way, which exposes or guesses a provenance | `.addr()` and `with_addr`, or `expose_provenance()` on purpose |
 {%- endif %}

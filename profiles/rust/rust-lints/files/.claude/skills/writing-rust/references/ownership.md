@@ -172,7 +172,9 @@ Under `strict`, `clippy::clone_on_ref_ptr` refuses `.clone()` on an `Arc` or an
 `Arc` pays for an atomic count so its value can cross threads, which is worth it
 only for a value that is `Send` and `Sync`; within one thread, `Rc` and
 `RefCell` do the same work without the atomics. A value shared across threads
-and changed there is `Arc<Mutex<T>>`, or an atomic for a lone integer or flag.
+and changed there is `Arc<Mutex<T>>`, or an atomic for a lone integer or flag,
+whose orderings `writing-unsafe-rust` teaches, as it does an `unsafe impl` of
+`Send` or `Sync`.
 
 ```rust,compile_fail
 // fails: clippy::arc_with_non_send_sync

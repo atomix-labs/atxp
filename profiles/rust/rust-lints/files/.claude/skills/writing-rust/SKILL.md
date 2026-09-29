@@ -1,6 +1,6 @@
 ---
 name: writing-rust
-description: Use when writing, changing or reviewing Rust code, whether a crate, module, type, trait, function or error type; when choosing between an error and a panic, a newtype and an alias, a spec struct and a builder, a borrow and a clone; when a rustc or clippy lint fires or an `#[expect]` needs a reason. Covers errors, crate and module layout, naming, API design, ownership and lints{% if "async" in devset.features %}, and async Rust on tokio{% endif %}.
+description: Use when writing, changing or reviewing Rust code, whether a crate, module, type, trait, function or error type; when choosing between an error and a panic, a newtype and an alias, a spec struct and a builder, a borrow and a clone; when a rustc or clippy lint fires or an `#[expect]` needs a reason. Covers errors, crate and module layout, naming, API design, ownership and lints{% if "async" in devset.features %}, and async Rust on tokio{% endif %}. Not for unsafe code or atomics, which writing-unsafe-rust covers.
 ---
 
 # Writing Rust
@@ -11,7 +11,7 @@ what a call costs and how it refuses; signatures that make a wrong call fail to
 compile; and lints answered where they fire. The rules below are the whole of
 it, each with its reason. The references hold each rule's why, a bad and a good
 example that compile under the workspace's lints, and what holds the rule.
-Unsafe code is out of scope for this skill.
+Unsafe code, raw pointers and atomics are `writing-unsafe-rust`'s.
 
 The examples leave their docs out to stay short, and compile with the lints that
 ask for docs off; real code writes them: `# Errors` on a public function that
@@ -32,7 +32,8 @@ Under `strict`, real code also documents every item.
    broken invariant**, since a library cannot know whether its caller can
    recover. A function that panics carries `#[track_caller]`, a `# Panics`
    section and an `expect` whose message states the invariant; a `debug_assert!`
-   checks what the type's own code keeps, never a caller's input.
+   checks what the type's own code keeps, or an `unsafe fn`'s contract, never a
+   safe function's input.
 2. **One private `errors.rs` a crate, its types re-exported flat from
    `lib.rs`**, so one file says every way the crate refuses. A public module
    with refusals of its own has its own.
@@ -184,7 +185,9 @@ Read each reference a step names, whole, before writing the code.
    asks. Only where the lint misreads the code, `#[expect]` it at the narrowest
    scope with a reason; never edit the lint table or give a crate its own
    `[lints.clippy]`.
-8. **Before finishing**: the checks below, until they pass.
+8. **Unsafe code, a raw pointer, an `unsafe impl` or an atomic**:
+   `writing-unsafe-rust`, before the code is written.
+9. **Before finishing**: the checks below, until they pass.
 {%- if "async" in devset.features %}
 
 Async code on tokio also reads `references/async.md`, whole: its locks,
