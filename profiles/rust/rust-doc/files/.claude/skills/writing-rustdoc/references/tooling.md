@@ -11,7 +11,9 @@ ladder and then the heuristic lint; the raw steps, in order, each clean before
 the next:
 
 ```sh
+{%- if "rust-fmt" in devset.profiles or "dprint" in devset.profiles or "toml" in devset.profiles or "markdown" in devset.profiles %}
 # The formatters the workspace has: each rewraps, never tightens.
+{%- endif %}
 {%- if "rust-fmt" in devset.profiles %}
 just fix-rust-fmt
 {%- endif %}
