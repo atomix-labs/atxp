@@ -138,7 +138,9 @@ Each crate's `tests/trybuild.rs` builds its fixtures under
 `target/tests/trybuild/`, which every crate's suite shares, and nextest runs
 test binaries in parallel, so two suites contend for one build directory. A
 workspace with several suites puts them in one nextest test group that runs one
-at a time, as `running.md` shows.
+at a time, as `running.md` shows. The filter names only binaries the workspace
+has: nextest refuses `binary(=trybuild)` where no test binary of that name
+exists, so the group is added with the first suite.
 
 ```text
 # Bad: two suites building under one directory at once.
@@ -197,4 +199,6 @@ const _: () = copy_send_sync::<Pos>();
 ```
 
 Held by the crate's own build. A trait that must stay absent, a type that must
-not be `Send`, is a trybuild fixture, since no bound can say "not".
+not be `Send`, is a trybuild fixture: Rust has no bound that says "not", and
+though a trick of ambiguous impls can assert it, a fixture is the plain way, and
+pins the message too.

@@ -32,7 +32,8 @@ source; open the page before linking it.
 [Miri](https://github.com/rust-lang/miri) runs with the host isolated, so a call
 such as `getcwd` is refused unless `-Zmiri-disable-isolation` is set, which is
 why `properties.md` skips a property under it; `cargo miri test` runs a crate's
-tests as `cargo test` does, doctests included.
+tests as `cargo test` does, doctests included, and `--lib --tests` leaves the
+doctests out.
 {%- endif %}
 
 ## Where the Workspace Departs
@@ -40,7 +41,7 @@ tests as `cargo test` does, doctests included.
 | a source says                                                                             | here                                                                                                           |
 | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | rust-skills `test-use-super`: `use super::*` in a test module                             | each name imported                                                                                             |
-| rust-skills `test-descriptive-names`: `function_condition_expected_result`, `when_…_then` | the property as a sentence, article first                                                                      |
+| rust-skills `test-descriptive-names`: `function_condition_expected_result`, `when_…_then` | the property as a sentence, its subject first                                                                  |
 | rust-skills `test-arrange-act-assert`: `// Arrange`, `// Act`, `// Assert` comments       | none; a comment explains a setup that is not obvious, never the assertion                                      |
 | rust-skills `test-integration-dir`: `tests/common/mod.rs`                                 | `tests/testing/mod.rs`, as `testing.rs` in a crate, declared `#[cfg(test)]`                                    |
 | rust-skills `test-mock-traits`, `test-mockall-mocking`: mockall for dependencies          | a hand-written fake of the trait; a mock framework only where a repository has one                             |

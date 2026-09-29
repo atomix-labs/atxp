@@ -11,7 +11,7 @@ that reader has.
 ## A Test's Name Is the Property It Pins
 
 A failing run prints the test's name first, and often alone, so the name says
-what should hold, as a sentence in snake case, article first:
+what should hold, as a sentence in snake case, its subject first:
 `a_step_past_the_last_column_is_refused`. A test pins one property, with as many
 assertions as that property needs, so its name can state it; a second property
 is a second test. A name that says only what is called, `test_step`, `it_works`

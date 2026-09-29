@@ -40,17 +40,18 @@ lint asks a test or a fixture for more.
 3. **What the crate's tests share lives in `src/testing.rs`, declared
    `#[cfg(test)] mod testing;`, its items `pub(crate)`**, so a fixture is
    written once and stays out of the API. What integration tests share lives in
-   `tests/testing/mod.rs`, declared `#[cfg(test)] mod testing;` in each file,
-   opening with `#![allow(dead_code, reason = "each test binary uses part of
-   this module")]`, the workspace's one `allow`. What another crate's tests need
-   sits behind a `testing` feature, `#[doc(hidden)] pub`, turned on only in
-   their `[dev-dependencies]`.
+   `tests/testing/mod.rs`, declared `#[cfg(test)] mod testing;` in each file, so
+   clippy.toml's test allowances reach it as they reach a unit test, and opening
+   with `#![allow(dead_code, reason = "each test binary uses part of this
+   module")]`, the workspace's one `allow`. What another crate's tests need sits
+   behind a `testing` feature, `#[doc(hidden)] pub`, turned on only in their
+   `[dev-dependencies]`.
 4. **A test of what a feature adds sits under that feature's `#[cfg(feature =
    "…")]`**, since it compiles only with the feature on.
 
 ### Names and Messages
 
-1. **A test's name is the property it pins, a sentence, article first,
+1. **A test's name is the property it pins, a sentence, its subject first,
    `a_step_past_the_last_column_is_refused`, and a test pins one property**;
    never `test_`, `it_works` or the function's name, since the name is what a
    failure prints first.
@@ -156,8 +157,10 @@ lint asks a test or a fixture for more.
    group of `max-threads = 1`, in `.config/nextest.toml`**, whose
    `[test-groups]` and `[profile.default]` keys are the repository's; the
    cargo-nextest profile owns only the `ci` profile's.
-4. **A flaky test is found with `--stress-count` and fixed, never retried into a
-   pass**, since a retry hides the race from all but the next run it fails.
+4. **A retry is how a flaky test is found, and FLAKY is a fault to fix, never a
+   pass to accept**: nextest reports a test that passes on a retry as FLAKY, and
+   the run still passes; the retry count is the repository's, in its
+   `.config/nextest.toml`, and `--stress-count` runs one test until it fails.
 5. **A test that can hang has a `slow-timeout` with `terminate-after`**, since
    nextest marks a slow test and stops nothing on its own.
 {%- if "strict" in lints %}
@@ -199,7 +202,7 @@ Read each reference a step names, whole, before writing the test.
    shares.
 8. **A flaky or hanging test**: `references/running.md` and
    `references/writing-tests.md`: stress it until it fails, find the sleep or
-   the shared global, and fix that.
+   the shared global, and fix that; a FLAKY line in a run is such a test.
 9. **Before finishing**: the checks below, and each ignored test the change
    touches.
 {%- if "agents" in lints %}
@@ -234,8 +237,9 @@ A doctest, and the `//!` of a test file or a fixture, follow `writing-rustdoc`.
   that needs a feature it is not gated on; it runs nightly, not in `just check`.
 {%- endif %}
 {%- if "miri" in toolchain %}
-- `cargo miri test -p <crate>`: a crate's tests and doctests under Miri; no
-  recipe runs it.
+- `cargo miri test -p <crate>`: a crate's tests and doctests under Miri, or
+  `--lib --tests` where the doctests are examples for the host; no recipe runs
+  it.
 {%- endif %}
 - By hand, since no recipe runs them: `cargo nextest run --run-ignored only`,
   `TRYBUILD=overwrite cargo nextest run -p <crate> --test trybuild` for a new or
@@ -255,7 +259,7 @@ A doctest, and the `//!` of a test file or a fixture, follow `writing-rustdoc`.
 | "`#[ignore]` the slow one"                 | Make it fast; `#[ignore = "…"]` only for what it needs.          |
 | "Sleep 50 ms for the thread"               | Wait for the thing itself, with a deadline.                      |
 | "It passes under nextest"                  | It passes under `cargo test` too, with nothing shared.           |
-| "Retry it, it is flaky"                    | `--stress-count` until it fails, then fix the race.              |
+| "It passed on the retry"                   | FLAKY is a fault: `--stress-count` until it fails, then fix it.  |
 | "A mock for the store"                     | A fake that implements the trait over a plain value.             |
 | "`tests/common/mod.rs` for the helpers"    | `tests/testing/mod.rs`; a test of several files is `main.rs`.    |
 | "A `compile_fail` doctest pins it"         | A trybuild fixture, with its `.stderr`.                          |

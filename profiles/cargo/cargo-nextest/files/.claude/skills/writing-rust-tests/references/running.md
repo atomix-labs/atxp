@@ -110,17 +110,21 @@ test-group  = 'tile-server'
 
 Held by review.
 
-## A Flaky Test Is Found and Fixed, Not Retried
+## A Flaky Test Is Found by a Retry, and Fixed
 
-A test that fails one run in fifty has a race, a sleep or a shared global, and
-retrying it hides the bug from everyone but the next person it fails for.
-`--stress-count` runs it until it fails, which is how it is found and how its
-fix is shown. Where a repository sets `retries` in its profile, nextest reports
-a pass on a retry as FLAKY, and `flaky-result = "fail"` fails the run on one.
+A test that fails one run in fifty has a race, a sleep or a shared global. A
+retry is how it is found: with retries set, nextest runs a failed test again,
+and reports one that passes on a retry as FLAKY, while the run itself passes.
+That report is a fault to fix, never a pass to accept. How many retries is the
+repository's to set, `retries` in its `.config/nextest.toml`, and
+`flaky-result = "fail"` fails the run on a flaky test, so none goes unread.
+`--stress-count` runs one test until it fails, which is how its race is shown,
+and then its fix.
 
 ```text
-# Bad: a pass that proves nothing, and a race left for the next run.
-cargo nextest run -p tiles --retries 3
+# Bad: the run passes, and its FLAKY line is taken for a pass.
+   FLAKY 2/3 [   0.003s] (1/1) tiles tests::a_painter_reports_its_tile
+     Summary [   0.007s] 1 test run: 1 passed (1 flaky), 0 skipped
 ```
 
 ```text
@@ -155,8 +159,10 @@ Held by review.
 
 `cargo miri test -p <crate>` runs a crate's tests under Miri, which checks each
 operation for undefined behaviour; it runs as `cargo test` does, one process for
-each binary, and runs the doctests too. No recipe runs it. A test Miri cannot
-run carries `#[cfg_attr(miri, ignore = "…")]` naming what it cannot do.
+each binary, and runs the doctests too. Where the doctests are examples for the
+host, `--lib --tests` leaves them out, and `just check-cargo-nextest` still runs
+them. No recipe runs Miri. A test Miri cannot run carries `#[cfg_attr(miri,
+ignore = "…")]` naming what it cannot do.
 
 ```text
 # Bad: every crate, most of which call what Miri has no shim for.
@@ -165,6 +171,7 @@ cargo miri test --workspace
 
 ```text
 cargo miri test -p tiles
+cargo miri test -p tiles --lib --tests
 ```
 
 Held by review.

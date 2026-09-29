@@ -130,7 +130,7 @@ mod tests {
     use super::index;
 
     proptest! {
-        // Bad: keeps one input in a million, and fails with "Too many global rejects".
+        // Bad: keeps one input in 67 million, and fails with "Too many global rejects".
         #[test]
         fn every_square_on_the_board_has_an_index(col in any::<u16>(), row in any::<u16>()) {
             prop_assume!(col < 8 && row < 8);
@@ -236,10 +236,12 @@ proptest-regressions/
 ```
 
 ```text
-# crates/tiles/proptest-regressions/pos.txt, committed beside the fix.
 # Seeds for failure cases proptest has generated in the past. It is
 # automatically read and these particular cases re-run before any
 # novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
 cc 6dfaaacf71ba74d7b4b2d2368e56a69e2194f0a4a3e99ab10cd4a8914b6ace51 # shrinks to col = 1000
 ```
 
