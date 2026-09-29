@@ -66,7 +66,7 @@ paths       = ["docs/**", "*.md"]
 
 ## Recipes
 
-- `check-github-labels`: Checks .github/labels.toml, and that the forms, the
+- `check-github-labels`: Checks .github/labels.toml, and that the forms,
   automation and Dependabot name only its labels.
 
 ## Variables

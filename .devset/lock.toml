@@ -86,7 +86,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-labels"
-digest = "7d2b5a51d9c59ef9a78730211a44c3cad17dfb6aaf9a54ee3ed75b69d0fcf63a"
+digest = "56ec205943a25ac1bba6da3d6695d9c1a1315537c5d1a277a95b5d1d8063f33d"
 
 [profiles.source]
 path = "profiles"
