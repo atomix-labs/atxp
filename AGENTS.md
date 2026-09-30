@@ -17,12 +17,15 @@ fixes what a formatter or linter can, and `just --list` shows every recipe.
 A change beyond a line or two is ready when its passes have run and `just check`
 passes:
 
+- `/humanize` on what the change says to a reader: its comments, docs, names and
+  messages.
 - `/review-names` on a change that adds, renames or changes what a public item
   does.
 - `/review-security` on a change that reads input from outside the process.
 
-Each runs in a fresh context and reports; fix what it finds, or say why a
-finding does not hold.
+Each runs in a fresh context and reports: `/humanize` edits, then says what it
+changed and what it left, and a review says what it found. Fix what a pass
+leaves or finds, or say why a finding does not hold.
 
 ## Managed Files
 

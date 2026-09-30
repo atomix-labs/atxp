@@ -160,9 +160,9 @@ them.
 AGENTS.md, started where there is none, with a block on checking a change and on
 the files devset manages; CLAUDE.md, which imports it; and Claude Code's
 permissions and hooks in `.claude/`. The permissions allow every check and fix,
-devset's commands that only read, and `git diff`, `git log`, `git show` and `git
-status`, and deny publishing; the hooks keep the agent at work until `just
-check` passes on what its turn changed.
+devset's commands that only read, `git diff`, `git log`, `git show`, `git
+status` and the `humanize` pass, and deny publishing; the hooks keep the agent
+at work until `just check` passes on what its turn changed.
 
 A profile whose concern an agent needs taught ships a skill, or several, in
 `.claude/skills/<skill>/`, under its own `agents` feature: `rust-lints`, with
@@ -173,12 +173,12 @@ A profile whose concern an agent needs taught ships a skill, or several, in
 one each. The layer itself teaches how a repository reads, under its
 `readability` feature: `writing-prose`, for every sentence a reader meets;
 `writing-readable-code`, for the shape of code, each in any language, with a
-section for each language profile applied; and the `review-names` pass. Under
-its `security` feature, it ships the `review-security` pass. `git-commits`,
-`cargo-deny` and `mdbook` add a block to AGENTS.md where there is one. The
-bundle's `agents` turns on the layer and every one of them. A skill is a
-template like any payload, so it names a recipe only where the profile that
-provides it is applied.
+section for each language profile applied; the `humanize` pass, which acts on
+their tells; and the `review-names` pass. Under its `security` feature, it ships
+the `review-security` pass. `git-commits`, `cargo-deny` and `mdbook` add a block
+to AGENTS.md where there is one. The bundle's `agents` turns on the layer and
+every one of them. A skill is a template like any payload, so it names a recipe
+only where the profile that provides it is applied.
 
 A skill is a guide, which teaches while the agent works, or a pass, which runs
 in a fork of its own on finished work and reports. `rust-lints`' `review-rust`
@@ -186,9 +186,14 @@ reviews a change against the Rust guides the repository has; the layer's
 `review-names` reviews the names it adds or renames, and calls a rename breaking
 where a published crate released the name; its `review-security` reviews it for
 what someone outside the process can reach through it, and reports only a path
-from an input to a harm. The block `agents` writes in AGENTS.md has Before You
-Finish, which names each pass the repository has, so an agent runs them before
-it calls a change done, without being asked; it is left out where no pass is.
+from an input to a harm. None of these changes anything. `humanize` edits: it
+rewrites what a change says to a reader, and code whose shape was left
+mechanical, keeping what the code does, then runs the checks on what it touched.
+Since a fork cannot ask for an approval in a session run with `-p`, its front
+matter grants the edits and commands it needs for the turn it runs. The block
+`agents` writes in AGENTS.md has Before You Finish, which names each pass the
+repository has, so an agent runs them before it calls a change done, without
+being asked; it is left out where no pass is.
 
 ## The Repository
 
