@@ -252,7 +252,7 @@ support = ["target"]
 
 [[profiles]]
 name = "agents"
-digest = "bee0ac523fc88edc16be07ec92301b254f8555bb79e66ebb5e73f7e683f6de9f"
+digest = "6d5120c9b19b3586e92d56b938fab42f53f8b2a300bf14a29a3e81170c4021e3"
 
 [profiles.source]
 path = "profiles"
