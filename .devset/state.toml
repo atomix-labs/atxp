@@ -46,6 +46,10 @@ canonical = "b0a1b90b3b64e6b2bb6a930d9011c4c078567175b8b79e8cfa2162ea43f8d063"
 exact = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
 canonical = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
 
+[files.".claude/skills/review-names/SKILL.md"]
+exact = "b145c9ba416219bb3130e7ec78294c0c1ab2111f00e15a66d5406d98f2dfe34f"
+canonical = "b145c9ba416219bb3130e7ec78294c0c1ab2111f00e15a66d5406d98f2dfe34f"
+
 [files.".claude/skills/review-security/SKILL.md"]
 exact = "d9812b5ba70d8b43f191f574345e2525b404cc7fdb013ab97e1efe26f0639386"
 canonical = "d9812b5ba70d8b43f191f574345e2525b404cc7fdb013ab97e1efe26f0639386"
@@ -83,8 +87,8 @@ exact = "058891278cb9d0ba169337115df4be41d2abb2ffbad40b6aabcdc1d79b3ea02c"
 canonical = "058891278cb9d0ba169337115df4be41d2abb2ffbad40b6aabcdc1d79b3ea02c"
 
 [files.".claude/skills/writing-readable-code/SKILL.md"]
-exact = "46857339eef921935609a44c62a8016c15496b28ea6a364479b80f41653ff8c1"
-canonical = "46857339eef921935609a44c62a8016c15496b28ea6a364479b80f41653ff8c1"
+exact = "6ed1d4b0e9c9037a71914d5c533ee114b12b3b8ed0cf4ba4830214444bc694de"
+canonical = "6ed1d4b0e9c9037a71914d5c533ee114b12b3b8ed0cf4ba4830214444bc694de"
 
 [files.".claude/skills/writing-readable-code/references/naming.md"]
 exact = "d326382d39724a054fbdeeb7ee001827560cd9d3af4ea2ff013ef0689d6ff6a4"
@@ -95,8 +99,8 @@ exact = "3551dce55fff08f41a13da62aba47e03075ef365718c5051e5656e49ea84987b"
 canonical = "3551dce55fff08f41a13da62aba47e03075ef365718c5051e5656e49ea84987b"
 
 [files.".claude/skills/writing-readable-code/references/sources.md"]
-exact = "f9d8d59c4338ddaa8fa3409af9a50499f2333ec24184ea456c29b4cc9bb48fed"
-canonical = "f9d8d59c4338ddaa8fa3409af9a50499f2333ec24184ea456c29b4cc9bb48fed"
+exact = "04a48441a820617eade2f69a31a739dd97504e31bb49af94afeee32fafc73205"
+canonical = "04a48441a820617eade2f69a31a739dd97504e31bb49af94afeee32fafc73205"
 
 [files.".claude/skills/writing-readable-code/references/structure.md"]
 exact = "eb35ae034548394c41caf960c7de9e3292d38223dd57a44664966eb253e2297f"
@@ -509,8 +513,8 @@ policy = "merge"
 
 [parts."AGENTS.md".agents]
 scope = "block"
-exact = "f0b2d8676cb2a1e8607dbceb695bc74ee98de4d8149e5aac2ebbdc94b2f41d3b"
-canonical = "102fa3650de962e70bb49733bb120e82b5b63d57eec5cc7dbfa050a0e69f1863"
+exact = "5ed41d312af1487fe97a812d2adff6e76597eec28534ed90456e70b0aca2cbd3"
+canonical = "26591b0ec6339e1c87c9cf5aa152c5ce52932ac0fd529b6a25c0f5de20c82ac4"
 
 [parts."AGENTS.md".git-commits]
 scope = "block"

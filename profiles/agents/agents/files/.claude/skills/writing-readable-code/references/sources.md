@@ -83,19 +83,19 @@ primary source; open the page before linking it.
 
 ## Where This Skill Departs
 
-| a source says                                                                                 | here                                                                                             |
-| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| naming-analyzer: `getUser`, which writes, becomes `fetchAndUpdateUserLogin`                   | a name that needs "and" is two functions, or one named for the one thing the two make together   |
-| naming-analyzer: `MAX` becomes `MAX_RETRY_ATTEMPTS`, `validate(x)` becomes `validateEmail(…)` | a name is judged after reading its definition, its uses and its tests, never from the name alone |
-| naming-analyzer: acronyms in capitals, `HTTPServer`, for Go                                   | an acronym is one word, `HttpServer`, as Rust's casing has it                                    |
-| naming-analyzer: a boolean field `active` becomes `isActive`                                  | in Rust a field is `active` and the method that asks is `is_active`                              |
-| naming-analyzer: a report of counts, severities and a bulk rename script                      | no report here; a public rename breaks callers, so it keeps a deprecated alias or is left        |
-| reducing-entropy: "Type safety" is a red flag, "worth how many lines?"                        | a type that makes a wrong state impossible to build is worth its lines                           |
-| reducing-entropy: count lines before and after, and "If after > before, reject it"            | code is judged by what a reader must hold, not by its length                                     |
-| reducing-entropy: "Better separation of concerns" is a red flag, since it is more code        | a function that names a step earns its place, even with one caller                               |
-| rust-skills `anti-over-abstraction`: generalize at "2+ concrete types", and wait for three    | a trait comes with its second implementation; blocks merge when they change for the same reason  |
-| rust-skills `anti-over-abstraction`: a public API "might benefit from abstraction"            | concrete in a public API too, until a second implementation, or one its callers write, exists    |
-| rust-skills `type-enum-states`: a transition that ends in a `_ =>` arm                        | a `match` on an enum the crate owns names each variant, so a new one is refused where it lands   |
+| a source says                                                                                 | here                                                                                                                                                                                    |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| naming-analyzer: `getUser`, which writes, becomes `fetchAndUpdateUserLogin`                   | a name that needs "and" is two functions, or one named for the one thing the two make together                                                                                          |
+| naming-analyzer: `MAX` becomes `MAX_RETRY_ATTEMPTS`, `validate(x)` becomes `validateEmail(…)` | a name is judged after reading its definition, its uses and its tests, never from the name alone                                                                                        |
+| naming-analyzer: acronyms in capitals, `HTTPServer`, for Go                                   | an acronym is one word, `HttpServer`, as Rust's casing has it                                                                                                                           |
+| naming-analyzer: a boolean field `active` becomes `isActive`                                  | in Rust a field is `active` and the method that asks is `is_active`                                                                                                                     |
+| naming-analyzer: a report of counts, severities and a bulk rename script                      | no report in this guide, and `review-names` counts only what it read; a rename of what a published crate released keeps a deprecated alias or is left, and any other moves every caller |
+| reducing-entropy: "Type safety" is a red flag, "worth how many lines?"                        | a type that makes a wrong state impossible to build is worth its lines                                                                                                                  |
+| reducing-entropy: count lines before and after, and "If after > before, reject it"            | code is judged by what a reader must hold, not by its length                                                                                                                            |
+| reducing-entropy: "Better separation of concerns" is a red flag, since it is more code        | a function that names a step earns its place, even with one caller                                                                                                                      |
+| rust-skills `anti-over-abstraction`: generalize at "2+ concrete types", and wait for three    | a trait comes with its second implementation; blocks merge when they change for the same reason                                                                                         |
+| rust-skills `anti-over-abstraction`: a public API "might benefit from abstraction"            | concrete in a public API too, until a second implementation, or one its callers write, exists                                                                                           |
+| rust-skills `type-enum-states`: a transition that ends in a `_ =>` arm                        | a `match` on an enum the crate owns names each variant, so a new one is refused where it lands                                                                                          |
 
 ## Corrected Here
 
@@ -118,7 +118,9 @@ joshuadavidthomas's, for deleting what a change makes obsolete, asking what
 flexibility is for, and its mindset of what is expensive to add later; and
 [leonardomso/rust-skills](https://github.com/leonardomso/rust-skills), at
 v1.5.1, for `anti-over-abstraction`, `type-enum-states`, `pat-let-else`,
-`anti-stringly-typed` and `api-parse-dont-validate`.
+`anti-stringly-typed` and `api-parse-dont-validate`. The `review-names` pass
+takes the kinds of name it reads, and of finding as a start, from the same
+`naming-analyzer`, and the notice below covers it too.
 
 agent-toolkit carries this notice:
 

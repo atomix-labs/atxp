@@ -7,7 +7,7 @@ fixes what a formatter or linter can, and `just --list` shows every recipe.
     shows only where one is on. A new pass edits two places: `passes`, joining its own test with
     `or`, and its item in the list. #}
 {%- set lints = devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([]) %}
-{%- set passes = "agents" in lints or "security" in devset.features %}
+{%- set passes = "agents" in lints or "readability" in devset.features or "security" in devset.features %}
 {%- if passes %}
 
 ## Before You Finish
@@ -17,6 +17,10 @@ passes:
 {# The passes, one to a line. #}
 {%- if "agents" in lints %}
 - `/review-rust` on a change to Rust code.
+{%- endif %}
+{%- if "readability" in devset.features %}
+- `/review-names` on a change that adds, renames or changes what a public item
+  does.
 {%- endif %}
 {%- if "security" in devset.features %}
 - `/review-security` on a change that reads input from outside the process.
