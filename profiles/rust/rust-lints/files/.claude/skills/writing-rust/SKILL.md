@@ -80,8 +80,8 @@ Under `strict`, real code also documents every item.
    by cost; `try_` refuses, `_with` takes a closure, `_in` an allocator; `new`
    builds, `create` lays, `open` binds, `open_or_create` does either; `*Spec`
    for one call's parameters, `*Config` for a program's settings, `*Guard` and
-   `*Error` by role, never `*Options`; an acronym is one word; a type parameter
-   is one capital letter.
+   `*Error` by role, never `*Options` or `*Params`; an acronym is one word; a
+   type parameter is one capital letter.
 2. **A type's one value is an associated constant, `Pos::ORIGIN`, and a
    yes-or-no method starts `is_` or `has_`**, with `is_empty` beside every
    `len`.
