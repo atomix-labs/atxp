@@ -1,6 +1,7 @@
+{%- set pitch = description | trim | trim(".") or "what the project does" -%}
 [package]
 name                   = "{{ name or devset.target }}"
-description.workspace  = true
+description            = "{{ pitch if pitch[1:2] is upper else pitch[:1] | lower ~ pitch[1:] }}."
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true

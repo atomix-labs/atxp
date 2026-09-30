@@ -1,7 +1,8 @@
 {%- set crate = name or devset.target -%}
+{%- set pitch = description | trim | trim(".") or "what the project does" -%}
 [package]
 name                   = "{{ crate }}-cli"
-description.workspace  = true
+description            = "{{ pitch if pitch[1:2] is upper else pitch[:1] | lower ~ pitch[1:] }}, from the command line."
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -9,13 +10,14 @@ license.workspace      = true
 authors.workspace      = true
 repository.workspace   = true
 
+[lints]
+workspace = true
+
 [[bin]]
 name = "{{ crate }}"
 path = "src/main.rs"
+doc  = false
 
 [dependencies]
 # internal
 {{ crate }} = { workspace = true }
-
-[lints]
-workspace = true
