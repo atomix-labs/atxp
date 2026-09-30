@@ -228,7 +228,7 @@ path = "profiles"
 
 [[profiles]]
 name = "devset-collection"
-digest = "8e0eb4c458a90802080c1cc77cfa332efe7d5379302d9639b2239eae4b443989"
+digest = "2f159dde321874473881bef7d3ffb0b07ed9e3624b67be0147327f743e2fdbe4"
 
 [profiles.source]
 path = "profiles"
@@ -252,7 +252,7 @@ support = ["target"]
 
 [[profiles]]
 name = "agents"
-digest = "87fe12326b964ab000aeeded4f7ab68a8d3ed3e7c2c2efd695a0b3c78792dac9"
+digest = "d3fb35145f659a6ddbfd81a95d85a1c5ec2af84d8b0b0b344aeec4a4b26549ce"
 
 [profiles.source]
 path = "profiles"
@@ -260,6 +260,7 @@ path = "profiles"
 [profiles.features]
 hook = ["default"]
 readability = ["default"]
+security = ["default"]
 
 [[profiles]]
 name = "vhs"

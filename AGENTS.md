@@ -12,6 +12,16 @@ each keeps.
 Run `just check`: CI runs the same checks, and names each that fails. `just fix`
 fixes what a formatter or linter can, and `just --list` shows every recipe.
 
+## Before You Finish
+
+A change beyond a line or two is ready when its passes have run and `just check`
+passes:
+
+- `/review-security` on a change that reads input from outside the process.
+
+Each runs in a fresh context and reports; fix what it finds, or say why a
+finding does not hold.
+
 ## Managed Files
 
 Profiles, applied by devset, manage some of the files here. `devset status`
