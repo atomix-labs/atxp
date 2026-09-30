@@ -46,6 +46,14 @@ canonical = "b0a1b90b3b64e6b2bb6a930d9011c4c078567175b8b79e8cfa2162ea43f8d063"
 exact = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
 canonical = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
 
+[files.".claude/skills/humanize/SKILL.md"]
+exact = "e3a64a5f35eede7f357a833ab15e5a9c4656587ec6182ff9ef6b0ee7ebbbd225"
+canonical = "e3a64a5f35eede7f357a833ab15e5a9c4656587ec6182ff9ef6b0ee7ebbbd225"
+
+[files.".claude/skills/humanize/references/sources.md"]
+exact = "7baa60eaed457e424d6694b65bfc598a4cb8383088efe307c88a61c525af68e9"
+canonical = "7baa60eaed457e424d6694b65bfc598a4cb8383088efe307c88a61c525af68e9"
+
 [files.".claude/skills/review-names/SKILL.md"]
 exact = "b145c9ba416219bb3130e7ec78294c0c1ab2111f00e15a66d5406d98f2dfe34f"
 canonical = "b145c9ba416219bb3130e7ec78294c0c1ab2111f00e15a66d5406d98f2dfe34f"
@@ -388,8 +396,8 @@ canonical = "d21a7c0b3dca1668b2034fcc68496382da99b43af977b7a1903e617a8644904e"
 
 [parts.".claude/settings.json".agents]
 scope = "keys"
-exact = "3d0108855d922965555a793372b3c10781d4621255d6ded65b4aecbcd76b250d"
-canonical = "3d0108855d922965555a793372b3c10781d4621255d6ded65b4aecbcd76b250d"
+exact = "e981727824955d4d7a882ecb6ef3ec848afc8deac777dd6bea88d08afcbfe959"
+canonical = "e981727824955d4d7a882ecb6ef3ec848afc8deac777dd6bea88d08afcbfe959"
 policy = "merge"
 
 [parts.".config/mise/mise.lock".devset]
@@ -513,8 +521,8 @@ policy = "merge"
 
 [parts."AGENTS.md".agents]
 scope = "block"
-exact = "5ed41d312af1487fe97a812d2adff6e76597eec28534ed90456e70b0aca2cbd3"
-canonical = "26591b0ec6339e1c87c9cf5aa152c5ce52932ac0fd529b6a25c0f5de20c82ac4"
+exact = "46a4db1f06b6ba6aacf48f68a9235a649a1d506f77b48ffcbc22fd2589203f26"
+canonical = "7b8b59561c056ce5b2c47c3bfe7179f641c37a3dfb9004f43cf6badbde73baa8"
 
 [parts."AGENTS.md".git-commits]
 scope = "block"

@@ -11,6 +11,9 @@
       "Bash(git log *)",
       "Bash(git show *)",
       "Bash(git status *)"
+{%- if "readability" in devset.features %},
+      "Skill(humanize *)"
+{%- endif %}
     ],
     "deny": ["Bash(just publish*)", "Bash(just * publish*)", "Bash(just bump*)", "Bash(just * bump*)"],
     "ask": ["Bash(just * release*)"]

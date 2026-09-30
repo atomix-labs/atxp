@@ -35,6 +35,13 @@ template = true
 executable = true
 when       = { features = ["hook"] }
 
+[files.".claude/skills/humanize/SKILL.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/humanize/references/sources.md"]
+when = { features = ["readability"] }
+
 [files.".claude/skills/review-names/SKILL.md"]
 template = true
 when     = { features = ["readability"] }
