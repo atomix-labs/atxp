@@ -41,22 +41,42 @@ Two of them keep a managed block:
 The copyright line names `authors`, or else the directory. The Covenant's
 contact is left for the project to fill in.
 
+The `agents` feature adds the `writing-readmes` skill in `.claude/skills/`: how
+a README is written around the header block, which it never edits and moves to
+the top where the block was appended; the pitch, Install, Quick Start, the
+project's own sections, then Documentation, Contributing and License, in that
+order; commands that run as shown, `cargo add` for a library and `cargo install
+--locked` for a command line, naming the package where its binary is named
+otherwise, and the minimum Rust from `rust-version`; Cargo features in the rows
+of the crate docs' table; the README and the `//!` crate page kept apart; and
+images and links that resolve wherever the README is shown. Where
+[`cargo-publish`](../../cargo/cargo-publish/README.md) publishes the crates, it
+teaches why a README crates.io shows takes absolute URLs, and how each crate
+gets one; where [`vhs`](../../docs/vhs/README.md) records the demo, how its
+picture is kept. Its templates are a library's, a command line's and a
+workspace's README, whole, and it names
+[`rust-doc`](../../rust/rust-doc/README.md)'s `writing-rustdoc` for the crate
+page where that profile's `agents` is on.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                  | Part  | Policy | Notes                                                             |
-| --------------------- | ----- | ------ | ----------------------------------------------------------------- |
-| `README.md`           | block | owned  | template, feature `readme`                                        |
-| `CONTRIBUTING.md`     | block | owned  | feature `contributing`                                            |
-| `LICENSE-MIT`         | whole | once   | template, feature `license`, `license` one of `MIT OR Apache-2.0` |
-| `LICENSE-APACHE`      | whole | once   | feature `license`, `license` one of `MIT OR Apache-2.0`           |
-| `LICENSE`             | whole | once   | template, feature `license`, `license` one of `MIT`, `Apache-2.0` |
-| `SECURITY.md`         | whole | once   | template, feature `security`                                      |
-| `BREAKING-CHANGES.md` | whole | once   | template, feature `breaking-changes`                              |
-| `CODE_OF_CONDUCT.md`  | whole | once   | template, feature `conduct`                                       |
-| `SUPPORT.md`          | whole | once   | template, feature `support`                                       |
-| `ARCHITECTURE.md`     | whole | once   | feature `architecture`                                            |
+| File                                                     | Part  | Policy | Notes                                                             |
+| -------------------------------------------------------- | ----- | ------ | ----------------------------------------------------------------- |
+| `README.md`                                              | block | owned  | template, feature `readme`                                        |
+| `CONTRIBUTING.md`                                        | block | owned  | feature `contributing`                                            |
+| `LICENSE-MIT`                                            | whole | once   | template, feature `license`, `license` one of `MIT OR Apache-2.0` |
+| `LICENSE-APACHE`                                         | whole | once   | feature `license`, `license` one of `MIT OR Apache-2.0`           |
+| `LICENSE`                                                | whole | once   | template, feature `license`, `license` one of `MIT`, `Apache-2.0` |
+| `SECURITY.md`                                            | whole | once   | template, feature `security`                                      |
+| `BREAKING-CHANGES.md`                                    | whole | once   | template, feature `breaking-changes`                              |
+| `CODE_OF_CONDUCT.md`                                     | whole | once   | template, feature `conduct`                                       |
+| `SUPPORT.md`                                             | whole | once   | template, feature `support`                                       |
+| `ARCHITECTURE.md`                                        | whole | once   | feature `architecture`                                            |
+| `.claude/skills/writing-readmes/SKILL.md`                | whole | owned  | template, feature `agents`                                        |
+| `.claude/skills/writing-readmes/references/sources.md`   | whole | owned  | feature `agents`                                                  |
+| `.claude/skills/writing-readmes/references/templates.md` | whole | owned  | template, feature `agents`                                        |
 
 ## Features
 
@@ -71,6 +91,7 @@ contact is left for the project to fill in.
 | `support`          |         |                                   |
 | `architecture`     |         |                                   |
 | `devset-badge`     |         |                                   |
+| `agents`           |         |                                   |
 
 ## Variables
 
