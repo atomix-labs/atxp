@@ -29,9 +29,12 @@ and `fix-*` recipe, `just --list`, devset's commands that only read, and `git
 diff`, `git log`, `git show` and `git status`, which a pass reads the change
 with, without asking. It may never run `just publish`, which no release can take
 back, or `just bump`, the weekly workflow's; `just release`, which only writes,
-asks first. Claude Code honours the list only in a workspace whose trust dialog
-was accepted; in one that is untrusted, a pass reads the files it can and says
-in its report what it could not run.
+asks first. Each holds however the recipe is reached: `just` runs every recipe
+it is given, so the list also refuses `just check publish`, which the allowed
+`just check*` would otherwise admit, and asks before `just check release`.
+Claude Code honours the list only in a workspace whose trust dialog was
+accepted; in one that is untrusted, a pass reads the files it can and says in
+its report what it could not run.
 
 With `hook`, a default, a turn that changes the repository ends only once `just
 check` passes. As each prompt arrives, a `UserPromptSubmit` hook notes the
