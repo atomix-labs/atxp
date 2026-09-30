@@ -8,8 +8,8 @@ to a module that holds unsafe code. It says where unsafe code may sit, what each
 proof must establish, and what holds each rule.
 {%- if "agents" in rustdoc %}
 
-How a `// SAFETY:` or a `# Safety` section is worded is `writing-rustdoc`'s;
-this says what each must prove, and how an `// INVARIANT:` is written.
+How a `// SAFETY:`, an `// INVARIANT:` or a `# Safety` section is worded is
+`writing-rustdoc`'s; this says what each must prove.
 {%- endif %}
 
 Each example is small enough that a safe form would serve it; it shows the shape
@@ -91,8 +91,8 @@ Each unsafe site is allowed where it stands, with `#[expect(unsafe_code,
 reason = "…")]` on the statement, the item, the `impl` block or the module that
 holds the unsafe, and `#![expect]` on the crate only where unsafe is the crate's
 whole purpose. The reason names the unsafe operation and why no safe form
-serves, never "unsafe code". The `// SAFETY:` comment sits above the attribute,
-or between it and the statement.
+serves, never "unsafe code". The `// SAFETY:` comment sits above the attribute
+where the attribute is on the unsafe statement or `unsafe impl` itself.
 {%- if "strict" in devset.features %}
 
 The workspace denies `unsafe_code`, so no unsafe compiles without one.
