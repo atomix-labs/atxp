@@ -11,8 +11,8 @@ Where the repository has a pass, a skill that runs on finished work in a fork of
 its own, the block also has Before You Finish: each pass to run before a change
 is done, with what it is for, and to fix what it finds or say why a finding does
 not hold. It names `/review-rust` where
-[`rust-lints`](../../rust/rust-lints/README.md)' `agents` is on, and is left out
-where no pass is.
+[`rust-lints`](../../rust/rust-lints/README.md)' `agents` is on, and
+`/review-security` where `security` is, and is left out where no pass is.
 
 `.claude/settings.json` holds Claude Code's permissions as keys, under `merge`,
 so the repository keeps its own beside them. An agent may run every `check-*`
@@ -64,6 +64,27 @@ each names it and defers to it, where it is applied: the Rust skills of
 [`python`](../../lang/python/README.md) is applied, and what the shell asks
 where [`shell`](../../lang/shell/README.md) is.
 
+With `security`, a default, the profile ships the `review-security` pass, which
+reviews a change for what someone outside the process can reach through it, and
+changes nothing. It maps each input the change reads from outside the process
+and who controls it, traces each through the attack classes a library or a CLI
+meets, tries to refute each candidate, and reports only a finding with a
+concrete path from the input to the harm, weighed by what an attacker gains.
+Path traversal, command injection, unbounded allocation, decoding without
+limits, secrets in logs and errors, races on files, input printed unescaped and
+a recipe's arguments are always checked; panics on input, size arithmetic and
+unsound `unsafe` where `rust-lints` is applied, with `writing-unsafe-rust` for a
+proof where its `agents` is on; dependency advisories, through
+`check-cargo-deny`, where [`cargo-deny`](../../cargo/cargo-deny/README.md) is;
+scripts and Python where [`shell`](../../lang/shell/README.md) and
+[`python`](../../lang/python/README.md) are; and a workflow's expressions where
+[`github-ci`](../../github/github-ci/README.md) is. A published crate's public
+function is judged for every caller it could have, an unpublished one's for the
+workspace's. It adapts the method of Cloudflare's security-audit skill, MIT,
+whose notice its `sources.md` carries. It takes a revision range or paths, and
+after `--` what the change is for and who sends its input, `/review-security
+main..HEAD -- the tile server loads the set a client names`.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
@@ -74,6 +95,9 @@ where [`shell`](../../lang/shell/README.md) is.
 | `CLAUDE.md`                                                     | whole | once   | scaffold `claude`               |
 | `.claude/settings.json`                                         | keys  | merge  | template                        |
 | `.claude/hooks/check.sh`                                        | whole | owned  | executable, feature `hook`      |
+| `.claude/skills/review-security/SKILL.md`                       | whole | owned  | template, feature `security`    |
+| `.claude/skills/review-security/references/attack-classes.md`   | whole | owned  | template, feature `security`    |
+| `.claude/skills/review-security/references/sources.md`          | whole | owned  | template, feature `security`    |
 | `.claude/skills/writing-prose/SKILL.md`                         | whole | owned  | template, feature `readability` |
 | `.claude/skills/writing-prose/references/comments.md`           | whole | owned  | template, feature `readability` |
 | `.claude/skills/writing-prose/references/messages.md`           | whole | owned  | template, feature `readability` |
@@ -91,6 +115,7 @@ where [`shell`](../../lang/shell/README.md) is.
 | ------------- | ------- | ------- |
 | `hook`        | yes     |         |
 | `readability` | yes     |         |
+| `security`    | yes     |         |
 
 ## Requires
 

@@ -4,11 +4,13 @@ description = "What a coding agent reads to work in the repository: AGENTS.md, C
 devset      = ">=0.5.0"
 
 [features]
-default = ["hook", "readability"]
+default = ["hook", "readability", "security"]
 # Claude Code's hooks: a turn that changes the repository ends only once `just check` passes.
 hook = []
 # Skills for how prose and code read, in .claude/skills/.
 readability = []
+# The review-security pass, in .claude/skills/.
+security = []
 
 [requires]
 just = {}
@@ -32,6 +34,18 @@ template = true
 [files.".claude/hooks/check.sh"]
 executable = true
 when       = { features = ["hook"] }
+
+[files.".claude/skills/review-security/SKILL.md"]
+template = true
+when     = { features = ["security"] }
+
+[files.".claude/skills/review-security/references/attack-classes.md"]
+template = true
+when     = { features = ["security"] }
+
+[files.".claude/skills/review-security/references/sources.md"]
+template = true
+when     = { features = ["security"] }
 
 [files.".claude/skills/writing-prose/SKILL.md"]
 template = true

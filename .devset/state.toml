@@ -46,6 +46,18 @@ canonical = "b0a1b90b3b64e6b2bb6a930d9011c4c078567175b8b79e8cfa2162ea43f8d063"
 exact = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
 canonical = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
 
+[files.".claude/skills/review-security/SKILL.md"]
+exact = "d9812b5ba70d8b43f191f574345e2525b404cc7fdb013ab97e1efe26f0639386"
+canonical = "d9812b5ba70d8b43f191f574345e2525b404cc7fdb013ab97e1efe26f0639386"
+
+[files.".claude/skills/review-security/references/attack-classes.md"]
+exact = "781e30ff514a65899fcfbb80caa004be5d4d7262a69cebb31006ecdeeeafe1c5"
+canonical = "781e30ff514a65899fcfbb80caa004be5d4d7262a69cebb31006ecdeeeafe1c5"
+
+[files.".claude/skills/review-security/references/sources.md"]
+exact = "363b40ffa6cd758b08d880fc7270fb8a69c1c8e42a6d70f7c8ab639433700fee"
+canonical = "363b40ffa6cd758b08d880fc7270fb8a69c1c8e42a6d70f7c8ab639433700fee"
+
 [files.".claude/skills/using-devset/SKILL.md"]
 exact = "1b58e22f094fc69b393afe5ad006e4c801799970f8ebf89a26e689a43b9a9a1a"
 canonical = "1b58e22f094fc69b393afe5ad006e4c801799970f8ebf89a26e689a43b9a9a1a"
@@ -497,8 +509,8 @@ policy = "merge"
 
 [parts."AGENTS.md".agents]
 scope = "block"
-exact = "1fcad9e05558e426c48c1efc0118e842cb3e3443396effb8b44d2992300dee89"
-canonical = "cf8ac9a823c3b6311ca300eb7802a4d06546d23fa9b01559d1ef8acacda1545f"
+exact = "f0b2d8676cb2a1e8607dbceb695bc74ee98de4d8149e5aac2ebbdc94b2f41d3b"
+canonical = "102fa3650de962e70bb49733bb120e82b5b63d57eec5cc7dbfa050a0e69f1863"
 
 [parts."AGENTS.md".git-commits]
 scope = "block"
