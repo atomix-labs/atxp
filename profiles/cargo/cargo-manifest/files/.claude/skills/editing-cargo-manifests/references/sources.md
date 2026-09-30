@@ -36,25 +36,25 @@ a manifest claim needs backing; open the page before linking it.
 
 ## What Measurement Shows
 
-On cargo 1.98.1, the toolchain the profiles pin:
+Measured with cargo 1.98.1, the `rust-version` a new workspace declares, and the
+cargo 1.101 of the nightly the profiles pin:
 
 1. **A `version` beside `workspace = true` is ignored, not refused.** The page
    on specifying dependencies says "Other than `optional` and `features`,
-   inherited dependencies cannot use any other dependency key"; Cargo loads a
-   member that writes `version` there, warns "unused manifest key:
-   dependencies.serde.version", and ignores it. The rule writes only the two the
+   inherited dependencies cannot use any other dependency key"; both Cargos load
+   a member that writes `version` there, warn "unused manifest key:
+   dependencies.serde.version", and ignore it. The rule writes only the two the
    page names.
-2. **A member's `default-features = false` over a default the workspace entry
-   leaves on is refused, as the
+2. **A member's `default-features = false`, over a default its workspace entry
+   leaves on, is refused by one Cargo and taken by the other.** Cargo 1.98.1
+   refuses to load an edition 2024 member that writes it, "`default-features =
+   false` cannot override workspace's `default-features`", as the
    [edition guide](https://doc.rust-lang.org/edition-guide/rust-2024/cargo-inherited-default-features.html)
-   says.** An edition 2024 member that writes it fails to load,
-   "`default-features = false` cannot override workspace's `default-features`";
-   an earlier edition ignores it with a warning. So it goes on the workspace
-   entry, the one place it takes effect.
-3. **No canonical essay on feature bloat exists.** Searches return tool READMEs
-   and forum threads. Cite `features.html#feature-combinations` (the exponential
-   cost, official) and `#mutually-exclusive-features` (split first, official)
-   rather than a blog post.
+   says. Cargo 1.101 takes it: `cargo tree -e features -i serde -p <member>`
+   shows that member's serde with no `default`, and the same tree over the
+   workspace shows `default` back on, since a second member wants it. So the
+   rule puts `default-features = false` on the workspace entry, which both
+   Cargos honour, for every member at once.
 
 ## Contested Upstream, Settled Here
 

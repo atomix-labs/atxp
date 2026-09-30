@@ -1,6 +1,6 @@
 ---
 name: editing-cargo-manifests
-description: Use when creating a crate, or writing, reviewing or cleaning any `Cargo.toml` in the workspace; when adding, removing or re-pinning a dependency; when adding or reshaping a `[features]` table, or deciding between a feature, an optional dependency and a separate crate; when adding a proc-macro crate; when declaring a `[[bench]]`, `[[bin]]`, `[[example]]` or `[lib]` target; when `std` reaches a `no_std` crate through a default; when the manifest check or the unused-dependency check reports a finding. Covers the manifest's shape, dependencies and their inheritance, features and defaults, and targets.
+description: Use when creating a crate, or writing, reviewing or cleaning any `Cargo.toml` in the workspace, the root's included; when adding, removing or re-pinning a dependency; when adding or reshaping a `[features]` table, or choosing between a feature, an optional dependency and a separate crate; when adding a proc-macro crate or declaring a `[[bench]]`, `[[bin]]`, `[[example]]` or `[lib]` target; when `std` reaches a `no_std` crate through a default; when the manifest check or the unused-dependency check reports a finding. Covers the manifest's shape, the root, dependencies, features, defaults and targets.{% if "agents" in (devset.layers | selectattr("profile", "equalto", "cargo-profiles") | map(attribute="features") | first | default([])) %} Not for build profiles, which tuning-rust-performance covers.{% endif %}{% if "agents" in (devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([])) %} Not for the lint table, which writing-rust covers.{% endif %}
 ---
 
 # Editing Cargo Manifests
@@ -14,6 +14,7 @@ of it, each with its reason; `references/sources.md` holds the Cargo
 documentation behind each.
 {%- set lints = devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([]) %}
 {%- set rustdoc = devset.layers | selectattr("profile", "equalto", "rust-doc") | map(attribute="features") | first | default([]) %}
+{%- set tooling = devset.layers | selectattr("profile", "equalto", "devset") | map(attribute="features") | first | default([]) %}
 
 ## Rules
 
@@ -26,17 +27,18 @@ documentation behind each.
    and each `[target.'cfg(…)'.dependencies]`.
 2. **`[package]` reads `name`, `description`, then the keys the workspace sets,
    each `<key>.workspace = true`: `version`, `edition`, `rust-version`,
-   `license`, `authors`, then `publish` or `repository`**, so a crate says only
+   `license`, `authors`, then `publish` where the workspace keeps its crates off
+   crates.io, or `repository` where it publishes them**, so a crate says only
    its name and pitch, and one edit to the workspace moves every crate.
 3. **Every crate has `[lints] workspace = true`, and nothing else under
    `[lints]`**, so no crate leaves the shared lints without anyone deciding it
    should.
 4. **Every `[features]` table opens with `default`, even `default = []`**, the
    manifest's word that nothing else is on by default.
-5. **No comment but the group markers, `# external` then `# internal`, each once
-   and bare, inside a dependency table**; a reason worth keeping goes in the
-   crate's docs, a feature's in its `# Crate features` table and a target's in
-   its file's `//!`.
+5. **No comment in a member but the group markers, `# external` then `#
+   internal`, each once and bare, inside a dependency table**; a reason worth
+   keeping goes in the crate's docs, a feature's in its `# Crate features` table
+   and a target's in its file's `//!`.
 6. **Nothing Cargo finds or defaults to by itself**: no `[lib]` or `[[bin]]`
    that restates `src/lib.rs` or `src/main.rs`, no `build = "build.rs"`, no
    `autobins` or its kin, and no `documentation`, since crates.io links docs.rs
@@ -93,12 +95,18 @@ divan = { workspace = true }
    holding its token logic, and each reaches the next by `path`**, since a
    `proc-macro = true` crate exports its macros alone and its logic is tested
    through the library: the parent reaches `macros/macro`, and the macro crate
-   its sibling, `../macro-impl`, neither of them listed in the workspace.
+   its sibling, `../macro-impl`, neither of them listed in
+   `[workspace.dependencies]`.
 4. **A dependency's default is turned off where it would reach a crate that does
    not want it: an external crate a `no_std` member uses has `default-features =
-   false` on its workspace entry**, since Cargo unifies a dependency's features
-   across the build, and a member cannot turn off a default its workspace entry
-   leaves on: edition 2024 refuses it, and earlier editions ignore it.
+   false` on its workspace entry**, since a member's own cannot hold: Cargo
+   1.98, the `rust-version` a new workspace declares, refuses it over a default
+   the workspace entry leaves on, and where a newer Cargo takes it, feature
+   unification turns the default back on for any build with a member that wants
+   it.
+5. **No dev-dependency depends back on the crate that names it**, since Cargo
+   then builds a second copy of the crate, whose types are not the ones under
+   test, and a test that mixes them fails with E0308.
 
 ### Features
 
@@ -145,13 +153,55 @@ Under `strict`, a library is `no_std` first:
 are found without a table; one is written only for a key that is not its
 default:
 
-| written                                                                      | when                                                                                    |
-| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `[lib] proc-macro = true`                                                    | a proc-macro crate                                                                      |
-| `[[bench]] name`, `harness = false`                                          | a bench that owns its `main`, as divan's and criterion's do                             |
-| `[lib] bench = false`                                                        | such benches take flags that libtest's harness in the library refuses                   |
-| `[[bin]] name`, `path`                                                       | a binary named other than its package, or than its file in `src/bin/`                   |
-| `required-features` on a `[[bin]]`, `[[example]]`, `[[test]]` or `[[bench]]` | a target that needs a feature the crate does not default to; it does nothing on `[lib]` |
+| written                                                                      | when                                                                                             |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `[lib] proc-macro = true`                                                    | a proc-macro crate                                                                               |
+| `[[bench]] name`, `harness = false`                                          | a bench that owns its `main`, as divan's and criterion's do                                      |
+| `[lib] bench = false`                                                        | such benches take flags that libtest's harness in the library refuses                            |
+| `[[bin]] name`, `path`                                                       | a binary named other than its package, or than its file in `src/bin/`                            |
+| `[[bin]] doc = false`                                                        | a binary named like a library of the workspace, whose rustdoc page would overwrite the library's |
+| `required-features` on a `[[bin]]`, `[[example]]`, `[[test]]` or `[[bench]]` | a target that needs a feature the crate does not default to; it does nothing on `[lib]`          |
+
+`doc = false` also takes the binary out of rustdoc's build, so no check sees a
+broken link in its docs; clippy still reads them{% if "strict" in rustdoc %}, and the doc lint its words{% endif %}.
+
+### The Root
+
+The workspace's own `Cargo.toml` holds what the members share. The rules above
+are a member's: the root's comments, the ones the profiles write above their
+keys among them, are its own.
+
+1. **`[workspace]` finds its members by glob, `members = ["crates/*"]`, and sets
+   `resolver = "3"`**, so a crate under `crates/` is a member without an edit,
+   and a virtual workspace, which has no edition to infer it from, still
+   resolves as edition 2024 does.
+2. **`[workspace.package]` holds the keys members inherit**: `version`,
+   `edition`, `rust-version`, `license`, `authors`, and `publish` or
+   `repository`. Raising `rust-version` decides who can build the crates, so it
+   is a change of its own{% if "rust-msrv" in devset.profiles %}, and `just check-rust-msrv` builds on it{% endif %}.
+3. **`[patch]` sits in the root alone**, since Cargo ignores one in a member,
+   with a warning.
+4. **A git dependency is pinned by `rev`**, so what it names moves only when the
+   pin does.
+{%- if "cargo-deny" in devset.profiles %}
+
+`just check-cargo-deny` refuses a git dependency pinned otherwise, or from a
+source `deny.toml`'s `allow-git` does not name.
+{%- endif %}
+{%- if "rust-lints" in devset.profiles %}
+
+rust-lints writes the lints of `[workspace.lints]`, all but `unexpected_cfgs`,
+which is the repository's.
+{%- endif %}
+{%- if "cargo-profiles" in devset.profiles %}
+
+cargo-profiles writes the `[profile.*]` keys.
+{%- endif %}
+{%- if "rust-lints" in devset.profiles or "cargo-profiles" in devset.profiles %}
+
+A key a profile writes changes through the profile: an edit by hand is drift,
+which `devset status` reports{% if "agents" in tooling %}, and `using-devset` says how it is changed{% endif %}.
+{%- endif %}
 
 ## Steps
 
@@ -161,16 +211,27 @@ default:
    clause, as `writing-rustdoc` words it{% endif %}.
 2. **A dependency**: its entry in `[workspace.dependencies]` under its group,
    with its version and `default-features`, then `{ workspace = true }` in the
-   member, with `features` or `optional` where the member needs them.
-3. **A feature**: which of the three earns it; `dep:` for an optional
+   member, with `features` or `optional` where the member needs them. `cargo
+   add` writes `name.workspace = true` where the entry exists, which the check
+   misreads, and a pinned version where it does not: write the entry first, and
+   the member's line in the inline form.
+{%- if "cargo-bump" in devset.profiles %}
+3. **Re-pinning a dependency**: its version in its workspace entry, nowhere
+   else; `just bump-cargo-bump` moves every requirement to its newest release
+   past a three-day cooldown.
+{%- else %}
+3. **Re-pinning a dependency**: its version in its workspace entry, nowhere
+   else.
+{%- endif %}
+4. **A feature**: which of the three earns it; `dep:` for an optional
    dependency; the features it forwards; its row in the crate docs' `# Crate
    features` table.
-4. **A proc-macro crate**: the pair under the parent's `macros/`, each reached
+5. **A proc-macro crate**: the pair under the parent's `macros/`, each reached
    by `path`, the macro crate's `[lib] proc-macro = true`.
-5. **A target**: only a key that is not its default, from the table above.
-6. **A finding**: `just fix` puts each dependency under its group; the rest is
+6. **A target**: only a key that is not its default, from the table above.
+7. **A finding**: `just fix` puts each dependency under its group; the rest is
    fixed by hand, as the finding names it.
-7. **Before finishing**: `just fix`, then the checks below until they pass.
+8. **Before finishing**: `just fix`, then the checks below until they pass.
 
 ## Checks
 
@@ -178,8 +239,9 @@ default:
   order; `description`; the comments and the two groups; every internal
   dependency inherited, and every `path` in its crate's tree; `default` first;
   and every crate on the workspace's lints. `mise exec -- python3
-  .just/cargo-manifest.py <path>` checks one manifest. The order of the tables,
-  a key Cargo would find by itself, and `documentation` are held by review.
+  .just/cargo-manifest.py <path>` checks one manifest. An external dependency
+  pinned in a member, the order of the tables, a key Cargo would find by itself,
+  and `documentation` are held by review.
 {%- if "toml" in devset.profiles %}
 - `just check-toml`: taplo's layout, each dependency group in alphabetical
   order.
@@ -193,13 +255,19 @@ default:
 {%- if "cargo-deny" in devset.profiles %}
 - `just check-cargo-deny`: advisories, licences, bans and sources.
 {%- endif %}
+{%- if "cargo-publish" in devset.profiles %}
+- `just check-cargo-publish`: every crate crates.io will take, packaged and
+  built from its package, so a missing file or a dependency without a version
+  fails the change and not the release.
+{%- endif %}
 {%- if "cargo-hack" in devset.profiles %}
 - `just nightly-cargo-hack`: every feature builds alone.
 {%- endif %}
 - `just check`: all of them.
 - By hand: `cargo tree -e features -i <crate>` says who turned a feature on
-  across the build, and `cargo tree -e features -i <crate> -p <member>` within
-  one member.
+  across the workspace, and `cargo tree -e features -i <crate> -p <member>`
+  within one member: Cargo unifies features across what one command builds, so a
+  build of one member can lack a feature a build of all of them has.
 
 ## What Not to Do
 
@@ -208,7 +276,7 @@ default:
 | "This dependency's purpose is not obvious; a `#` gloss helps" | No comment: the crate docs say it, where its guarantee is used.        |
 | "A paragraph above `[[bench]]` says why it has no harness"    | The bench's `//!` says it.                                             |
 | "No feature is on by default, so `default` can go"            | `default = []` is the declaration that none is. Write it.              |
-| "`default-features = false` here keeps `std` out"             | Cargo refuses it over a default the workspace leaves on: put it there. |
+| "`default-features = false` here keeps `std` out"             | Cargo 1.98 refuses it, and unification undoes it: the workspace entry. |
 | "A `no-std` feature reads clearer"                            | Features only add: name the thing, `std`.                              |
 | "Two features that conflict; a `compile_error!` will say so"  | Split the crate: the `compile_error!` is the last resort.              |
 | "An optional dependency's implicit feature is fine"           | `dep:`, so the crate's name is not a public feature.                   |
@@ -225,5 +293,5 @@ Read the reference before citing a source for a rule, or where Cargo's own
 documentation seems to say otherwise, and again after compaction.
 
 - `references/sources.md`: the Cargo documentation and tools behind each rule,
-  what measurement on the pinned toolchain shows of them, and what this
-  workspace settles that the ecosystem contests.
+  what measurement on Cargo 1.98 and the pinned nightly shows of them, and what
+  this workspace settles that the ecosystem contests.

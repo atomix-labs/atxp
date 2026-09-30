@@ -22,7 +22,8 @@ The `agents` feature adds the `editing-cargo-manifests` skill in
 in `[workspace.dependencies]`, with a proc-macro crate the one a member reaches
 by path; what earns a feature, features that only add, and small defaults, with
 `std` the opt-in where [`rust-lints`](../../rust/rust-lints/README.md) is
-`strict`; the targets that need a table; and how to add a crate, a dependency, a
+`strict`; the targets that need a table; what the workspace root holds, and
+which of its keys the profiles write; and how to add a crate, a dependency, a
 feature or a target within it.
 
 <!-- facts: written by devset-collection -->
