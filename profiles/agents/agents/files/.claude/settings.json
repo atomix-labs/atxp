@@ -12,7 +12,8 @@
       "Bash(git show *)",
       "Bash(git status *)"
     ],
-    "deny": ["Bash(just publish*)", "Bash(just bump*)"]
+    "deny": ["Bash(just publish*)", "Bash(just * publish*)", "Bash(just bump*)", "Bash(just * bump*)"],
+    "ask": ["Bash(just * release*)"]
   }
 {%- if "hook" in devset.features %},
   "hooks": {
