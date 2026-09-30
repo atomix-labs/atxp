@@ -332,8 +332,8 @@ canonical = "d21a7c0b3dca1668b2034fcc68496382da99b43af977b7a1903e617a8644904e"
 
 [parts.".claude/settings.json".agents]
 scope = "keys"
-exact = "1a7a14e629fff766c9cf9e7f20e98374f899d7b957cdefc3170d31e036db943d"
-canonical = "1a7a14e629fff766c9cf9e7f20e98374f899d7b957cdefc3170d31e036db943d"
+exact = "89519fe954ee04c8fcc0e53c64987dda83e87e99fa2f191c34b387b6b7115c4e"
+canonical = "89519fe954ee04c8fcc0e53c64987dda83e87e99fa2f191c34b387b6b7115c4e"
 policy = "merge"
 
 [parts.".config/mise/mise.lock".devset]

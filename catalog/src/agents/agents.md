@@ -16,12 +16,21 @@ repository's to write. Its managed block says how to check a change, and which
 files devset manages. CLAUDE.md, scaffolded where there is none, imports
 AGENTS.md for Claude Code and says where the skills are.
 
+Where the repository has a pass, a skill that runs on finished work in a fork of
+its own, the block also has Before You Finish: each pass to run before a change
+is done, with what it is for, and to fix what it finds or say why a finding does
+not hold. It names `/review-rust` where [`rust-lints`](../rust/rust-lints.md)'
+`agents` is on, and is left out where no pass is.
+
 `.claude/settings.json` holds Claude Code's permissions as keys, under `merge`,
 so the repository keeps its own beside them. An agent may run every `check-*`
-and `fix-*` recipe, `just --list`, and devset's commands that only read, without
-asking. It may never run `just publish`, which no release can take back, or
-`just bump`, the weekly workflow's; `just release`, which only writes, asks
-first.
+and `fix-*` recipe, `just --list`, devset's commands that only read, and `git
+diff`, `git log`, `git show` and `git status`, which a pass reads the change
+with, without asking. It may never run `just publish`, which no release can take
+back, or `just bump`, the weekly workflow's; `just release`, which only writes,
+asks first. Claude Code honours the list only in a workspace whose trust dialog
+was accepted; in one that is untrusted, a pass reads the files it can and says
+in its report what it could not run.
 
 With `hook`, the default, a turn that changes the repository ends only once
 `just check` passes. As each prompt arrives, a `UserPromptSubmit` hook notes the

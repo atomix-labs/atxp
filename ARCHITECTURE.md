@@ -159,19 +159,28 @@ them.
 `agents` gives a coding agent what it reads before it changes a repository:
 AGENTS.md, started where there is none, with a block on checking a change and on
 the files devset manages; CLAUDE.md, which imports it; and Claude Code's
-permissions and hooks in `.claude/`. The permissions allow every check and fix
-and devset's commands that only read, and deny publishing; the hooks keep the
-agent at work until `just check` passes on what its turn changed.
+permissions and hooks in `.claude/`. The permissions allow every check and fix,
+devset's commands that only read, and `git diff`, `git log`, `git show` and `git
+status`, and deny publishing; the hooks keep the agent at work until `just
+check` passes on what its turn changed.
 
 A profile whose concern an agent needs taught ships a skill, or several, in
 `.claude/skills/<skill>/`, under its own `agents` feature: `rust-lints`, with
-`writing-rust` and `writing-unsafe-rust`, `cargo-nextest`, with
-`writing-rust-tests`, `cargo-profiles`, with `tuning-rust-performance`,
-`rust-doc`, `cargo-manifest`, `devset`, `devset-collection`, `github-ci`,
-`github-release` and `mdbook` do. `git-commits`, `cargo-deny` and `mdbook` add a
-block to AGENTS.md where there is one. The bundle's `agents` turns on the layer
-and every one of them. A skill is a template like any payload, so it names a
-recipe only where the profile that provides it is applied.
+`writing-rust`, `writing-unsafe-rust` and the `review-rust` pass;
+`cargo-nextest`, with `writing-rust-tests`; `cargo-profiles`, with
+`tuning-rust-performance`; and `rust-doc`, `cargo-manifest`, `devset`,
+`devset-collection`, `github-ci`, `github-release` and `mdbook`, with one each.
+`git-commits`, `cargo-deny` and `mdbook` add a block to AGENTS.md where there is
+one. The bundle's `agents` turns on the layer and every one of them. A skill is
+a template like any payload, so it names a recipe only where the profile that
+provides it is applied.
+
+A skill is a guide, which teaches while the agent works, or a pass, which runs
+in a fork of its own on finished work and reports. The first pass is
+`rust-lints`' `review-rust`, which reviews a change against the Rust guides the
+repository has. The block `agents` writes in AGENTS.md has Before You Finish,
+which names each pass the repository has, so an agent runs them before it calls
+a change done, without being asked; it is left out where no pass is.
 
 ## The Repository
 

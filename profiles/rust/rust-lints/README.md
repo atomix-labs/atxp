@@ -50,6 +50,26 @@ tests, and Miri where [`rust-toolchain`](../../rust/rust-toolchain/README.md)
 has its `miri` feature. Each bad example a lint catches fails with that lint,
 and each good one compiles under this wall.
 
+The `agents` feature also adds the `review-rust` pass, a skill that runs in a
+fork of its own on a change that is ready and reports what it finds, changing
+nothing. It reads each Rust guide's body whole, and the reference sections the
+change needs: these two guides, and those of
+[`cargo-nextest`](../../cargo/cargo-nextest/README.md),
+[`cargo-profiles`](../../cargo/cargo-profiles/README.md),
+[`rust-doc`](../../rust/rust-doc/README.md) and
+[`cargo-manifest`](../../cargo/cargo-manifest/README.md) where their `agents` is
+on. It runs `check-rust-clippy` first, where
+[`rust-clippy`](../../rust/rust-clippy/README.md) is applied, and leaves to the
+lints what they hold; then it reads every changed hunk, and checks errors, API
+and naming, unsafe code and atomics, tests, performance, docs and manifests in
+turn. Each finding has its line, the rule it breaks by skill and heading, why it
+matters in the change, the fix, and its weight: blocking, important or a
+suggestion. It takes a revision range or paths, and after `--` what the change
+is for, `/review-rust main..HEAD -- the grid refuses a tile off its edge`; with
+none, it reviews the working tree and the branch. An agent runs it before
+calling a change done, as the [`agents`](../../agents/agents/README.md)
+profile's block in AGENTS.md says.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
@@ -58,6 +78,7 @@ and each good one compiles under this wall.
 | ------------------------------------------------------------------ | ----- | ------ | --------------------------------- |
 | `Cargo.toml`                                                       | keys  | owned  | template                          |
 | `.just/rust-lints.just`                                            | whole | owned  | feature `nightly`                 |
+| `.claude/skills/review-rust/SKILL.md`                              | whole | owned  | template, feature `agents`        |
 | `.claude/skills/writing-rust/SKILL.md`                             | whole | owned  | template, feature `agents`        |
 | `.claude/skills/writing-rust/references/api-design.md`             | whole | owned  | template, feature `agents`        |
 | `.claude/skills/writing-rust/references/async.md`                  | whole | owned  | feature `agents`, feature `async` |
