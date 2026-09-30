@@ -33,11 +33,11 @@ a crate that exists. Then, in the crate's settings on crates.io, add the GitHub
 trusted publisher: the repository, the workflow `release.yml`, and the
 environment `release`.
 
-crates.io asks each crate for a description, a licence and a repository, which
-[`cargo-workspace`](cargo-workspace.md)'s crates inherit from
-`[workspace.package]`, and shows the `readme`, `keywords` and `categories` each
-crate sets. The `rust` bundle brings this profile with its `publish` feature: a
-repository opts in to publishing.
+crates.io asks each crate for a description, a licence and a repository:
+[`cargo-workspace`](cargo-workspace.md)'s crates each write their own
+description and inherit the rest from `[workspace.package]`. It shows the
+`readme`, `keywords` and `categories` each crate sets. The `rust` bundle brings
+this profile with its `publish` feature: a repository opts in to publishing.
 
 ## Owns
 
