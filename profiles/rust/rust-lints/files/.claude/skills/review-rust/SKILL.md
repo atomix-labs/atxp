@@ -51,7 +51,8 @@ $ARGUMENTS
 
 Find the change with git, each command run from the repository's root as it is
 written here, since a fork cannot ask for an approval and a command written
-another way, `git -C <dir> diff`, may need one:
+another way, `git -C <dir> diff`, may need one; a shell loop or a `$VARIABLE` is
+refused, so several files are read one command each:
 
 - **The working tree**: `git diff -U20 HEAD`, staged or not, and `git status
   --short --untracked-files=all` for files git does not track yet, each read
@@ -128,14 +129,15 @@ too large to read whole is read hunk by hunk, never skipped.
 ## Read the References
 
 Once the change is read, find the rules its hunks need in the guides'
-references, each in its guide's `references/`, as the guide's References section
-names them: for an error type, a panic or an `expect`, `writing-rust`'s
-`errors.md`; for a name a caller sees, its `naming.md`; for an `unsafe` block,
-`writing-unsafe-rust`'s `safety-comments.md`. List a reference's rules with
-`grep -n '^## ' <reference>`, and read the section a hunk needs with `Read` and
-an offset and a limit, from its heading to the next one, never the whole file: a
-reference runs to a thousand lines, and the pass has only its context. A finding
-cites the heading of the section it read.
+references, each at `.claude/skills/<guide>/references/<name>.md` from the
+repository's root, as the guide's References section names them: for an error
+type, a panic or an `expect`, `writing-rust`'s `errors.md`; for a name a caller
+sees, its `naming.md`; for an `unsafe` block, `writing-unsafe-rust`'s
+`safety-comments.md`. List a reference's rules with `grep -n '^## '
+.claude/skills/<guide>/references/<name>.md`, and read the section a hunk needs
+with `Read` and an offset and a limit, from its heading to the next one, never
+the whole file: a reference runs to a thousand lines, and the pass has only its
+context. A finding cites the heading of the section it read.
 
 ## Check, in Order
 
