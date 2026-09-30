@@ -54,8 +54,11 @@ Under `strict`, real code also documents every item.
    happen. Whether a retry could succeed is in the type: `TryError`, or a
    variant documented as transient.
 7. **Alias an error type, never `Result`**, so each signature names its error. A
-   binary returns `Result<(), BoxError>`, and a failure only an operator reads
-   is `io::Error::other("…")`; nothing uses anyhow.
+   binary fails with a `BoxError`, and a one-off failure is
+   `io::Error::other("…")`; nothing uses anyhow. `main` returns `Result<(),
+   BoxError>` where only an operator reads a failure; a command a person runs
+   prints the message and each cause and returns `ExitCode`, since an `Err` from
+   `main` prints its `Debug`.
 8. **A dropped error is named, `|_gone|`**, so a reader sees the drop was
    chosen.
 
@@ -181,8 +184,10 @@ Read each reference a step names, whole, before writing the code.
    `references/naming.md` and `references/ownership.md`: a spec, a newtype or a
    typestate; its derives; constructors and conversions by name; `#[must_use]`;
    borrowed parameters; named generics.
-6. **A binary**: `references/errors.md`, for a `main` that returns `Result<(),
-   BoxError>` and failures only an operator reads, which are `io::Error::other`.
+6. **A binary**: `references/errors.md`, for its `BoxError` and
+   `io::Error::other`, and a `main` that returns `Result<(), BoxError>` where
+   only an operator reads a failure, or, in a command a person runs, prints the
+   message and each cause and returns `ExitCode`.
 7. **A lint that fires**: find it in `references/lints.md` and write what it
    asks. Only where the lint misreads the code, `#[expect]` it at the narrowest
    scope with a reason; never edit the lint table or give a crate its own
@@ -233,6 +238,7 @@ Code made faster, a benchmark, and a build profile follow
 | -------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | "`#[allow]`, just this once"                             | `#[expect(lint, reason = "…")]` at the site: it fails once the cause is gone.  |
 | "A `String` error is enough here"                        | A type for the question, its facts as fields; in a binary, `io::Error::other`. |
+| "`fn main() -> Result` reports the error"                | In a command a person runs, `ExitCode`, printing the message and each cause.   |
 | "`anyhow` keeps the library simple"                      | thiserror types a caller can match; `anyhow` erases them.                      |
 | "One `Error` enum for the whole crate"                   | One type for each question a verb can be asked.                                |
 | "`#[error("load error: {0}")]` on a `#[from]`"           | `#[error(transparent)]`, or render the cause and expose nothing.               |

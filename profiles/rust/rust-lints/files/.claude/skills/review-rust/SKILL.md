@@ -146,7 +146,8 @@ hunk may break rules in several; each is its own finding.
    can cause; a crate-wide or string error; a message out of its form; an error
    that renders its cause and exposes it; a `#[from]` whose lower error means
    more than one thing in the wrapper; a refused value not handed back; a
-   `Result` alias; an error dropped without a name.
+   `Result` alias; a command a person runs whose `main` returns the error; an
+   error dropped without a name.
 2. **API and naming**: `writing-rust`'s Layout, Names and API rules, with
    `layout.md`, `naming.md` and `api-design.md`. A public item added, removed,
    renamed or changed is a change its callers see: the finding says whether it

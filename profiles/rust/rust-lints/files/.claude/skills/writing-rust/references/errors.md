@@ -833,18 +833,19 @@ Held by review.
 
 ## A Binary Fails with a Boxed Error
 
-A binary, an example or a bench reports a failure and stops; nobody matches on
-it. It returns `Result<(), BoxError>`, where `BoxError` boxes any error that is
-`Send` and `Sync`, so `?` converts every library error into it, and a one-off
-failure is `io::Error::other("…")`: no error type is defined for a failure only
-an operator reads. A dropped cause is named: a thread's panic payload is
-`_panicked`.
+A binary whose failure only an operator reads, an example or a bench reports a
+failure and stops; nobody matches on it. It returns `Result<(), BoxError>`,
+where `BoxError` boxes any error that is `Send` and `Sync`, so `?` converts
+every library error into it, and a one-off failure is `io::Error::other("…")`:
+no error type is defined for a failure only an operator reads. A dropped cause
+is named: a thread's panic payload is `_panicked`. A command a person runs fails
+the same way inside, and its `main` reports the message instead, as "A Command a
+Person Runs Reports the Error's Message" says.
 
 ```rust
 // Bad: a `String` loses the chain, and every `?` needs a `map_err` first.
-fn squares(cols: u16, rows: u16) -> Result<u32, String> {
-    let squares = u32::from(cols).checked_mul(u32::from(rows));
-    squares.ok_or_else(|| String::from("the board is too big"))
+fn squares(cols: u16, rows: u16) -> Result<u16, String> {
+    cols.checked_mul(rows).ok_or_else(|| String::from("the board is too big"))
 }
 
 fn main() -> Result<(), String> {
@@ -859,9 +860,9 @@ use std::{io, thread};
 /// What a failure in this binary is.
 type BoxError = Box<dyn Error + Send + Sync>;
 
-fn squares(cols: u16, rows: u16) -> Result<u32, BoxError> {
-    let squares = u32::from(cols).checked_mul(u32::from(rows));
-    Ok(squares.ok_or_else(|| io::Error::other("the board has more squares than a u32 counts"))?)
+fn squares(cols: u16, rows: u16) -> Result<u16, BoxError> {
+    let squares = cols.checked_mul(rows);
+    Ok(squares.ok_or_else(|| io::Error::other("the board has more squares than a u16 counts"))?)
 }
 
 fn main() -> Result<(), BoxError> {
@@ -875,6 +876,101 @@ fn main() -> Result<(), BoxError> {
 ```
 
 Held by review.
+
+## A Command a Person Runs Reports the Error's Message
+
+A command a person runs is a command line a user types, whose failure the person
+who typed it reads; a service, a daemon or a tool whose output only an operator
+reads is not one. When `main` returns an `Err`, the standard library prints
+`Error:` and the error's `Debug` form, which names a type and its fields where
+the person needs to know what went wrong. So such a command's `main` returns
+`ExitCode` and calls a `run` that returns `Result<(), BoxError>`. On an `Err`,
+it prints `error: {error}` to stderr, then each error beneath it as `caused by:
+{cause}`, and returns `ExitCode::FAILURE`.
+
+Walking `source()` prints each fact once, because an error renders its cause or
+exposes it, never both: the standard library's `Error` docs ask it of an error
+that wraps another, and "An Error Renders Its Cause or Exposes It, Never Both"
+holds it here. An error that renders its cause exposes nothing and prints as one
+line; one that exposes its cause, as an error from another crate may, adds a
+`caused by:` line for it. The message alone would drop a cause that an error
+exposes and does not render. `main` prints under an
+`#[expect(clippy::print_stderr)]` whose reason says why.
+
+```rust
+use core::error;
+use std::env;
+
+use thiserror::Error;
+
+/// What a failure in this command is.
+type BoxError = Box<dyn error::Error + Send + Sync>;
+
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+#[error("bounds error: square {at} is past the {len} the grid has")]
+struct BoundsError {
+    at: usize,
+    len: usize,
+}
+
+// Bad: `tiles 12` prints `Error: BoundsError { at: 12, len: 9 }`, the error's `Debug`.
+fn main() -> Result<(), BoxError> {
+    let at = env::args().nth(1).unwrap_or_default().parse()?;
+    if at >= 9 {
+        return Err(BoundsError { at, len: 9 }.into());
+    }
+    Ok(())
+}
+```
+
+```rust
+use core::{error, iter};
+use std::env;
+use std::process::ExitCode;
+
+use thiserror::Error;
+
+/// What a failure in this command is.
+type BoxError = Box<dyn error::Error + Send + Sync>;
+
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+#[error("bounds error: square {at} is past the {len} the grid has")]
+struct BoundsError {
+    at: usize,
+    len: usize,
+}
+
+fn run() -> Result<(), BoxError> {
+    let at = env::args().nth(1).unwrap_or_default().parse()?;
+    if at >= 9 {
+        return Err(BoundsError { at, len: 9 }.into());
+    }
+    Ok(())
+}
+
+#[expect(clippy::print_stderr, reason = "stderr is where a person reads why the command failed")]
+fn main() -> ExitCode {
+    let Err(error) = run() else { return ExitCode::SUCCESS };
+    eprintln!("error: {error}");
+    for cause in iter::successors(error.source(), |cause| cause.source()) {
+        eprintln!("caused by: {cause}");
+    }
+    ExitCode::FAILURE
+}
+```
+
+```text
+$ tiles 12
+error: bounds error: square 12 is past the 9 the grid has
+```
+
+Held by review.
+{%- if "strict" in devset.features %}
+
+Under `strict`, `clippy::print_stderr` refuses the `eprintln!` without its
+`#[expect]`, as "Print Only from a Binary, with a Reason" in
+`references/lints.md` says.
+{%- endif %}
 
 ## Return an Error for Anything a Caller Can Cause
 
