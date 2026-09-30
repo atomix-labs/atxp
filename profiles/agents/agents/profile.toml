@@ -52,3 +52,23 @@ when     = { features = ["readability"] }
 [files.".claude/skills/writing-prose/references/tells.md"]
 template = true
 when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-readable-code/SKILL.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-readable-code/references/naming.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-readable-code/references/simplicity.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-readable-code/references/sources.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-readable-code/references/structure.md"]
+template = true
+when     = { features = ["readability"] }
