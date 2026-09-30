@@ -212,9 +212,9 @@ which `devset status` reports{% if "agents" in tooling %}, and `using-devset` sa
 2. **A dependency**: its entry in `[workspace.dependencies]` under its group,
    with its version and `default-features`, then `{ workspace = true }` in the
    member, with `features` or `optional` where the member needs them. `cargo
-   add` writes `name.workspace = true` where the entry exists, which the check
-   misreads, and a pinned version where it does not: write the entry first, and
-   the member's line in the inline form.
+   add` writes the dotted `name.workspace = true` where the entry exists, which
+   Cargo and the check read as the inline form the workspace writes, and a
+   pinned version where it does not: write the entry first.
 {%- if "cargo-bump" in devset.profiles %}
 3. **Re-pinning a dependency**: its version in its workspace entry, nowhere
    else; `just bump-cargo-bump` moves every requirement to its newest release

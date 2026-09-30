@@ -184,6 +184,7 @@ tests/setup-stub.sh          the setup stub against a repository served locally
 tests/agents-hook.sh         the agents profile's hooks through the turns they tell apart
 tests/skill-form.sh          the catalog check's skill form against skills that break it
 tests/skill_examples.py      every Rust example the skills show, compiled under the strict lints
+tests/cargo-manifest.sh      the manifest check against members that write a dependency dotted
 tests/bundle.sh              the bundle applied to an empty repository, with the features given
 .devset/                     atxp's record of the profiles it applies to itself
 .just/, .github/             written by those profiles; atxp's own recipes are in the justfile
