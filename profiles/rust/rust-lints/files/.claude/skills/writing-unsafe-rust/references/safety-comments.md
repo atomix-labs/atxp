@@ -1,4 +1,5 @@
 {%- set rustdoc = devset.layers | selectattr("profile", "equalto", "rust-doc") | map(attribute="features") | first | default([]) -%}
+{%- set tuning = devset.layers | selectattr("profile", "equalto", "cargo-profiles") | map(attribute="features") | first | default([]) -%}
 # Safety Comments
 
 Read this before an `unsafe` block, an `unsafe fn`, an `unsafe impl` or an
@@ -22,6 +23,11 @@ for most needs: `split_at_mut` and `chunks_exact_mut` for disjoint borrows,
 `get` and iterators for indexing, `copy_from_slice`, `array::from_fn`,
 `from_ne_bytes`. A bounds check is traded for a proof only once it is measured
 to cost, since the optimizer removes many of them.
+{%- if "agents" in tuning %}
+
+How a check is measured, and the loop shapes that leave none to remove, are
+`tuning-rust-performance`'s.
+{%- endif %}
 
 ```rust
 use core::slice;

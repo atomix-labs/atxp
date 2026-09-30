@@ -1,4 +1,5 @@
 {%- set toolchain = devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([]) -%}
+{%- set tuning = devset.layers | selectattr("profile", "equalto", "cargo-profiles") | map(attribute="features") | first | default([]) -%}
 # Atomics
 
 Read this before a value is shared between threads through anything but a lock
@@ -14,6 +15,11 @@ operations and fences. A data race, two accesses to one place that nothing
 orders, one a write and one not atomic, is undefined behaviour; a wrong ordering
 between atomics is not, but it lets a thread act on a value another has not
 finished, which is the same bug one step removed.
+{%- if "agents" in tuning %}
+
+What an atomic costs when threads share its cache line, and how long a spin
+should wait, are `tuning-rust-performance`'s.
+{%- endif %}
 
 ## Shared State Is a Lock, a `OnceLock` or an Atomic, Never `static mut`
 
@@ -491,6 +497,11 @@ impl Drop for Unlock<'_> {
 
 Held by review, and by a loom model, which reports two threads in the cell at
 once when the lock's orderings are too weak.
+{%- if "agents" in tuning %}
+
+The lock shows the orderings a lock needs; how long a waiter spins before it
+blocks, and whether a spin pays at all, are `tuning-rust-performance`'s.
+{%- endif %}
 
 ## A Pointer Shared Across Threads Is an `AtomicPtr`
 

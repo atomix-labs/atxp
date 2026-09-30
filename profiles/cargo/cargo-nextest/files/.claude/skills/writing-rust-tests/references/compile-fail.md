@@ -1,4 +1,5 @@
 {%- set toolchain = devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([]) -%}
+{%- set tuning = devset.layers | selectattr("profile", "equalto", "cargo-profiles") | map(attribute="features") | first | default([]) -%}
 # Compile-Fail Tests
 
 Read this before a test that a misuse must fail to compile, before a fixture or
@@ -178,6 +179,10 @@ A size a type must stay within, a trait it must keep implementing, `Send`,
 fails the build of the crate itself when the fact stops holding. A test that
 checks it at run time fails only when the tests run, and only if the test is
 there.
+{%- if "agents" in tuning %}
+
+Which size a hot type keeps, and why, is `tuning-rust-performance`'s.
+{%- endif %}
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,4 +1,5 @@
 {%- set toolchain = devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([]) -%}
+{%- set tuning = devset.layers | selectattr("profile", "equalto", "cargo-profiles") | map(attribute="features") | first | default([]) -%}
 # Running
 
 Read this before running tests by hand, when a test fails, hangs or passes only
@@ -25,6 +26,11 @@ just check-cargo-nextest
 ```
 
 Held by the recipe, which `just check` and CI run.
+{%- if "agents" in tuning %}
+
+A benchmark is no test: nextest never runs it, and `cargo bench` runs it as
+`tuning-rust-performance` says.
+{%- endif %}
 
 ## Reach One Test by Its Name
 

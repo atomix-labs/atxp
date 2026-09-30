@@ -4,6 +4,8 @@ description = "Build profiles as keys of the workspace Cargo.toml: release, benc
 devset      = ">=0.5.0"
 
 [features]
+# The tuning-rust-performance skill, in .claude/skills/.
+agents = []
 strict = []
 
 [files."Cargo.toml"]
@@ -12,3 +14,30 @@ template = true
 
 [files.".gitignore"]
 scope = "block"
+
+[files.".claude/skills/tuning-rust-performance/SKILL.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/tuning-rust-performance/references/allocation.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/tuning-rust-performance/references/codegen.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/tuning-rust-performance/references/data-layout.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/tuning-rust-performance/references/measuring.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/tuning-rust-performance/references/sources.md"]
+when = { features = ["agents"] }
+
+[files.".claude/skills/tuning-rust-performance/references/threads.md"]
+template = true
+when     = { features = ["agents"] }

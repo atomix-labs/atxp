@@ -33,15 +33,15 @@ None is on by default. Outside it are
 
 ## Features
 
-| Feature    | Default | Enables                                                                                                                                                                                                                           |
-| ---------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `docs`     |         | `dep:mdbook`                                                                                                                                                                                                                      |
-| `publish`  |         | `dep:cargo-publish`, `dep:github-release`, `dep:project`                                                                                                                                                                          |
-| `binaries` |         | `dep:cargo-binaries`, `dep:github-release`                                                                                                                                                                                        |
-| `oss`      |         | `dep:project`, `project/conduct`, `project/support`, `dep:github-templates`                                                                                                                                                       |
-| `nightly`  |         | `rust-lints/nightly`, `dep:cargo-hack`, `dep:github-nightly`                                                                                                                                                                      |
-| `strict`   |         | `cargo-deny/strict`, `rust-lints/strict`, `cargo-profiles/strict`, `rust-doc/strict`                                                                                                                                              |
-| `agents`   |         | `dep:agents`, `cargo-deny/agents`, `cargo-manifest/agents`, `cargo-nextest/agents`, `devset/agents`, `git-commits/agents`, `github-ci/agents`, `rust-doc/agents`, `rust-lints/agents`, `github-release?/agents`, `mdbook?/agents` |
+| Feature    | Default | Enables                                                                                                                                                                                                                                                    |
+| ---------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs`     |         | `dep:mdbook`                                                                                                                                                                                                                                               |
+| `publish`  |         | `dep:cargo-publish`, `dep:github-release`, `dep:project`                                                                                                                                                                                                   |
+| `binaries` |         | `dep:cargo-binaries`, `dep:github-release`                                                                                                                                                                                                                 |
+| `oss`      |         | `dep:project`, `project/conduct`, `project/support`, `dep:github-templates`                                                                                                                                                                                |
+| `nightly`  |         | `rust-lints/nightly`, `dep:cargo-hack`, `dep:github-nightly`                                                                                                                                                                                               |
+| `strict`   |         | `cargo-deny/strict`, `rust-lints/strict`, `cargo-profiles/strict`, `rust-doc/strict`                                                                                                                                                                       |
+| `agents`   |         | `dep:agents`, `cargo-deny/agents`, `cargo-manifest/agents`, `cargo-nextest/agents`, `cargo-profiles/agents`, `devset/agents`, `git-commits/agents`, `github-ci/agents`, `rust-doc/agents`, `rust-lints/agents`, `github-release?/agents`, `mdbook?/agents` |
 
 ## Requires
 
