@@ -1,6 +1,6 @@
 ---
 name: tuning-rust-performance
-description: Use when making Rust code faster or smaller, or judging whether a change did; when writing a benchmark or profiling a hot path; when an allocation, a buffer, a `format!` or a `clone` sits in a loop; when choosing `#[inline]`, `#[inline(always)]`, `#[cold]` or `cold_path`, or reading bounds checks or vectorization in the assembly; when a type's size, field order, `Option` or large enum variant matters, or a cache line is shared between threads; when a thread spins, busy-polls, is pinned or reads the clock in a hot loop; when choosing LTO, codegen units, a build profile, `panic = "abort"` or target CPU features. Covers measuring, allocation, code generation, data layout, what threads cost each other, and the workspace's build profiles.{% if "agents" in (devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([])) %} Not for whether the code is correct, which writing-rust covers.{% endif %}
+description: Use when making Rust code faster or smaller, or judging whether a change did; when writing a benchmark or profiling a hot path; when an allocation, a buffer, a `format!` or a `clone` sits in a loop; when choosing `#[inline]`, `#[inline(always)]`, `#[cold]` or `cold_path`, or reading bounds checks or vectorization in the assembly; when a type's size, field order, `Option` or large enum variant matters, or a cache line is shared between threads; when a thread spins, busy-polls, is pinned or reads the clock in a hot loop; when choosing a `HashMap`'s hasher or lookups; when choosing LTO, codegen units, a build profile, `panic = "abort"` or target CPU features. Covers measuring, allocation, code generation, data layout, what threads cost each other, and the workspace's build profiles.{% if "agents" in (devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([])) %} Not for whether the code is correct, which writing-rust covers.{% endif %}
 ---
 
 # Tuning Rust Performance
@@ -30,9 +30,11 @@ Under `strict`, real code also documents every item.
 ### Measuring
 
 1. **Measure before a change and after, one change at a time, and keep it only
-   if the number moved: its p50 moved, the way claimed, by more than two runs of
-   the baseline differ**, since time is rarely spent where it is guessed to be,
-   and a faster-looking form that is not faster only costs its reader.
+   if the number moved: the baseline and the change run twice each, both runs of
+   the change past both of the baseline, the way claimed, by more than the
+   baseline's spread and by more than 1%**, since time is rarely spent where it
+   is guessed to be, and a faster-looking form that is not faster only costs its
+   reader.
 2. **Find where the time goes with a profiler on the `profiling` build**, which
    is `release` with full debug info, so the profile names the functions and
    lines of the code that ships.
@@ -213,9 +215,9 @@ Read each reference a step names, whole, before changing the code.
    false`, `black_box` in and out, a warm-up, a distribution, batches for a
    small call, a pinned core, and its results committed.
 3. **Judging a change made for speed**: `references/measuring.md`: the baseline
-   run twice and the change once, all committed; the p50 moved, the way claimed,
-   past the baseline's own spread; a claim about generated code read in the
-   disassembled binary that ships.
+   and the change run twice each, all committed; both of the change's p50s past
+   both of the baseline's, the way claimed, by more than its spread and 1%; a
+   claim about generated code read in the disassembled binary that ships.
 4. **A hot path or loop**: `references/allocation.md` for what it allocates,
    `references/codegen.md` for its calls, branches and bounds, and
    `references/data-layout.md` for the types it reads.
@@ -244,8 +246,8 @@ A test that counts allocations, or asserts a size, follows `writing-rust-tests`.
 {%- if "rust-clippy" in devset.profiles %}
 - `just check-rust-clippy`: clippy on every crate, target and feature, the
   benchmarks included, which holds `inline_always`, `format_push_string`,
-  `assigning_clones`, `large_stack_arrays`, `large_enum_variant`, `linkedlist`
-  and a crate's `disallowed-methods`.
+  `assigning_clones`, `large_stack_arrays`, `large_enum_variant`, `linkedlist`,
+  `map_entry`, `implicit_hasher` and a crate's `disallowed-methods`.
 {%- endif %}
 {%- if "cargo-nextest" in devset.profiles %}
 - `just check-cargo-nextest`: every test, the counting-allocator tests included.

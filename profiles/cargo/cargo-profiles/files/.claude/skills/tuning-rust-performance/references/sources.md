@@ -21,7 +21,7 @@ says what it costs.
 | [The Rust Reference, Type layout](https://doc.rust-lang.org/reference/type-layout.html#the-rust-representation)  | the default representation promises no field order; `repr(C)` keeps it                                                                                                                                                                      | `data-layout.md`                           |
 | [`core::hint`](https://doc.rust-lang.org/core/hint/index.html)                                                   | `black_box`, "best-effort", "generally be relied upon for benchmarking"; `cold_path`, stable since 1.95, "can actually decrease performance if the branch is called more than expected"; `spin_loop`                                        | `measuring.md`, `codegen.md`, `threads.md` |
 | [`GlobalAlloc`](https://doc.rust-lang.org/std/alloc/trait.GlobalAlloc.html)                                      | the global allocator's contract                                                                                                                                                                                                             | `allocation.md`: the counting test         |
-| [clippy's lint list](https://rust-lang.github.io/rust-clippy/master/index.html)                                  | `inline_always`, `format_push_string`, `assigning_clones`, `large_stack_arrays`, `large_enum_variant`, `linkedlist`, `vec_box`, `disallowed_methods`, `disallowed_macros`                                                                   | each rule "held by" one                    |
+| [clippy's lint list](https://rust-lang.github.io/rust-clippy/master/index.html)                                  | `inline_always`, `format_push_string`, `assigning_clones`, `large_stack_arrays`, `large_enum_variant`, `linkedlist`, `vec_box`, `map_entry`, `implicit_hasher`, `disallowed_methods`, `disallowed_macros`                                   | each rule "held by" one                    |
 | [clippy's configuration](https://doc.rust-lang.org/clippy/lint_configuration.html)                               | `disallowed-methods` and `disallowed-macros`; `array-size-threshold` 16384; `enum-variant-size-threshold` 200; `stack-size-threshold` 512000                                                                                                | `allocation.md`, `data-layout.md`          |
 | [crossbeam-utils, `CachePadded`](https://docs.rs/crossbeam-utils/latest/crossbeam_utils/struct.CachePadded.html) | 128 bytes on x86-64, since Intel's "spatial prefetcher is pulling pairs of 64-byte cache lines at a time"; on aarch64, since big.LITTLE's "big" cores have 128-byte lines; on powerpc64, its line                                           | `threads.md`                               |
 
@@ -40,18 +40,19 @@ reference says to measure it rather than state it.
 
 ## Where the Workspace Departs
 
-| a source says                                                                                  | here                                                                                                                   |
-| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| rust-skills `perf-release-profile`, `opt-lto-release`: `panic = "abort"` and `strip = true`    | `release` keeps its symbols, so a profile names its functions; `abort` only under `strict`, for its reason             |
-| rust-skills `opt-target-cpu`: `target-cpu=native` in `.cargo/config.toml`                      | never in a checked-in file; a floor every machine meets, and a known machine's CPU added with `--config`               |
-| rust-skills `mem-smallvec`, `mem-arrayvec`, `mem-thinvec`, `mem-compact-string`, `perf-ahash`  | not taught: reuse and capacity first; another crate's storage only where the repository has it and a run shows it pays |
-| rust-skills `mem-arena-allocator`: an arena for each request                                   | not taught; a buffer the hot path reuses                                                                               |
-| rust-skills `perf-profile-first`: `cargo flamegraph`                                           | a profiler on the `profiling` build, whichever the machine has                                                         |
-| rust-skills `perf-black-box-bench`, `opt-inline-always-rare`: criterion                        | a `harness = false` benchmark of the crate's own; criterion or divan where the repository has them                     |
-| rust-skills `opt-inline-always-rare`: `#[inline(always)]` "proven by profiling"                | only where a call would defeat the function, under an `#[expect(clippy::inline_always, …)]` naming why                 |
-| rust-skills `opt-likely-hint`: an early return and the order of match arms as hints            | no hint to rely on: reordering left one function's code as it was, and changed another's where `cold_path` did not     |
-| rust-skills `opt-pgo-profile`, `opt-simd-portable`: profile-guided optimization, portable SIMD | not taught                                                                                                             |
-| rust-skills `mem-write-over-format`: `write!(out, "…\n").unwrap()`                             | `writeln!`, since `clippy::write_with_newline` refuses the first, and `?`                                              |
+| a source says                                                                                  | here                                                                                                                                                       |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| rust-skills `perf-release-profile`, `opt-lto-release`: `panic = "abort"` and `strip = true`    | `release` keeps its symbols, so a profile names its functions; `abort` only under `strict`, for its reason                                                 |
+| rust-skills `opt-target-cpu`: `target-cpu=native` in `.cargo/config.toml`                      | never in a checked-in file; a floor every machine meets, and a known machine's CPU added with `--config`                                                   |
+| rust-skills `mem-smallvec`, `mem-arrayvec`, `mem-thinvec`, `mem-compact-string`                | not taught: reuse and capacity first; another crate's storage only where the repository has it and a run shows it pays                                     |
+| rust-skills `perf-ahash`: ahash or FxHash where DoS resistance is not needed                   | `data-layout.md`: the default hasher for keys from outside; the repository's faster one for keys the program makes, where a profile and a run show it pays |
+| rust-skills `mem-arena-allocator`: an arena for each request                                   | not taught; a buffer the hot path reuses                                                                                                                   |
+| rust-skills `perf-profile-first`: `cargo flamegraph`                                           | a profiler on the `profiling` build, whichever the machine has                                                                                             |
+| rust-skills `perf-black-box-bench`, `opt-inline-always-rare`: criterion                        | a `harness = false` benchmark of the crate's own; criterion or divan where the repository has them                                                         |
+| rust-skills `opt-inline-always-rare`: `#[inline(always)]` "proven by profiling"                | only where a call would defeat the function, under an `#[expect(clippy::inline_always, …)]` naming why                                                     |
+| rust-skills `opt-likely-hint`: an early return and the order of match arms as hints            | no hint to rely on: reordering left one function's code as it was, and changed another's where `cold_path` did not                                         |
+| rust-skills `opt-pgo-profile`, `opt-simd-portable`: profile-guided optimization, portable SIMD | not taught                                                                                                                                                 |
+| rust-skills `mem-write-over-format`: `write!(out, "…\n").unwrap()`                             | `writeln!`, since `clippy::write_with_newline` refuses the first, and `?`                                                                                  |
 
 ## Corrected Here
 
@@ -108,7 +109,8 @@ and checked by compiling and running: `mem-with-capacity`,
 `opt-inline-small`, `opt-inline-always-rare`, `opt-inline-never-cold`,
 `opt-cold-unlikely`, `opt-bounds-check`, `opt-cache-friendly`,
 `opt-lto-release`, `opt-codegen-units`, `opt-target-cpu`, `perf-profile-first`,
-`perf-black-box-bench` and `perf-release-profile`.
+`perf-black-box-bench`, `perf-release-profile`, `perf-ahash` and
+`perf-entry-api`.
 
 Both versions carry the same notice:
 

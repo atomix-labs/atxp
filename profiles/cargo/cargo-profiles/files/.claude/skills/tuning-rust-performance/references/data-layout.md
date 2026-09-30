@@ -280,11 +280,10 @@ std's `HashMap` hashes with an algorithm seeded at random, chosen to resist
 HashDoS: keys an attacker picks to collide, which turn each lookup into a walk.
 It is currently SipHash 1-3, and std's documentation says others outperform it
 for small keys such as integers, without that protection. So a map keyed by what
-comes from outside, a name a person typed or a key off the network, keeps std's
-hasher. A faster one, one the repository already depends on, as FxHash or ahash,
-is for keys the program makes itself, and only where a profile shows hashing hot
-and a run shows the swap pays. A public function that takes a map is generic
-over its hasher, so a caller's choice passes through.
+comes from outside, a name a person typed or a key off the network, keeps the
+default hasher. A faster one, one the repository already depends on, as FxHash
+or ahash, is for keys the program makes itself, and only where a profile shows
+hashing hot and a run shows the swap pays.
 
 ```text
 // Bad: a predictable hasher over names a person typed, which they can make collide.
@@ -292,17 +291,31 @@ let glyphs: FxHashMap<String, char> = FxHashMap::default();
 ```
 
 ```rust
-use core::hash::BuildHasher;
 use std::collections::HashMap;
 
-#[must_use]
-pub fn glyph_of<S: BuildHasher>(glyphs: &HashMap<String, char, S>, name: &str) -> Option<char> {
-    glyphs.get(name).copied()
+#[derive(Debug, Default)]
+pub struct Glyphs {
+    // Names a person types, so the default hasher, seeded at random.
+    by_name: HashMap<String, char>,
+}
+
+impl Glyphs {
+    pub fn name(&mut self, name: String, glyph: char) {
+        self.by_name.insert(name, glyph);
+    }
+
+    #[must_use]
+    pub fn glyph(&self, name: &str) -> Option<char> {
+        self.by_name.get(name).copied()
+    }
 }
 ```
 
-Held by review, and by `clippy::implicit_hasher`, which asks a public function
-that takes a `HashMap` to be generic over its hasher.
+Held by review.
+
+A public function that takes a `HashMap` is generic over its hasher, `fn
+glyph_of<S: BuildHasher>(glyphs: &HashMap<String, char, S>, …)`, so a caller's
+choice of hasher passes through; `clippy::implicit_hasher` asks for it.
 
 ## A Map Keyed by a Small Dense Id Is a `Vec`
 

@@ -16,9 +16,11 @@ Where a program spends its time is rarely where it is guessed to, so a change
 made for speed is measured twice: on the same benchmark, machine and build,
 before and after. One change at a time, so each number says what moved it. Two
 runs of one build differ too, so the baseline is run twice before the change is,
-and the change moved the number when its p50 moves, the way the change claims,
-by more than the two baseline runs differ. A change that moved nothing comes out
-again, since a form that looks faster and is not only costs its reader.
+and the change twice after, and the change moved the number when both of its
+p50s pass both of the baseline's, the way the change claims, by more than the
+two baseline runs differ and by more than 1%, since two runs that agree to the
+nanosecond make any move look real. A change that moved nothing comes out again,
+since a form that looks faster and is not only costs its reader.
 
 ```text
 # Bad: a change for speed, and a claim with nothing behind it.
@@ -30,7 +32,7 @@ perf(tiles): sum a row's brightness over eight lanes
 
 `taskset -c 8 cargo bench -p tiles --bench brightness`, built first with
 `--no-run`, 4,096 values, on a Graviton4: p50 2,959 ns in both runs before,
-404 ns after; p99 2,961 ns before, 406 ns after; an empty round 32 ns.
+404 ns in both after; p99 2,961 ns before, 406 ns after; an empty round 32 ns.
 Results: crates/tiles/benches/results/2026-09-30T04-40Z-<commit>-brightness/
 ```
 
@@ -191,9 +193,10 @@ refuses an `unwrap`.
 
 Under `strict`, `release` aborts on a panic, and a benchmark still unwinds, its
 dependencies with it: `cargo bench` measures code built to unwind. A gain that
-could rest on drops or panics is confirmed on a `--release` binary or example,
-`cargo run --release --example brightness`, and the run's profile line says
-which build it was.
+could rest on drops or panics is confirmed on a `--release` build: the
+benchmark's harness copied to `examples/brightness.rs`, then `cargo run
+--release --example brightness`, and the run's profile line says which build it
+was.
 {%- endif %}
 
 ## Pass What Is Measured Through `black_box`, Its Input and Its Result

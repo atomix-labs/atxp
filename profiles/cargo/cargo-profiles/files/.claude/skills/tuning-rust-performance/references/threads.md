@@ -159,7 +159,9 @@ measured too slow, on a core of its own: it calls `core::hint::spin_loop()` on
 every turn, which tells the core it is waiting, `pause` on x86-64 and `isb` on
 Arm, for a bound measured against the wake-up it saves, then blocks. Never
 `thread::yield_now` in a loop: on a core with nothing else to run it returns at
-once, and the loop spins on with no bound.
+once, and the loop spins on with no bound. The setter unparks the thread that
+made the pair, so the half that waits is kept on it by a `PhantomData<*const
+()>`, and a wait from another thread does not compile.
 
 ```rust
 use core::sync::atomic::AtomicBool;
@@ -176,7 +178,11 @@ pub fn wait_for(ready: &AtomicBool) {
 ```
 
 ```rust
+extern crate alloc;
+
+use alloc::sync::Arc;
 use core::hint::spin_loop;
+use core::marker::PhantomData;
 use core::sync::atomic::AtomicBool;
 use core::sync::atomic::Ordering::{Acquire, Release};
 use std::thread::{self, Thread};
@@ -184,35 +190,47 @@ use std::thread::{self, Thread};
 // A hundred turns, about 1.5 us on a Graviton4, under the 6 us a park and an unpark took there.
 const SPINS: u32 = 100;
 
-/// Set once by any thread, and waited for by the thread that made it.
 #[derive(Debug)]
-pub struct Ready {
+struct Flag {
     set: AtomicBool,
     waiter: Thread,
 }
 
-impl Ready {
-    #[must_use]
-    pub fn for_this_thread() -> Self {
-        Self { set: AtomicBool::new(false), waiter: thread::current() }
-    }
+#[derive(Debug, Clone)]
+pub struct Setter(Arc<Flag>);
 
+#[derive(Debug)]
+pub struct Waiter {
+    flag: Arc<Flag>,
+    // The setter unparks the thread that made the pair, so the waiter stays on it.
+    _here: PhantomData<*const ()>,
+}
+
+#[must_use]
+pub fn ready() -> (Setter, Waiter) {
+    let flag = Arc::new(Flag { set: AtomicBool::new(false), waiter: thread::current() });
+    (Setter(Arc::clone(&flag)), Waiter { flag, _here: PhantomData })
+}
+
+impl Setter {
     pub fn set(&self) {
-        // ORDERING: Release, pairing with the Acquire loads in `wait`.
-        self.set.store(true, Release);
-        self.waiter.unpark();
+        // ORDERING: Release, pairing with the Acquire loads in `Waiter::wait`.
+        self.0.set.store(true, Release);
+        self.0.waiter.unpark();
     }
+}
 
+impl Waiter {
     pub fn wait(&self) {
         for _ in 0..SPINS {
-            // ORDERING: Acquire, pairing with the Release store in `set`.
-            if self.set.load(Acquire) {
+            // ORDERING: Acquire, pairing with the Release store in `Setter::set`.
+            if self.flag.set.load(Acquire) {
                 return;
             }
             spin_loop();
         }
-        // ORDERING: Acquire, pairing with the Release store in `set`.
-        while !self.set.load(Acquire) {
+        // ORDERING: Acquire, pairing with the Release store in `Setter::set`.
+        while !self.flag.set.load(Acquire) {
             thread::park();
         }
     }
