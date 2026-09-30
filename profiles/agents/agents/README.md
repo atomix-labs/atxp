@@ -11,8 +11,9 @@ Where the repository has a pass, a skill that runs on finished work in a fork of
 its own, the block also has Before You Finish: each pass to run before a change
 is done, with what it is for, and to fix what it finds or say why a finding does
 not hold. It names `/review-rust` where
-[`rust-lints`](../../rust/rust-lints/README.md)' `agents` is on, and
-`/review-security` where `security` is, and is left out where no pass is.
+[`rust-lints`](../../rust/rust-lints/README.md)' `agents` is on, `/review-names`
+where `readability` is, and `/review-security` where `security` is, and is left
+out where no pass is.
 
 `.claude/settings.json` holds Claude Code's permissions as keys, under `merge`,
 so the repository keeps its own beside them. An agent may run every `check-*`
@@ -67,6 +68,18 @@ each names it and defers to it, where it is applied: the Rust skills of
 [`python`](../../lang/python/README.md) is applied, and what the shell asks
 where [`shell`](../../lang/shell/README.md) is.
 
+With `readability` too, the profile ships the `review-names` pass, which reads
+each name a change adds, renames or makes false, or every name under a path, and
+changes nothing. It reads each name's definition, uses and tests before it
+judges it, public names first, and reports each that misleads, is unclear,
+clashes with the codebase, citing the names it clashes with, or breaks the
+language's conventions, leaving to the lints what they refuse. A published
+crate's rename of a name a release has shipped breaks its callers, so the fix
+keeps the old name as a deprecated alias; an unpublished crate's moves every
+caller and keeps none. It takes a revision range or paths, and after `--` what
+the change is for, `/review-names main..HEAD -- the grid's cursor moves by
+squares`.
+
 With `security`, a default, the profile ships the `review-security` pass, which
 reviews a change for what someone outside the process can reach through it, and
 changes nothing. It maps each input the change reads from outside the process
@@ -98,6 +111,7 @@ main..HEAD -- the tile server loads the set a client names`.
 | `CLAUDE.md`                                                     | whole | once   | scaffold `claude`               |
 | `.claude/settings.json`                                         | keys  | merge  | template                        |
 | `.claude/hooks/check.sh`                                        | whole | owned  | executable, feature `hook`      |
+| `.claude/skills/review-names/SKILL.md`                          | whole | owned  | template, feature `readability` |
 | `.claude/skills/review-security/SKILL.md`                       | whole | owned  | template, feature `security`    |
 | `.claude/skills/review-security/references/attack-classes.md`   | whole | owned  | template, feature `security`    |
 | `.claude/skills/review-security/references/sources.md`          | whole | owned  | template, feature `security`    |

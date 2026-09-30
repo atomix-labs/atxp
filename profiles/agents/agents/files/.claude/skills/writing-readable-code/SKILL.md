@@ -176,9 +176,10 @@ Read each reference a step names, whole, before writing the code.
    functions and types, how it refuses, and how it lays out modules and tests;
    write in them.
 2. **Naming or renaming**: `references/naming.md`. Say what the thing is or does
-   in a sentence; the name is that sentence's noun or verb. A public item's
-   rename breaks its callers: keep the old name as a deprecated alias, or leave
-   it, and say which in the change's description.
+   in a sentence; the name is that sentence's noun or verb. A rename of a public
+   item a published crate has released breaks its callers: keep the old name as
+   a deprecated alias, or leave it, and say which in the change's description;
+   otherwise, move every caller and keep no alias.
 3. **A new function, or one grown long**: `references/structure.md`: its steps
    at one level, refusals first, nothing it does left out of its name.
 4. **A choice: a flag, a mode, an option, a boolean**: `references/structure.md`

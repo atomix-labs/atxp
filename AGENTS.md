@@ -17,6 +17,8 @@ fixes what a formatter or linter can, and `just --list` shows every recipe.
 A change beyond a line or two is ready when its passes have run and `just check`
 passes:
 
+- `/review-names` on a change that adds, renames or changes what a public item
+  does.
 - `/review-security` on a change that reads input from outside the process.
 
 Each runs in a fresh context and reports; fix what it finds, or say why a
