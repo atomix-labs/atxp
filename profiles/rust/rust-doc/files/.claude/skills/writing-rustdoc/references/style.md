@@ -1,7 +1,8 @@
 # Style: Voice, Compaction, and What to Cut
 
-Derived from the crates `exemplars.md` quotes: `mem-init`, `mem-region` and
-`mem-allocators`. Where the
+Read this before any summary line or body prose, before tightening a doc, and
+before an example, a link or a list. Derived from the crates `exemplars.md`
+quotes: `mem-init`, `mem-region` and `mem-allocators`. Where the
 [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/documentation.html)
 or the
 [Pragmatic Rust Guidelines](https://microsoft.github.io/rust-guidelines/guidelines/docs/index.html)
@@ -98,41 +99,42 @@ Apply in order until the sentence fits.
 
 ## 4 Cut List with Rewrites
 
-| cut                                                            | why                                      | write instead                                       |
-| -------------------------------------------------------------- | ---------------------------------------- | --------------------------------------------------- |
-| `This struct/fn/method …`                                      | the subject is the item                  | start with the verb or the role                     |
-| `Returns a new instance of X` / `Creates a new X`              | says nothing the signature does not      | the state it yields: `An empty tally.`              |
-| `A struct that holds …` / `Represents …`                       | the kind is visible                      | the role                                            |
-| `# Arguments` / `# Parameters` / `# Returns`                   | Rust convention is prose                 | fold names into the summary: `Copies `src`to`dst`.` |
-| `The `src` slice.` on `src: &[T]`                              | restates the type                        | `What to copy.`                                     |
-| `// increment len` above `len += 1`                            | narrates the line                        | delete, or the invariant it maintains               |
-| `Note that …`, `It is important to …`, `Please`                | filler                                   | the fact                                            |
-| `simply`, `just`, `basically`, `essentially`                   | filler                                   | delete                                              |
-| `will`                                                         | tense drift                              | present tense                                       |
-| `can be used to`, `allows you to`, `provides`                  | indirection                              | the verb                                            |
-| `for more information see …`, `See also`                       | link ceremony                            | link the noun inline                                |
-| `powerful`, `simple`, `easy`, `efficient`, `zero-cost`         | unverifiable                             | the measured fact, or nothing                       |
-| `generic`, `reusable`                                          | editorializing; being in a lib proves it | what it does                                        |
-| `etc.`, `and so on`, `various`                                 | vague                                    | the full list, or the rule that generates it        |
-| `# Example` (singular)                                         | nonstandard                              | `# Examples`                                        |
-| blank line after `# Heading`                                   | house style                              | content on the next line                            |
-| a heading over one sentence                                    | structure without content                | a clause in the prose                               |
-| a bullet list of two                                           | a sentence with `and`                    | prose                                               |
-| `TODO`, `FIXME`, `(?)`, `should probably`                      | debris                                   | ask (SKILL.md), and omit                            |
-| `RC10 phase B`, `chunk 3`, `as agreed`, PR/issue talk          | dev-process noise                        | nothing; history lives in git                       |
-| `# HOT`, rule IDs (`STY-CMT-5`), `DEVIATION` tags              | belong to a suite this tree lacks        | nothing                                             |
-| the summary repeated as the first body sentence                | duplication                              | start the body with *why*                           |
-| a `///` on a `#[derive(Debug, Clone)]` or an obvious `Default` | nothing to say                           | nothing                                             |
-| a module doc that lists its items                              | the listing is the module page           | one line naming the role                            |
-| `Entry point: …` / `Entry points: …`                           | restates signatures                      | nothing; or the one-line contract                   |
-| a doc that explains an `#[expect]` beside it                   | the `reason` is its one home             | nothing                                             |
-| a comment naming the lint (`clippy wants …`)                   | lint machinery narration                 | the fact the code rests on                          |
+| cut                                                            | why                                      | write instead                                           |
+| -------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------- |
+| `This struct/fn/method …`                                      | the subject is the item                  | start with the verb or the role                         |
+| `Returns a new instance of X` / `Creates a new X`              | says nothing the signature does not      | the state it yields: `An empty tally.`                  |
+| `A struct that holds …` / `Represents …`                       | the kind is visible                      | the role                                                |
+| `# Arguments` / `# Parameters` / `# Returns`                   | Rust convention is prose                 | fold names into the summary: ``Copies `src` to `dst`.`` |
+| ``The `src` slice.`` on `src: &[T]`                            | restates the type                        | `What to copy.`                                         |
+| `// increment len` above `len += 1`                            | narrates the line                        | delete, or the invariant it maintains                   |
+| `Note that …`, `It is important to …`, `Please`                | filler                                   | the fact                                                |
+| `simply`, `just`, `basically`, `essentially`                   | filler                                   | delete                                                  |
+| `will`                                                         | tense drift                              | present tense                                           |
+| `can be used to`, `allows you to`, `provides`                  | indirection                              | the verb                                                |
+| `for more information see …`, `See also`                       | link ceremony                            | link the noun inline                                    |
+| `powerful`, `simple`, `easy`, `efficient`, `zero-cost`         | unverifiable                             | the measured fact, or nothing                           |
+| `generic`, `reusable`                                          | editorializing; being in a lib proves it | what it does                                            |
+| `etc.`, `and so on`, `various`                                 | vague                                    | the full list, or the rule that generates it            |
+| `# Example` (singular)                                         | nonstandard                              | `# Examples`                                            |
+| blank line after `# Heading`                                   | house style                              | content on the next line                                |
+| a heading over one sentence                                    | structure without content                | a clause in the prose                                   |
+| a bullet list of two                                           | a sentence with `and`                    | prose                                                   |
+| `TODO`, `FIXME`, `(?)`, `should probably`                      | debris                                   | ask (SKILL.md), and omit                                |
+| `RC10 phase B`, `chunk 3`, `as agreed`, PR/issue talk          | dev-process noise                        | nothing; history lives in git                           |
+| `# HOT`, rule IDs (`STY-CMT-5`), `DEVIATION` tags              | belong to a suite this tree lacks        | nothing                                                 |
+| the summary repeated as the first body sentence                | duplication                              | start the body with *why*                               |
+| a `///` on a `#[derive(Debug, Clone)]` or an obvious `Default` | nothing to say                           | nothing                                                 |
+| a module doc that lists its items                              | the listing is the module page           | one line naming the role                                |
+| `Entry point: …` / `Entry points: …`                           | restates signatures                      | nothing; or the one-line contract                       |
+| a doc that explains an `#[expect]` beside it                   | the `reason` is its one home             | nothing                                                 |
+| a comment naming the lint (`clippy wants …`)                   | lint machinery narration                 | the fact the code rests on                              |
 
 ## 5 Examples
 
-- The shape: `#![feature(…)]` first if the crate needs it, then `use core::…;`
-  lines, a blank line, `use mem_…::{…};` lines, a blank line, the code.
-  `rustfmt` orders them; write them that way.
+- The shape: `use core::…;` lines, a blank line, `use mem_…::{…};` lines, a
+  blank line, the code; `rustfmt` orders them, so write them that way. A
+  `#![feature(…)]` opens an example only for an unstable API it calls, never for
+  a lint.
 - Show *why* the item is used, not that it can be called. A small domain type
   (`Leg`, `Order`, `Tag`) beats `Foo`; a real quantity (`4096`, `64 * 1024`)
   beats `42`.
@@ -144,11 +146,11 @@ Apply in order until the sentence fits.
 - `?` for a real error path, closed by a trailing hidden line, not a wrapper fn:
   `# Ok::<(), core::alloc::LayoutError>(())` or `# Ok::<(), Box<dyn
   core::error::Error>>(())`.
-- One `// SAFETY:` line above each `unsafe {}`, same rules as in code
-  (`comments.md`).
+- A `// SAFETY:` above each `unsafe {}`, proving each precondition, as in code
+  (`comments.md` §1).
 - One `//` line per non-obvious step, naming the cost or the fact, never the
-  operation: `// A `Vec` is byte-aligned, so over-allocate and let the cut find
-  the record's alignment.`
+  operation: ``// A `Vec` is byte-aligned, so over-allocate and let the cut find
+  the record's alignment.``
 - Hide with `# ` only setup that would obscure the point (`#
   install(OwnerId::new(NonZeroU64::MIN))?;`, `# let _ = boxed;`); keep every
   `use` visible.
@@ -167,17 +169,18 @@ Apply in order until the sentence fits.
 ## 6 Links
 
 - Every item mentioned is an intra-doc link on first use per doc block:
-  `[`RunInit`]`, `[`len`](Self::len)`, `[`cut`](Region::cut)`,
-  `[`pin_init!`](crate::pin_init)`. Backticks inside the brackets always;
-  `[`Foo`](Foo)` is a denied redundancy.
+  ``[`RunInit`]``, ``[`len`](Self::len)``, ``[`cut`](Region::cut)``,
+  ``[`pin_init!`](crate::pin_init)``. Backticks inside the brackets always;
+  ``[`Foo`](Foo)`` is a denied redundancy.
 - A path a short name cannot reach goes in the target:
-  `[`Layout`](core::alloc::Layout)`, `[`Shared`](crate::Shared)`, or as a
-  reference definition at the bottom of the block: `[`Shared`]: crate::Shared`.
+  ``[`Layout`](core::alloc::Layout)``, ``[`Shared`](crate::Shared)``, or as a
+  reference definition at the bottom of the block: ``[`Shared`]:
+  crate::Shared``.
 - Reference definitions sit at the end of the doc block, in order of first use,
   with short stable labels: `[rust#125632]`, `[goal]`, `[pin-init]`, `[loom]`.
 - A crate that is not a dependency cannot be intra-linked
   (`private_intra_doc_links`, broken links are denied): reach it by relative
-  HTML path, `[`SeqLock`]: ../mem_sync/seqlock/struct.SeqLock.html`.
+  HTML path, ``[`SeqLock`]: ../mem_sync/seqlock/struct.SeqLock.html``.
 - An unstable, cfg-gated, or foreign item rustdoc cannot resolve is linked by
   URL reference definition, never demoted to a bare code span:
   `[`AtomicPrimitive`]:
@@ -212,8 +215,8 @@ Apply in order until the sentence fits.
 
 ## 8 House Vocabulary
 
-Verbs and nouns already in play across the workspace. Reuse them before coining
-one.
+Verbs and nouns the exemplar crates use. Reuse them, or the crate's own, before
+coining one.
 
 | word                 | means                                                          |
 | -------------------- | -------------------------------------------------------------- |

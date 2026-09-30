@@ -9,6 +9,7 @@ rust-toolchain = {}
 [features]
 # The house's doc lint, in check-rust-doc.
 strict = []
+# The writing-rustdoc skill, in .claude/skills/.
 agents = []
 
 [files.".just/rust-doc.just"]
@@ -17,14 +18,16 @@ template = true
 [files.".just/rust-doc.py"]
 
 [files.".claude/skills/writing-rustdoc/SKILL.md"]
-when = { features = ["agents"] }
+template = true
+when     = { features = ["agents"] }
 
 [files.".claude/skills/writing-rustdoc/references/comments.md"]
 template = true
 when     = { features = ["agents"] }
 
 [files.".claude/skills/writing-rustdoc/references/exemplars.md"]
-when = { features = ["agents"] }
+template = true
+when     = { features = ["agents"] }
 
 [files.".claude/skills/writing-rustdoc/references/sources.md"]
 when = { features = ["agents"] }

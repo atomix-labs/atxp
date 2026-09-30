@@ -1,9 +1,12 @@
+{%- set lints = devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([]) -%}
+{%- set toolchain = devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([]) -%}
 # Exemplars: `mem-init`, `mem-region`, `mem-allocators`, Annotated
 
-Excerpts from three memory crates, each with the rule it shows. A new crate's
-docs must sit comfortably next to these; when they would not, the new docs are
-wrong. `mem-init`'s crate page is the problem-first form, `mem-allocators`' the
-shape-first one.
+Read this to see a rule on the page, before writing docs in a form this skill's
+other references only describe. Excerpts from three memory crates, each with the
+rule it shows. A new crate's docs must sit comfortably next to these; when they
+would not, the new docs are wrong. `mem-init`'s crate page is the problem-first
+form, `mem-allocators`' the shape-first one.
 
 Contents: 1 Crate pages · 2 Modules · 3 Types and fields · 4 Traits · 5
 Functions · 6 Errors · 7 Private items · 8 `// SAFETY:` and `// ORDERING:` · 9
@@ -513,7 +516,8 @@ let head = unsafe { Self::from_raw_parts(self.base, mid) };
 let tail = unsafe { Self::from_raw_parts(after, self.len.wrapping_sub(mid)) };
 ```
 
-- One `unsafe` op per block, one line per obligation, each naming the fact.
+- One `unsafe` op per block, its `// SAFETY:` naming the fact for each
+  precondition, in as many lines as that takes: the head's runs to two.
   Non-safety rationale sits above, separated by a bare `//`. Chaining (`as the
   head, and …`) when the fact is one up.
 - `// ORDERING:` states the ordering and what it does or does not publish.
@@ -536,11 +540,6 @@ let tail = unsafe { Self::from_raw_parts(after, self.len.wrapping_sub(mid)) };
 ```
 
 ```text
-#[assert(
-    size == size_of::<usize>() => "an address, and nothing else",
-    size_of::<Atomic<VirtAddr>>() == size_of::<usize>() => "no wrapper overhead in a shared word",
-)]
-
 debug_assert!(chunk.word().is_inuse(), "a block given back twice, or never served");
 
 #[cfg_attr(miri, ignore = "mmap is unsupported under Miri")]
@@ -607,19 +606,28 @@ fn only_a_free_chunk_opens_its_links() { … }
 ```
 
 ```text
-//! UI tests pinning the properties the type system carries. Regenerate snapshots with
+//! The misuses a region refuses, each a fixture that must not compile: a region spent twice,
+{%- if "cargo-nextest" in devset.profiles %}
+//! and a structure built inside one escaping the bytes it borrows. Regenerate a message with
+//! `TRYBUILD=overwrite cargo nextest run -p mem-region --test trybuild`.
+{%- else %}
+//! and a structure built inside one escaping the bytes it borrows. Regenerate a message with
 //! `TRYBUILD=overwrite cargo test -p mem-region --test trybuild`.
+{%- endif %}
+{%- if "miri" in toolchain %}
 
-#![feature(non_exhaustive_omitted_patterns_lint, strict_provenance_lints)]
-// Neither a loom model nor miri drives a compiler or spawns a process.
+// Neither a loom model nor Miri drives a compiler.
 #![cfg(not(any(loom, miri)))]
+{%- else %}
+
+// A loom model drives no compiler.
+#![cfg(not(loom))]
+{%- endif %}
 
 #[cfg(test)]
 mod tests {
-    /// Each fixture is a use these shapes must refuse: a region spent twice, and a structure built
-    /// inside one escaping the bytes it borrows.
     #[test]
-    fn ui() { … }
+    fn each_misuse_fails_to_compile() { … }
 }
 ```
 
@@ -639,8 +647,10 @@ const CORE: u32 = 6;
 //! What the vocabulary is for: one buffer becomes a partition, and the type system holds the line.
 //!
 //! Run with `cargo run -p mem-region --example region-tour`.
+{%- if "strict" in lints %}
 
 #![expect(clippy::print_stdout, reason = "a demo binary reports its result on stdout")]
+{%- endif %}
 ```
 
 ```text
@@ -650,9 +660,10 @@ const CORE: u32 = 6;
 //! **One crossing datum, and it is the segment's name.** …
 ```
 
-- A fixture states the unsoundness it prevents, nothing about the harness. A
-  bench states what the gap between arms measures. An example says what it shows
-  and how to run it. An integration test states its proof and the one datum that
+- A fixture states the unsoundness it prevents, nothing about the harness; the
+  harness's test is named for what it pins, and only it carries a `cfg`. A bench
+  states what the gap between arms measures. An example says what it shows and
+  how to run it. An integration test states its proof and the one datum that
   crosses.
 
 ## 12 Manifest
@@ -661,13 +672,18 @@ const CORE: u32 = 6;
 description = "place structures in raw bytes and address them by location, not by pointer."
 
 [dependencies]
-# internal
-mem-assert     = { workspace = true }
-mem-region     = { workspace = true }
 # external
-pin-init     = { workspace = true } # `init!` expands to its paths; not named in source.
-zerocopy     = { workspace = true } # `FromZeros`, the one marker for "a zeroed place is a value".
+pin-init = { workspace = true }
+zerocopy = { workspace = true }
+# internal
+mem-assert = { workspace = true }
+mem-region = { workspace = true }
 ```
+
+- The pitch clause, lowercased, with its period. The group markers, external
+  first, are the only comments the manifest carries: why `pin-init` is a
+  dependency, though no source names it, is said in the crate docs where `init!`
+  is, not beside the entry.
 
 ## 13 Re-Exports and Omissions
 

@@ -28,18 +28,18 @@ root=$(cd "$crate" && cargo locate-project --workspace --message-format plain | 
 cd "$root"
 
 if ! $lint_only; then
-    host=$(rustc -vV | sed -n 's/^host: //p')
     features=()
     grep -q '^\[features\]' "$crate/Cargo.toml" && features=(--all-features)
     step() { echo "== $*"; "$@"; }
     step cargo fmt -p "$name" -- --check
-    # As `just check-rust-doc` builds it: private items documented, and any warning fatal.
-    RUSTDOCFLAGS="-D warnings" step cargo doc -p "$name" --no-deps --target "$host" "${features[@]}" \
-        --document-private-items
-    step cargo test -p "$name" --doc --target "$host" "${features[@]}"
-    step cargo clippy -p "$name" --all-targets --target "$host" "${features[@]}"
-    # A dead `#[expect]` is a warning, so it does not fail clippy on its own.
-    if cargo clippy -p "$name" --all-targets --target "$host" "${features[@]}" 2>&1 | grep -q 'unfulfilled_lint_expectations'; then
+    # As `just check-rust-doc` builds it, in the recipes' cache: private items documented, and any
+    # warning fatal.
+    RUSTDOCFLAGS="-D warnings" step cargo doc -p "$name" --no-deps "${features[@]}" --document-private-items
+    step cargo test -p "$name" --doc "${features[@]}"
+    step cargo clippy -p "$name" --all-targets "${features[@]}"
+    # A dead `#[expect]` fails clippy only where the workspace denies `unfulfilled_lint_expectations`;
+    # elsewhere it warns, so it is looked for either way.
+    if cargo clippy -p "$name" --all-targets "${features[@]}" 2>&1 | grep -q 'unfulfilled_lint_expectations'; then
         echo "doc-audit: an #[expect] no longer fires" >&2; exit 1
     fi
 fi
