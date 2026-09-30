@@ -1,4 +1,5 @@
 {%- set lints = devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([]) -%}
+{%- set manifests = devset.layers | selectattr("profile", "equalto", "cargo-manifest") | map(attribute="features") | first | default([]) -%}
 # Tooling: Gates, Lints, Rustdoc Mechanics
 
 Read this before running the checks, when a lint fires on a doc or a comment,
@@ -7,13 +8,13 @@ depends on.
 
 Contents: 1 Commands · 2 Workspace lints that shape docs · 3 Features and cfg
 axes · 4 Links rustdoc cannot resolve · 5 Rustdoc and doctest attributes · 6
-Rendered check
+Rendered check · 7 Docs.rs
 
 ## 1 Commands
 
-From the workspace root. `scripts/doc-audit.sh <crate-dir>` runs the whole
-ladder and then the heuristic lint; the raw steps, in order, each clean before
-the next:
+From the workspace root. `.claude/skills/writing-rustdoc/scripts/doc-audit.sh
+<crate-dir>` runs the whole ladder and then the heuristic lint; the raw steps,
+in order, each clean before the next:
 
 ```sh
 {%- if "rust-fmt" in devset.profiles or "dprint" in devset.profiles or "toml" in devset.profiles or "markdown" in devset.profiles %}
@@ -31,16 +32,18 @@ just fix-toml
 {%- if "markdown" in devset.profiles %}
 just fix-markdown
 {%- endif %}
+export CARGO_BUILD_TARGET=$(rustc -vV | sed -n 's/^host: //p')   # the host, as the recipes build
 cargo fmt -p <crate> -- --check
 RUSTDOCFLAGS="-D warnings" cargo doc -p <crate> --no-deps [--all-features] --document-private-items
 cargo test -p <crate> --doc [--all-features]
-cargo clippy -p <crate> --all-targets [--all-features]
+cargo clippy -p <crate> --all-targets [--all-features] -- -D warnings
 mise exec -- python3 .just/rust-doc.py <crate-dir>        # the cut list, mechanically
 ```
 
 `--all-features` where the manifest has a `[features]` table. `-D warnings`
-fails the build on any rustdoc warning, as `just check-rust-doc` does; the steps
-build as the recipes do, so they share one cache.
+fails the build on any warning, as `just check-rust-doc` does. The recipes name
+the host as the target, `CARGO_BUILD_TARGET`, so building the same way shares
+their cache and writes the docs where they do, `target/<host>/doc/`.
 
 The build documents private items, as `just check-rust-doc` does: it is where a
 private doc's ``[`SLOTS`]`` link is checked, and it surfaces link hygiene a
@@ -132,8 +135,8 @@ Under `strict`, the table denies these too:
 
 No lint table is applied here: rustdoc's own lints warn, and the `-D warnings`
 of `just check-rust-doc` fails on each. A dead `#[expect]` is a warning,
-`unfulfilled_lint_expectations`, so read a check's output for `warning:`, not
-only for errors.
+`unfulfilled_lint_expectations`, which the audit's `-D warnings` fails on too;
+in a check without it, read the output for `warning:`, not only for errors.
 {%- endif %}
 
 ## 3 Features and Cfg Axes
@@ -150,25 +153,33 @@ An item behind `#[cfg(target_os = …)]` is named in plain backticks on shared
 surfaces; an intra-doc link to it breaks on the other target. An item behind
 `cfg(loom)`/`cfg(miri)` likewise.
 
-docs.rs builds a published crate with its default features, unless
-`[package.metadata.docs.rs]` says otherwise; a crate that is not published needs
-none of it.
+A published crate's docs are built by docs.rs, with its default features unless
+the manifest says otherwise: §7.
 
 ## 4 Links Rustdoc Cannot Resolve
 
-| target                                     | write                                                                                                                 |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| an item of this crate or a dependency      | ``[`Name`]``, ``[`m`](Self::m)``, ``[`Layout`](core::alloc::Layout)``                                                 |
-| a path used several times in one block     | a reference definition: ``[`Shared`]: crate::Shared``                                                                 |
-| a workspace crate that is not a dependency | relative HTML path: ``[`SeqLock`]: ../mem_sync/seqlock/struct.SeqLock.html``                                          |
-| an unstable / impl-restricted std item     | URL: ``[`AtomicPrimitive`]: https://doc.rust-lang.org/std/sync/atomic/trait.AtomicPrimitive.html``                    |
-| a third-party crate or one of its items    | URL: `[loom]: https://docs.rs/loom`, ``[`UnsafeCell`]: https://docs.rs/loom/latest/loom/cell/struct.UnsafeCell.html`` |
-| an issue, RFC, paper                       | URL with a stable short label: `[rust#125632]: https://github.com/rust-lang/rust/issues/125632`                       |
-| a `cfg`-gated variant on a shared surface  | plain `` `Variant` ``, no link                                                                                        |
+| target                                       | write                                                                                                                 |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| an item of this crate or a normal dependency | ``[`Name`]``, ``[`m`](Self::m)``, ``[`Layout`](core::alloc::Layout)``, by the crate's path                            |
+| a path used several times in one block       | a reference definition: ``[`Shared`]: crate::Shared``                                                                 |
+| an unstable / impl-restricted std item       | URL: ``[`AtomicPrimitive`]: https://doc.rust-lang.org/std/sync/atomic/trait.AtomicPrimitive.html``                    |
+| a third-party crate or one of its items      | URL: `[loom]: https://docs.rs/loom`, ``[`UnsafeCell`]: https://docs.rs/loom/latest/loom/cell/struct.UnsafeCell.html`` |
+| an issue, RFC, paper                         | URL with a stable short label: `[rust#125632]: https://github.com/rust-lang/rust/issues/125632`                       |
+| a `cfg`-gated variant on a shared surface    | plain `` `Variant` ``, no link                                                                                        |
 
 A ``[`Foo`]`` with a matching reference definition uses the URL and skips
 intra-doc resolution, so it links cleanly and stays code-formatted. Never demote
 an unresolvable link to a bare code span when a page for it exists.
+
+A crate of the workspace that is not a normal dependency is not linked, and not
+named: a relative HTML path to its pages breaks on docs.rs and wherever the item
+is inlined, and rustdoc cannot check it. A published crate outside the workspace
+may be linked by its docs.rs URL, as a third-party crate is.
+{%- if "strict" in devset.features %}
+
+Under `strict`, the doc lint refuses a crate of the workspace named where it is
+neither this crate, its family nor a dependency.
+{%- endif %}
 
 A name shared by a private module and a public macro or fn (`mod init` and
 `init!`) is ambiguous only when private items are documented, which `just
@@ -195,19 +206,49 @@ check-rust-doc` and the audit both do: write the disambiguator from the start,
 
 ## 6 Rendered Check
 
-The audit's build lands at `target/doc/<crate_snake>/index.html`, and `just
-check-rust-doc`'s beside it, with every crate of the workspace. Read the crate
+The audit's build and `just check-rust-doc`'s land at
+`target/<host>/doc/<crate_snake>/index.html`, the path `cargo doc` prints after
+`Generated`; the recipe's holds every crate of the workspace. Read the crate
 page top to bottom in the HTML (without a browser, `sed 's/<[^>]*>//g'` over the
 file) and check:
 
 1. The crate page reads as an introduction; the sidebar shows the task headings.
 2. Every ``[`Name`]`` became a link; no literal `` [` `` survives (``grep -c
    '\[`' index.html``). A link into a sibling workspace crate renders as plain
-   code, not a link, until that crate is documented into the same `target/doc`
-   (`cargo doc --workspace` documents them all); that is not a defect of the
-   doc, and no lint fires for it.
+   code, not a link, until that crate is documented beside it (`cargo doc
+   --workspace` documents them all); that is not a defect of the doc, and no
+   lint fires for it.
 3. Diagrams and listings sit in `text` fences, aligned; table pipes align in the
    source.
 4. Each summary is complete in the module listing: one sentence, no trailing
    fragment.
 5. No heading is followed by an empty paragraph; no `# Example` singular.
+
+## 7 Docs.rs
+
+A crate published to crates.io has its docs built by docs.rs, on a recent
+nightly, for its default features alone, with a `docsrs` cfg set on the crate
+being documented and on none of its dependencies. So a published crate:
+
+- **Builds every item it documents**: where a feature gates an item, the
+  manifest says `all-features = true` under `[package.metadata.docs.rs]`, or
+  `features = […]` naming those docs.rs can build.
+- **Marks what a feature gates**: `#![cfg_attr(docsrs, feature(doc_cfg))]` in
+  `lib.rs` shows, on the nightly the profiles pin, an "Available on crate
+  feature … only" badge on each gated item; an item whose badge must say more
+  than its `cfg` adds `#[cfg_attr(docsrs, doc(cfg(feature = "…")))]`. Both build
+  on stable, where nothing sets `docsrs`; a `doc(cfg)` outside `cfg_attr(docsrs,
+  …)` does not, since it is unstable. `just check-rust-doc` sets no `docsrs`, so
+  the badges are read by hand, on nightly: `RUSTDOCFLAGS="--cfg docsrs" cargo
+  doc -p <crate> --all-features --no-deps`.
+- **Links only what resolves there**: items of this crate and its normal
+  dependencies, which docs.rs links to each dependency's own docs, and pages by
+  URL (§4); never a relative HTML path.
+- **Has its manifest's words**: a `description`, which crates.io refuses a crate
+  without and shows beside it (`comments.md` §9), and a `repository`, the source
+  link crates.io and docs.rs show.
+{%- if "agents" in manifests %}
+
+The `[package.metadata.docs.rs]` table is written as `editing-cargo-manifests`
+says.
+{%- endif %}

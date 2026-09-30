@@ -32,7 +32,7 @@ Re-exports and omissions
 //!
 //! A facade over [pin-init]: it re-exports the whole surface, so nothing downstream reaches into
 //! it directly. It swaps `init!` / `pin_init!` for wrappers that deny `mem::forget` …, and
-//! replaces `pin-init`'s `Zeroable` with [`zeroed`] over `zerocopy::FromZeros` -- a marker wrapped
+//! replaces `pin-init`'s `Zeroable` with [`zeroed`] over `zerocopy::FromZeros`: a marker wrapped
 //! around one method is one name too many when a mature one already states it.
 ````
 
@@ -182,8 +182,8 @@ use core::num::NonZeroU64;
 /// place of an address, so the same word names the same byte in every peer.
 ///
 /// An **alias**, not a newtype: the name is worth having, a second type is not. Nothing forces the
-/// choice -- a newtype states `AtomNiche` for itself, as `Word<C>` does -- so what decides it is
-/// that every caller here already means this exact word.
+/// choice (a newtype states `AtomNiche` for itself, as `Word<C>` does), so what decides it is that
+/// every caller here already means this exact word.
 pub type Offset = NonZeroU64;
 ```
 
@@ -443,8 +443,10 @@ pub enum RegionError {
 pub enum ReserveError {
     /// No run of free bytes fits this layout: free something and retry, or ask for less.
     #[error("reserve error: the allocator refused {layout:?}")]
-    Exhausted { /// What it refused.
-                layout: Layout },
+    Exhausted {
+        /// What it refused.
+        layout: Layout,
+    },
 }
 ```
 
@@ -595,7 +597,7 @@ fn a_cut_aligns_the_address_not_the_offset() { … }
 fn only_a_free_chunk_opens_its_links() { … }
 ```
 
-- Names are the property, article first. Messages continue one sentence across
+- Names are the property, subject first. Messages continue one sentence across
   the assertions. A `//` above a test says what it pins when the name cannot; a
   `///` when the test carries a compile-time property.
 
@@ -698,7 +700,7 @@ mem-region = { workspace = true }
 mod borrowed {
     // `Zeroable`, `MaybeZeroable`, `ZeroableOption`, `init_zeroed` and `zeroed` are
     // deliberately absent: `pin-init`'s marker is one trait around one default method, and
-    // [`zeroed`](super::zeroed) is that method over `zerocopy::FromZeros` -- so one marker
+    // [`zeroed`](super::zeroed) is that method over `zerocopy::FromZeros`, so one marker
     // states "a zeroed place is a value" for the whole codebase rather than two.
     pub use pin_init::{…};
 }

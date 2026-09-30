@@ -1,6 +1,6 @@
 ---
 name: writing-rustdoc
-description: Use when writing, revising or reviewing rustdoc (`//!`, `///`), `// SAFETY:`, `// INVARIANT:` and `// ORDERING:` comments, `#[expect]` reasons, assertion and `expect` messages, the `//!` of a test, bench or example file, or a crate's `Cargo.toml` description; when a crate, module, type, trait or `unsafe fn` is added or changed and its docs must follow; when asked to document a crate, make it docs.rs ready, clean up its docs, or audit them for restatement, filler, widows or missing Safety, Errors and Examples sections. Covers summaries by item kind, body prose, sections, examples, links, comments, messages, file headers and the manifest's description. Not for Markdown outside Rust source.
+description: Use when writing, revising or reviewing rustdoc (`//!`, `///`), `// SAFETY:`, `// INVARIANT:` and `// ORDERING:` comments, `#[expect]` reasons, assertion and `expect` messages, the `//!` of a test, bench or example file, or a crate's `Cargo.toml` description; when a crate, module, type, trait or `unsafe fn` is added or changed and its docs must follow; when asked to document a crate, make it docs.rs ready, clean up its docs, or audit them for restatement, filler, widows or missing Safety, Errors and Examples sections. Covers summaries by item kind, body prose, sections, examples, links, comments, messages, file headers, docs.rs and the manifest's description. Not for Markdown outside Rust source{% if "agents" in (devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([])) %}, or what a safety proof must establish, which writing-unsafe-rust covers{% endif %}.
 ---
 
 # Writing Rustdoc
@@ -162,9 +162,10 @@ Delete on sight; `references/style.md` §4 gives each rewrite.
 - **Restatement**: a parameter list, the return type, a field's type, the derive
   list, the summary again, a module doc listing its members, a comment
   explaining a neighbouring `#[expect]`.
-- **Structure**: a blank line after a section heading, `# Example`, `#
-  Arguments`, `# Returns`, `# Overview`, `# Usage`, `# Notes`, a heading over
-  one sentence, a list of two, a `# Types` bullet for each export.
+- **Structure**: a blank line after `# Safety`, `# Errors`, `# Panics` or `#
+  Examples`; `# Example`, `# Arguments`, `# Returns`, `# Overview`, `# Usage`,
+  `# Notes`; a heading over one sentence, a list of two, a `# Types` bullet for
+  each export.
 - **Debris**: `TODO`, `FIXME`, `(?)`, `should probably`, a placeholder link, an
   invented issue, a number with no run behind it, phase and chunk labels.
 - **Padding**: a clause added to a finished one-liner.
@@ -177,7 +178,7 @@ function that needs them, and backticks on an identifier in prose.
 Under `strict` they hold more: every item documented, private ones and fields
 included, though not a test's helpers; a `// SAFETY:` on each unsafe block and
 `unsafe impl`, and none on safe code; a first paragraph short enough for a
-listing; a message on every assertion.
+listing; a message on every assertion outside a test.
 {%- endif %}
 {%- endif %}
 {%- if "strict" in devset.features %}
@@ -202,7 +203,7 @@ Read each reference a step names, whole, before writing.
    `git log -p -- <path>` and design documents; ask for the rest (step 7); write
    top down, crate, modules, items, fields, comments, tests and examples, then
    the `description`. `references/style.md`, `references/templates.md`,
-   `references/exemplars.md`.
+   `references/exemplars.md`, and `references/tooling.md` §7 for docs.rs.
 2. **A new or changed item**: its summary, prose, sections, and an example where
    a user builds or drives it: `references/style.md`, and
    `references/templates.md` §3 and §4.
@@ -232,14 +233,13 @@ Read each reference a step names, whole, before writing.
 - `just check`: every check, as CI runs them, after `just fix`.
 - `just check-rust-doc`: rustdoc over every crate and feature, private items
   included, a warning failing it{% if "strict" in devset.features %}, then the doc lint{% endif %}.
-- `mise exec -- python3 .just/rust-doc.py <crate-dir> --advisory`: the doc lint
-  over one crate, with widows and summaries that wrap.
 - `.claude/skills/writing-rustdoc/scripts/doc-audit.sh <crate-dir>`: formatting,
-  rustdoc, doctests, clippy and the doc lint over one crate, each clean before
-  the next; `--lint-only --advisory` is the quick reread.
+  rustdoc, doctests, clippy and the doc lint, `.just/rust-doc.py`, over one
+  crate, each clean before the next; `--lint-only --advisory` is the quick
+  reread, with widows and summaries that wrap.
 
-Then read the page the audit builds, `target/doc/<crate>/index.html`: every
-``[`Name`]`` a link, no heading over an empty paragraph, the crate page an
+Then read the page the audit builds, `target/<host>/doc/<crate>/index.html`:
+every ``[`Name`]`` a link, no heading over an empty paragraph, the crate page an
 introduction a newcomer can start from.
 
 Done means every public item, field and variant has a summary that says more
@@ -288,6 +288,6 @@ compaction: this body is the summary, and the tables and templates are there.
 - `references/exemplars.md`: to see a rule on the page, in annotated excerpts
   from three exemplar crates.
 - `references/tooling.md`: before the checks: commands, the lints that shape
-  docs, cfgs, links rustdoc cannot resolve, doctest attributes.
+  docs, cfgs, links rustdoc cannot resolve, doctest attributes, docs.rs.
 - `references/sources.md`: before a doc makes an external claim, or when a
   rule's source is asked for.

@@ -9,7 +9,7 @@ or the
 say otherwise, the exemplar crates win.
 
 Contents: 1 Summary lines · 2 Body prose · 3 Compaction moves · 4 Cut list with
-rewrites · 5 Examples · 6 Links · 7 Words and punctuation · 8 House vocabulary
+rewrites · 5 Examples · 6 Links · 7 Words and punctuation · 8 Vocabulary
 
 ## 1 Summary Lines
 
@@ -171,7 +171,7 @@ Apply in order until the sentence fits.
 
 - Every item mentioned is an intra-doc link on first use per doc block:
   ``[`RunInit`]``, ``[`len`](Self::len)``, ``[`cut`](Region::cut)``,
-  ``[`pin_init!`](crate::pin_init)``. Backticks inside the brackets always;
+  ``[`pin_init!`](crate::pin_init!)``. Backticks inside the brackets always;
   ``[`Foo`](Foo)`` is a denied redundancy.
 - A path a short name cannot reach goes in the target:
   ``[`Layout`](core::alloc::Layout)``, ``[`Shared`](crate::Shared)``, or as a
@@ -179,9 +179,12 @@ Apply in order until the sentence fits.
   crate::Shared``.
 - Reference definitions sit at the end of the doc block, in order of first use,
   with short stable labels: `[rust#125632]`, `[goal]`, `[pin-init]`, `[loom]`.
-- A crate that is not a dependency cannot be intra-linked
-  (`private_intra_doc_links`, broken links are denied): reach it by relative
-  HTML path, ``[`SeqLock`]: ../mem_sync/seqlock/struct.SeqLock.html``.
+- A dependency's item is linked by the crate's path,
+  ``[`Layout`](core::alloc::Layout)``, ``[`PinInit`](pin_init::PinInit)``; only
+  a normal dependency resolves. A crate that is not one is not linked, and not
+  named: a relative HTML path to its pages breaks on docs.rs and wherever the
+  item is inlined, and nothing checks it. A published crate outside the
+  workspace may be linked by its docs.rs URL.
 - An unstable, cfg-gated, or foreign item rustdoc cannot resolve is linked by
   URL reference definition, never demoted to a bare code span:
   ``[`AtomicPrimitive`]:
@@ -196,8 +199,8 @@ Apply in order until the sentence fits.
 ## 7 Words and Punctuation
 
 - Clauses hang off a colon or semicolon, or become a participle. No em dash
-  (`—`) anywhere; `--` survives only where nothing else reads right, about once
-  per crate.
+  (`—`) anywhere, and no `--` standing in for one: a colon, a semicolon, a comma
+  or a parenthesis, by what follows.
 - Backticks on every identifier, path, literal, feature name, lint name, and
   shell command.
 - **Bold** for the one load-bearing claim in a block (`**Plain, not atomic, and
@@ -214,10 +217,11 @@ Apply in order until the sentence fits.
 - One space after a period. No exclamation marks, no emoji, no `e.g.`/`i.e.`
   where `like`/`that is` reads better.
 
-## 8 House Vocabulary
+## 8 Vocabulary
 
-Verbs and nouns the exemplar crates use. Reuse them, or the crate's own, before
-coining one.
+The crate's own nouns and verbs come first, and the workspace's after them;
+where neither has a word, these are the ones the exemplar crates use. Reuse one
+before coining another.
 
 | word                 | means                                                          |
 | -------------------- | -------------------------------------------------------------- |

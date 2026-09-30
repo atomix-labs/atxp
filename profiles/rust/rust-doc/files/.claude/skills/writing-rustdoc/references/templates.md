@@ -634,7 +634,8 @@ nested bullets deeper than one level.
 ## 9 Section Names
 
 - *Task*: gerund, sentence case, what the reader is doing: `Building one value`,
-  `Building many`, `Choosing a source`, `Allocating through Allocator Trait`.
+  `Building many`, `Choosing a source`, `Allocating through the allocator
+  trait`.
 - *Concept*: the noun: `Pinned types`, `Contention`, `Ordering`, `Lifecycle`,
   `Safety model`.
 - *Fixed*, exact spelling: `Types`, `Crate features`, `What it compiles to`, and

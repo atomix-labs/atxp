@@ -12,7 +12,8 @@ case "${1:-}" in
     -h|--help) usage; exit 0 ;;
     "") usage >&2; exit 2 ;;
 esac
-crate=$1
+[ -f "$1/Cargo.toml" ] || { echo "doc-audit: $1 has no Cargo.toml" >&2; exit 2; }
+crate=$(cd "$1" && pwd)
 shift
 lint_only=false; advisory=()
 for arg in "$@"; do
@@ -22,26 +23,24 @@ for arg in "$@"; do
         *) echo "doc-audit: unknown argument $arg" >&2; exit 2 ;;
     esac
 done
-[ -f "$crate/Cargo.toml" ] || { echo "doc-audit: $crate has no Cargo.toml" >&2; exit 2; }
 name=$(sed -n 's/^name *= *"\([^"]*\)".*/\1/p' "$crate/Cargo.toml" | head -1)
 root=$(cd "$crate" && cargo locate-project --workspace --message-format plain | xargs dirname)
 cd "$root"
+# The host as the target, as the `just` recipes build, so the audit shares their cache and writes
+# the docs where `just check-rust-doc` does: `target/<host>/doc/`.
+export CARGO_BUILD_TARGET="${CARGO_BUILD_TARGET:-$(rustc -vV | sed -n 's/^host: //p')}"
 
 if ! $lint_only; then
     features=()
     grep -q '^\[features\]' "$crate/Cargo.toml" && features=(--all-features)
     step() { echo "== $*"; "$@"; }
     step cargo fmt -p "$name" -- --check
-    # As `just check-rust-doc` builds it, in the recipes' cache: private items documented, and any
-    # warning fatal.
-    RUSTDOCFLAGS="-D warnings" step cargo doc -p "$name" --no-deps "${features[@]}" --document-private-items
-    step cargo test -p "$name" --doc "${features[@]}"
-    step cargo clippy -p "$name" --all-targets "${features[@]}"
-    # A dead `#[expect]` fails clippy only where the workspace denies `unfulfilled_lint_expectations`;
-    # elsewhere it warns, so it is looked for either way.
-    if cargo clippy -p "$name" --all-targets "${features[@]}" 2>&1 | grep -q 'unfulfilled_lint_expectations'; then
-        echo "doc-audit: an #[expect] no longer fires" >&2; exit 1
-    fi
+    # As `just check-rust-doc` builds it: private items documented, and any warning fatal.
+    RUSTDOCFLAGS="-D warnings" step cargo doc -p "$name" --no-deps ${features[@]+"${features[@]}"} \
+        --document-private-items
+    step cargo test -p "$name" --doc ${features[@]+"${features[@]}"}
+    # Any warning fatal, a dead `#[expect]` included where the workspace only warns of one.
+    step cargo clippy -p "$name" --all-targets ${features[@]+"${features[@]}"} -- -D warnings
 fi
 echo "== doc-lint"
-python3 "$(git rev-parse --show-toplevel)/.just/rust-doc.py" "$crate" "${advisory[@]}"
+python3 -B "$(git rev-parse --show-toplevel)/.just/rust-doc.py" "$crate" ${advisory[@]+"${advisory[@]}"}

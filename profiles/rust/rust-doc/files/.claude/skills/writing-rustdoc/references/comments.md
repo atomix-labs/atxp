@@ -216,8 +216,9 @@ The one `allow` is the `dead_code` atop `tests/testing/mod.rs`, which
 ```
 
 `unsafe_code` is expected at the narrowest scope that holds the unsafe, the
-statement, the item or the `impl`, and on the crate only where unsafe is its
-whole purpose; the reason names the concrete unsafe and why no safe form serves:
+statement, the item, the `impl` or the module, and on the crate only where
+unsafe is its whole purpose; the reason names the concrete unsafe and why no
+safe form serves:
 
 ```text
 #![expect(

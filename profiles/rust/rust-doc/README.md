@@ -18,9 +18,9 @@ for a fact rather than guessing it. It gives the summary each kind of item
 takes; the sections, their order and form; examples that show why and end in an
 assertion; the crate page; a cut list of what to delete on sight; and the
 wording of each safety, invariant and ordering comment, `#[expect]` reason,
-message, test name and file header. Templates, annotated exemplars, and an audit
-and an inventory script come with it, so an agent writes documentation as the
-repository wants it.
+message, test name and file header; and what a published crate needs for
+docs.rs. Templates, annotated exemplars, and an audit and an inventory script
+come with it, so an agent writes documentation as the repository wants it.
 
 <!-- facts: written by devset-collection -->
 
