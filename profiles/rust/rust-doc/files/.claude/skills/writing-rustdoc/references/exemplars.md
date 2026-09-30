@@ -549,7 +549,8 @@ debug_assert!(chunk.word().is_inuse(), "a block given back twice, or never serve
 
 - Reasons are causes, lowercase, no period. A `debug_assert!`'s message names
   the violation, as a fact about the input.
-{%- if "miri" in toolchain %} An `ignore` says what Miri cannot do there.
+{%- if "miri" in toolchain %} An `ignore` says what Miri cannot do
+  there.
 {%- endif %}
 
 ## 10 Tests
