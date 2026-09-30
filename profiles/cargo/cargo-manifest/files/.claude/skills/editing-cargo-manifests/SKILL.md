@@ -81,21 +81,24 @@ divan = { workspace = true }
 1. **Every version lives in `[workspace.dependencies]`, external and internal
    alike, with its `default-features` and the features every member needs; a
    member writes `name = { workspace = true }`, adding at most `features` and
-   `optional`, in that order**, so one edit moves every crate; Cargo refuses any
-   other key on an inherited dependency.
+   `optional`, in that order**, so one edit moves every crate: those two are all
+   Cargo documents for an inherited dependency, and the workspace's form uses no
+   other. Cargo ignores a `version` there, with a warning.
 2. **An internal crate is listed in `[workspace.dependencies]` with its `path`
    and `version`, under `# internal`, and every member inherits it**; the
    manifest check refuses a `path` to a listed crate, and one that leaves the
-   member's own directory.
+   member's own directory, but for a crate in a `macros/` directory, which may
+   reach its siblings there.
 3. **A proc-macro crate sits in its parent's `macros/`, beside a plain library
    holding its token logic, and each reaches the next by `path`**, since a
    `proc-macro = true` crate exports its macros alone and its logic is tested
-   through the library; a `path` into the crate's own tree, to a crate the
-   workspace does not list, is the one a member writes.
+   through the library: the parent reaches `macros/macro`, and the macro crate
+   its sibling, `../macro-impl`, neither of them listed in the workspace.
 4. **A dependency's default is turned off where it would reach a crate that does
    not want it: an external crate a `no_std` member uses has `default-features =
    false` on its workspace entry**, since Cargo unifies a dependency's features
-   across the build, and an override in one member protects that member alone.
+   across the build, and a member cannot turn off a default its workspace entry
+   leaves on: edition 2024 refuses it, and earlier editions ignore it.
 
 ### Features
 
@@ -126,9 +129,10 @@ divan = { workspace = true }
 
 Under `strict`, a library is `no_std` first:
 
-1. **A library writes `#![no_std]` unconditionally, never `cfg_attr`-ed on, and
-   `extern crate alloc;` where it allocates**, so a use of `std` is gated on
-   purpose and never compiles the day something unifies `std` on.
+1. **A library that can run without `std` writes `#![no_std]` unconditionally,
+   never `cfg_attr`-ed on, and `extern crate alloc;` where it allocates**, so a
+   use of `std` is gated on purpose and never compiles the day something unifies
+   `std` on.
 2. **`std` is a feature that only adds, and never in `default`**, forwarded to
    each dependency that has its own; a crate that is `std`-only by nature, a
    binary, a proc-macro crate or one that owns the syscalls, has no `std`
@@ -170,9 +174,12 @@ default:
 
 ## Checks
 
-- `just check-cargo-manifest`: the shape above, every internal dependency
-  inherited, and every crate on the workspace's lints; `mise exec -- python3
-  .just/cargo-manifest.py <path>` checks one manifest.
+- `just check-cargo-manifest`: the `[package]` keys, inherited and in their
+  order; `description`; the comments and the two groups; every internal
+  dependency inherited, and every `path` in its crate's tree; `default` first;
+  and every crate on the workspace's lints. `mise exec -- python3
+  .just/cargo-manifest.py <path>` checks one manifest. The order of the tables,
+  a key Cargo would find by itself, and `documentation` are held by review.
 {%- if "toml" in devset.profiles %}
 - `just check-toml`: taplo's layout, each dependency group in alphabetical
   order.
@@ -189,26 +196,28 @@ default:
 {%- if "cargo-hack" in devset.profiles %}
 - `just nightly-cargo-hack`: every feature builds alone.
 {%- endif %}
-- `just check`: all of them. `cargo tree -e features -i <crate>` says who turned
-  a feature on.
+- `just check`: all of them.
+- By hand: `cargo tree -e features -i <crate>` says who turned a feature on
+  across the build, and `cargo tree -e features -i <crate> -p <member>` within
+  one member.
 
 ## What Not to Do
 
-| Thought                                                       | Instead                                                              |
-| ------------------------------------------------------------- | -------------------------------------------------------------------- |
-| "This dependency's purpose is not obvious; a `#` gloss helps" | No comment: the crate docs say it, where its guarantee is used.      |
-| "A paragraph above `[[bench]]` says why it has no harness"    | The bench's `//!` says it.                                           |
-| "No feature is on by default, so `default` can go"            | `default = []` is the declaration that none is. Write it.            |
-| "`default-features = false` here keeps `std` out"             | It keeps it out of this crate alone: put it on the workspace entry.  |
-| "A `no-std` feature reads clearer"                            | Features only add: name the thing, `std`.                            |
-| "Two features that conflict; a `compile_error!` will say so"  | Split the crate: the `compile_error!` is the last resort.            |
-| "An optional dependency's implicit feature is fine"           | `dep:`, so the crate's name is not a public feature.                 |
-| "One more feature is small"                                   | It is permanent, unifies across the build, and multiplies the sweep. |
-| "Pin the version here; only this crate uses it"               | Until a second does: `[workspace.dependencies]`.                     |
-| "`path = "../tiles-geometry"` is simpler"                     | `{ workspace = true }`; a `path` is for a crate inside this one.     |
-| "`[lib] path = "src/lib.rs"`, to be explicit"                 | Cargo finds it: write only a key that is not the default.            |
-| "Remove the workspace entry the check says is unused"         | Ask first whether a crate is about to use it.                        |
-| "`taplo fmt` passed, so the manifest is clean"                | taplo never sees a comment: run the manifest check.                  |
+| Thought                                                       | Instead                                                                |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| "This dependency's purpose is not obvious; a `#` gloss helps" | No comment: the crate docs say it, where its guarantee is used.        |
+| "A paragraph above `[[bench]]` says why it has no harness"    | The bench's `//!` says it.                                             |
+| "No feature is on by default, so `default` can go"            | `default = []` is the declaration that none is. Write it.              |
+| "`default-features = false` here keeps `std` out"             | Cargo refuses it over a default the workspace leaves on: put it there. |
+| "A `no-std` feature reads clearer"                            | Features only add: name the thing, `std`.                              |
+| "Two features that conflict; a `compile_error!` will say so"  | Split the crate: the `compile_error!` is the last resort.              |
+| "An optional dependency's implicit feature is fine"           | `dep:`, so the crate's name is not a public feature.                   |
+| "One more feature is small"                                   | It is permanent, unifies across the build, and multiplies the sweep.   |
+| "Pin the version here; only this crate uses it"               | Until a second does: `[workspace.dependencies]`.                       |
+| "`path = "../tiles-geometry"` is simpler"                     | `{ workspace = true }`; a `path` is for a crate inside this one.       |
+| "`[lib] path = "src/lib.rs"`, to be explicit"                 | Cargo finds it: write only a key that is not the default.              |
+| "Remove the workspace entry the check says is unused"         | Ask first whether a crate is about to use it.                          |
+| "`taplo fmt` passed, so the manifest is clean"                | taplo never sees a comment: run the manifest check.                    |
 
 ## References
 
@@ -216,5 +225,5 @@ Read the reference before citing a source for a rule, or where Cargo's own
 documentation seems to say otherwise, and again after compaction.
 
 - `references/sources.md`: the Cargo documentation and tools behind each rule,
-  where measurement disagrees with them, and what this workspace settles that
-  the ecosystem contests.
+  what measurement on the pinned toolchain shows of them, and what this
+  workspace settles that the ecosystem contests.

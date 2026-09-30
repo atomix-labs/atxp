@@ -34,20 +34,24 @@ a manifest claim needs backing; open the page before linking it.
 | [cargo-hack](https://github.com/taiki-e/cargo-hack)                                                                                               | `--each-feature`, `--feature-powerset --depth N`, `--group-features`; deduplicates equivalent combinations                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `just nightly-cargo-hack`                                                                          |
 {%- endif %}
 
-## Where Measurement Disagrees
+## What Measurement Shows
 
-1. **A member's `default-features = false` on an inherited dependency is
-   honoured.** The
+On cargo 1.98.1, the toolchain the profiles pin:
+
+1. **A `version` beside `workspace = true` is ignored, not refused.** The page
+   on specifying dependencies says "Other than `optional` and `features`,
+   inherited dependencies cannot use any other dependency key"; Cargo loads a
+   member that writes `version` there, warns "unused manifest key:
+   dependencies.serde.version", and ignores it. The rule writes only the two the
+   page names.
+2. **A member's `default-features = false` over a default the workspace entry
+   leaves on is refused, as the
    [edition guide](https://doc.rust-lang.org/edition-guide/rust-2024/cargo-inherited-default-features.html)
-   says it is rejected when the workspace entry does not itself set it, and
-   quotes a warning reading "`default-features` is ignored for regex". On this
-   toolchain it is neither ignored nor rejected: `cargo tree -e features -i
-   serde` shows a member that sets it resolving serde with no `default` and no
-   `std`, while a member that does not resolves it with both. The rule here
-   still puts `default-features = false` on the workspace entry, for a reason
-   the doc does not cover: a member override protects only the member that
-   writes it, and union resolution reaches the rest.
-2. **No canonical essay on feature bloat exists.** Searches return tool READMEs
+   says.** An edition 2024 member that writes it fails to load,
+   "`default-features = false` cannot override workspace's `default-features`";
+   an earlier edition ignores it with a warning. So it goes on the workspace
+   entry, the one place it takes effect.
+3. **No canonical essay on feature bloat exists.** Searches return tool READMEs
    and forum threads. Cite `features.html#feature-combinations` (the exponential
    cost, official) and `#mutually-exclusive-features` (split first, official)
    rather than a blog post.
