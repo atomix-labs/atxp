@@ -944,10 +944,10 @@ that broke the promise, and a `# Panics` section saying when; its `expect`
 message states the precondition as an instruction.
 
 A check a release build need not pay for is a `debug_assert!` whose message
-states the fact it checks: an invariant the type's own code keeps, or the
-contract an `unsafe` function states, which `writing-unsafe-rust` teaches. A
-safe function's input is never such a check: it is refused with an error, as
-above.
+names the violation it catches, as a fact, so a failure reads as what went
+wrong: an invariant the type's own code keeps, or the contract an `unsafe`
+function states, which `writing-unsafe-rust` teaches. A safe function's input is
+never such a check: it is refused with an error, as above.
 
 ```rust
 use core::num::NonZeroU16;
@@ -972,7 +972,7 @@ impl Grid {
         // invariant of this type's own, which no caller can break.
         debug_assert!(
             self.squares.len().is_multiple_of(usize::from(self.cols.get())),
-            "a grid of whole rows"
+            "a row cut short at the grid's end"
         );
         self.squares.chunks(usize::from(self.cols.get()))
     }
