@@ -214,10 +214,10 @@ file) and check:
 
 1. The crate page reads as an introduction; the sidebar shows the task headings.
 2. Every ``[`Name`]`` became a link; no literal `` [` `` survives (``grep -c
-   '\[`' index.html``). A link into a sibling workspace crate renders as plain
-   code, not a link, until that crate is documented beside it (`cargo doc
-   --workspace` documents them all); that is not a defect of the doc, and no
-   lint fires for it.
+   '\[`' index.html``). A link into a sibling workspace crate renders as a link
+   whose target is the bare path (`href="tiles_geometry::span"`), dead until that
+   crate is documented beside it (`cargo doc --workspace` documents them all);
+   that is not a defect of the doc, and no lint fires for it.
 3. Diagrams and listings sit in `text` fences, aligned; table pipes align in the
    source.
 4. Each summary is complete in the module listing: one sentence, no trailing
