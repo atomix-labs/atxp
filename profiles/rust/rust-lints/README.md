@@ -22,8 +22,12 @@ nightly [`rust-toolchain`](../../rust/rust-toolchain/README.md) pins, their
 features switched on by `-Zcrate-attr`, so no source needs a `#![feature]` and
 [`rust-msrv`](../../rust/rust-msrv/README.md) can still prove a crate builds on
 stable. A crate that enables them itself, as one built on nightly alone may, is
-no fault: the check allows the feature enabled twice. It goes on past a crate
-that fails, so one run names every crate to fix.
+no fault: the check allows the feature enabled twice. Its flags join the
+rustflags Cargo's configuration sets, so the CPU floors
+[`cargo-workspace`](../../cargo/cargo-workspace/README.md) sets still hold; a
+`RUSTFLAGS` the caller sets replaces those, as it does for any build, and the
+flags join it instead. It goes on past a crate that fails, so one run names
+every crate to fix.
 
 The `agents` feature adds the `writing-rust` skill in `.claude/skills/`: how
 Rust is written here, in errors, crate and module layout, naming, API design,
