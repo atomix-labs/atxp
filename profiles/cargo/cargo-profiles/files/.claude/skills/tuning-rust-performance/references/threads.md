@@ -22,12 +22,13 @@ sharing, and it runs both threads at the speed of the line crossing between
 them. So a value written by one thread and read or written by others sits on a
 line of its own, and the line is the target's: 64 bytes on x86-64 and on a
 Graviton4's Neoverse V2, but Intel's cores since Sandy Bridge fetch lines in
-pairs, and the big cores of Arm's big.LITTLE designs have 128-byte lines.
-crossbeam's `CachePadded` pads to 128 bytes on x86-64 and aarch64 for those
-reasons, and code that runs on more than one kind of machine does the same:
-`#[repr(align(128))]` on a wrapper, its size asserted, or `CachePadded` where
-the repository has crossbeam. Measure it: the cost depends on the machine and on
-how often each thread writes.
+pairs, the big cores of Arm's big.LITTLE designs have 128-byte lines, and on
+Apple silicon, Apple's documentation says, the size differs from Intel Macs' and
+is read from `hw.cachelinesize`. crossbeam's `CachePadded` pads to 128 bytes on
+x86-64 and aarch64 for the first two reasons, and code that runs on more than
+one kind of machine does the same: `#[repr(align(128))]` on a wrapper, its size
+asserted, or `CachePadded` where the repository has crossbeam. Measure it: the
+cost depends on the machine and on how often each thread writes.
 
 ```rust
 use core::sync::atomic::AtomicU64;
@@ -91,7 +92,8 @@ Threads that all write one atomic take turns at its line, whatever they write to
 it, so a count bumped once for each tile by every worker runs no faster than one
 worker. Each worker counts in a value of its own, and adds it to the shared
 count once, when it is done; a count read while the work goes on is split into
-one part a thread, each on its own line, and summed when read.
+one part a thread, each on its own line, and summed when read. The work is split
+into one share a worker, since a thread for each row costs a spawn each.
 
 ```rust
 use core::sync::atomic::AtomicU64;
@@ -99,13 +101,14 @@ use core::sync::atomic::Ordering::Relaxed;
 use std::thread;
 
 #[must_use]
-pub fn lit(rows: &[Vec<u8>]) -> u64 {
+pub fn lit(rows: &[Vec<u8>], workers: usize) -> u64 {
     let lit = AtomicU64::new(0);
+    let share = rows.len().div_ceil(workers.max(1)).max(1);
     thread::scope(|scope| {
-        for row in rows {
+        for rows in rows.chunks(share) {
             let lit = &lit;
             scope.spawn(move || {
-                for tile in row {
+                for tile in rows.iter().flatten() {
                     if *tile > 0 {
                         // Bad: every worker takes the one line for every tile.
                         // ORDERING: Relaxed throughout, a count read once the scope has joined.
@@ -125,13 +128,14 @@ use core::sync::atomic::Ordering::Relaxed;
 use std::thread;
 
 #[must_use]
-pub fn lit(rows: &[Vec<u8>]) -> u64 {
+pub fn lit(rows: &[Vec<u8>], workers: usize) -> u64 {
     let lit = AtomicU64::new(0);
+    let share = rows.len().div_ceil(workers.max(1)).max(1);
     thread::scope(|scope| {
-        for row in rows {
+        for rows in rows.chunks(share) {
             let lit = &lit;
             scope.spawn(move || {
-                let mine = row.iter().filter(|tile| **tile > 0).count();
+                let mine = rows.iter().flatten().filter(|tile| **tile > 0).count();
                 // ORDERING: Relaxed throughout, a count read once the scope has joined.
                 lit.fetch_add(u64::try_from(mine).unwrap_or(u64::MAX), Relaxed);
             });
@@ -143,51 +147,79 @@ pub fn lit(rows: &[Vec<u8>]) -> u64 {
 
 Held by review.
 
-## A Spin Waits a Bounded While, with `spin_loop`, Then Yields
+## A Wait Blocks, and Spins First Only Where Waking Is Measured Too Slow
 
-A thread waiting for another either spins, reading until the value changes, or
-blocks, and the operating system wakes it later. Waking takes far longer than a
-spin that ends soon, so a wait expected to be that short spins; one that may be
-long blocks, on a channel, a lock or `thread::park`, since a spinning thread
-burns its core, and on a core it shares, delays the very thread it waits for. So
-a spin calls `core::hint::spin_loop()` on every turn, which tells the core it is
-waiting, `pause` on x86-64 and `isb` on Arm, and after a bounded number of turns
-it yields the core, or blocks.
+A thread waiting for another either blocks, and the operating system wakes it
+later, or spins, reading until the value changes. A spinning thread burns its
+core, and on a core it shares delays the very thread it waits for, so a wait
+blocks: on a channel, a `Condvar`, or `thread::park` with the setter's `unpark`.
+std's `Mutex` on Linux already spins briefly, a hundred reads, before it sleeps;
+`park` and a `Condvar` sleep at once. A hand-written spin is only for a wake-up
+measured too slow, on a core of its own: it calls `core::hint::spin_loop()` on
+every turn, which tells the core it is waiting, `pause` on x86-64 and `isb` on
+Arm, for a bound measured against the wake-up it saves, then blocks. Never
+`thread::yield_now` in a loop: on a core with nothing else to run it returns at
+once, and the loop spins on with no bound.
 
 ```rust
 use core::sync::atomic::AtomicBool;
 use core::sync::atomic::Ordering::Acquire;
+use std::thread;
 
 pub fn wait_for(ready: &AtomicBool) {
-    // Bad: an unbounded spin, with no hint to the core that it waits.
+    // Bad: a spin with no bound, and a yield that returns at once where nothing else runs.
     // ORDERING: Acquire, pairing with the Release store that sets `ready`.
-    while !ready.load(Acquire) {}
+    while !ready.load(Acquire) {
+        thread::yield_now();
+    }
 }
 ```
 
 ```rust
 use core::hint::spin_loop;
 use core::sync::atomic::AtomicBool;
-use core::sync::atomic::Ordering::Acquire;
-use std::thread;
+use core::sync::atomic::Ordering::{Acquire, Release};
+use std::thread::{self, Thread};
 
-const SPINS: u32 = 1_000;
+// A hundred turns, about 1.5 us on a Graviton4, under the 6 us a park and an unpark took there.
+const SPINS: u32 = 100;
 
-pub fn wait_for(ready: &AtomicBool) {
-    let mut spins = 0_u32;
-    // ORDERING: Acquire, pairing with the Release store that sets `ready`.
-    while !ready.load(Acquire) {
-        if spins < SPINS {
-            spins = spins.saturating_add(1);
+/// Set once by any thread, and waited for by the thread that made it.
+#[derive(Debug)]
+pub struct Ready {
+    set: AtomicBool,
+    waiter: Thread,
+}
+
+impl Ready {
+    #[must_use]
+    pub fn for_this_thread() -> Self {
+        Self { set: AtomicBool::new(false), waiter: thread::current() }
+    }
+
+    pub fn set(&self) {
+        // ORDERING: Release, pairing with the Acquire loads in `wait`.
+        self.set.store(true, Release);
+        self.waiter.unpark();
+    }
+
+    pub fn wait(&self) {
+        for _ in 0..SPINS {
+            // ORDERING: Acquire, pairing with the Release store in `set`.
+            if self.set.load(Acquire) {
+                return;
+            }
             spin_loop();
-        } else {
-            thread::yield_now();
+        }
+        // ORDERING: Acquire, pairing with the Release store in `set`.
+        while !self.set.load(Acquire) {
+            thread::park();
         }
     }
 }
 ```
 
-Held by review.
+Held by review, and by a benchmark of the wake-up.
 
 ## A Busy Poll Runs Only on a Core of Its Own
 

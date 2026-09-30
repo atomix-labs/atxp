@@ -172,7 +172,7 @@ pub fn render(row: &[u16], out: &mut String) -> fmt::Result {
 
 Held by `clippy::format_push_string`.
 
-## Clone into What You Hold with `clone_from`
+## Clone into a Held Value with `clone_from`
 
 `held = saved.clone()` allocates a new copy and frees what `held` had;
 `held.clone_from(&saved)` copies into `held`'s own allocation where it has room,

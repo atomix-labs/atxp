@@ -30,7 +30,8 @@ Under `strict`, real code also documents every item.
 ### Measuring
 
 1. **Measure before a change and after, one change at a time, and keep it only
-   if the number moved**, since time is rarely spent where it is guessed to be,
+   if the number moved: its p50 moved, the way claimed, by more than two runs of
+   the baseline differ**, since time is rarely spent where it is guessed to be,
    and a faster-looking form that is not faster only costs its reader.
 2. **Find where the time goes with a profiler on the `profiling` build**, which
    is `release` with full debug info, so the profile names the functions and
@@ -45,7 +46,9 @@ Under `strict`, real code also documents every item.
 5. **Warm up, repeat, and report the distribution, p50, p99 and the maximum,
    beside the harness's own floor, on a quiet core pinned with `taskset`**,
    since a mean hides the tail; on isolated cores each thread pins itself, since
-   the scheduler spreads none across them.
+   the scheduler spreads none across them. A call within a few times the floor
+   is timed in batches, the round divided by the batch, since alone it reads as
+   the floor.
 6. **Commit each run a change rests on,
    `benches/results/<time>-<commit>-<name>/`, with the machine, kernel,
    toolchain, profile, flags and parameters**, so a later change is judged under
@@ -87,26 +90,27 @@ cannot allocate at all.
 
 ### Code Generation
 
-1. **Mark `#[inline]` a small public function that calls another**, since
-   without LTO another crate reaches its body only so, in an incremental build
-   or a published crate's user's; rustc offers one that calls nothing on its own
-   outside incremental builds, each caller compiles a generic body, and the
-   workspace's fat-LTO builds need none.
+1. **Mark `#[inline]` a small public function that calls another**, since a
+   build without LTO reaches its body from another crate only so. rustc offers a
+   small function that calls nothing on its own, outside incremental builds, and
+   each caller compiles a generic one; the workspace's fat-LTO builds need none,
+   but an incremental build and a published crate's users do.
 2. **`#[inline(always)]` only where a call would defeat the function, under an
    `#[expect(clippy::inline_always, reason = "…")]`**, since every forced copy
    grows the code around it.
 3. **`#[inline(never)]` keeps a function a function**: the body a benchmark
    times, a probe whose assembly is read, the rare half split from a hot one.
-4. **`#[cold]` on a function a hot path rarely calls, with `#[inline(never)]`
-   where it is small, and `core::hint::cold_path()` on a rare branch**, since a
-   small cold function is still inlined, its work on the hot path; `likely` and
-   `unlikely` are unstable, and a hint's effect is measured.
+4. **Move a rare path's work into a `#[cold]` `#[inline(never)]` function, and
+   mark a rare branch `core::hint::cold_path()`**, since a small cold function
+   is still inlined, its work on the hot path; `likely` and `unlikely` are
+   unstable, branch order is no hint, and a hint's effect is measured.
 5. **Let a hot loop's shape prove its bounds: iterate, zip, or slice to one
    length first**, since a `get` with a fallback is a branch on every element,
    and keeps the loop scalar.
 6. **Sum floats into several lanes where the order does not matter**, since the
    compiler keeps a float sum in order, one addition after another, where an
-   integer sum vectorizes.
+   integer sum vectorizes; a caller that needs the ordered sum bit for bit keeps
+   the order.
 7. **Build for the CPUs that run the code, never `target-cpu=native` in a
    checked-in file**, since a binary dies on the first instruction its machine
    lacks.
@@ -123,20 +127,26 @@ The workspace's `.cargo/config.toml` sets a CPU floor for each architecture:
    the release's.
 2. **`release` is `opt-level = 3`, fat LTO and one codegen unit, without debug
    assertions or overflow checks, its symbols kept**: the fastest code and the
-   slowest build; `bench` is the same, `profiling` adds full debug info, and
-   `release-fast` trades thin LTO and sixteen units for a quicker build.
+   slowest build; `bench` has its settings, `profiling` adds full debug info,
+   and `release-fast` trades thin LTO and sixteen units for a quicker build. A
+   panic unwinds in each unless `strict` sets `panic = "abort"`, which a package
+   override cannot set.
 3. **`dev` builds the workspace's code at `opt-level = 0` and its dependencies
    at 3**, so they run optimized in tests; its `lto = false` is thin LTO within
    a crate, none at `opt-level = 0`, and `"off"` is none anywhere.
 4. **The profiles' keys are cargo-profiles'; a crate's own setting is a key of
    its own, `[profile.release.package.<crate>]`, or a profile that `inherits`**,
-   since a changed owned key is drift, which devset reports.
+   since a changed owned key is drift, which devset reports; a smaller binary is
+   such a profile, with `strip = true` and `opt-level = "z"`, each measured.
 {%- if "strict" in devset.features %}
 5. **Under `strict`, a panic ends the process, `panic = "abort"` in `release`
    and `dev`**, so a broken invariant stops the process before it acts on what
    it left: no destructor runs, `catch_unwind` catches nothing, and a failure a
-   caller must survive is an error, never a panic; tests and benchmarks still
-   unwind.
+   caller must survive is an error, never a panic. Tests and benchmarks still
+   unwind, since Cargo builds them and their dependencies so: `cargo bench`
+   measures code built to unwind, and a gain that could rest on drops or panics
+   is confirmed on a `--release` binary or example, as its run's profile line
+   says.
 {%- endif %}
 
 ### Data Layout
@@ -158,9 +168,13 @@ The workspace's `.cargo/config.toml` sets a CPU floor for each architecture:
 6. **Data that never grows is `Box<[T]>` or `Box<str>`**, a word smaller than a
    `Vec` or a `String`.
 7. **Store values side by side, a `Vec<T>` or a `VecDeque<T>`, never a linked
-   list or a `Vec<Box<T>>`**, since each pointer followed is a load from
-   anywhere.
-8. **What a hot loop reads together is stored together, apart from what it
+   list or a `Vec<Box<T>>` of a small `T`**, since each pointer followed is a
+   load from anywhere.
+8. **Keys from outside the program keep std's hasher, which resists chosen
+   collisions; a faster one from the repository only for keys the program makes,
+   where a profile shows hashing hot and a run shows it pays**; a map keyed by a
+   small dense id is a `Vec`, and `entry` looks a key up once.
+9. **What a hot loop reads together is stored together, apart from what it
    skips**, since the skipped fields still fill its cache; measured, since a
    loop that reads them all gains nothing.
 
@@ -172,9 +186,11 @@ The workspace's `.cargo/config.toml` sets a CPU floor for each architecture:
    fetched in pairs on x86-64.
 2. **A count many threads add to is added once a thread**, since threads take
    turns at one atomic's line whatever they write.
-3. **A spin calls `core::hint::spin_loop()` each turn, and yields after a
-   bounded while**, since waking is far slower than a short spin, and a long
-   spin burns the core its peer may need.
+3. **Block, and spin only where a wake-up is measured too slow, on a core of its
+   own: `core::hint::spin_loop()` each turn, for a bound measured against that
+   wake-up, then `thread::park` or a `Condvar`**, never `yield_now`, which on a
+   core with nothing else to run returns at once; std's `Mutex` spins briefly
+   already.
 4. **A busy poll runs only on a core of its own, pinned and isolated**, since it
    uses the whole core whether or not input comes.
 5. **A hot thread is pinned, and each thread pins itself**, since a moved thread
@@ -194,19 +210,23 @@ Read each reference a step names, whole, before changing the code.
    change one thing; run it again; keep the change only if the number moved, and
    commit the run with the change.
 2. **A benchmark**: `references/measuring.md`: a `[[bench]]` with `harness =
-   false`, `black_box` in and out, a warm-up, a distribution, a pinned core, and
-   its results committed.
-3. **A hot path or loop**: `references/allocation.md` for what it allocates,
+   false`, `black_box` in and out, a warm-up, a distribution, batches for a
+   small call, a pinned core, and its results committed.
+3. **Judging a change made for speed**: `references/measuring.md`: the baseline
+   run twice and the change once, all committed; the p50 moved, the way claimed,
+   past the baseline's own spread; a claim about generated code read in the
+   disassembled binary that ships.
+4. **A hot path or loop**: `references/allocation.md` for what it allocates,
    `references/codegen.md` for its calls, branches and bounds, and
    `references/data-layout.md` for the types it reads.
-4. **A type stored many times or read in a hot loop**:
+5. **A type stored many times or read in a hot loop**:
    `references/data-layout.md`: its size asserted, its integers, its `Option`s
    and variants, where its fields live.
-5. **State that threads share, a spin, a poll, a pinned thread, a clock in a
+6. **State that threads share, a spin, a poll, a pinned thread, a clock in a
    loop**: `references/threads.md`.
-6. **A build profile, LTO, codegen units, a target CPU, or `panic`**:
+7. **A build profile, LTO, codegen units, a target CPU, or `panic`**:
    `references/codegen.md`, from its CPU rule on.
-7. **Before finishing**: the checks below, and the benchmark the change rests
+8. **Before finishing**: the checks below, and the benchmark the change rests
    on, run again.
 {%- if "agents" in lints %}
 
@@ -251,7 +271,9 @@ A test that counts allocations, or asserts a size, follows `writing-rust-tests`.
 | "`lto = false` turns LTO off"                 | `lto = "off"`; `false` is thin LTO within each crate.                          |
 | "Change the release profile for this crate"   | `[profile.release.package.<crate>]`, or a profile that `inherits`.             |
 | "Two counters side by side, one per thread"   | A 128-byte line each, asserted.                                                |
-| "Spin until it's ready"                       | `spin_loop` for a bounded while, then yield or block.                          |
+| "Spin until it's ready"                       | Block; spin first only for a measured wake-up, bounded, then park.             |
+| "`dyn` is slow, make it generic"              | Measure: each type's copy of a generic costs code size too.                    |
+| "`Arc::clone` per item, across threads"       | One clone a thread: every clone and drop writes the one count's line.          |
 
 ## References
 
@@ -267,8 +289,8 @@ after compaction: this body is the summary, and the examples are there.
   bounds check, a float sum, a target CPU, a build profile, LTO, codegen units
   or `panic`.
 - `references/data-layout.md`: before a type stored many times or read in a hot
-  loop, a `repr`, an `Option`, an enum's variants, an integer's width, or a
-  collection of boxes.
+  loop, a `repr`, an `Option`, an enum's variants, an integer's width, a
+  collection of boxes, or a hash map's hasher, keys and lookups.
 - `references/threads.md`: before state several threads write, a spin, a busy
   poll, a pinned or isolated core, a clock read in a loop, or a hot thread's
   memory.

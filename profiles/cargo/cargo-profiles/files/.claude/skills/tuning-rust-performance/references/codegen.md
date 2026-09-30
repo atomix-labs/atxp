@@ -12,16 +12,15 @@ nothing else.
 ## Mark `#[inline]` a Small Public Function That Calls Another
 
 A caller in another crate reaches a non-generic function's body only if it is
-offered: by `#[inline]`, by LTO, or by rustc itself. rustc offers a function
-that, once its own calls are inlined, calls nothing and is small, but only in a
+offered: by `#[inline]`, by LTO, or by rustc itself. rustc offers a small
+function that, once its own calls are inlined, calls nothing, but only in a
 build that is not incremental; a generic function each caller compiles already.
-So `#[inline]` matters for a small function that still calls another, a rare
-path kept out of line or a function too large to inline, for every function in
-an incremental build, and for the users of a published crate, who build without
-this workspace's profiles. The workspace's own `release`, `bench` and
-`profiling` builds inline across crates by fat LTO without it. It does not reach
-through a call: a function inlined still calls what it calls, unless that is
-offered too.
+So `#[inline]` matters in three places: a small function that still calls
+another, as one that keeps a rare path out of line does; any function, in an
+incremental build; and a published crate, whose users build without this
+workspace's profiles. The workspace's own `release`, `bench` and `profiling`
+builds inline across crates by fat LTO without it. It does not reach through a
+call: a function inlined still calls what it calls, unless that is offered too.
 
 ```rust
 #[derive(Debug, Default)]
@@ -151,48 +150,68 @@ pub fn drive<T, F: FnMut() -> T>(rounds: u64, op: &mut F) {
 
 Held by review.
 
-## Mark What a Hot Path Rarely Calls `#[cold]`, and a Rare Branch `cold_path`
+## Move a Rare Path's Work into a `#[cold]` Function, and Mark a Rare Branch `cold_path`
 
 `#[cold]` says a function is unlikely to be called, so the compiler may lay its
 call sites out of the hot path's way; `core::hint::cold_path()`, stable since
-Rust 1.95, says the same of the branch it is called in. Neither keeps a small
+Rust 1.95, says the same of the branch it is called in. So a hot function keeps
+its rare path's work, a growth, a refusal built with its context, in a function
+of its own, marked `#[cold]` and `#[inline(never)]`, and the hot function stays
+small enough to inline where it is called. `#[cold]` alone does not keep a small
 function out of line: a small `#[cold]` function is inlined like any other, and
 its work may be done on every call, computed beside the hot result and one of
-them chosen. So a cold function that is small is also `#[inline(never)]`.
-`core::hint::likely` and `unlikely` are unstable. Each is a hint whose effect is
+them chosen. The order of branches and arms is no hint to rely on: reordering
+one left its code as it was, and changed another's where `cold_path` did not;
+`core::hint::likely` and `unlikely` are unstable. Each hint's effect is
 measured: a path marked cold that runs often is made slower.
 
 ```rust
-// Bad: small, so it is inlined anyway, and may be computed on every call.
-#[cold]
-const fn spill(tile: u32, cols: u32) -> u32 {
-    tile.wrapping_mul(7) ^ cols
+#[derive(Debug, Default)]
+pub struct Row {
+    tiles: Vec<u8>,
 }
 
-#[must_use]
-pub const fn place(tile: u32, cols: u32) -> u32 {
-    if tile < cols {
-        return tile.wrapping_mul(2);
+impl Row {
+    #[inline]
+    pub fn paint(&mut self, at: usize, tile: u8) {
+        if let Some(slot) = self.tiles.get_mut(at) {
+            *slot = tile;
+            return;
+        }
+        // Bad: the rare growth written into the hot function, with nothing to say it is rare.
+        self.tiles.resize(at.saturating_add(1), 0);
+        if let Some(slot) = self.tiles.get_mut(at) {
+            *slot = tile;
+        }
     }
-    spill(tile, cols)
 }
 ```
 
 ```rust
 use core::hint::cold_path;
 
-#[cold]
-#[inline(never)]
-const fn spill(tile: u32, cols: u32) -> u32 {
-    tile.wrapping_mul(7) ^ cols
+#[derive(Debug, Default)]
+pub struct Row {
+    tiles: Vec<u8>,
 }
 
-#[must_use]
-pub const fn place(tile: u32, cols: u32) -> u32 {
-    if tile < cols {
-        return tile.wrapping_mul(2);
+impl Row {
+    #[inline]
+    pub fn paint(&mut self, at: usize, tile: u8) {
+        match self.tiles.get_mut(at) {
+            Some(slot) => *slot = tile,
+            None => self.spill(at, tile),
+        }
     }
-    spill(tile, cols)
+
+    #[cold]
+    #[inline(never)]
+    fn spill(&mut self, at: usize, tile: u8) {
+        self.tiles.resize(at.saturating_add(1), 0);
+        if let Some(slot) = self.tiles.get_mut(at) {
+            *slot = tile;
+        }
+    }
 }
 
 #[must_use]
@@ -247,8 +266,11 @@ Held by review, and by the disassembly of the binary that ships, as
 Adding floats in another order can change the sum, so the compiler adds them in
 the order written, one after another, where an integer sum is split across
 vector lanes. Where the order does not matter to the caller, a sum into several
-lanes, then of the lanes, lets the compiler vectorize it; its result may differ
-from the ordered sum in the last bits, which is the trade.
+lanes, then of the lanes, lets the compiler vectorize it. Its result may differ
+from the ordered sum: a little where the values share a sign, and by much more
+where large values of both signs cancel, as `1e8`, `-1e8` and 4,094 ones do,
+which sum to 4,094 in order and 3,072 over eight lanes. A caller that needs the
+ordered sum bit for bit keeps the order.
 
 ```rust
 #[must_use]
@@ -341,15 +363,18 @@ The workspace's `Cargo.toml` holds six profiles. `release` builds at
 and one codegen unit, which lets it optimize across the whole crate: the fastest
 code, and the slowest build. It has no debug assertions and no overflow checks,
 keeps its symbols, `strip = false`, so a profiler can name its functions, and
-compiles each crate whole, `incremental = false`. `bench` is `release`.
-`profiling` is `release` with full debug info, packed beside the binary,
-`split-debuginfo = "packed"`, and nothing stripped. `release-fast` is `release`
-with thin LTO, sixteen units and incremental builds, for a quicker build while
-iterating. `dev` builds the workspace's code at `opt-level = 0` with debug
-assertions and overflow checks, and its dependencies at `opt-level = 3`,
+compiles each crate whole, `incremental = false`. `bench` has `release`'s
+settings, though Cargo builds a benchmark to unwind on a panic. `profiling` is
+`release` with full debug info, packed beside the binary, `split-debuginfo =
+"packed"`, and nothing stripped. `release-fast` is `release` with thin LTO,
+sixteen units and incremental builds, for a quicker build while iterating. `dev`
+builds the workspace's code at `opt-level = 0` with debug assertions and
+overflow checks, and its dependencies at `opt-level = 3`,
 `[profile.dev.package."*"]`, so their code runs optimized in tests and debug
 builds; a generic function of a dependency may be compiled where it is used, at
 the using crate's level, `0`. `test` is `dev` with sixteen codegen units.
+Without `strict`, a panic unwinds in every profile; `strict` sets `panic =
+"abort"`, and a package override cannot set `panic` at all.
 
 `lto = false`, as `dev` has it, is not no LTO: it is thin LTO within each crate,
 across its codegen units, and none at all where a crate has one unit or
@@ -370,6 +395,31 @@ codegen-units = 1
 ```
 
 Held by cargo-profiles, whose keys these are.
+
+## A Smaller Binary Is a Profile of Its Own
+
+`release` is built for speed, and keeps its symbols and the standard library's
+debug info so a profile can name what it runs; a binary that must be small is a
+profile of its own that `inherits` `release`: `strip = true` drops the symbols
+and that debug info, and `opt-level = "z"` trades speed for size. Each is
+measured, for size and for speed: for a small command line, `release` built
+2,148,664 bytes, `strip = true` 398,760, and `opt-level = "z"` with it 333,224.
+
+```toml
+# Bad: `release` changed for size, which slows every build that ships and blinds the profiler.
+[profile.release]
+opt-level = "z"
+strip     = true
+```
+
+```toml
+[profile.small]
+inherits  = "release"
+opt-level = "z"
+strip     = true
+```
+
+Held by review.
 
 ## A Crate's Own Setting Is a Key of Its Own
 
@@ -413,8 +463,11 @@ flushed; `catch_unwind` catches nothing; a thread that panics ends every thread.
 A failure a caller must survive is an error it is handed, never a panic it
 catches. The code the workspace compiles carries no unwinding paths, where the
 prebuilt standard library keeps its own. Tests and benchmarks still unwind,
-since Cargo builds them with `unwind` whatever the profile says, so a
-`#[should_panic]` test works as it does elsewhere.
+their dependencies with them, since Cargo builds them with `unwind` whatever the
+profile says, so a `#[should_panic]` test works as it does elsewhere, and `cargo
+bench` measures code built to unwind: a gain that could rest on drops or panics
+is confirmed on a `--release` binary or example, whose run's profile line says
+so.
 
 ```rust
 use core::panic::AssertUnwindSafe;

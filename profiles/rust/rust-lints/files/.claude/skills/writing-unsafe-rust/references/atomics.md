@@ -497,6 +497,11 @@ impl Drop for Unlock<'_> {
 
 Held by review, and by a loom model, which reports two threads in the cell at
 once when the lock's orderings are too weak.
+{%- if "agents" in tuning %}
+
+The lock shows the orderings a lock needs; how long a waiter spins before it
+blocks, and whether a spin pays at all, are `tuning-rust-performance`'s.
+{%- endif %}
 
 ## A Pointer Shared Across Threads Is an `AtomicPtr`
 

@@ -4,10 +4,11 @@
 
 Read this before a type stored many times or read in a hot loop, an enum with a
 variant much larger than the rest, a `repr`, an `Option` around a type, the
-width of an integer field, a size assertion, and a collection of boxes or a
-linked list. A loop runs at the speed its data reaches it: a type half the size
-puts twice as many in each cache line, and data laid out in the order a loop
-reads it arrives before it is asked for.
+width of an integer field, a size assertion, a collection of boxes or a linked
+list, and a hash map: its hasher, its keys and its lookups. A loop runs at the
+speed its data reaches it: a type half the size puts twice as many in each cache
+line, and data laid out in the order a loop reads it arrives before it is asked
+for.
 
 ## A Hot Type's Size Is Asserted Beside It
 
@@ -272,6 +273,126 @@ impl Queue {
 Held by `clippy::linkedlist`, and by `clippy::vec_box` for a `Vec<Box<T>>` whose
 `T` is sized and under 4,096 bytes; neither reads a type in the crate's exported
 signatures.
+
+## Keys from Outside the Program Keep the Standard Hasher
+
+std's `HashMap` hashes with an algorithm seeded at random, chosen to resist
+HashDoS: keys an attacker picks to collide, which turn each lookup into a walk.
+It is currently SipHash 1-3, and std's documentation says others outperform it
+for small keys such as integers, without that protection. So a map keyed by what
+comes from outside, a name a person typed or a key off the network, keeps std's
+hasher. A faster one, one the repository already depends on, as FxHash or ahash,
+is for keys the program makes itself, and only where a profile shows hashing hot
+and a run shows the swap pays. A public function that takes a map is generic
+over its hasher, so a caller's choice passes through.
+
+```text
+// Bad: a predictable hasher over names a person typed, which they can make collide.
+let glyphs: FxHashMap<String, char> = FxHashMap::default();
+```
+
+```rust
+use core::hash::BuildHasher;
+use std::collections::HashMap;
+
+#[must_use]
+pub fn glyph_of<S: BuildHasher>(glyphs: &HashMap<String, char, S>, name: &str) -> Option<char> {
+    glyphs.get(name).copied()
+}
+```
+
+Held by review, and by `clippy::implicit_hasher`, which asks a public function
+that takes a `HashMap` to be generic over its hasher.
+
+## A Map Keyed by a Small Dense Id Is a `Vec`
+
+Ids the program hands out in order, from zero, index a `Vec`: a lookup is an
+offset, with no hash and no probe, and the values sit side by side. A `HashMap`
+keyed by such an id hashes every lookup to find what an index would.
+
+```rust
+use std::collections::HashMap;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Sprite {
+    pub width: u16,
+}
+
+#[derive(Debug, Default)]
+pub struct Atlas {
+    // Bad: ids 0, 1, 2 and on, each hashed to find its sprite.
+    sprites: HashMap<u16, Sprite>,
+}
+
+impl Atlas {
+    #[must_use]
+    pub fn sprite(&self, id: u16) -> Option<&Sprite> {
+        self.sprites.get(&id)
+    }
+}
+```
+
+```rust
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Sprite {
+    pub width: u16,
+}
+
+#[derive(Debug, Default)]
+pub struct Atlas {
+    sprites: Vec<Sprite>,
+}
+
+impl Atlas {
+    #[must_use]
+    pub fn sprite(&self, id: u16) -> Option<&Sprite> {
+        self.sprites.get(usize::from(id))
+    }
+}
+```
+
+Held by review.
+
+## `entry` Finds a Key Once
+
+`contains_key` and then `insert` hash the key and probe the table twice; `entry`
+finds the slot once, and fills it or hands back what is there.
+
+```rust,compile_fail
+// fails: clippy::map_entry
+use std::collections::HashMap;
+
+#[derive(Debug, Default)]
+pub struct FirstSeen {
+    at: HashMap<char, u16>,
+}
+
+impl FirstSeen {
+    pub fn note(&mut self, glyph: char, at: u16) {
+        // Bad: two lookups where one serves.
+        if !self.at.contains_key(&glyph) {
+            self.at.insert(glyph, at);
+        }
+    }
+}
+```
+
+```rust
+use std::collections::HashMap;
+
+#[derive(Debug, Default)]
+pub struct FirstSeen {
+    at: HashMap<char, u16>,
+}
+
+impl FirstSeen {
+    pub fn note(&mut self, glyph: char, at: u16) {
+        self.at.entry(glyph).or_insert(at);
+    }
+}
+```
+
+Held by `clippy::map_entry`.
 
 ## What a Hot Loop Reads Together Is Stored Together
 
