@@ -10,9 +10,8 @@ engineer with the code open beside the docs, so a doc says only what the code
 cannot: why an item exists, what it promises, what it assumes, what it costs;
 and it links the rest. Compact means no restatement, never less content. The
 rules below are the whole of it, each with its reason; the references hold the
-full tables, the templates and annotated exemplars. Their examples are docs, so
-they document every item they show; a `rust` block compiles under the
-workspace's lints, and a `text` block is a skeleton or a fragment.
+tables, templates and exemplars, whose examples are docs and so document every
+item they show.
 {%- set lints = devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([]) %}
 {%- set manifests = devset.layers | selectattr("profile", "equalto", "cargo-manifest") | map(attribute="features") | first | default([]) %}
 {%- set tests = devset.layers | selectattr("profile", "equalto", "cargo-nextest") | map(attribute="features") | first | default([]) %}
@@ -22,10 +21,9 @@ workspace's lints, and a `text` block is a skeleton or a fragment.
 ### What a Doc Says
 
 1. **Only what the code, its tests, its manifest or its history say**: a sign
-   convention, a unit, an order, a cost, an atomicity or durability promise the
-   code does not state is a guess, however plausible, so the sentence is left
-   out and asked for, never filled with a plausible reason, a generic phrase, a
-   link not opened or output not produced.
+   convention, a unit, an order, a cost or a promise the code does not state is
+   a guess, however plausible, so the sentence is left out and asked for, never
+   filled with a plausible reason, a link not opened or output not produced.
 2. **Nothing the code already says**: no summary that paraphrases the signature,
    no `# Arguments` or `# Returns`, no module doc listing its items, no comment
    narrating the next line, no doc on a `mod x;` line; a sentence whose deletion
@@ -50,18 +48,18 @@ workspace's lints, and a `text` block is a skeleton or a fragment.
    and says more than the name**, since rustdoc shows it in every listing;
    `references/style.md` §1 has every kind, and what not to write:
 
-| item          | summary                                       | write                                                    |
-| ------------- | --------------------------------------------- | -------------------------------------------------------- |
-| crate         | the pitch, the manifest's `description`       | Boards of tiles, and the moves across them.              |
-| module        | one line, naming its key item                 | The moves a tile makes across a [`Board`].               |
-| fn            | a verb first, present tense                   | Slides the tile toward `dir`, or `None` at an edge.      |
-| getter        | the value: `The …`, `How many …`, `Whether …` | How many squares hold a tile.                            |
-| constructor   | the state it yields                           | A board of `cols` by `rows` empty squares.               |
-| type          | its role; a verb phrase for an active one     | A square of a board, by column and row.                  |
-| trait         | `How to …` for a capability, else the role    | How to paint a tile onto a square.                       |
-| field         | a noun phrase; its invariant after it         | Squares that hold a tile. Never more than the board has. |
-| error type    | `Why …`                                       | Why a column and row name no square of a board.          |
-| error variant | the condition, as a fact                      | The column is past the board's last.                     |
+| item          | summary                                    | write                                               |
+| ------------- | ------------------------------------------ | --------------------------------------------------- |
+| crate         | the pitch, the manifest's `description`    | Boards of tiles, and the moves across them.         |
+| module        | one line, naming its key item              | The moves a tile makes across a [`Board`].          |
+| fn            | a verb first, present tense                | Slides the tile toward `dir`, or `None` at an edge. |
+| getter        | the value: `How many …`, `Whether …`       | How many squares hold a tile.                       |
+| constructor   | the state it yields                        | A board of `cols` by `rows` empty squares.          |
+| type          | its role; a verb phrase for an active one  | A square of a board, by column and row.             |
+| trait         | `How to …` for a capability, else the role | How to paint a tile onto a square.                  |
+| field         | a noun phrase; its invariant after it      | Tiles on the board. At most one a square.           |
+| error type    | `Why …`                                    | Why a column and row name no square of a board.     |
+| error variant | the condition, as a fact                   | The column is past the board's last.                |
 
 ### Sections
 
@@ -130,9 +128,10 @@ promise, what `Ok` and `Err` each mean.
    deliberate absence, one fact a comment, capitalized, with a period**; a terse
    line that states its fact is finished.
 6. **A message is a lowercase fragment with no period**: an assertion's says the
-   property, continuing its test's sentence; an `expect`'s why the call cannot
-   fail; a `debug_assert!`'s the violation; an `#[error]`'s reads `"<type words>
-   error: <fragment>"`, its fields inline.
+   property, continuing its test's sentence; an `expect`'s, in a test or an
+   example, why the call cannot fail, and in library code the precondition; a
+   `debug_assert!`'s the violation; an `#[error]`'s reads `"<type words> error:
+   <fragment>"`, its fields inline.
 7. **Every file opens with a `//!`**: `lib.rs` the crate page; a module its
    role, in one line; a file of `tests/` what it proves; a compile-fail fixture
    the unsoundness it prevents; a bench what the gap between its arms measures;
@@ -176,9 +175,9 @@ function that needs them, and backticks on an identifier in prose.
 {%- if "strict" in lints %}
 
 Under `strict` they hold more: every item documented, private ones and fields
-included; a `// SAFETY:` on each unsafe block and `unsafe impl`, and none on
-safe code; a first paragraph short enough for a listing; a message on every
-assertion.
+included, though not a test's helpers; a `// SAFETY:` on each unsafe block and
+`unsafe impl`, and none on safe code; a first paragraph short enough for a
+listing; a message on every assertion.
 {%- endif %}
 {%- endif %}
 {%- if "strict" in devset.features %}
@@ -198,12 +197,12 @@ Read each reference a step names, whole, before writing.
 
 1. **Documenting or auditing a crate**: read it whole, its manifest, modules,
    `tests/`, `benches/` and `examples/`, and match the voice there;
-   `scripts/doc-inventory.py <crate-dir>` lists each item, its visibility and
-   its sections; find the facts in comments, test names, `git log -p -- <path>`
-   and the design documents; ask for the rest (step 7); write top down, crate,
-   modules, items, fields and variants, comments, `#[expect]` reasons, tests and
-   examples, then the `description`. `references/style.md`,
-   `references/templates.md`, `references/exemplars.md`.
+   `.claude/skills/writing-rustdoc/scripts/doc-inventory.py <crate-dir>` lists
+   each item and the sections it has; find the facts in comments, test names,
+   `git log -p -- <path>` and design documents; ask for the rest (step 7); write
+   top down, crate, modules, items, fields, comments, tests and examples, then
+   the `description`. `references/style.md`, `references/templates.md`,
+   `references/exemplars.md`.
 2. **A new or changed item**: its summary, prose, sections, and an example where
    a user builds or drives it: `references/style.md`, and
    `references/templates.md` §3 and §4.
@@ -224,9 +223,9 @@ Read each reference a step names, whole, before writing.
    that may be surface or plumbing, two docs that disagree. Without an answer,
    write the rest and leave those sentences out, never a placeholder.
 8. **Before finishing**: `just fix`; then cut or rebalance each paragraph whose
-   last line holds one to three words, since the formatter wraps and never
-   joins; the checks below; the rendered page. Report what was written where,
-   each command and its result, and each question still open.
+   last line holds one to three words, since the formatter never joins lines;
+   the checks below; the rendered page. Report what was written where, each
+   command's result, and each question still open.
 
 ## Checks
 
@@ -259,7 +258,6 @@ Under `strict`, every private item has its summary too.
 | --------------------------------------------------- | ------------------------------------------------------- |
 | "A negative offset probably means earlier"          | The code does not say it: leave it out, and ask.        |
 | "The crate is close; I'll fix the gaps I see"       | The inventory and the audit say what is left.           |
-| "A blank line after `# Examples`, as is usual"      | Not here: the content starts on the next line.          |
 | "``[`PosError`] if the column is off`` reads fine"  | ``[`Variant`], <condition>.``, a `- ` list for several. |
 | "The three-line summary is one thought"             | One sentence, a blank `///`, then the rest.             |
 | "`ignore` for now; the example needs setup"         | `no_run`, a `text` fence, or a smaller example.         |
@@ -270,6 +268,10 @@ Under `strict`, every private item has its summary too.
 | "A comment beside the `#[expect]` explains it"      | Its `reason` is its one home.                           |
 | "My rewrite of that comment reads better"           | A terse line that states its fact is finished.          |
 | "The description is out of scope for docs"          | It is the crate's pitch on crates.io: write it, or ask. |
+| "A newtype needs an example, however tautological"  | Not where a neighbour's example shows its whole use.    |
+| "This sibling crate's concept needs a paragraph"    | Link the crate that defines it; write it there if not.  |
+| "No time to read the tests and the history"         | A doc without its facts costs more later: read them.    |
+| "The checks are slow; `cargo fmt` is enough"        | They take seconds on a warm cache: run them.            |
 
 ## References
 

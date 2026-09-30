@@ -25,10 +25,10 @@ does not. Then a blank `///` line, then the body.
 | fn / method     | verb first, present tense, implied subject                                             | Splits into the first `mid` bytes and the rest, or `None` when `mid` is past the end. | This function splits the region.               |
 | getter          | name the value: `The …`, `Where …`, `Bytes …`, `How many …`                            | Bytes the span holds.                                                                 | Returns the length of the span.                |
 | predicate       | `Whether …`                                                                            | Whether the span holds no bytes.                                                      | Returns true if empty.                         |
-| `Option` result | the value, then `, or `None` when …`                                                   | The next `layout`-shaped region, or `None` when what is left cannot hold one.         | Returns an Option containing the region.       |
+| `Option` result | the value, then ``, or `None` when …``                                                 | The next `layout`-shaped region, or `None` when what is left cannot hold one.         | Returns an Option containing the region.       |
 | constructor     | the state it yields, or the door it is; never `Creates a new`                          | The range of `len` bytes at `start`.                                                  | Creates a new `Span`.                          |
 | struct / enum   | its role: noun phrase, or verb phrase for an active object                             | Drops the prefix a run wrote, unless the run completes.                               | A struct that represents a guard.              |
-| adapter type    | `What [`f`] builds.`                                                                   | What [`each`] builds.                                                                 | The return type of `each`.                     |
+| adapter type    | ``What [`f`] builds.``                                                                 | What [`each`] builds.                                                                 | The return type of `each`.                     |
 | trait           | `How to …` for a capability, the role otherwise                                        | How to build a run of `T` at a destination that already exists.                       | Trait for run initializers.                    |
 | marker trait    | the property an impl asserts                                                           | Bytes returned to this allocator become available again.                              | Marker trait for reclaiming allocators.        |
 | assoc. type     | what it is, per impl                                                                   | A stored location: a pointer for [`Local`], an [`Offset`] for [`Shared`].             | The stored type.                               |
@@ -52,7 +52,8 @@ which…`). Never open with `This`, `Returns`, `Creates`, `Represents`, `Used`,
 
 State, in this order and only when true:
 
-1. **Why it exists / when to use it**, and when not: `Prefer [`x`] for …, so …`.
+1. **Why it exists / when to use it**, and when not: ``Prefer [`x`] for …, so
+   …``.
 2. **The contract**: what is guaranteed, in what order, what remains on failure.
 3. **The reason for each non-obvious choice**, as fact + consequence in one
    sentence: *"pin-init's derive emits `::pin_init::` absolute paths with no way
@@ -183,8 +184,8 @@ Apply in order until the sentence fits.
   HTML path, ``[`SeqLock`]: ../mem_sync/seqlock/struct.SeqLock.html``.
 - An unstable, cfg-gated, or foreign item rustdoc cannot resolve is linked by
   URL reference definition, never demoted to a bare code span:
-  `[`AtomicPrimitive`]:
-  https://doc.rust-lang.org/std/sync/atomic/trait.AtomicPrimitive.html`,
+  ``[`AtomicPrimitive`]:
+  https://doc.rust-lang.org/std/sync/atomic/trait.AtomicPrimitive.html``,
   `[loom]: https://docs.rs/loom`.
 - A variant gated on `cfg(target_os)` is named in plain backticks on shared
   surfaces; a link to it breaks on the other target.
@@ -205,7 +206,7 @@ Apply in order until the sentence fits.
   (`whose contract *is* reclamation`).
 - Sentence case for headings; no terminal period on headings, table headers, or
   fragment bullets.
-- Numbers as words below ten in prose (`one `T``, `two flags`); digits for
+- Numbers as words below ten in prose (``one `T` ``, `two flags`); digits for
   measurements and code (`7 instructions against 6`, `64 GiB`, `4 KiB`).
 - Present tense, indicative. `Prefer …` and `Use …` for guidance, never
   `should`/`must` in prose; `must` belongs in a `# Safety` precondition only
@@ -226,7 +227,7 @@ coining one.
 | lay / laid           | initialize a structure into a region                           |
 | hand out / hand back | allocate / free                                                |
 | carve / cut          | take a sub-range from a range                                  |
-| name                 | point to (`a pointer that names a live `B``)                   |
+| name                 | point to (``a pointer that names a live `B` ``)                |
 | cover / hold         | span / contain bytes                                           |
 | peer                 | another process over the same bytes                            |
 | publish / verify     | make visible with a release store / check before trusting      |

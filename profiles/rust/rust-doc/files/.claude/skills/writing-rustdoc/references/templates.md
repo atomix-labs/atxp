@@ -116,8 +116,8 @@ The default is one line:
 ```
 
 `//! A bump cursor over one region.` · `//! Why an allocator refused.` · `//!
-Driving an initializer at a destination.` · `//! `Arena`'s [`Allocator`] impl:
-it carves, and never takes a cut back.`
+Driving an initializer at a destination.` · ``//! `Arena`'s [`Allocator`] impl:
+it carves, and never takes a cut back.``
 
 A module that is itself a surface adds a contract paragraph and one example:
 
@@ -156,13 +156,14 @@ always plural.
 /// ```
 /// <shortest example that shows the why>
 /// ```
-#[inline]
-#[must_use]
+#[inline]                                     ← a small public fn that calls another
+#[must_use]                                   ← a pure fn; never one returning a `Result`
 pub fn …
 ````
 
 Getters and constructors are one line with no example: `/// Bytes the span
-holds.`, `/// The range of `len`bytes at`start`.`, `/// Wraps a raw address.`
+holds.`, ``/// The range of `len` bytes at `start`.``, `/// Wraps a raw
+address.`
 
 ### 3.2 Unsafe Function
 
@@ -184,10 +185,10 @@ holds.`, `/// The range of `len`bytes at`start`.`, `/// Wraps a raw address.`
 pub unsafe fn …
 ````
 
-The infallible twin of a fallible fn writes `# Safety` as `As [`try_version`].`
-and drops `# Errors`. A method users should not call directly says so in the
-summary and links the front door: `/// Writes them at `dst`. Prefer
-[`raw_run_init`] / [`raw_try_run_init`] to calling this.`
+The infallible twin of a fallible fn writes `# Safety` as ``As
+[`try_version`].`` and drops `# Errors`. A method users should not call directly
+says so in the summary and links the front door: ``/// Writes them at `dst`.
+Prefer [`raw_run_init`] / [`raw_try_run_init`] to calling this.``
 
 ### 3.3 Trait
 

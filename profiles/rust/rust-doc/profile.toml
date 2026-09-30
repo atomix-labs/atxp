@@ -44,7 +44,9 @@ template = true
 when     = { features = ["agents"] }
 
 [files.".claude/skills/writing-rustdoc/scripts/doc-audit.sh"]
-when = { features = ["agents"] }
+executable = true
+when       = { features = ["agents"] }
 
 [files.".claude/skills/writing-rustdoc/scripts/doc-inventory.py"]
-when = { features = ["agents"] }
+executable = true
+when       = { features = ["agents"] }

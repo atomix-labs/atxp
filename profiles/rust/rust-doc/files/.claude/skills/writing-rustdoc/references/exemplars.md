@@ -334,7 +334,7 @@ pub unsafe fn raw_try_init<…>(dst: *mut T, init: I) -> Result<(), E> {
 
 - Verb first; the conditional precondition after a semicolon; the example's
   `use` blocks, domain type, `// SAFETY:` lines, and closing `assert_eq!`; the
-  twin delegates with `As [`…`].`
+  twin delegates with ``As [`…`].``
 
 ````text
 /// The base, once `layout` is known to fit it.
@@ -387,7 +387,7 @@ pub fn fit(&self, layout: Layout) -> Result<NonNull<u8>, RegionError> {
 pub fn cut(self, layout: Layout) -> Option<Self> { … }
 ````
 
-- `Option` form: value, then `, or `None` when …`. Contract stated as
+- `Option` form: value, then ``, or `None` when …``. Contract stated as
   consequence (`Consumes, as every division does`). `?` closed by the trailing
   `# Ok::<(), E>(())`; `expect` with a fragment.
 
@@ -541,12 +541,16 @@ let tail = unsafe { Self::from_raw_parts(after, self.len.wrapping_sub(mid)) };
 
 ```text
 debug_assert!(chunk.word().is_inuse(), "a block given back twice, or never served");
+{%- if "miri" in toolchain %}
 
 #[cfg_attr(miri, ignore = "mmap is unsupported under Miri")]
+{%- endif %}
 ```
 
-- Reasons are causes, lowercase, no period. Assertion messages are claims about
-  the value.
+- Reasons are causes, lowercase, no period. A `debug_assert!`'s message names
+  the violation, as a fact about the input.
+{%- if "miri" in toolchain %} An `ignore` says what Miri cannot do there.
+{%- endif %}
 
 ## 10 Tests
 

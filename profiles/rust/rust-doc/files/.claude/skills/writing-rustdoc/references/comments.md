@@ -274,7 +274,8 @@ forwards"`, `"never backwards"`. Not every assertion needs one; add it where the
 - Helpers, fixtures, and test-local constants get one summary line stating their
   role in the proof: `/// A layout that is valid by construction.`, `/// Slots
   the run writes into, and the one that refuses.`; a constant that pairs with
-  another links it: ``/// See [`SLOTS`].``
+  another links it: ``/// See [`SLOTS`].`` No lint asks for these lines: the
+  house writes them, and review holds them.
 - A test module opens with `//!` only for setup notes (how to regenerate, why a
   `cfg` excludes a runner). In a crate with loom models, the other tests sit
   under `#[cfg(test)] #[cfg(not(loom))]`, and a model is `#[cfg(test)]
