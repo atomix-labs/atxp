@@ -24,8 +24,8 @@ asks first. Claude Code honours the list only in a workspace whose trust dialog
 was accepted; in one that is untrusted, a pass reads the files it can and says
 in its report what it could not run.
 
-With `hook`, the default, a turn that changes the repository ends only once
-`just check` passes. As each prompt arrives, a `UserPromptSubmit` hook notes the
+With `hook`, a default, a turn that changes the repository ends only once `just
+check` passes. As each prompt arrives, a `UserPromptSubmit` hook notes the
 repository's state: `HEAD`, the changes to tracked files, and the untracked
 files. The Stop hook runs `just check` only if that state has changed, so a turn
 that reads, plans or answers ends at once, whatever the tree held before it.
@@ -44,22 +44,39 @@ Skills come with the profiles they teach, each under that profile's `agents`
 feature; the bundle [`rust`](../../bundles/rust/README.md)'s `agents` turns on
 this profile and every skill.
 
+With `readability`, a default, this profile teaches how a repository reads, in
+any language, in `.claude/skills/`. `writing-prose` is for every sentence a
+reader meets: documents, comments and doc comments, commits, pull requests and
+changelogs, error, log and panic messages, a CLI's help, a suppression's reason
+and an assertion's message. It puts the fact first, once, in the present tense,
+says what is rather than what was done, and keeps out the tells of generated
+text, ranked by strength, while keeping the words technical text uses literally.
+Where another profile's skill holds a part, the Rust skills for `///` or an
+error type's message, `cutting-releases` for release notes, it names that skill
+and defers to it, where it is applied.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                     | Part  | Policy | Notes                      |
-| ------------------------ | ----- | ------ | -------------------------- |
-| `AGENTS.md`              | block | owned  | template                   |
-| `CLAUDE.md`              | whole | once   | scaffold `claude`          |
-| `.claude/settings.json`  | keys  | merge  | template                   |
-| `.claude/hooks/check.sh` | whole | owned  | executable, feature `hook` |
+| File                                                  | Part  | Policy | Notes                           |
+| ----------------------------------------------------- | ----- | ------ | ------------------------------- |
+| `AGENTS.md`                                           | block | owned  | template                        |
+| `CLAUDE.md`                                           | whole | once   | scaffold `claude`               |
+| `.claude/settings.json`                               | keys  | merge  | template                        |
+| `.claude/hooks/check.sh`                              | whole | owned  | executable, feature `hook`      |
+| `.claude/skills/writing-prose/SKILL.md`               | whole | owned  | template, feature `readability` |
+| `.claude/skills/writing-prose/references/comments.md` | whole | owned  | template, feature `readability` |
+| `.claude/skills/writing-prose/references/messages.md` | whole | owned  | template, feature `readability` |
+| `.claude/skills/writing-prose/references/sources.md`  | whole | owned  | template, feature `readability` |
+| `.claude/skills/writing-prose/references/tells.md`    | whole | owned  | template, feature `readability` |
 
 ## Features
 
-| Feature | Default | Enables |
-| ------- | ------- | ------- |
-| `hook`  | yes     |         |
+| Feature       | Default | Enables |
+| ------------- | ------- | ------- |
+| `hook`        | yes     |         |
+| `readability` | yes     |         |
 
 ## Requires
 
