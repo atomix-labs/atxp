@@ -16,6 +16,7 @@ workspace = true
 [[bin]]
 name = "{{ crate }}"
 path = "src/main.rs"
+doc  = false
 
 [dependencies]
 # internal

@@ -7,14 +7,15 @@ virtual manifest with `members = ["crates/*"]`, resolver 3, and a
 `crates/<name>/`, a library with its crate docs to write, `#![no_std]` under
 [`rust-lints`](../../rust/rust-lints/README.md)' `strict`. With `kind` `bin` or
 `both`, a command line beside it, `crates/<name>-cli/`, whose binary is `<name>`
-and which calls the library. `name` defaults to the directory's. Each crate has
-its own `description`, the pitch its crate docs open with: the `description`
-variable, its first letter lowercased, or a line to replace where it is empty;
-the command line's ends `, from the command line`. Each manifest is in the shape
-[`cargo-manifest`](../cargo-manifest/README.md) holds, and each crate's docs
-pass [`rust-doc`](../../rust/rust-doc/README.md)'s doc lint. The scaffold is
-written once and is the repository's from then on; where a `Cargo.toml` is
-already there, nothing is written.
+and which calls the library; `cargo doc` leaves the binary out, since its page
+would overwrite the library's of the same name. `name` defaults to the
+directory's. Each crate has its own `description`, the pitch its crate docs open
+with: the `description` variable, its first letter lowercased, or a line to
+replace where it is empty; the command line's ends `, from the command line`.
+Each manifest is in the shape [`cargo-manifest`](../cargo-manifest/README.md)
+holds, and each crate's docs pass [`rust-doc`](../../rust/rust-doc/README.md)'s
+doc lint. The scaffold is written once and is the repository's from then on;
+where a `Cargo.toml` is already there, nothing is written.
 
 Git ignores Cargo's `target/` at any depth, rustfmt's `.rs.bk` backups, and MSVC
 debug files, in a block of `.gitignore`. `.cargo/config.toml` sets CPU floors
