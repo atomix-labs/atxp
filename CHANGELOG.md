@@ -3,6 +3,29 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.18.0](https://github.com/atomix-labs/atxp/releases/tag/v0.18.0) - 2026-09-30
+
+### Features
+
+- [db50e41](https://github.com/atomix-labs/atxp/commit/db50e41d6c0ecd60a8031cc72b0c54ae21ed8454) *(agents)* Rewrite what a change says so a careful person wrote it, in humanize ([#128](https://github.com/atomix-labs/atxp/pull/128))
+- [f6f4f15](https://github.com/atomix-labs/atxp/commit/f6f4f155b1069c81115337c6b2ffcf1a52cf93b2) *(agents)* Review the names a change adds, in review-names ([#127](https://github.com/atomix-labs/atxp/pull/127))
+- [8dea920](https://github.com/atomix-labs/atxp/commit/8dea9204d4179e19291a24e6d04da162221f5755) *(project)* Teach how a README is written here, in writing-readmes ([#125](https://github.com/atomix-labs/atxp/pull/125))
+- [455825e](https://github.com/atomix-labs/atxp/commit/455825e2513eda93e5699735966710cada94cec1) *(agents)* Review a change for what an attacker can reach, in review-security ([#124](https://github.com/atomix-labs/atxp/pull/124))
+- [4615c0f](https://github.com/atomix-labs/atxp/commit/4615c0f682edd71a0f5fd19a57c049af577cb905) *(agents)* Teach how prose and code read, in writing-prose and writing-readable-code ([#122](https://github.com/atomix-labs/atxp/pull/122))
+
+### Bug Fixes
+
+- [f113ae3](https://github.com/atomix-labs/atxp/commit/f113ae39466fea4c7297fb56560d7f8536666ed0) *(agents)* Deny a guarded recipe named after an allowed one ([#126](https://github.com/atomix-labs/atxp/pull/126))
+- [f597ac6](https://github.com/atomix-labs/atxp/commit/f597ac64d59ad483a5202d18ea7485b6a98b9c63) *(rust-lints)* Give review-rust's fork commands it can run, from the repository's root ([#123](https://github.com/atomix-labs/atxp/pull/123))
+- [0a243be](https://github.com/atomix-labs/atxp/commit/0a243beb339d1601fc2bfdd618638272ef76257a) *(rust-lints)* Report the error's message from a command a person runs, in writing-rust ([#120](https://github.com/atomix-labs/atxp/pull/120))
+- [4a8bb94](https://github.com/atomix-labs/atxp/commit/4a8bb948a27d154668633f617d5b6c3d63b4690e) *(rust-lints)* Refuse a *Params struct in writing-rust's body, as its reference does ([#121](https://github.com/atomix-labs/atxp/pull/121))
+
+### Documentation
+
+- [a0cf8ae](https://github.com/atomix-labs/atxp/commit/a0cf8ae5cda1b39dfcc1e9966cd83cd257fecd0c) Record the demo for v0.17.0 ([#119](https://github.com/atomix-labs/atxp/pull/119))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.17.0...v0.18.0>
+
 ## [0.17.0](https://github.com/atomix-labs/atxp/releases/tag/v0.17.0) - 2026-09-30
 
 ### Features
