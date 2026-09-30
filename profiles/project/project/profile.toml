@@ -16,6 +16,8 @@ support      = []
 architecture = []
 # "managed with devset" among the header's badges, linking devset.
 devset-badge = []
+# The writing-readmes skill, in .claude/skills/.
+agents = []
 
 [requires]
 git-changelog = { optional = true }
@@ -99,3 +101,14 @@ when     = { features = ["support"] }
 [files."ARCHITECTURE.md"]
 policy = "once"
 when   = { features = ["architecture"] }
+
+[files.".claude/skills/writing-readmes/SKILL.md"]
+template = true
+when     = { features = ["agents"] }
+
+[files.".claude/skills/writing-readmes/references/sources.md"]
+when = { features = ["agents"] }
+
+[files.".claude/skills/writing-readmes/references/templates.md"]
+template = true
+when     = { features = ["agents"] }

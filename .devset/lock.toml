@@ -228,7 +228,7 @@ path = "profiles"
 
 [[profiles]]
 name = "devset-collection"
-digest = "2f159dde321874473881bef7d3ffb0b07ed9e3624b67be0147327f743e2fdbe4"
+digest = "0affd396bec78e9aa13ef10e233533b213be80017b8ced4771157b4651e0ae30"
 
 [profiles.source]
 path = "profiles"
@@ -241,7 +241,7 @@ site = ["target"]
 
 [[profiles]]
 name = "project"
-digest = "3d89ed45c05c593bd76c11421cc2fa82f6a6c8d358bf3698c7b09a9c9a29f7c5"
+digest = "a0d4220df2a1417d877fb79f10abbcdeab962e349a2c54e068ccf9035999cc40"
 
 [profiles.source]
 path = "profiles"
@@ -252,7 +252,7 @@ support = ["target"]
 
 [[profiles]]
 name = "agents"
-digest = "d3fb35145f659a6ddbfd81a95d85a1c5ec2af84d8b0b0b344aeec4a4b26549ce"
+digest = "ff0184e01c3a23498a537f57bf012100374c08d82c2e512644888d1e205ae4c5"
 
 [profiles.source]
 path = "profiles"

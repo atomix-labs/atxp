@@ -169,9 +169,9 @@ A profile whose concern an agent needs taught ships a skill, or several, in
 `writing-rust`, `writing-unsafe-rust` and the `review-rust` pass;
 `cargo-nextest`, with `writing-rust-tests`; `cargo-profiles`, with
 `tuning-rust-performance`; and `rust-doc`, `cargo-manifest`, `devset`,
-`devset-collection`, `github-ci`, `github-release` and `mdbook`, with one each.
-The layer itself teaches how a repository reads, under its `readability`
-feature: `writing-prose`, for every sentence a reader meets, and
+`devset-collection`, `github-ci`, `github-release`, `mdbook` and `project`, with
+one each. The layer itself teaches how a repository reads, under its
+`readability` feature: `writing-prose`, for every sentence a reader meets, and
 `writing-readable-code`, for the shape of code, each in any language, with a
 section for each language profile applied; and it ships the `review-security`
 pass, under its `security` feature. `git-commits`, `cargo-deny` and `mdbook` add
