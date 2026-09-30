@@ -57,6 +57,10 @@ test-agents-hook:
 test-skill-form:
     mise exec -- bash tests/skill-form.sh
 
+# Tests the manifest check against members that write a dependency in dotted form.
+test-cargo-manifest:
+    mise exec -- bash tests/cargo-manifest.sh
+
 # Compiles every Rust example the skills show under the strict lints, each as its block says; with
 # skills named, only theirs.
 test-skill-examples *skills:

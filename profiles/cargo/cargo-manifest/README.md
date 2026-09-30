@@ -18,8 +18,13 @@ the groups where the table has one; a table already in its groups keeps its
 layout, and one with any other line in it is left for the check to name.
 
 The `agents` feature adds the `editing-cargo-manifests` skill in
-`.claude/skills/`: the shape this profile checks, and how to add a crate, a
-dependency or a feature within it.
+`.claude/skills/`: the shape this profile checks, table by table; every version
+in `[workspace.dependencies]`, with a proc-macro crate the one a member reaches
+by path; what earns a feature, features that only add, and small defaults, with
+`std` the opt-in where [`rust-lints`](../../rust/rust-lints/README.md) is
+`strict`; the targets that need a table; what the workspace root holds, and
+which of its keys the profiles write; and how to add a crate, a dependency, a
+feature or a target within it.
 
 <!-- facts: written by devset-collection -->
 

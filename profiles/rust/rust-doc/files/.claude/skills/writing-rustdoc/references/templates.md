@@ -1,10 +1,14 @@
+{%- set lints = devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([]) -%}
 {%- set manifests = devset.layers | selectattr("profile", "equalto", "cargo-manifest") | map(attribute="features") | first | default([]) -%}
+{%- set toolchain = devset.layers | selectattr("profile", "equalto", "rust-toolchain") | map(attribute="features") | first | default([]) -%}
 # Templates: Crate, Module, Item, File, Diagram, Table
 
-Skeletons in the exemplar crates' shape. *Fixed* sections keep their exact name
-across crates so a reader learns where to look once; *task* and *concept*
-sections are named for what the reader does or the thing explained. Drop any
-section with nothing to say; never pad one.
+Read this before a crate page, a module doc, an item's docs, an error type, the
+`//!` of a test, bench or example file, a manifest's `description`, a diagram or
+a table. Skeletons in the exemplar crates' shape. *Fixed* sections keep their
+exact name across crates so a reader learns where to look once; *task* and
+*concept* sections are named for what the reader does or the thing explained.
+Drop any section with nothing to say; never pad one.
 
 Contents: 1 Crate · 2 Module · 3 Items · 4 Errors · 5 Test, bench, example files
 · 6 Manifest · 7 Diagrams · 8 Tables and bullets · 9 Section names
@@ -80,13 +84,24 @@ restates an item's own docs.
 ### 1.3 Attributes That Follow
 
 ```text
+{%- if "strict" in lints %}
 #![no_std]
-#![feature(non_exhaustive_omitted_patterns_lint, strict_provenance_lints)]
+{%- endif %}
 #![expect(
     unsafe_code,
     reason = "<the concrete unsafe this crate exists to do>"
 )]
 ```
+
+The crate-level `#![expect(unsafe_code)]` is only for a crate whose whole
+purpose is unsafe; elsewhere it sits on the statement, item or `impl` that holds
+the unsafe. A crate that needs a nightly feature of its own, an unstable API,
+enables it here, with a `//` line saying why; no file writes one for a lint.
+{%- if "nightly" in lints %}
+
+`just check-rust-lints` turns on the features nightly's lints need through
+`-Zcrate-attr`, so no template here opens with a `#![feature]`.
+{%- endif %}
 
 Ordering rule for the crate page: *why → what → how to use it → what it costs →
 how to configure it*. Task sections go from the single, common case to the
@@ -101,8 +116,8 @@ The default is one line:
 ```
 
 `//! A bump cursor over one region.` · `//! Why an allocator refused.` · `//!
-Driving an initializer at a destination.` · `//! `Arena`'s [`Allocator`] impl:
-it carves, and never takes a cut back.`
+Driving an initializer at a destination.` · ``//! `Arena`'s [`Allocator`] impl:
+it carves, and never takes a cut back.``
 
 A module that is itself a surface adds a contract paragraph and one example:
 
@@ -141,13 +156,14 @@ always plural.
 /// ```
 /// <shortest example that shows the why>
 /// ```
-#[inline]
-#[must_use]
+#[inline]                                     ← a small public fn that calls another
+#[must_use]                                   ← a pure fn; never one returning a `Result`
 pub fn …
 ````
 
 Getters and constructors are one line with no example: `/// Bytes the span
-holds.`, `/// The range of `len`bytes at`start`.`, `/// Wraps a raw address.`
+holds.`, ``/// The range of `len` bytes at `start`.``, `/// Wraps a raw
+address.`
 
 ### 3.2 Unsafe Function
 
@@ -163,16 +179,16 @@ holds.`, `/// The range of `len`bytes at`start`.`, `/// Wraps a raw address.`
 ///
 /// # Examples
 /// ```
-/// // SAFETY: <the fact discharging the precondition>.
+/// // SAFETY: <for each precondition, the fact that discharges it>.
 /// unsafe { … }
 /// ```
 pub unsafe fn …
 ````
 
-The infallible twin of a fallible fn writes `# Safety` as `As [`try_version`].`
-and drops `# Errors`. A method users should not call directly says so in the
-summary and links the front door: `/// Writes them at `dst`. Prefer
-[`raw_run_init`] / [`raw_try_run_init`] to calling this.`
+The infallible twin of a fallible fn writes `# Safety` as ``As
+[`try_version`].`` and drops `# Errors`. A method users should not call directly
+says so in the summary and links the front door: ``/// Writes them at `dst`.
+Prefer [`raw_run_init`] / [`raw_try_run_init`] to calling this.``
 
 ### 3.3 Trait
 
@@ -226,6 +242,9 @@ included**: …`.
 /// <…>
 /// ```
 pub struct Name<S> {
+    // INVARIANT: <what every writer keeps>; <its writers>.   ← a field unsafe code relies on
+    /// <Noun phrase>.
+    raw: NonNull<T>,
     /// <Noun phrase>.[ <Invariant.>]
     field: T,
     /// Fixes <the type parameters> by owning them.      ← PhantomData
@@ -233,9 +252,14 @@ pub struct Name<S> {
 }
 ````
 
-Field docs are one line, private fields included
-(`missing_docs_in_private_items` is denied). Adapter and return types: `/// What
-[`builder`] builds.` and nothing more unless users construct them.
+Field docs are one line. An `// INVARIANT:` sits above the `///` of each field a
+`// SAFETY:` relies on (`comments.md` §2). Adapter and return types: ``/// What
+[`builder`] builds.`` and nothing more unless users construct them.
+{%- if "strict" in lints %}
+
+Under `strict`, private fields are documented too, since
+`missing_docs_in_private_items` is denied.
+{%- endif %}
 
 ### 3.5 Enum and Variants
 
@@ -295,9 +319,9 @@ mod borrowed {
 ```
 
 A hidden module that a dependent's tests use gets a `//!` saying why it is
-public and hidden: `//! Behind the `testing`feature: a plain`cfg(test)` module
-is invisible across a crate boundary, and a dependent's tests count drops the
-same way.`
+public and hidden: ``//! Behind the `testing` feature: a plain `cfg(test)`
+module is invisible across a crate boundary, and a dependent's tests count drops
+the same way.``
 
 ## 4 Errors
 
@@ -344,15 +368,83 @@ One `errors.rs` per crate. The message leads with the type's words (`region
 error:`, `reserve error:`, `sign error:`), then a fragment; no trailing period;
 fields by name. Variant docs are one line stating what it *is*; no value trivia.
 
+The example `SKILL.md` shows, whole: the error enum, the types it speaks of, and
+the method whose `# Errors` names each variant.
+
+````rust
+/// Why a column and row name no square of a board.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+pub enum PosError {
+    /// The column is past the board's last.
+    #[error("pos error: column {col} is past a board of {cols} columns")]
+    Col {
+        /// The column asked for.
+        col: u16,
+        /// Columns the board has.
+        cols: u16,
+    },
+    /// The row is past the board's last.
+    #[error("pos error: row {row} is past a board of {rows} rows")]
+    Row {
+        /// The row asked for.
+        row: u16,
+        /// Rows the board has.
+        rows: u16,
+    },
+}
+
+/// A square of a board, by column and row from the top left.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Pos {
+    /// Columns from the left edge.
+    pub col: u16,
+    /// Rows from the top edge.
+    pub row: u16,
+}
+
+/// A board of tiles, `cols` wide and `rows` deep.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Board {
+    /// Columns the board has.
+    pub cols: u16,
+    /// Rows the board has.
+    pub rows: u16,
+}
+
+impl Board {
+    /// The square at `col` and `row`, once both fall on the board.
+    ///
+    /// # Errors
+    /// - [`PosError::Col`], `col` is past the last column.
+    /// - [`PosError::Row`], `row` is past the last row.
+    ///
+    /// # Examples
+    /// ```
+    /// use tiles::{Board, Pos, PosError};
+    ///
+    /// let board = Board { cols: 8, rows: 8 };
+    /// assert_eq!(board.pos(3, 1)?, Pos { col: 3, row: 1 }, "a square of the board");
+    /// assert_eq!(board.pos(8, 1), Err(PosError::Col { col: 8, cols: 8 }), "and not past it");
+    /// # Ok::<(), PosError>(())
+    /// ```
+    pub const fn pos(self, col: u16, row: u16) -> Result<Pos, PosError> {
+        if col >= self.cols {
+            return Err(PosError::Col { col, cols: self.cols });
+        }
+        if row >= self.rows {
+            return Err(PosError::Row { row, rows: self.rows });
+        }
+        Ok(Pos { col, row })
+    }
+}
+````
+
 ## 5 Test, Bench, Example Files
 
 ```text
 //! <The proof, as a claim>: <what two parties share and what crosses between them>.
 //!
 //! <One paragraph on the one datum that crosses, or the shape the test exercises.>
-
-#![feature(non_exhaustive_omitted_patterns_lint, strict_provenance_lints)]
-#![cfg(not(any(loom, miri)))]
 
 #[cfg(test)]
 mod tests {
@@ -361,24 +453,44 @@ mod tests {
 }
 ```
 
-```text
-//! UI tests pinning the properties the type system carries. Regenerate snapshots with
-//! `TRYBUILD=overwrite cargo test -p <crate> --test trybuild`.
+The compile-fail harness, `tests/trybuild.rs`, is the one test file that may
+carry a `cfg` of its own, since it runs a compiler; its test says what it pins,
+`each_misuse_fails_to_compile`, and each fixture's `//!` says what that one
+refuses:
 
-#![feature(non_exhaustive_omitted_patterns_lint, strict_provenance_lints)]
-// Neither a loom model nor miri drives a compiler or spawns a process.
-#![cfg(not(any(loom, miri)))]
+```text
+//! The misuses the types refuse, each a fixture that must not compile. Regenerate a message
+{%- if "cargo-nextest" in devset.profiles %}
+//! with `TRYBUILD=overwrite cargo nextest run -p <crate> --test trybuild`, and read it before
+//! it is committed.
+{%- else %}
+//! with `TRYBUILD=overwrite cargo test -p <crate> --test trybuild`, and read it before it is
+//! committed.
+{%- endif %}
+{%- if "miri" in toolchain %}
+
+// Miri drives no compiler.
+#![cfg(not(miri))]
+{%- endif %}
 
 #[cfg(test)]
 mod tests {
-    /// Each fixture is a use <the shape> must refuse: <one clause per fixture>.
     #[test]
-    fn ui() {
-        let t = trybuild::TestCases::new();
-        t.compile_fail("tests/compile_fail/*.rs");
+    fn each_misuse_fails_to_compile() {
+        let cases = trybuild::TestCases::new();
+        cases.compile_fail("tests/compile_fail/*.rs");
     }
 }
 ```
+{%- if "miri" in toolchain %}
+
+In a crate with loom models, the `cfg` is `#![cfg(not(any(loom, miri)))]`, since
+a loom model drives no compiler either.
+{%- else %}
+
+In a crate with loom models, it carries `#![cfg(not(loom))]`, since a loom model
+drives no compiler.
+{%- endif %}
 
 ```text
 //! <The property, and the unsoundness forgetting it would allow, in one or two lines.>   ← compile_fail fixture
@@ -397,8 +509,10 @@ const CORE: u32 = 6;
 //! <What the walk-through shows: one sentence.>
 //!
 //! Run with `cargo run -p <crate> --example <name>`.
+{%- if "strict" in lints %}
 
 #![expect(clippy::print_stdout, reason = "a demo binary reports its result on stdout")]
+{%- endif %}
 ```
 
 ## 6 Manifest
@@ -413,19 +527,22 @@ Only the `description` is this skill's.
 
 ```toml
 [package]
-name        = "mem-foo"
+name        = "tiles-paint"
 description = "<the crate summary's pitch clause verbatim, first letter lowercased, trailing period; never `the crate that …`>."
 
 [dependencies]
-# internal
-mem-assert = { workspace = true }
 # external
-zerocopy = { workspace = true }
+thiserror = { workspace = true }
+# internal
+tiles-geometry = { workspace = true }
 
 [dev-dependencies]
 # external
 trybuild = { workspace = true }
 ```
+
+`# external` comes first, then `# internal`, and they are the manifest's only
+comments.
 
 ## 7 Diagrams
 
@@ -499,15 +616,15 @@ Tables: header cells lowercase; pipes aligned by hand (`rustfmt` does not touch
 markdown); code in backticks; no terminal periods; one sentence before the table
 and no restatement after it.
 
-```markdown
-| feature | enables | ← # Crate
-features | --------- | ------------------------------------------ |
+```text
+| feature   | enables                                    |   ← # Crate features
+| --------- | ------------------------------------------ |
 
-| target | value | source | ← a fact per
-platform | --------- | ----- | ------------------------------- |
+| target    | value | source                          |    ← a fact per platform
+| --------- | ----- | ------------------------------- |
 
-| source | element built | cost | may refuse | ← # Choosing a
-<noun> | --------- | ------------- | ------------- | ---------- |
+| source    | element built | cost          | may refuse |   ← # Choosing a <noun>
+| --------- | ------------- | ------------- | ---------- |
 ```
 
 Bullets: fragments carry no period; full sentences do. Parallel grammar across
@@ -517,7 +634,8 @@ nested bullets deeper than one level.
 ## 9 Section Names
 
 - *Task*: gerund, sentence case, what the reader is doing: `Building one value`,
-  `Building many`, `Choosing a source`, `Allocating through Allocator Trait`.
+  `Building many`, `Choosing a source`, `Allocating through the allocator
+  trait`.
 - *Concept*: the noun: `Pinned types`, `Contention`, `Ordering`, `Lifecycle`,
   `Safety model`.
 - *Fixed*, exact spelling: `Types`, `Crate features`, `What it compiles to`, and

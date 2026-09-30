@@ -218,11 +218,9 @@ Read each reference a step names, whole, before writing the code.
    they pass.
 {%- if "agents" in rustdoc %}
 
-How a `// SAFETY:` or `// ORDERING:` comment and a `# Safety` section are worded
-is `writing-rustdoc`'s; this skill says what they prove, and teaches `//
-INVARIANT:`. Where they differ, this skill holds: an `// ORDERING:` on every
-atomic operation, and a `// SAFETY:` above its `#[expect]`, as many lines as its
-preconditions need.
+How a `// SAFETY:`, `// INVARIANT:` or `// ORDERING:` comment and a `# Safety`
+section are worded, and where each sits, is `writing-rustdoc`'s; this skill says
+what each must prove.
 {%- endif %}
 
 ## Checks

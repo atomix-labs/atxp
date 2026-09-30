@@ -10,7 +10,8 @@ not in one. Those rules are checked here, on the lines rather than the values.
 `--fix` rewrites each dependency table as `# external` and its entries, then `# internal` and
 its, keeping their order and a blank line between the groups: a tool that removes an entry, as
 `cargo shear --fix` does, takes the comment above it too. A table already in its groups, or
-holding any other line, is left as it is.
+holding any other line, is left as it is. A dependency written dotted, `serde.workspace = true`,
+as `cargo add` writes one, is read as its inline table.
 """
 
 import json
@@ -39,6 +40,22 @@ PACKAGE_ORDER = [
 INHERITED = {"version", "edition", "rust-version", "license", "authors", "publish"}
 
 DEP_KINDS = {"dependencies", "dev-dependencies", "build-dependencies"}
+
+
+def dependency(line: str):
+    """The dependency a line of a dependency table names, and the key of it the line sets, or None
+    for a line that sets none: `serde = { … }` is `("serde", None)`, and the dotted form Cargo reads
+    as the same entry, `serde.workspace = true`, is `("serde", "workspace")`."""
+    entry = ENTRY.match(line)
+    if not entry:
+        return None
+    key = entry.group(1)
+    if key.startswith('"'):
+        name, _, rest = key[1:].partition('"')
+        rest = rest.removeprefix(".")
+    else:
+        name, _, rest = key.partition(".")
+    return name, rest or None
 
 
 def tracked(repo: Path) -> list[Path]:
@@ -74,9 +91,9 @@ def workspace_deps(root: Path) -> set:
         if table:
             inside = table.group(1) == "workspace.dependencies"
         elif inside:
-            entry = ENTRY.match(line)
-            if entry:
-                names.add(entry.group(1))
+            dep = dependency(line)
+            if dep:
+                names.add(dep[0])
     return names
 
 
@@ -129,7 +146,7 @@ def check_groups(path: Path, header: str, body: list, internal: set, found: list
             if group is None:
                 found.append((path, lineno, "group: an entry before any `# internal` / `# external`"))
             else:
-                entries[group].append((lineno, ENTRY.match(line).group(1)))
+                entries[group].append((lineno, dependency(line)[0]))
     if seen == ["# internal", "# external"]:
         found.append((path, body[0][0], "group: `# internal` before `# external`"))
     for lineno, name in entries["# internal"]:
@@ -151,12 +168,18 @@ def owned(crate: Path, target: str) -> bool:
 
 
 def check_inherit(path: Path, body: list, shared: set, internal: set, found: list) -> None:
-    """An internal dep the workspace already pins is inherited; a path dep stays in the crate's tree."""
+    """An internal dep the workspace already pins is inherited; a path dep stays in the crate's tree.
+    A dep written in dotted form, over one line or several, is read as its inline table."""
+    specs: dict = {}
     for lineno, line in body:
-        entry = ENTRY.match(line)
-        if not entry or entry.group(1) not in internal:
+        dep = dependency(line)
+        if not dep or dep[0] not in internal:
             continue
-        name, value = entry.group(1), line.split("=", 1)[1]
+        name, key = dep
+        value = line.split("=", 1)[1].strip()
+        specs.setdefault(name, (lineno, []))[1].append(value if key is None else f"{key} = {value}")
+    for name, (lineno, parts) in specs.items():
+        value = ", ".join(parts)
         target = re.search(r'path\s*=\s*"([^"]+)"', value)
         if target and name in shared:
             found.append((path, lineno, f"dep: `{name}` is in [workspace.dependencies]; inherit it"))
@@ -244,7 +267,7 @@ def grouped(body: list, internal: set) -> list:
         return body
     groups = {marker: [] for marker in GROUPS}
     for line in entries:
-        groups["# internal" if ENTRY.match(line).group(1) in internal else "# external"].append(line)
+        groups["# internal" if dependency(line)[0] in internal else "# external"].append(line)
     gap = ["\n"] if any(not line.strip() for line in body[start:end]) else []
     out = []
     for marker in GROUPS:
