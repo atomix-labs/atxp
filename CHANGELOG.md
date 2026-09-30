@@ -3,6 +3,36 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.17.0](https://github.com/atomix-labs/atxp/releases/tag/v0.17.0) - 2026-09-30
+
+### Features
+
+- [895bc52](https://github.com/atomix-labs/atxp/commit/895bc52aa683218cbd46a31bb325479b7e08515b) *(rust-lints)* Review a Rust change against the workspace's guides, in review-rust ([#117](https://github.com/atomix-labs/atxp/pull/117))
+- [05339ae](https://github.com/atomix-labs/atxp/commit/05339ae098db4e74ff5114ac42fb57fb3943f580) Bring the rustdoc and manifest skills' depth back, agreeing with the code ([#116](https://github.com/atomix-labs/atxp/pull/116))
+- [ad09e84](https://github.com/atomix-labs/atxp/commit/ad09e84c89118b96f30641bb9b3fa959e7ce25a5) *(cargo-profiles)* Teach how Rust is made fast here, in tuning-rust-performance ([#113](https://github.com/atomix-labs/atxp/pull/113))
+- [80942e8](https://github.com/atomix-labs/atxp/commit/80942e888788ed6094ba8427a997dafd098bc8ea) *(cargo-nextest)* Teach how tests are written here, in writing-rust-tests ([#112](https://github.com/atomix-labs/atxp/pull/112))
+- [31052c0](https://github.com/atomix-labs/atxp/commit/31052c08b1d4b655cedf13981ac343de0bdb1667) *(rust-lints)* Teach unsafe code and atomics, in writing-unsafe-rust ([#111](https://github.com/atomix-labs/atxp/pull/111))
+- [c819651](https://github.com/atomix-labs/atxp/commit/c819651e9d793bc6d3b8e0b9ad35ea0881a17f53) *(rust-lints)* Teach how Rust is written here, in writing-rust ([#110](https://github.com/atomix-labs/atxp/pull/110))
+- [1caf6bd](https://github.com/atomix-labs/atxp/commit/1caf6bd243d157e68f329fb58290f7d617ee44a7) Report every crate a lint check fails, not the first ([#107](https://github.com/atomix-labs/atxp/pull/107))
+- [08d4fe5](https://github.com/atomix-labs/atxp/commit/08d4fe5ef40d8a77bcc5d12f2ee7d62a9d6991aa) *(devset-collection)* Hold skills to the guide and pass form ([#105](https://github.com/atomix-labs/atxp/pull/105)) **breaking**
+
+### Bug Fixes
+
+- [2e54642](https://github.com/atomix-labs/atxp/commit/2e546428532e38164408e62a0b7eb5f0fc0be0b8) *(cargo-workspace)* Scaffold a crate as the manifest and rustdoc skills write one ([#115](https://github.com/atomix-labs/atxp/pull/115))
+- [2528206](https://github.com/atomix-labs/atxp/commit/2528206612c49c81de8703d6b72a72935998eb95) *(rust-lints)* Keep the CPU floor under the nightly lints ([#114](https://github.com/atomix-labs/atxp/pull/114))
+- [a80e7e5](https://github.com/atomix-labs/atxp/commit/a80e7e56fc77f0e6309cc1244dd399be942cda44) Show the skills' fragments and skeletons as text, not Rust ([#106](https://github.com/atomix-labs/atxp/pull/106))
+
+### Documentation
+
+- [8cc3b2a](https://github.com/atomix-labs/atxp/commit/8cc3b2a0c3e2db88e106dfdc7736759411d5dc02) Validate a skill without it, then with it, as its author ([#109](https://github.com/atomix-labs/atxp/pull/109))
+- [6177840](https://github.com/atomix-labs/atxp/commit/6177840cddfecb7b31ae7e6949cdb0690abdabe6) Record the demo for v0.16.0 ([#104](https://github.com/atomix-labs/atxp/pull/104))
+
+### Miscellaneous
+
+- [27baeb2](https://github.com/atomix-labs/atxp/commit/27baeb295c9445e6774fd7f80f816cde5d60ff50) Compile every example the skills show ([#108](https://github.com/atomix-labs/atxp/pull/108))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.16.0...v0.17.0>
+
 ## [0.16.0](https://github.com/atomix-labs/atxp/releases/tag/v0.16.0) - 2026-09-29
 
 ### Features
