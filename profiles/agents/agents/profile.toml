@@ -4,9 +4,11 @@ description = "What a coding agent reads to work in the repository: AGENTS.md, C
 devset      = ">=0.5.0"
 
 [features]
-default = ["hook"]
+default = ["hook", "readability"]
 # Claude Code's hooks: a turn that changes the repository ends only once `just check` passes.
 hook = []
+# Skills for how prose and code read, in .claude/skills/.
+readability = []
 
 [requires]
 just = {}
@@ -30,3 +32,43 @@ template = true
 [files.".claude/hooks/check.sh"]
 executable = true
 when       = { features = ["hook"] }
+
+[files.".claude/skills/writing-prose/SKILL.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-prose/references/comments.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-prose/references/messages.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-prose/references/sources.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-prose/references/tells.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-readable-code/SKILL.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-readable-code/references/naming.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-readable-code/references/simplicity.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-readable-code/references/sources.md"]
+template = true
+when     = { features = ["readability"] }
+
+[files.".claude/skills/writing-readable-code/references/structure.md"]
+template = true
+when     = { features = ["readability"] }

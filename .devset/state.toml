@@ -50,6 +50,46 @@ canonical = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
 exact = "1b58e22f094fc69b393afe5ad006e4c801799970f8ebf89a26e689a43b9a9a1a"
 canonical = "1b58e22f094fc69b393afe5ad006e4c801799970f8ebf89a26e689a43b9a9a1a"
 
+[files.".claude/skills/writing-prose/SKILL.md"]
+exact = "03cdd8470d634c97c5dee3640a20f4a07be632e45e77d5c7cf0cf20ed091d414"
+canonical = "03cdd8470d634c97c5dee3640a20f4a07be632e45e77d5c7cf0cf20ed091d414"
+
+[files.".claude/skills/writing-prose/references/comments.md"]
+exact = "5f7c008e856e4bf072f3a36c721584f31dc1ef7afdc80e2c7f030993114c4e9e"
+canonical = "5f7c008e856e4bf072f3a36c721584f31dc1ef7afdc80e2c7f030993114c4e9e"
+
+[files.".claude/skills/writing-prose/references/messages.md"]
+exact = "7d330f2623197783b907fda96f1321a3b99b787ab88de7f8f02b62896f0fac10"
+canonical = "7d330f2623197783b907fda96f1321a3b99b787ab88de7f8f02b62896f0fac10"
+
+[files.".claude/skills/writing-prose/references/sources.md"]
+exact = "bb5adc7327bc5b40160f5a9bb4f547373c6831cfb8fc50bbc6caa0a37ce815cc"
+canonical = "bb5adc7327bc5b40160f5a9bb4f547373c6831cfb8fc50bbc6caa0a37ce815cc"
+
+[files.".claude/skills/writing-prose/references/tells.md"]
+exact = "058891278cb9d0ba169337115df4be41d2abb2ffbad40b6aabcdc1d79b3ea02c"
+canonical = "058891278cb9d0ba169337115df4be41d2abb2ffbad40b6aabcdc1d79b3ea02c"
+
+[files.".claude/skills/writing-readable-code/SKILL.md"]
+exact = "46857339eef921935609a44c62a8016c15496b28ea6a364479b80f41653ff8c1"
+canonical = "46857339eef921935609a44c62a8016c15496b28ea6a364479b80f41653ff8c1"
+
+[files.".claude/skills/writing-readable-code/references/naming.md"]
+exact = "d326382d39724a054fbdeeb7ee001827560cd9d3af4ea2ff013ef0689d6ff6a4"
+canonical = "d326382d39724a054fbdeeb7ee001827560cd9d3af4ea2ff013ef0689d6ff6a4"
+
+[files.".claude/skills/writing-readable-code/references/simplicity.md"]
+exact = "3551dce55fff08f41a13da62aba47e03075ef365718c5051e5656e49ea84987b"
+canonical = "3551dce55fff08f41a13da62aba47e03075ef365718c5051e5656e49ea84987b"
+
+[files.".claude/skills/writing-readable-code/references/sources.md"]
+exact = "f9d8d59c4338ddaa8fa3409af9a50499f2333ec24184ea456c29b4cc9bb48fed"
+canonical = "f9d8d59c4338ddaa8fa3409af9a50499f2333ec24184ea456c29b4cc9bb48fed"
+
+[files.".claude/skills/writing-readable-code/references/structure.md"]
+exact = "eb35ae034548394c41caf960c7de9e3292d38223dd57a44664966eb253e2297f"
+canonical = "eb35ae034548394c41caf960c7de9e3292d38223dd57a44664966eb253e2297f"
+
 [files.".config/mise/conf.d/devset-devset.toml"]
 exact = "a26dc769f455ffc586233771fe01f6cbb61967ee3cac88bd93ab5e107fd1d724"
 canonical = "a26dc769f455ffc586233771fe01f6cbb61967ee3cac88bd93ab5e107fd1d724"

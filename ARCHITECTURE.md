@@ -170,10 +170,14 @@ A profile whose concern an agent needs taught ships a skill, or several, in
 `cargo-nextest`, with `writing-rust-tests`; `cargo-profiles`, with
 `tuning-rust-performance`; and `rust-doc`, `cargo-manifest`, `devset`,
 `devset-collection`, `github-ci`, `github-release` and `mdbook`, with one each.
-`git-commits`, `cargo-deny` and `mdbook` add a block to AGENTS.md where there is
-one. The bundle's `agents` turns on the layer and every one of them. A skill is
-a template like any payload, so it names a recipe only where the profile that
-provides it is applied.
+The layer itself teaches how a repository reads, under its `readability`
+feature: `writing-prose`, for every sentence a reader meets, and
+`writing-readable-code`, for the shape of code, each in any language, with a
+section for each language profile applied. `git-commits`, `cargo-deny` and
+`mdbook` add a block to AGENTS.md where there is one. The bundle's `agents`
+turns on the layer and every one of them. A skill is a template like any
+payload, so it names a recipe only where the profile that provides it is
+applied.
 
 A skill is a guide, which teaches while the agent works, or a pass, which runs
 in a fork of its own on finished work and reports. The first pass is
