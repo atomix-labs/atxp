@@ -5,59 +5,50 @@ conversion or signature: a type a caller builds, a function it calls, a trait it
 implements or uses. It says how the surface is shaped so that wrong calls do not
 compile and right ones read plainly.
 
-## Configure with a Spec Struct, Not a Builder
+## Configure with a Spec: Required Values in `new`, Each Option a Setter
 
 A call that creates or opens something, and takes three parameters or more, or
-one a caller may leave at its usual value, takes them as one `*Spec` struct with
-public fields, built as a literal and passed as any value is, by value where it
-is small and `Copy` and by reference where it is not; one or two plain values
-stay arguments, `Board::create(path)`, `Grid::new(columns, rows)`. Every field
-is written at the call site, so nothing is configured by a default nobody wrote
-down, a missing field is a compile error, and a reader sees the whole
-configuration in one place. A usual value is a named constructor or constant of
-the spec, `GridSpec::square(8)`, never a `Default` nobody sees. A program's
-settings, loaded from a file or the environment, are a `*Config`. A builder is
-for construction that is a sequence of steps, as a message encoded field by
-field, not for a set of values.
+one a caller may leave at its usual value, takes them as one `*Spec`; one or two
+plain values stay arguments, `Board::create(path)`, `Position::new(column,
+row)`. The values the call cannot do without are the parameters of the spec's
+`new`, so none is left out, each in a type that holds only what the call takes,
+a `NonZeroU16` for a count that cannot be zero. Each optional one takes its
+usual value in `new` and has a setter named for the option, with no `set_` or
+`with_`, marked `#[must_use]`, that takes and returns the spec, so a caller
+chains what it changes, `GridSpec::new(columns, rows).wrap(Wrap::Torus)`. A
+setter is a `const fn` where its field allows, as `clippy::missing_const_for_fn`
+asks: one that assigns a field with a destructor, a `String` or a `Vec`, drops
+the old value, which a `const fn` cannot, E0493. A spec of `Copy` fields can
+then be a `const`. The fields are private, with no getters, read by the verb in
+the spec's own module, or `pub(crate)` where the verb lives in another; `Debug`
+shows them. The verb that takes the spec checks, once, what the field types
+cannot hold, such as a limit two settings reach together, and refuses with an
+error that names the settings and why. An option added later is one more setter,
+which breaks no caller, so a published spec needs no `#[non_exhaustive]`.
+
+This is the shape of `std`'s `OpenOptions` and `Command`, quinn's configs and
+hyper's `http1::Builder`: one value, a setter for each option, then the call
+that uses it. Their setters take `&mut self`, so a chain of them ends in a
+borrow, which only a call at its end can use; a spec's take `self`, so a chain
+is a value, which a caller binds, stores, passes on or makes a `const`. A
+program's settings, loaded from a file or the environment, are a `*Config`.
+Where a spec itself is read from a file, an opt-in `serde` feature derives
+`Deserialize` on its private fields through a gated import, `#[cfg(feature =
+"serde")] use serde::Deserialize;`, and the verb checks what was read as it
+checks the rest.
+
+A builder, a type beside the value it builds, is for construction that is a
+sequence of steps: a message encoded field by field, or a typestate whose steps
+must come in order; bon is the crate for one. A spec has no `*Builder` beside
+it, and its setters are written by hand, not derived by bon.
 
 ```rust
-// Bad: three fields behind a builder, so a forgotten setter is a silent
-// default.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-pub struct GridBuilder {
-    columns: u16,
-    rows: u16,
-    wrap: bool,
-}
-
-impl GridBuilder {
-    #[must_use]
-    pub const fn columns(mut self, columns: u16) -> Self {
-        self.columns = columns;
-        self
-    }
-
-    #[must_use]
-    pub const fn rows(mut self, rows: u16) -> Self {
-        self.rows = rows;
-        self
-    }
-
-    #[must_use]
-    pub const fn wrap(mut self, wrap: bool) -> Self {
-        self.wrap = wrap;
-        self
-    }
-}
-```
-
-```rust
-/// What a grid is laid with.
+// Bad: public fields, built as a literal, so an option added later breaks every
+// caller, and nothing checks a value before a grid is laid with it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GridSpec {
     pub columns: u16,
     pub rows: u16,
-    /// Whether a move off one edge comes back on the other.
     pub wrap: Wrap,
 }
 
@@ -67,12 +58,53 @@ pub enum Wrap {
     Torus,
 }
 
+#[must_use]
+pub const fn board() -> GridSpec {
+    GridSpec { columns: 12, rows: 0, wrap: Wrap::Torus }
+}
+```
+
+```rust
+use core::num::NonZeroU16;
+
+use thiserror::Error;
+
+/// What a grid is laid with: the parameters of `Grid::new`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct GridSpec {
+    columns: NonZeroU16,
+    rows: NonZeroU16,
+    wrap: Wrap,
+}
+
+/// Whether a move off one edge comes back on the other.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Wrap {
+    Edges,
+    Torus,
+}
+
 impl GridSpec {
-    /// A square grid of `side` squares a side, whose edges stop a move.
+    /// A grid of `columns` by `rows` squares, whose edges stop a move.
     #[must_use]
-    pub const fn square(side: u16) -> Self {
-        Self { columns: side, rows: side, wrap: Wrap::Edges }
+    pub const fn new(columns: NonZeroU16, rows: NonZeroU16) -> Self {
+        Self { columns, rows, wrap: Wrap::Edges }
     }
+
+    /// Whether a move off one edge comes back on the other; `Wrap::Edges` unless set.
+    #[must_use]
+    pub const fn wrap(mut self, wrap: Wrap) -> Self {
+        self.wrap = wrap;
+        self
+    }
+}
+
+/// Why `Grid::new` refused a spec: its columns by its rows make more squares than a grid holds.
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+#[error("grid spec error: `columns` by `rows` is {squares} squares, over the {maximum} a grid holds")]
+pub struct GridSpecError {
+    pub squares: u32,
+    pub maximum: u32,
 }
 
 #[derive(Debug)]
@@ -81,36 +113,61 @@ pub struct Grid {
 }
 
 impl Grid {
-    #[must_use]
-    pub const fn new(spec: GridSpec) -> Self {
-        Self { spec }
+    /// The most squares a grid holds.
+    pub const MAX_SQUARES: u32 = 4096;
+
+    pub fn new(spec: GridSpec) -> Result<Self, GridSpecError> {
+        let squares = u32::from(spec.columns.get()).saturating_mul(u32::from(spec.rows.get()));
+        if squares > Self::MAX_SQUARES {
+            return Err(GridSpecError { squares, maximum: Self::MAX_SQUARES });
+        }
+        Ok(Self { spec })
     }
 
     #[must_use]
-    pub const fn spec(&self) -> GridSpec {
-        self.spec
+    pub const fn is_torus(&self) -> bool {
+        matches!(self.spec.wrap, Wrap::Torus)
     }
 }
 
-#[must_use]
-pub const fn board() -> Grid {
-    Grid::new(GridSpec { columns: 12, rows: 8, wrap: Wrap::Torus })
-}
+/// The board every game starts on: 12 by 8 squares, each edge joined to the one opposite.
+const STARTING_BOARD: GridSpec = GridSpec::new(
+    NonZeroU16::new(12).expect("12 is not zero"),
+    NonZeroU16::new(8).expect("8 is not zero"),
+)
+.wrap(Wrap::Torus);
 
-#[must_use]
-pub const fn chessboard() -> Grid {
-    Grid::new(GridSpec::square(8))
+pub fn starting_board() -> Result<Grid, GridSpecError> {
+    Grid::new(STARTING_BOARD)
 }
 ```
 
-Held by review. A builder that is right has `#[must_use]` on each method that
-returns `Self`: `clippy::return_self_not_must_use` asks for it.
+A setter that assigns a field with a destructor is a plain `fn`:
 
-In a published crate, a new field on a spec that callers build as a literal
-breaks each of them. A spec there that will grow is `#[non_exhaustive]`, as the
-rule on exhaustive types below says. Outside its crate such a spec cannot be
-built as a literal at all, not even with `..GridSpec::square(8)`, so callers
-start from its constructor and assign the fields they change.
+```rust,compile_fail
+// fails: E0493
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GridSpec {
+    title: Option<String>,
+}
+
+impl GridSpec {
+    // Bad: assigning `title` drops the `String` already there, which a `const fn` cannot.
+    #[must_use]
+    pub const fn title(mut self, title: String) -> Self {
+        self.title = Some(title);
+        self
+    }
+}
+```
+
+Held by review, and by `clippy::return_self_not_must_use`, which asks for the
+`#[must_use]` on each setter.
+{%- if "strict" in devset.features %}
+
+Under `strict`, `clippy::missing_const_for_fn` asks for the `const` on each
+setter whose field allows it.
+{%- endif %}
 
 ## A Newtype's Constructor and Accessor Name Its Unit
 
@@ -671,8 +728,11 @@ A type whose natural empty value needs no arguments implements `Default`, and a
 `new()` beside it returns `Self::default()`, so the two cannot drift. Where a
 default would mislead, the type has none, and an `#[expect]` on its `new` says
 why: a `new` that reads the clock, or one that panics until a startup
-precondition holds, is no value a caller could assume. A spec has no `Default`:
-its fields are written at every call site.
+precondition holds, is no value a caller could assume. A spec with required
+values has no `Default`, since a default would make them up; a spec with none,
+whose `new()` takes nothing, derives `Default` and its `new` delegates to it, as
+here, or `clippy::new_without_default` refuses it. `Default::default` is no
+`const fn`, so that `new` is not one, and such a spec cannot be a `const`.
 
 ```rust,compile_fail
 // fails: clippy::new_without_default

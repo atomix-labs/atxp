@@ -420,13 +420,15 @@ Held by `clippy::iter_without_into_iter`.
 ## A Type's Name Says Its Role: `Spec`, `Config`, `Guard`, `Error`
 
 The last word of a type's name says what it is for. A `*Spec` holds the
-parameters of one call that creates or opens something, `Grid::new(GridSpec { …
-})`, built as a literal; a `*Config` holds a program's settings, as loaded from
-a file or the environment; a `*Guard` holds something until it drops; an
-`*Error` is a refusal. A marker type is an adjective or a role, `Editing`,
-`Sealed`, `Shared`. No struct is a catch-all `*Options` or `*Params`: `std`'s
-`OpenOptions` is a builder, a different shape, and no model for a struct of
-parameters.
+parameters of one call that creates or opens something, the required ones taken
+by its `new` and each option set by a setter, `.wrap(Wrap::Torus)`, as
+`api-design.md` says; a `*Config` holds a program's settings, as loaded from a
+file or the environment; a `*Guard` holds something until it drops; an `*Error`
+is a refusal. A marker type is an adjective or a role, `Editing`, `Sealed`,
+`Shared`. No struct is a catch-all `*Options` or `*Params`, which says neither
+whose values these are nor where they come from: `std`'s `OpenOptions` has a
+spec's shape, setters and then the call that uses them, under the name `std`
+gave it.
 
 ```rust
 // Bad: a catch-all name, which says neither whose parameters these are nor
@@ -440,14 +442,17 @@ pub struct GridOptions {
 ```
 
 ```rust
+use core::num::NonZeroU16;
 use std::env;
+
+use thiserror::Error;
 
 /// What a grid is laid with: the parameters of `Grid::new`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GridSpec {
-    pub columns: u16,
-    pub rows: u16,
-    pub wrap: Wrap,
+    columns: NonZeroU16,
+    rows: NonZeroU16,
+    wrap: Wrap,
 }
 
 /// Whether a move off one edge comes back on the other.
@@ -455,6 +460,50 @@ pub struct GridSpec {
 pub enum Wrap {
     Edges,
     Torus,
+}
+
+impl GridSpec {
+    #[must_use]
+    pub const fn new(columns: NonZeroU16, rows: NonZeroU16) -> Self {
+        Self { columns, rows, wrap: Wrap::Edges }
+    }
+
+    #[must_use]
+    pub const fn wrap(mut self, wrap: Wrap) -> Self {
+        self.wrap = wrap;
+        self
+    }
+}
+
+/// Why `Grid::new` refused a spec: its columns by its rows make more squares than a grid holds.
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+#[error("grid spec error: `columns` by `rows` is {squares} squares, over the {maximum} a grid holds")]
+pub struct GridSpecError {
+    pub squares: u32,
+    pub maximum: u32,
+}
+
+#[derive(Debug)]
+pub struct Grid {
+    spec: GridSpec,
+}
+
+impl Grid {
+    /// The most squares a grid holds.
+    pub const MAX_SQUARES: u32 = 4096;
+
+    pub fn new(spec: GridSpec) -> Result<Self, GridSpecError> {
+        let squares = u32::from(spec.columns.get()).saturating_mul(u32::from(spec.rows.get()));
+        if squares > Self::MAX_SQUARES {
+            return Err(GridSpecError { squares, maximum: Self::MAX_SQUARES });
+        }
+        Ok(Self { spec })
+    }
+
+    #[must_use]
+    pub const fn is_torus(&self) -> bool {
+        matches!(self.spec.wrap, Wrap::Torus)
+    }
 }
 
 /// The editor's settings, as its environment gives them.
