@@ -92,7 +92,10 @@ A list that follows the graph is its profile's own: an entry a repository adds
 to it conflicts with the next change of the graph. So a list a repository adds
 to, as a formatter's excludes, stays fixed, since a path that is not there costs
 nothing, and each profile ignores its own output in `.gitignore`, which the
-formatters read.
+formatters read. taplo alone reads no `.gitignore`, so its excludes also name
+what `git-ignore` keeps out of a repository, `.notes/` and `.secrets/`; a
+repository with excludes of its own resolves that once, since `taplo.toml` is
+merged by key.
 
 ## The Recipe Spine
 

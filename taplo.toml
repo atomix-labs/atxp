@@ -1,10 +1,13 @@
-# Every TOML file, in one layout. Left out: build output, and what devset owns whole: its records,
-# and the profiles' pins.
+# Every TOML file, in one layout. Left out: build output; what devset owns whole, its records and
+# the profiles' pins; local notes and secrets, since taplo reads no .gitignore; and the profiles'
+# payloads, templates until devset renders them.
 exclude = [
     "**/node_modules/**",
     "**/target/**",
     ".devset/**",
     ".config/mise/conf.d/**",
+    ".notes/**",
+    ".secrets/**",
     "profiles/**/files/**",
 ]
 
