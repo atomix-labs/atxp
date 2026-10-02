@@ -6,11 +6,15 @@ Usage: crates-io.py check | publish
 `check` packages each, and builds it from its package, as crates.io will. Between releases, while
 crates.io has a crate at its version already, cargo would build its dependents against crates.io's
 copy, not the working tree's, so each is packaged without the build; a release's check, its versions
-new, builds them all. `publish` publishes each that crates.io does not have at its version,
-dependencies first, so a release that stopped halfway publishes the rest when it runs again.
+new, builds them all, from what this check packaged and not what an earlier one did. `publish`
+publishes each that crates.io does not have at its version, dependencies first, so a release that
+stopped halfway publishes the rest when it runs again.
 """
 
 import json
+import os
+import pathlib
+import shutil
 import subprocess
 import sys
 import urllib.error
@@ -55,6 +59,24 @@ def cargo(verb, crates, *flags):
     return subprocess.run(["cargo", verb, "--locked", *flags, *packages], check=False).returncode
 
 
+def forget_earlier_packages(crates):
+    """Drops what an earlier check left of `crates` as packages, so this one builds what it packages.
+
+    A crate whose sibling crates.io lacks is built against the sibling's package, from a registry
+    cargo writes under `target/package/`. Cargo takes a registry's crate at a version never to change:
+    it neither unpacks the package again over the copy in `$CARGO_HOME/registry/src/` nor rebuilds
+    it, so a change to the sibling between two checks at one version would go unbuilt.
+    """
+    home = pathlib.Path(os.environ.get("CARGO_HOME", pathlib.Path.home() / ".cargo"))
+    for name, version in crates:
+        # The registry cargo writes has no name, so its copies sit in `-<hash>`, beside crates.io's.
+        for unpacked in home.glob(f"registry/src/-*/{name}-{version}"):
+            shutil.rmtree(unpacked)
+    # A crate's builds go by its name, those from the registry's copy among them.
+    packages = [arg for name, _ in crates for arg in ("--package", name)]
+    subprocess.run(["cargo", "clean", "--quiet", *packages], check=True)
+
+
 def check():
     """Packages every publishable crate, and builds each from its package."""
     crates = publishable()
@@ -66,6 +88,8 @@ def check():
     if any(published(name, version) for name, version in crates):
         print("crates-io: crates.io has these versions already; packaging without the build")
         flags.append("--no-verify")
+    else:
+        forget_earlier_packages(crates)
     return cargo("package", crates, *flags)
 
 

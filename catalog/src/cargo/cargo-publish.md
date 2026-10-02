@@ -20,7 +20,9 @@ release. A crate is published when its `publish` allows crates.io; one with
   crates.io has a crate at its version already, cargo would build its dependents
   against crates.io's copy rather than the working tree's, so the crates are
   packaged without the build; a release's check, at the new versions, builds
-  them all.
+  them all. Cargo never unpacks or builds again a crate it has packaged at a
+  version, so a check that builds first drops what an earlier one left of the
+  workspace's crates, and a sibling changed since is built as it now is.
 - `publish-cargo-publish`, which `just publish` runs, publishes every crate
   crates.io does not have at its version, dependencies first. So a release that
   stopped halfway publishes the rest when it runs again.
