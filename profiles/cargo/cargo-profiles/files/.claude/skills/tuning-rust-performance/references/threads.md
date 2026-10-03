@@ -101,24 +101,24 @@ use core::sync::atomic::Ordering::Relaxed;
 use std::thread;
 
 #[must_use]
-pub fn lit(rows: &[Vec<u8>], workers: usize) -> u64 {
-    let lit = AtomicU64::new(0);
+pub fn lit_count(rows: &[Vec<u8>], workers: usize) -> u64 {
+    let total = AtomicU64::new(0);
     let share = rows.len().div_ceil(workers.max(1)).max(1);
     thread::scope(|scope| {
         for rows in rows.chunks(share) {
-            let lit = &lit;
+            let total = &total;
             scope.spawn(move || {
                 for tile in rows.iter().flatten() {
                     if *tile > 0 {
                         // Bad: every worker takes the one line for every tile.
                         // ORDERING: Relaxed throughout, a count read once the scope has joined.
-                        lit.fetch_add(1, Relaxed);
+                        total.fetch_add(1, Relaxed);
                     }
                 }
             });
         }
     });
-    lit.into_inner()
+    total.into_inner()
 }
 ```
 
@@ -128,20 +128,20 @@ use core::sync::atomic::Ordering::Relaxed;
 use std::thread;
 
 #[must_use]
-pub fn lit(rows: &[Vec<u8>], workers: usize) -> u64 {
-    let lit = AtomicU64::new(0);
+pub fn lit_count(rows: &[Vec<u8>], workers: usize) -> u64 {
+    let total = AtomicU64::new(0);
     let share = rows.len().div_ceil(workers.max(1)).max(1);
     thread::scope(|scope| {
         for rows in rows.chunks(share) {
-            let lit = &lit;
+            let total = &total;
             scope.spawn(move || {
-                let mine = rows.iter().flatten().filter(|tile| **tile > 0).count();
+                let share_total = rows.iter().flatten().filter(|tile| **tile > 0).count();
                 // ORDERING: Relaxed throughout, a count read once the scope has joined.
-                lit.fetch_add(u64::try_from(mine).unwrap_or(u64::MAX), Relaxed);
+                total.fetch_add(u64::try_from(share_total).unwrap_or(u64::MAX), Relaxed);
             });
         }
     });
-    lit.into_inner()
+    total.into_inner()
 }
 ```
 
@@ -203,13 +203,13 @@ pub struct Setter(Arc<Flag>);
 pub struct Waiter {
     flag: Arc<Flag>,
     // The setter unparks the thread that made the pair, so the waiter stays on it.
-    _here: PhantomData<*const ()>,
+    _home_thread: PhantomData<*const ()>,
 }
 
 #[must_use]
 pub fn ready() -> (Setter, Waiter) {
     let flag = Arc::new(Flag { set: AtomicBool::new(false), waiter: thread::current() });
-    (Setter(Arc::clone(&flag)), Waiter { flag, _here: PhantomData })
+    (Setter(Arc::clone(&flag)), Waiter { flag, _home_thread: PhantomData })
 }
 
 impl Setter {
@@ -294,13 +294,13 @@ use std::time::Instant;
 #[derive(Debug)]
 pub struct Stamp {
     pub tile: u32,
-    pub at: Instant,
+    pub time: Instant,
 }
 
-pub fn stamp(tiles: &[u32], out: &mut Vec<Stamp>) {
+pub fn stamp(tiles: &[u32], stamps: &mut Vec<Stamp>) {
     for tile in tiles {
         // Bad: a clock read for each tile, and each tile a different now.
-        out.push(Stamp { tile: *tile, at: Instant::now() });
+        stamps.push(Stamp { tile: *tile, time: Instant::now() });
     }
 }
 ```
@@ -311,11 +311,11 @@ use std::time::Instant;
 #[derive(Debug)]
 pub struct Stamp {
     pub tile: u32,
-    pub at: Instant,
+    pub time: Instant,
 }
 
-pub fn stamp(tiles: &[u32], now: Instant, out: &mut Vec<Stamp>) {
-    out.extend(tiles.iter().map(|tile| Stamp { tile: *tile, at: now }));
+pub fn stamp(tiles: &[u32], now: Instant, stamps: &mut Vec<Stamp>) {
+    stamps.extend(tiles.iter().map(|tile| Stamp { tile: *tile, time: now }));
 }
 ```
 

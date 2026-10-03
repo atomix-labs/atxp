@@ -10,16 +10,16 @@ and the form each file takes so the lints and the runner read it as a test.
 A unit test reaches the private items of the module it pins, so it lives in that
 module's file, in a `#[cfg(test)] mod tests` after everything else: a reader
 meets the code, then what pins it, and only the test build compiles it. It
-imports each name it uses, `use super::{Board, Pos}`, as the module's other code
-does, so a reader sees what the tests touch; `use super::*` takes whatever the
-module grows, and hides which items a test reaches.
+imports each name it uses, `use super::{Board, Position}`, as the module's other
+code does, so a reader sees what the tests touch; `use super::*` takes whatever
+the module grows, and hides which items a test reaches.
 {%- if "rust-lints" in devset.profiles %}
 
 ```rust,compile_fail
 // fails: clippy::items_after_test_module
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
@@ -30,36 +30,44 @@ mod tests {
 
     #[test]
     fn a_step_right_moves_one_column() {
-        assert_eq!(step_right(Pos { col: 3, row: 4 }), Some(Pos { col: 4, row: 4 }), "one column");
+        assert_eq!(
+            step_right(Position { column: 3, row: 4 }),
+            Some(Position { column: 4, row: 4 }),
+            "one column"
+        );
     }
 }
 
 #[must_use]
-pub fn step_right(at: Pos) -> Option<Pos> {
-    at.col.checked_add(1).map(|col| Pos { col, ..at })
+pub fn step_right(position: Position) -> Option<Position> {
+    position.column.checked_add(1).map(|column| Position { column, ..position })
 }
 ```
 {%- endif %}
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 #[must_use]
-pub fn step_right(at: Pos) -> Option<Pos> {
-    at.col.checked_add(1).map(|col| Pos { col, ..at })
+pub fn step_right(position: Position) -> Option<Position> {
+    position.column.checked_add(1).map(|column| Position { column, ..position })
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Pos, step_right};
+    use super::{Position, step_right};
 
     #[test]
     fn a_step_right_moves_one_column() {
-        assert_eq!(step_right(Pos { col: 3, row: 4 }), Some(Pos { col: 4, row: 4 }), "one column");
+        assert_eq!(
+            step_right(Position { column: 3, row: 4 }),
+            Some(Position { column: 4, row: 4 }),
+            "one column"
+        );
     }
 }
 ```
@@ -85,8 +93,8 @@ a `//!` that says what it proves.
 // Bad: tests/moves.rs, its tests loose at the top of the file.
 #[test]
 fn a_tile_moves_right() {
-    let moved = tiles::step_right(tiles::Pos { col: 3, row: 4 });
-    assert_eq!(moved, Some(tiles::Pos { col: 4, row: 4 }), "one column");
+    let moved = tiles::step_right(tiles::Position { column: 3, row: 4 });
+    assert_eq!(moved, Some(tiles::Position { column: 4, row: 4 }), "one column");
 }
 ```
 
@@ -95,11 +103,15 @@ fn a_tile_moves_right() {
 
 #[cfg(test)]
 mod tests {
-    use tiles::{Pos, step_right};
+    use tiles::{Position, step_right};
 
     #[test]
     fn a_tile_moves_right() {
-        assert_eq!(step_right(Pos { col: 3, row: 4 }), Some(Pos { col: 4, row: 4 }), "one column");
+        assert_eq!(
+            step_right(Position { column: 3, row: 4 }),
+            Some(Position { column: 4, row: 4 }),
+            "one column"
+        );
     }
 }
 ```
@@ -161,20 +173,20 @@ API.
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Board {
-    pub cols: u16,
+    pub columns: u16,
     pub rows: u16,
 }
 
 // Bad: part of the crate's API, only so its tests can share a board.
 #[must_use]
 pub const fn test_board() -> Board {
-    Board { cols: 8, rows: 8 }
+    Board { columns: 8, rows: 8 }
 }
 
 impl Board {
     #[must_use]
     pub fn squares(self) -> u32 {
-        u32::from(self.cols).saturating_mul(u32::from(self.rows))
+        u32::from(self.columns).saturating_mul(u32::from(self.rows))
     }
 }
 
@@ -193,14 +205,14 @@ mod tests {
 mod board {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     pub struct Board {
-        pub cols: u16,
+        pub columns: u16,
         pub rows: u16,
     }
 
     impl Board {
         #[must_use]
         pub fn squares(self) -> u32 {
-            u32::from(self.cols).saturating_mul(u32::from(self.rows))
+            u32::from(self.columns).saturating_mul(u32::from(self.rows))
         }
     }
 
@@ -223,7 +235,7 @@ mod testing {
     use crate::Board;
 
     pub(crate) const fn chessboard() -> Board {
-        Board { cols: 8, rows: 8 }
+        Board { columns: 8, rows: 8 }
     }
 }
 ```
@@ -244,8 +256,8 @@ goes unfulfilled in the binary that uses every helper.
 // Bad: tests/testing/mod.rs, and an `#[expect]` that fails the binary using both helpers.
 #![expect(dead_code, reason = "each test binary uses part of this module")]
 
-pub(crate) fn chessboard() -> tiles::Board { tiles::Board { cols: 8, rows: 8 } }
-pub(crate) fn strip() -> tiles::Board { tiles::Board { cols: 8, rows: 1 } }
+pub(crate) fn chessboard() -> tiles::Board { tiles::Board { columns: 8, rows: 8 } }
+pub(crate) fn strip() -> tiles::Board { tiles::Board { columns: 8, rows: 1 } }
 ```
 
 ```text
@@ -257,11 +269,11 @@ pub(crate) fn strip() -> tiles::Board { tiles::Board { cols: 8, rows: 1 } }
 use tiles::Board;
 
 pub(crate) const fn chessboard() -> Board {
-    Board { cols: 8, rows: 8 }
+    Board { columns: 8, rows: 8 }
 }
 
 pub(crate) const fn strip() -> Board {
-    Board { cols: 8, rows: 1 }
+    Board { columns: 8, rows: 1 }
 }
 
 // tests/squares.rs

@@ -137,34 +137,34 @@ const fn glow(tile: f32) -> f32 {
     tile.mul_add(0.75, 0.25)
 }
 
-fn nearest_rank(took: &[Duration], per_mille: usize) -> Duration {
-    let rank = took.len().saturating_mul(per_mille) / 1_000;
-    took.get(rank.min(took.len().saturating_sub(1))).copied().unwrap_or_default()
+fn nearest_rank(timings: &[Duration], per_mille: usize) -> Duration {
+    let rank = timings.len().saturating_mul(per_mille) / 1_000;
+    timings.get(rank.min(timings.len().saturating_sub(1))).copied().unwrap_or_default()
 }
 
-/// Times `op` in rounds of `batch` calls, and reports what one call costs, in nanoseconds.
-fn time<F: FnMut()>(name: &str, batch: u32, mut op: F) -> Result<(), BoxError> {
-    let mut took = Vec::with_capacity(ROUNDS);
+/// Times `operation` in rounds of `batch` calls, and reports what one call costs, in nanoseconds.
+fn time<F: FnMut()>(name: &str, batch: u32, mut operation: F) -> Result<(), BoxError> {
+    let mut timings = Vec::with_capacity(ROUNDS);
     for round in 0..WARM_UP.saturating_add(ROUNDS) {
         let start = Instant::now();
         for _ in 0..batch {
-            op();
+            operation();
         }
         let elapsed = start.elapsed();
         if round >= WARM_UP {
-            took.push(elapsed);
+            timings.push(elapsed);
         }
     }
-    took.sort_unstable();
+    timings.sort_unstable();
     let per_call = |round: Duration| round.as_secs_f64() * 1e9 / f64::from(batch);
-    let (p50, p99) = (per_call(nearest_rank(&took, 500)), per_call(nearest_rank(&took, 990)));
-    let max = per_call(took.last().copied().unwrap_or_default());
+    let (p50, p99) = (per_call(nearest_rank(&timings, 500)), per_call(nearest_rank(&timings, 990)));
+    let max = per_call(timings.last().copied().unwrap_or_default());
     writeln!(io::stdout().lock(), "{name}: ns a call, p50 {p50:.1}, p99 {p99:.1}, max {max:.1}")?;
     Ok(())
 }
 
 fn main() -> Result<(), BoxError> {
-    let row: Vec<f32> = (0..4_096_u16).map(|at| f32::from(at) * 0.5).collect();
+    let row: Vec<f32> = (0..4_096_u16).map(|index| f32::from(index) * 0.5).collect();
     time("an empty round", 1, || {})?;
     time("in order, 4,096 values", 1, || {
         black_box(in_order(black_box(&row)));
@@ -216,7 +216,7 @@ use std::time::Instant;
 
 #[inline(never)]
 fn weigh(row: &[u32]) -> u32 {
-    row.iter().fold(0, |acc, tile| acc.rotate_left(3) ^ tile.wrapping_mul(0x9e37_79b9))
+    row.iter().fold(0, |weight, tile| weight.rotate_left(3) ^ tile.wrapping_mul(0x9e37_79b9))
 }
 
 #[must_use]
@@ -235,7 +235,7 @@ use std::time::Instant;
 
 #[inline(never)]
 fn weigh(row: &[u32]) -> u32 {
-    row.iter().fold(0, |acc, tile| acc.rotate_left(3) ^ tile.wrapping_mul(0x9e37_79b9))
+    row.iter().fold(0, |weight, tile| weight.rotate_left(3) ^ tile.wrapping_mul(0x9e37_79b9))
 }
 
 #[must_use]

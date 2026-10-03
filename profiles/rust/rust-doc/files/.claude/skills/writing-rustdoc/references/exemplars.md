@@ -8,6 +8,11 @@ rule it shows. A new crate's docs must sit comfortably next to these; when they
 would not, the new docs are wrong. `mem-init`'s crate page is the problem-first
 form, `mem-allocators`' the shape-first one.
 
+The excerpts are adapted from the crates, not quoted: the docs' words and form
+are theirs, and the names are written in whole words, `length`, `destination`,
+`required` and `available` where the crates write `len`, `dst`, `need` and
+`have`, with each error variant named for its whole condition.
+
 Contents: 1 Crate pages · 2 Modules · 3 Types and fields · 4 Traits · 5
 Functions · 6 Errors · 7 Private items · 8 `// SAFETY:` and `// ORDERING:` · 9
 `#[expect]` and messages · 10 Tests · 11 Fixtures and headers · 12 Manifest · 13
@@ -92,16 +97,16 @@ Re-exports and omissions
 
 ````text
 //! # What It Compiles To
-//! `raw_try_init(dst, init!(Order { id, near <- init!(Leg { px, qty }), tag: [0; 32] }))` from the
-//! example above, release build, aarch64:
+//! `raw_try_init(destination, init!(Order { id, near <- init!(Leg { price, quantity }), tag: [0; 32] }))`
+//! from the example above, release build, aarch64:
 //!
 //! ```text
 //! movi v0.2d, #0      ; zero the tag
-//! stp  x1, x2, [x0]   ; id, near.px  -> dst, dst+8
+//! stp  x1, x2, [x0]   ; id, near.price -> destination, destination+8
 //! …
 //! ```
 //!
-//! Every field is stored straight through `dst` (`x0`): no stack frame, no `memcpy`, …
+//! Every field is stored straight through `destination` (`x0`): no stack frame, no `memcpy`, …
 ````
 
 - The exact call, the build, the real listing, one paragraph on what it proves.
@@ -165,7 +170,7 @@ pub struct Region<S: PtrStore> {
     /// First byte of the span.
     base: NonNull<u8>,
     /// Bytes the span holds.
-    len: usize,
+    length: usize,
     /// Where the bytes live, and, for [`Local`](crate::Local), how long they last.
     storage: PhantomData<S>,
 }
@@ -211,11 +216,11 @@ struct Guard<T> { … }
 #[derive(Debug, Clone, Copy)]
 pub struct Each<T, E, F> {
     /// How many slots to write.
-    len: usize,
+    length: usize,
     /// What initializes each one.
-    f: F,
+    initializer: F,
     /// Fixes the element and error types by owning them.
-    elem: PhantomData<(T, E)>,
+    element: PhantomData<(T, E)>,
 }
 ```
 
@@ -228,8 +233,8 @@ pub struct Each<T, E, F> {
 /// How to build a run of `T` at a destination that already exists.
 ///
 /// # Safety
-/// `Ok` means [`len`](Self::len) `T`s are initialized at `dst`; `Err` means none are, and those
-/// bytes may only be released, never dropped.
+/// `Ok` means [`len`](Self::len) `T`s are initialized at `destination`; `Err` means none are, and
+/// those bytes may only be released, never dropped.
 pub unsafe trait RunInit<T, E = Infallible>: Sized {
     /// How many it writes, known before it writes any.
     fn len(&self) -> usize;
@@ -237,14 +242,16 @@ pub unsafe trait RunInit<T, E = Infallible>: Sized {
     /// Whether it writes none.
     fn is_empty(&self) -> bool { … }
 
-    /// Writes them at `dst`. Prefer [`raw_run_init`] / [`raw_try_run_init`] to calling this.
+    /// Writes them at `destination`. Prefer [`raw_run_init`] / [`raw_try_run_init`] to calling
+    /// this.
     ///
     /// # Safety
-    /// `dst` is aligned, writable, uninitialized for [`len`](Self::len) `T`s, and unaliased.
+    /// `destination` is aligned, writable, uninitialized for [`len`](Self::len) `T`s, and
+    /// unaliased.
     ///
     /// # Errors
     /// Whatever the source reports, having dropped the prefix it had written.
-    unsafe fn __init(self, dst: *mut T) -> Result<(), E>;
+    unsafe fn __init(self, destination: *mut T) -> Result<(), E>;
 }
 ```
 
@@ -295,11 +302,11 @@ pub unsafe trait Reclaiming: Allocator {}
 ## 5 Functions
 
 ````text
-/// Writes `init`'s value at `dst`.
+/// Writes `init`'s value at `destination`.
 ///
 /// # Safety
-/// `dst` is aligned, writable, uninitialized for one `T`, and unaliased; and, unless `I` is
-/// [`Init`](pin_init::Init), `dst` stays put until the `T` is dropped.
+/// `destination` is aligned, writable, uninitialized for one `T`, and unaliased; and, unless `I`
+/// is [`Init`](pin_init::Init), `destination` stays put until the `T` is dropped.
 ///
 /// # Errors
 /// Whatever the initializer reports, having written nothing.
@@ -312,22 +319,22 @@ pub unsafe trait Reclaiming: Allocator {}
 ///
 /// #[derive(Debug, PartialEq)]
 /// struct Leg {
-///     px: i64,
-///     qty: i64,
+///     price: i64,
+///     quantity: i64,
 /// }
 ///
 /// let mut slot = MaybeUninit::<Leg>::uninit();
 /// // SAFETY: a fresh slot for one `Leg`, named by nothing else.
-/// let Ok(()) = (unsafe { raw_try_init(slot.as_mut_ptr(), init!(Leg { px: 100, qty: 1 })) });
+/// let Ok(()) = (unsafe { raw_try_init(slot.as_mut_ptr(), init!(Leg { price: 100, quantity: 1 })) });
 /// // SAFETY: the initializer reported success.
-/// assert_eq!(unsafe { slot.assume_init() }, Leg { px: 100, qty: 1 });
+/// assert_eq!(unsafe { slot.assume_init() }, Leg { price: 100, quantity: 1 });
 /// ```
-pub unsafe fn raw_try_init<…>(dst: *mut T, init: I) -> Result<(), E> {
+pub unsafe fn raw_try_init<…>(destination: *mut T, init: I) -> Result<(), E> {
     // SAFETY: the caller upholds `__init`'s contract, including pinning unless `I` cancels it.
-    unsafe { PinInit::__init(init, dst) }
+    unsafe { PinInit::__init(init, destination) }
 }
 
-/// Writes an infallible `init`'s value at `dst`.
+/// Writes an infallible `init`'s value at `destination`.
 ///
 /// # Safety
 /// As [`raw_try_init`].
@@ -355,8 +362,8 @@ pub unsafe fn raw_try_init<…>(dst: *mut T, init: I) -> Result<(), E> {
 /// assert!(region.fit(Layout::new::<[u64; 16]>()).is_err(), "128 do not");
 /// ```
 pub fn fit(&self, layout: Layout) -> Result<NonNull<u8>, RegionError> {
-    if self.len < layout.size() {
-        return Err(RegionError::TooSmall { need: layout.size(), have: self.len });
+    if self.length < layout.size() {
+        return Err(RegionError::TooSmall { required: layout.size(), available: self.length });
     }
     // A mask, not a remainder: `align()` is a power of two, but only a divide would prove it.
     if self.base.addr().get() & !layout.alignment().mask() != 0 { … }
@@ -397,8 +404,8 @@ pub fn cut(self, layout: Layout) -> Option<Self> { … }
 /// bounded.
 pub const fn wrapping_add(self, bytes: usize) -> Self { … }
 
-/// Where `ptr` points, dropping its provenance.
-pub fn of<T: ?Sized>(ptr: NonNull<T>) -> Self { … }
+/// Where `pointer` points, dropping its provenance.
+pub fn from_pointer<T: ?Sized>(pointer: NonNull<T>) -> Self { … }
 
 /// Takes `bytes` as the span to build inside: the safe door, enough without a mapping.
 ///
@@ -421,15 +428,15 @@ pub const fn from_slice(bytes: &'a mut [u8]) -> Self { … }
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum RegionError {
     /// The region is shorter than the layout.
-    #[error("region error: needs {need} bytes, region holds {have}")]
+    #[error("region error: needs {required} bytes, region holds {available}")]
     TooSmall {
         /// Bytes the layout needs.
-        need: usize,
+        required: usize,
         /// Bytes the region holds.
-        have: usize,
+        available: usize,
     },
     /// The region's base does not meet the layout's alignment.
-    #[error("region error: base {have} does not meet the {need}-byte alignment")]
+    #[error("region error: base {base:#x} does not meet the {alignment}-byte alignment")]
     Misaligned { … },
 }
 ```
@@ -444,16 +451,17 @@ pub enum RegionError {
 pub enum ReserveError {
     /// No run of free bytes fits this layout: free something and retry, or ask for less.
     #[error("reserve error: the allocator refused {layout:?}")]
-    Exhausted {
+    NoFreeRunFits {
         /// What it refused.
         layout: Layout,
     },
 }
 ```
 
-- `Why …` on the enum and the module; the variant is the condition, with what to
-  do about it after a colon; the message leads with the type's words and inlines
-  the fields.
+- `Why …` on the enum and the module; the variant names the whole condition, and
+  its doc says it, with what to do about it after a colon; the fields are whole
+  words, `required` and `available`; the message leads with the type's words and
+  inlines the fields.
 
 ## 7 Private Items
 
@@ -462,7 +470,7 @@ pub enum ReserveError {
 ///
 /// # Safety
 /// That element is initialized and nothing else drops it.
-const unsafe fn grew(&mut self) { … }
+const unsafe fn grow(&mut self) { … }
 
 /// Hands them all to the caller.
 const fn disarm(&mut self) { … }
@@ -482,16 +490,16 @@ fn record(self) -> &'static Header { … }
 ```text
 // SAFETY: the guard counts what landed, so a refusal at `index` drops exactly the slots below it.
 unsafe impl<…> RunInit<T, E> for Each<T, E, F> {
-    unsafe fn __init(mut self, dst: *mut T) -> Result<(), E> {
+    unsafe fn __init(mut self, destination: *mut T) -> Result<(), E> {
         …
-            // SAFETY: the `index`th of the `len` slots the caller promised, still fresh.
-            let slot = unsafe { dst.add(index) };
+            // SAFETY: the `index`th of the `length` slots the caller promised, still fresh.
+            let slot = unsafe { destination.add(index) };
             // Built where it lands, so nothing is moved in; on `Err` it wrote nothing.
             //
             // SAFETY: a fresh unaliased slot for one `T`, and `Init` cancels the pinning duty.
             unsafe { PinInit::__init(init, slot) }?;
             // SAFETY: the initializer reported success, so the guard may count it.
-            unsafe { guard.grew() }
+            unsafe { guard.grow() }
         …
     }
 }
@@ -501,7 +509,7 @@ unsafe impl<…> RunInit<T, E> for Each<T, E, F> {
 loop {
     // ORDERING: Relaxed throughout. The word hands out disjoint ranges and publishes
     // nothing; whatever a caller lays in the bytes it took, it releases itself.
-    let from = record.next.load(Relaxed).0;
+    let start = record.next.load(Relaxed).0;
     …
 }
 ```
@@ -510,13 +518,13 @@ loop {
 // SAFETY: a slice's base is never null.
 let base = unsafe { NonNull::new_unchecked(bytes.as_mut_ptr()) };
 
-// SAFETY: `mid <= len`, so the tail's base stays inside the region.
+// SAFETY: `mid <= length`, so the tail's base stays inside the region.
 let after = unsafe { self.base.byte_add(mid) };
 // SAFETY: the head lies inside the region, backing outlives `'a`, and `self` is consumed,
 // so nothing else covers those bytes.
 let head = unsafe { Self::from_raw_parts(self.base, mid) };
 // SAFETY: as the head, and the tail starts where the head ends, so the two are disjoint.
-let tail = unsafe { Self::from_raw_parts(after, self.len.wrapping_sub(mid)) };
+let tail = unsafe { Self::from_raw_parts(after, self.length.wrapping_sub(mid)) };
 ```
 
 - One `unsafe` op per block, its `// SAFETY:` naming the fact for each

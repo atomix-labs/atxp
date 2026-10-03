@@ -22,36 +22,40 @@ use derive_more::Display;
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("parse pos error: want `<col>,<row>`, like `3,4`")]
-pub struct ParsePosError;
+#[error("parse position error: want `<column>,<row>`, like `3,4`")]
+pub struct ParsePositionError;
 
 #[derive(Debug, Display, Clone, Copy, PartialEq, Eq)]
-#[display("{col},{row}")]
-pub struct Pos {
-    pub col: u16,
+#[display("{column},{row}")]
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
-impl FromStr for Pos {
-    type Err = ParsePosError;
+impl FromStr for Position {
+    type Err = ParsePositionError;
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
-        let (col, row) = text.split_once(',').ok_or(ParsePosError)?;
-        let col = col.parse().map_err(|_not_digits| ParsePosError)?;
-        let row = row.parse().map_err(|_not_digits| ParsePosError)?;
-        Ok(Self { col, row })
+        let (column, row) = text.split_once(',').ok_or(ParsePositionError)?;
+        let column = column.parse().map_err(|_not_a_number| ParsePositionError)?;
+        let row = row.parse().map_err(|_not_a_number| ParsePositionError)?;
+        Ok(Self { column, row })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Pos;
+    use super::Position;
 
     // Bad: the two positions the author was sure of.
     #[test]
-    fn a_pos_reads_back_as_it_prints() {
-        for pos in [Pos { col: 0, row: 0 }, Pos { col: 3, row: 4 }] {
-            assert_eq!(pos.to_string().parse::<Pos>(), Ok(pos), "one spelling, both ways");
+    fn a_position_reads_back_as_it_prints() {
+        for position in [Position { column: 0, row: 0 }, Position { column: 3, row: 4 }] {
+            assert_eq!(
+                position.to_string().parse::<Position>(),
+                Ok(position),
+                "one spelling, both ways"
+            );
         }
     }
 }
@@ -64,24 +68,24 @@ use derive_more::Display;
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("parse pos error: want `<col>,<row>`, like `3,4`")]
-pub struct ParsePosError;
+#[error("parse position error: want `<column>,<row>`, like `3,4`")]
+pub struct ParsePositionError;
 
 #[derive(Debug, Display, Clone, Copy, PartialEq, Eq)]
-#[display("{col},{row}")]
-pub struct Pos {
-    pub col: u16,
+#[display("{column},{row}")]
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
-impl FromStr for Pos {
-    type Err = ParsePosError;
+impl FromStr for Position {
+    type Err = ParsePositionError;
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
-        let (col, row) = text.split_once(',').ok_or(ParsePosError)?;
-        let col = col.parse().map_err(|_not_digits| ParsePosError)?;
-        let row = row.parse().map_err(|_not_digits| ParsePosError)?;
-        Ok(Self { col, row })
+        let (column, row) = text.split_once(',').ok_or(ParsePositionError)?;
+        let column = column.parse().map_err(|_not_a_number| ParsePositionError)?;
+        let row = row.parse().map_err(|_not_a_number| ParsePositionError)?;
+        Ok(Self { column, row })
     }
 }
 
@@ -89,18 +93,22 @@ impl FromStr for Pos {
 mod tests {
     use proptest::prelude::{any, prop_assert_eq, proptest};
 
-    use super::Pos;
+    use super::Position;
 
     proptest! {
         #[test]
-        fn a_pos_reads_back_as_it_prints(col in any::<u16>(), row in any::<u16>()) {
-            let pos = Pos { col, row };
-            prop_assert_eq!(pos.to_string().parse::<Pos>(), Ok(pos), "one spelling, both ways");
+        fn a_position_reads_back_as_it_prints(column in any::<u16>(), row in any::<u16>()) {
+            let position = Position { column, row };
+            prop_assert_eq!(
+                position.to_string().parse::<Position>(),
+                Ok(position),
+                "one spelling, both ways"
+            );
         }
 
         #[test]
         fn any_text_parses_or_is_refused(text in ".*") {
-            let _parsed = text.parse::<Pos>();
+            let _position = text.parse::<Position>();
         }
     }
 }
@@ -120,11 +128,11 @@ holds.
 
 ```rust
 #[must_use]
-pub fn index(col: u16, row: u16) -> Option<usize> {
-    if col >= 8 || row >= 8 {
+pub fn index(column: u16, row: u16) -> Option<usize> {
+    if column >= 8 || row >= 8 {
         return None;
     }
-    usize::from(row).checked_mul(8)?.checked_add(usize::from(col))
+    usize::from(row).checked_mul(8)?.checked_add(usize::from(column))
 }
 
 #[cfg(test)]
@@ -136,9 +144,9 @@ mod tests {
     proptest! {
         // Bad: keeps one input in 67 million, and fails with "Too many global rejects".
         #[test]
-        fn every_square_on_the_board_has_an_index(col in any::<u16>(), row in any::<u16>()) {
-            prop_assume!(col < 8 && row < 8);
-            prop_assert!(index(col, row).is_some_and(|at| at < 64), "an index below 64");
+        fn every_square_on_the_board_has_an_index(column in any::<u16>(), row in any::<u16>()) {
+            prop_assume!(column < 8 && row < 8);
+            prop_assert!(index(column, row).is_some_and(|square| square < 64), "an index below 64");
         }
     }
 }
@@ -146,11 +154,11 @@ mod tests {
 
 ```rust
 #[must_use]
-pub fn index(col: u16, row: u16) -> Option<usize> {
-    if col >= 8 || row >= 8 {
+pub fn index(column: u16, row: u16) -> Option<usize> {
+    if column >= 8 || row >= 8 {
         return None;
     }
-    usize::from(row).checked_mul(8)?.checked_add(usize::from(col))
+    usize::from(row).checked_mul(8)?.checked_add(usize::from(column))
 }
 
 #[cfg(test)]
@@ -161,8 +169,8 @@ mod tests {
 
     proptest! {
         #[test]
-        fn every_square_on_the_board_has_an_index(col in 0..8_u16, row in 0..8_u16) {
-            prop_assert!(index(col, row).is_some_and(|at| at < 64), "an index below 64");
+        fn every_square_on_the_board_has_an_index(column in 0..8_u16, row in 0..8_u16) {
+            prop_assert!(index(column, row).is_some_and(|square| square < 64), "an index below 64");
         }
     }
 }
@@ -181,8 +189,8 @@ among them.
 
 ```rust
 #[must_use]
-pub fn mirror(col: u16, cols: u16) -> Option<u16> {
-    cols.checked_sub(1)?.checked_sub(col)
+pub fn mirror(column: u16, columns: u16) -> Option<u16> {
+    columns.checked_sub(1)?.checked_sub(column)
 }
 
 #[cfg(test)]
@@ -194,9 +202,9 @@ mod tests {
     proptest! {
         // Bad: a failure prints a panic for each shrinking step.
         #[test]
-        fn a_mirrored_column_mirrors_back(col in 0..8_u16) {
-            let there = mirror(col, 8).expect("a column on the board has a mirror");
-            assert_eq!(mirror(there, 8), Some(col), "and back");
+        fn a_mirrored_column_mirrors_back(column in 0..8_u16) {
+            let opposite = mirror(column, 8).expect("a column on the board has a mirror");
+            assert_eq!(mirror(opposite, 8), Some(column), "and back");
         }
     }
 }
@@ -204,8 +212,8 @@ mod tests {
 
 ```rust
 #[must_use]
-pub fn mirror(col: u16, cols: u16) -> Option<u16> {
-    cols.checked_sub(1)?.checked_sub(col)
+pub fn mirror(column: u16, columns: u16) -> Option<u16> {
+    columns.checked_sub(1)?.checked_sub(column)
 }
 
 #[cfg(test)]
@@ -216,9 +224,9 @@ mod tests {
 
     proptest! {
         #[test]
-        fn a_mirrored_column_mirrors_back(col in 0..8_u16) {
-            let there = mirror(col, 8).expect("a column on the board has a mirror");
-            prop_assert_eq!(mirror(there, 8), Some(col), "and back");
+        fn a_mirrored_column_mirrors_back(column in 0..8_u16) {
+            let opposite = mirror(column, 8).expect("a column on the board has a mirror");
+            prop_assert_eq!(mirror(opposite, 8), Some(column), "and back");
         }
     }
 }
@@ -229,10 +237,10 @@ Held by review.
 ## A Property's Failures Are Committed
 
 When a property fails, proptest writes the failing case's seed to
-`proptest-regressions/`, in a file named for the source file, `src/pos.rs`'s in
-`proptest-regressions/pos.txt`, and runs those seeds first on every run after.
-The file is committed, so the case that failed once runs first everywhere, in CI
-included, and the fix stays proven.
+`proptest-regressions/`, in a file named for the source file,
+`src/position.rs`'s in `proptest-regressions/position.txt`, and runs those seeds
+first on every run after. The file is committed, so the case that failed once
+runs first everywhere, in CI included, and the fix stays proven.
 
 ```text
 # Bad: in .gitignore, so each run starts afresh, and a failure found once may not be found again.
@@ -246,7 +254,7 @@ proptest-regressions/
 #
 # It is recommended to check this file in to source control so that
 # everyone who runs the test benefits from these saved cases.
-cc 6dfaaacf71ba74d7b4b2d2368e56a69e2194f0a4a3e99ab10cd4a8914b6ace51 # shrinks to col = 1000
+cc 6dfaaacf71ba74d7b4b2d2368e56a69e2194f0a4a3e99ab10cd4a8914b6ace51 # shrinks to column = 1000
 ```
 
 Held by review.
@@ -263,7 +271,7 @@ Miri by a unit test of its edges instead.
 proptest! {
     // Bad: fails under Miri, and says nothing why.
     #[test]
-    fn a_pos_reads_back_as_it_prints(col in any::<u16>(), row in any::<u16>()) { … }
+    fn a_position_reads_back_as_it_prints(column in any::<u16>(), row in any::<u16>()) { … }
 }
 ```
 
@@ -271,7 +279,7 @@ proptest! {
 proptest! {
     #[cfg_attr(miri, ignore = "proptest reads the working directory, which Miri's isolation blocks")]
     #[test]
-    fn a_pos_reads_back_as_it_prints(col in any::<u16>(), row in any::<u16>()) { … }
+    fn a_position_reads_back_as_it_prints(column in any::<u16>(), row in any::<u16>()) { … }
 }
 ```
 
@@ -283,9 +291,9 @@ Held by review.
 A list of inputs and what each gives back, every way a parser refuses, is a
 table: `#[rstest]` with a `#[case]` for each row, each a test of its own, so
 every wrong row fails, not the first, and each is named in the run,
-`a_pos_parses_as_its_table_says::case_2_a_column_past_u16`. A case whose input
-does not say what it is for is named, `#[case::a_column_past_u16(…)]`. A loop
-over the rows in one test stops at the first that fails.
+`a_position_parses_as_its_table_says::case_2_a_column_past_u16`. A case whose
+input does not say what it is for is named, `#[case::a_column_past_u16(…)]`. A
+loop over the rows in one test stops at the first that fails.
 
 ```rust
 use core::str::FromStr;
@@ -293,40 +301,40 @@ use core::str::FromStr;
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("parse pos error: want `<col>,<row>`, like `3,4`")]
-pub struct ParsePosError;
+#[error("parse position error: want `<column>,<row>`, like `3,4`")]
+pub struct ParsePositionError;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
-impl FromStr for Pos {
-    type Err = ParsePosError;
+impl FromStr for Position {
+    type Err = ParsePositionError;
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
-        let (col, row) = text.split_once(',').ok_or(ParsePosError)?;
-        let col = col.parse().map_err(|_not_digits| ParsePosError)?;
-        let row = row.parse().map_err(|_not_digits| ParsePosError)?;
-        Ok(Self { col, row })
+        let (column, row) = text.split_once(',').ok_or(ParsePositionError)?;
+        let column = column.parse().map_err(|_not_a_number| ParsePositionError)?;
+        let row = row.parse().map_err(|_not_a_number| ParsePositionError)?;
+        Ok(Self { column, row })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{ParsePosError, Pos};
+    use super::{ParsePositionError, Position};
 
     // Bad: the first wrong row hides every row after it.
     #[test]
-    fn a_pos_parses_as_its_table_says() {
+    fn a_position_parses_as_its_table_says() {
         let table = [
-            ("3", Err(ParsePosError)),
-            ("65536,0", Err(ParsePosError)),
-            ("0,0", Ok(Pos { col: 0, row: 0 })),
+            ("3", Err(ParsePositionError)),
+            ("65536,0", Err(ParsePositionError)),
+            ("0,0", Ok(Position { column: 0, row: 0 })),
         ];
-        for (text, want) in table {
-            assert_eq!(text.parse::<Pos>(), want, "the table's answer for {text:?}");
+        for (text, expected) in table {
+            assert_eq!(text.parse::<Position>(), expected, "the table's answer for {text:?}");
         }
     }
 }
@@ -338,23 +346,23 @@ use core::str::FromStr;
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("parse pos error: want `<col>,<row>`, like `3,4`")]
-pub struct ParsePosError;
+#[error("parse position error: want `<column>,<row>`, like `3,4`")]
+pub struct ParsePositionError;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
-impl FromStr for Pos {
-    type Err = ParsePosError;
+impl FromStr for Position {
+    type Err = ParsePositionError;
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
-        let (col, row) = text.split_once(',').ok_or(ParsePosError)?;
-        let col = col.parse().map_err(|_not_digits| ParsePosError)?;
-        let row = row.parse().map_err(|_not_digits| ParsePosError)?;
-        Ok(Self { col, row })
+        let (column, row) = text.split_once(',').ok_or(ParsePositionError)?;
+        let column = column.parse().map_err(|_not_a_number| ParsePositionError)?;
+        let row = row.parse().map_err(|_not_a_number| ParsePositionError)?;
+        Ok(Self { column, row })
     }
 }
 
@@ -362,14 +370,16 @@ impl FromStr for Pos {
 mod tests {
     use rstest::rstest;
 
-    use super::{ParsePosError, Pos};
+    use super::{ParsePositionError, Position};
 
     #[rstest]
-    #[case::no_comma("3", Err(ParsePosError))]
-    #[case::a_column_past_u16("65536,0", Err(ParsePosError))]
-    #[case::the_first_square("0,0", Ok(Pos { col: 0, row: 0 }))]
-    fn a_pos_parses_as_its_table_says(#[case] text: &str, #[case] want: Result<Pos, ParsePosError>) {
-        assert_eq!(text.parse::<Pos>(), want, "the table's answer for {text:?}");
+    #[case::no_comma("3", Err(ParsePositionError))]
+    #[case::a_column_past_u16("65536,0", Err(ParsePositionError))]
+    #[case::the_first_square("0,0", Ok(Position { column: 0, row: 0 }))]
+    fn a_position_parses_as_its_table_says(
+        #[case] text: &str, #[case] expected: Result<Position, ParsePositionError>,
+    ) {
+        assert_eq!(text.parse::<Position>(), expected, "the table's answer for {text:?}");
     }
 }
 ```
@@ -414,14 +424,14 @@ libfuzzer-sys = "0.4"
 tiles         = { path = ".." }
 
 [[bin]]
-name  = "parse_pos"
-path  = "fuzz_targets/parse_pos.rs"
+name  = "parse_position"
+path  = "fuzz_targets/parse_position.rs"
 test  = false
 doc   = false
 bench = false
 
-// crates/tiles/fuzz/fuzz_targets/parse_pos.rs
-//! `Pos::from_str` over any UTF-8, which it refuses or reads and never panics on.
+// crates/tiles/fuzz/fuzz_targets/parse_position.rs
+//! `Position::from_str` over any UTF-8, which it refuses or reads and never panics on.
 
 #![no_main]
 
@@ -429,13 +439,13 @@ use libfuzzer_sys::fuzz_target;
 
 fuzz_target!(|data: &[u8]| {
     if let Ok(text) = core::str::from_utf8(data) {
-        let _parsed = text.parse::<tiles::Pos>();
+        let _position = text.parse::<tiles::Position>();
     }
 });
 ```
 
-Held by review. `cargo fuzz run parse_pos` fuzzes, on a nightly toolchain, since
-it needs nightly's sanitizer flags; no recipe runs it, and no profile pins
+Held by review. `cargo fuzz run parse_position` fuzzes, on a nightly toolchain,
+since it needs nightly's sanitizer flags; no recipe runs it, and no profile pins
 cargo-fuzz, which `cargo install cargo-fuzz` installs.
 
 ## A Fuzz Target's Corpus Is Committed and Replayed
@@ -462,7 +472,7 @@ artifacts
 coverage
 
 # Replays the seeds, once each.
-cargo fuzz run parse_pos -- -runs=0
+cargo fuzz run parse_position -- -runs=0
 ```
 
 Held by review.
@@ -477,7 +487,7 @@ pinned in every check, and not only when someone fuzzes again.
 
 ```text
 # Bad: the crash reproduced and fixed, and nothing pins it.
-cargo fuzz run parse_pos fuzz/artifacts/parse_pos/crash-11f6ad8e…
+cargo fuzz run parse_position fuzz/artifacts/parse_position/crash-11f6ad8e…
 ```
 
 ```rust
@@ -486,34 +496,34 @@ use core::str::FromStr;
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("parse pos error: want `<col>,<row>`, like `3,4`")]
-pub struct ParsePosError;
+#[error("parse position error: want `<column>,<row>`, like `3,4`")]
+pub struct ParsePositionError;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
-impl FromStr for Pos {
-    type Err = ParsePosError;
+impl FromStr for Position {
+    type Err = ParsePositionError;
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
-        let (col, row) = text.split_once(',').ok_or(ParsePosError)?;
-        let col = col.parse().map_err(|_not_digits| ParsePosError)?;
-        let row = row.parse().map_err(|_not_digits| ParsePosError)?;
-        Ok(Self { col, row })
+        let (column, row) = text.split_once(',').ok_or(ParsePositionError)?;
+        let column = column.parse().map_err(|_not_a_number| ParsePositionError)?;
+        let row = row.parse().map_err(|_not_a_number| ParsePositionError)?;
+        Ok(Self { column, row })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{ParsePosError, Pos};
+    use super::{ParsePositionError, Position};
 
-    // Found by the `parse_pos` fuzz target, shrunk to a comma and no row.
+    // Found by the `parse_position` fuzz target, shrunk to a comma and no row.
     #[test]
-    fn a_pos_with_no_row_is_refused() {
-        assert_eq!("3,".parse::<Pos>(), Err(ParsePosError), "a column alone");
+    fn a_position_with_no_row_is_refused() {
+        assert_eq!("3,".parse::<Position>(), Err(ParsePositionError), "a column alone");
     }
 }
 ```

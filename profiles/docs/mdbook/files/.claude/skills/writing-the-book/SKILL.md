@@ -59,7 +59,7 @@ yet; the API documentation holds the item-by-item detail.
 
   ```text
   // ANCHOR: neighbours
-  pub fn neighbours(&self, at: Point) -> impl Iterator<Item = Point> {
+  pub fn neighbours(&self, point: Point) -> impl Iterator<Item = Point> {
   // ANCHOR_END: neighbours
   ```
 

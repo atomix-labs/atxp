@@ -27,8 +27,8 @@ or `step_right_2`, tells the reader nothing the stack trace does not.
 
 ```rust
 #[must_use]
-pub fn step_right(col: u16, cols: u16) -> Option<u16> {
-    col.checked_add(1).filter(|&next| next < cols)
+pub fn step_right(column: u16, columns: u16) -> Option<u16> {
+    column.checked_add(1).filter(|&next| next < columns)
 }
 
 #[cfg(test)]
@@ -46,8 +46,8 @@ mod tests {
 
 ```rust
 #[must_use]
-pub fn step_right(col: u16, cols: u16) -> Option<u16> {
-    col.checked_add(1).filter(|&next| next < cols)
+pub fn step_right(column: u16, columns: u16) -> Option<u16> {
+    column.checked_add(1).filter(|&next| next < columns)
 }
 
 #[cfg(test)]
@@ -73,35 +73,35 @@ restriction lint no check turns on.
 ## Compare Whole Values with `assert_eq!`
 
 `assert_eq!` prints both sides when they differ, so a failure shows what arrived
-beside what was wanted. `assert!(a == b)` prints neither, and `assert!(result
-.is_err())` or `assert!(matches!(…))` say only that the shape was wrong. The
-workspace's error types are `PartialEq` where their payload allows, so a test
-compares the whole `Result`, the error and its fields included. It never
-compares `format!("{x:?}")`: a `Debug` form is no contract, and a derive or a
-new field changes it.
+beside what was wanted. `assert!(left == right)` prints neither, and
+`assert!(result.is_err())` or `assert!(matches!(…))` say only that the shape was
+wrong. The workspace's error types are `PartialEq` where their payload allows,
+so a test compares the whole `Result`, the error and its fields included. It
+never compares `format!("{error:?}")`: a `Debug` form is no contract, and a
+derive or a new field changes it.
 {%- if "rust-lints" in devset.profiles %}
 
 ```rust,compile_fail
 // fails: clippy::manual_assert_eq
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 #[must_use]
-pub fn step_right(at: Pos) -> Option<Pos> {
-    at.col.checked_add(1).map(|col| Pos { col, ..at })
+pub fn step_right(position: Position) -> Option<Position> {
+    position.column.checked_add(1).map(|column| Position { column, ..position })
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Pos, step_right};
+    use super::{Position, step_right};
 
     #[test]
     fn a_step_right_moves_one_column() {
         // Bad: a failure says the comparison was false, and not what came back.
-        assert!(step_right(Pos { col: 3, row: 4 }) == Some(Pos { col: 4, row: 4 }));
+        assert!(step_right(Position { column: 3, row: 4 }) == Some(Position { column: 4, row: 4 }));
     }
 }
 ```
@@ -109,30 +109,34 @@ mod tests {
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 #[must_use]
-pub fn step_right(at: Pos) -> Option<Pos> {
-    at.col.checked_add(1).map(|col| Pos { col, ..at })
+pub fn step_right(position: Position) -> Option<Position> {
+    position.column.checked_add(1).map(|column| Position { column, ..position })
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Pos, step_right};
+    use super::{Position, step_right};
 
     #[test]
     fn a_step_right_moves_one_column() {
-        assert_eq!(step_right(Pos { col: 3, row: 4 }), Some(Pos { col: 4, row: 4 }), "one column");
+        assert_eq!(
+            step_right(Position { column: 3, row: 4 }),
+            Some(Position { column: 4, row: 4 }),
+            "one column"
+        );
     }
 }
 ```
 
 {% if "rust-lints" in devset.profiles -%}
-Held by `clippy::manual_assert_eq`, which refuses `assert!(a == b)` with no
-message; with one, and on `is_err` or `matches!`, by review.
+Held by `clippy::manual_assert_eq`, which refuses `assert!(left == right)` with
+no message; with one, and on `is_err` or `matches!`, by review.
 {%- else -%}
 Held by review.
 {%- endif %}
@@ -144,13 +148,13 @@ says what should have held: a lowercase fragment with no final period, the
 property as a claim, `"the last column"`, never `"test failed"` or `"should be
 equal"`, which say what any failure says. The messages of one test read as a
 running sentence: `"to itself"`, `"and forwards"`, `"never backwards"`. An
-assertion whose expression says it all, `assert_eq!(board.cols(), 8)`, may leave
-the message out.
+assertion whose expression says it all, `assert_eq!(board.columns(), 8)`, may
+leave the message out.
 
 ```rust
 #[must_use]
-pub const fn offset(from: u16, to: u16) -> Option<u16> {
-    to.checked_sub(from)
+pub const fn offset(start: u16, end: u16) -> Option<u16> {
+    end.checked_sub(start)
 }
 
 #[cfg(test)]
@@ -169,8 +173,8 @@ mod tests {
 
 ```rust
 #[must_use]
-pub const fn offset(from: u16, to: u16) -> Option<u16> {
-    to.checked_sub(from)
+pub const fn offset(start: u16, end: u16) -> Option<u16> {
+    end.checked_sub(start)
 }
 
 #[cfg(test)]
@@ -200,17 +204,17 @@ nothing a reader does not see in the stack trace.
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Board {
-    pub cols: u16,
+    pub columns: u16,
     pub rows: u16,
 }
 
 impl Board {
     #[must_use]
-    pub fn index(self, col: u16, row: u16) -> Option<usize> {
-        if col >= self.cols || row >= self.rows {
+    pub fn index(self, column: u16, row: u16) -> Option<usize> {
+        if column >= self.columns || row >= self.rows {
             return None;
         }
-        usize::from(row).checked_mul(usize::from(self.cols))?.checked_add(usize::from(col))
+        usize::from(row).checked_mul(usize::from(self.columns))?.checked_add(usize::from(column))
     }
 }
 
@@ -220,7 +224,7 @@ mod tests {
 
     #[test]
     fn a_square_is_counted_row_by_row() {
-        let board = Board { cols: 8, rows: 8 };
+        let board = Board { columns: 8, rows: 8 };
         // Bad: a failure says an `Option` was `None`, and not what was assumed.
         assert_eq!(board.index(3, 4).unwrap(), 35, "four rows of eight, then three");
         assert_eq!(board.index(0, 7).expect("failed"), 56, "the last row's first square");
@@ -231,17 +235,17 @@ mod tests {
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Board {
-    pub cols: u16,
+    pub columns: u16,
     pub rows: u16,
 }
 
 impl Board {
     #[must_use]
-    pub fn index(self, col: u16, row: u16) -> Option<usize> {
-        if col >= self.cols || row >= self.rows {
+    pub fn index(self, column: u16, row: u16) -> Option<usize> {
+        if column >= self.columns || row >= self.rows {
             return None;
         }
-        usize::from(row).checked_mul(usize::from(self.cols))?.checked_add(usize::from(col))
+        usize::from(row).checked_mul(usize::from(self.columns))?.checked_add(usize::from(column))
     }
 }
 
@@ -251,9 +255,9 @@ mod tests {
 
     #[test]
     fn a_square_is_counted_row_by_row() {
-        let board = Board { cols: 8, rows: 8 };
-        let at = board.index(3, 4).expect("3,4 lies on an 8 by 8 board");
-        assert_eq!(at, 35, "four rows of eight, then three");
+        let board = Board { columns: 8, rows: 8 };
+        let index = board.index(3, 4).expect("3,4 lies on an 8 by 8 board");
+        assert_eq!(index, 35, "four rows of eight, then three");
     }
 }
 ```
@@ -283,14 +287,14 @@ impossible when a failing test is exactly the case where it is not.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Move {
     Step(u16),
-    Blocked { at: u16 },
+    Blocked { column: u16 },
 }
 
 #[must_use]
-pub const fn step(col: u16, cols: u16) -> Move {
-    match col.checked_add(1) {
-        Some(next) if next < cols => Move::Step(next),
-        _ => Move::Blocked { at: col },
+pub const fn step(column: u16, columns: u16) -> Move {
+    match column.checked_add(1) {
+        Some(next) if next < columns => Move::Step(next),
+        _ => Move::Blocked { column },
     }
 }
 
@@ -301,8 +305,8 @@ mod tests {
     #[test]
     fn a_step_off_the_board_names_where_it_stopped() {
         // Bad: a failing test is the case where this arm is reached.
-        let Move::Blocked { at } = step(7, 8) else { unreachable!() };
-        assert_eq!(at, 7, "the last column");
+        let Move::Blocked { column } = step(7, 8) else { unreachable!() };
+        assert_eq!(column, 7, "the last column");
     }
 }
 ```
@@ -312,14 +316,14 @@ mod tests {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Move {
     Step(u16),
-    Blocked { at: u16 },
+    Blocked { column: u16 },
 }
 
 #[must_use]
-pub const fn step(col: u16, cols: u16) -> Move {
-    match col.checked_add(1) {
-        Some(next) if next < cols => Move::Step(next),
-        _ => Move::Blocked { at: col },
+pub const fn step(column: u16, columns: u16) -> Move {
+    match column.checked_add(1) {
+        Some(next) if next < columns => Move::Step(next),
+        _ => Move::Blocked { column },
     }
 }
 
@@ -330,10 +334,10 @@ mod tests {
     #[test]
     fn a_step_off_the_board_names_where_it_stopped() {
         let moved = step(7, 8);
-        let Move::Blocked { at } = moved else {
+        let Move::Blocked { column } = moved else {
             panic!("a step off the board is blocked, not {moved:?}");
         };
-        assert_eq!(at, 7, "the last column");
+        assert_eq!(column, 7, "the last column");
     }
 }
 ```
@@ -357,14 +361,14 @@ message is pinned too, since a caller reads it.
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("bounds error: column {col} is past a board of {cols} columns")]
+#[error("bounds error: column {index} is past a board of {length} columns")]
 pub struct BoundsError {
-    pub col: u16,
-    pub cols: u16,
+    pub index: u16,
+    pub length: u16,
 }
 
-pub const fn check(col: u16, cols: u16) -> Result<u16, BoundsError> {
-    if col < cols { Ok(col) } else { Err(BoundsError { col, cols }) }
+pub const fn check(column: u16, columns: u16) -> Result<u16, BoundsError> {
+    if column < columns { Ok(column) } else { Err(BoundsError { index: column, length: columns }) }
 }
 
 #[cfg(test)]
@@ -383,14 +387,14 @@ mod tests {
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("bounds error: column {col} is past a board of {cols} columns")]
+#[error("bounds error: column {index} is past a board of {length} columns")]
 pub struct BoundsError {
-    pub col: u16,
-    pub cols: u16,
+    pub index: u16,
+    pub length: u16,
 }
 
-pub const fn check(col: u16, cols: u16) -> Result<u16, BoundsError> {
-    if col < cols { Ok(col) } else { Err(BoundsError { col, cols }) }
+pub const fn check(column: u16, columns: u16) -> Result<u16, BoundsError> {
+    if column < columns { Ok(column) } else { Err(BoundsError { index: column, length: columns }) }
 }
 
 #[cfg(test)]
@@ -405,13 +409,13 @@ mod tests {
 
     #[test]
     fn a_column_past_the_last_is_refused() {
-        assert_eq!(check(8, 8), Err(BoundsError { col: 8, cols: 8 }), "one past");
-        assert_eq!(check(0, 0), Err(BoundsError { col: 0, cols: 0 }), "and any, on no board");
+        assert_eq!(check(8, 8), Err(BoundsError { index: 8, length: 8 }), "one past");
+        assert_eq!(check(0, 0), Err(BoundsError { index: 0, length: 0 }), "and any, on no board");
     }
 
     #[test]
     fn a_bounds_error_names_the_column_and_the_board() {
-        let refused = BoundsError { col: 8, cols: 8 };
+        let refused = BoundsError { index: 8, length: 8 };
         assert_eq!(refused.to_string(), "bounds error: column 8 is past a board of 8 columns");
     }
 }
@@ -422,7 +426,7 @@ Held by review.
 ## A `#[test]` Function Returns `()`
 
 A test that returns `Result` and fails through `?` prints the error's `Debug`,
-`Error: ParseTileError { held: '?' }`, and no line, so the reader cannot tell
+`Error: ParseTileError { actual: '?' }`, and no line, so the reader cannot tell
 which call failed; a panic from `expect` names its file and line, and its
 message says what was assumed. A `#[test]` function returns `()`, and each call
 that must succeed says so with an `expect`. A doctest is not one: it is an
@@ -435,9 +439,9 @@ example a caller copies, so it uses `?` as the caller would, closed by a hidden
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("parse tile error: want `.` or `#`, not `{held}`")]
+#[error("parse tile error: want `.` or `#`, not `{actual}`")]
 pub struct ParseTileError {
-    pub held: char,
+    pub actual: char,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -449,11 +453,11 @@ pub enum Tile {
 impl TryFrom<char> for Tile {
     type Error = ParseTileError;
 
-    fn try_from(held: char) -> Result<Self, Self::Error> {
-        match held {
+    fn try_from(character: char) -> Result<Self, Self::Error> {
+        match character {
             '.' => Ok(Self::Blank),
             '#' => Ok(Self::Wall),
-            _ => Err(ParseTileError { held }),
+            _ => Err(ParseTileError { actual: character }),
         }
     }
 }
@@ -488,9 +492,9 @@ fn each_tile_parses_from_its_own_character() -> Result<(), ParseTileError> {
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("parse tile error: want `.` or `#`, not `{held}`")]
+#[error("parse tile error: want `.` or `#`, not `{actual}`")]
 pub struct ParseTileError {
-    pub held: char,
+    pub actual: char,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -502,11 +506,11 @@ pub enum Tile {
 impl TryFrom<char> for Tile {
     type Error = ParseTileError;
 
-    fn try_from(held: char) -> Result<Self, Self::Error> {
-        match held {
+    fn try_from(character: char) -> Result<Self, Self::Error> {
+        match character {
             '.' => Ok(Self::Blank),
             '#' => Ok(Self::Wall),
-            _ => Err(ParseTileError { held }),
+            _ => Err(ParseTileError { actual: character }),
         }
     }
 }
@@ -548,9 +552,9 @@ the test's own setup included. The panic is the test's result, so it returns
 ```text
 // Bad: rustc refuses it: "functions using `#[should_panic]` must return `()`".
 #[test]
-#[should_panic(expected = "index only a pos on the board")]
+#[should_panic(expected = "index only a position on the board")]
 fn indexing_past_the_last_column_panics() -> Result<(), BoundsError> {
-    let _square = Board::default()[Pos { col: 8, row: 0 }];
+    let _square = Board::default()[Position { column: 8, row: 0 }];
     Ok(())
 }
 ```
@@ -561,8 +565,8 @@ fn indexing_past_the_last_column_panics() -> Result<(), BoundsError> {
 use core::ops::Index;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
@@ -579,33 +583,35 @@ impl Default for Board {
 
 impl Board {
     #[must_use]
-    pub fn get(&self, at: Pos) -> Option<&u8> {
-        if at.col >= 8 || at.row >= 8 {
+    pub fn get(&self, position: Position) -> Option<&u8> {
+        if position.column >= 8 || position.row >= 8 {
             return None;
         }
-        self.squares.get(usize::from(at.row).checked_mul(8)?.checked_add(usize::from(at.col))?)
+        self.squares.get(
+            usize::from(position.row).checked_mul(8)?.checked_add(usize::from(position.column))?,
+        )
     }
 }
 
-impl Index<Pos> for Board {
+impl Index<Position> for Board {
     type Output = u8;
 
     #[track_caller]
     #[expect(clippy::expect_used, reason = "indexing panics off the board, as a slice's does")]
-    fn index(&self, at: Pos) -> &u8 {
-        self.get(at).expect("index only a pos on the board, or ask with `get`")
+    fn index(&self, position: Position) -> &u8 {
+        self.get(position).expect("index only a position on the board, or ask with `get`")
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Board, Pos};
+    use super::{Board, Position};
 
     // Bad: passes on any panic, a typo in the test included.
     #[test]
     #[should_panic]
     fn indexing_past_the_last_column_panics() {
-        let _square = Board::default()[Pos { col: 8, row: 0 }];
+        let _square = Board::default()[Position { column: 8, row: 0 }];
     }
 }
 ```
@@ -615,8 +621,8 @@ mod tests {
 use core::ops::Index;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
@@ -633,32 +639,34 @@ impl Default for Board {
 
 impl Board {
     #[must_use]
-    pub fn get(&self, at: Pos) -> Option<&u8> {
-        if at.col >= 8 || at.row >= 8 {
+    pub fn get(&self, position: Position) -> Option<&u8> {
+        if position.column >= 8 || position.row >= 8 {
             return None;
         }
-        self.squares.get(usize::from(at.row).checked_mul(8)?.checked_add(usize::from(at.col))?)
+        self.squares.get(
+            usize::from(position.row).checked_mul(8)?.checked_add(usize::from(position.column))?,
+        )
     }
 }
 
-impl Index<Pos> for Board {
+impl Index<Position> for Board {
     type Output = u8;
 
     #[track_caller]
     #[expect(clippy::expect_used, reason = "indexing panics off the board, as a slice's does")]
-    fn index(&self, at: Pos) -> &u8 {
-        self.get(at).expect("index only a pos on the board, or ask with `get`")
+    fn index(&self, position: Position) -> &u8 {
+        self.get(position).expect("index only a position on the board, or ask with `get`")
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Board, Pos};
+    use super::{Board, Position};
 
     #[test]
-    #[should_panic(expected = "index only a pos on the board")]
+    #[should_panic(expected = "index only a position on the board")]
     fn indexing_past_the_last_column_panics() {
-        let _square = Board::default()[Pos { col: 8, row: 0 }];
+        let _square = Board::default()[Position { column: 8, row: 0 }];
     }
 }
 ```
@@ -808,7 +816,7 @@ use std::thread;
 
 pub fn paint_later(tile: u8, painted: Sender<u8>) {
     thread::spawn(move || {
-        let _sent = painted.send(tile);
+        let _unsent_tile = painted.send(tile);
     });
 }
 
@@ -837,7 +845,7 @@ use std::thread;
 
 pub fn paint_later(tile: u8, painted: Sender<u8>) {
     thread::spawn(move || {
-        let _sent = painted.send(tile);
+        let _unsent_tile = painted.send(tile);
     });
 }
 
@@ -867,7 +875,7 @@ A value the process shares, the environment, the working directory, the wall
 clock, makes a test depend on every other thread that reads it. `env::set_var`
 is `unsafe` in edition 2024 for that reason, and `set_current_dir` moves every
 thread at once. So the code under test takes what it reads as a value or a
-trait, `cols(setting)` or `is_stale(painted_at, now)`, and the binary passes
+trait, `columns(setting)` or `is_stale(painted_at, now)`, and the binary passes
 `env::var` and `Instant::now()` in; a test passes its own values, and waits on
 no clock.
 
@@ -876,21 +884,21 @@ no clock.
 use core::num::ParseIntError;
 use std::env;
 
-pub fn cols() -> Result<u16, ParseIntError> {
-    env::var("TILES_COLS").map_or(Ok(8), |text| text.parse())
+pub fn columns() -> Result<u16, ParseIntError> {
+    env::var("TILES_COLUMNS").map_or(Ok(8), |text| text.parse())
 }
 
 #[cfg(test)]
 mod tests {
     use std::env;
 
-    use super::cols;
+    use super::columns;
 
     // Bad: `set_var` is unsafe, since every other thread reads the same environment.
     #[test]
     fn the_board_is_as_wide_as_its_setting() {
-        env::set_var("TILES_COLS", "12");
-        assert_eq!(cols(), Ok(12), "twelve columns");
+        env::set_var("TILES_COLUMNS", "12");
+        assert_eq!(columns(), Ok(12), "twelve columns");
     }
 }
 ```
@@ -900,7 +908,7 @@ use core::num::ParseIntError;
 use core::time::Duration;
 use std::time::Instant;
 
-pub fn cols(setting: Option<&str>) -> Result<u16, ParseIntError> {
+pub fn columns(setting: Option<&str>) -> Result<u16, ParseIntError> {
     setting.map_or(Ok(8), str::parse)
 }
 
@@ -914,12 +922,12 @@ mod tests {
     use core::time::Duration;
     use std::time::Instant;
 
-    use super::{cols, is_stale};
+    use super::{columns, is_stale};
 
     #[test]
     fn the_board_is_as_wide_as_its_setting() {
-        assert_eq!(cols(Some("12")), Ok(12), "twelve columns");
-        assert_eq!(cols(None), Ok(8), "and eight with none");
+        assert_eq!(columns(Some("12")), Ok(12), "twelve columns");
+        assert_eq!(columns(None), Ok(8), "and eight with none");
     }
 
     #[test]
@@ -956,7 +964,7 @@ the test reads back which from `local_addr`.
 #[test]
 fn a_board_file_reads_back() {
     fs::write("/tmp/tiles-test/board.txt", "8x8").expect("the directory exists");
-    assert_eq!(read_board("/tmp/tiles-test/board.txt"), Ok(Board { cols: 8, rows: 8 }));
+    assert_eq!(read_board("/tmp/tiles-test/board.txt"), Ok(Board { columns: 8, rows: 8 }));
     fs::remove_file("/tmp/tiles-test/board.txt").expect("the file was written");
 }
 ```
@@ -967,7 +975,7 @@ fn a_board_file_reads_back() {
     let scratch = TempDir::new().expect("a scratch directory");
     let path = scratch.path().join("board.txt");
     fs::write(&path, "8x8").expect("a fresh directory takes a file");
-    assert_eq!(read_board(&path), Ok(Board { cols: 8, rows: 8 }), "the board it wrote");
+    assert_eq!(read_board(&path), Ok(Board { columns: 8, rows: 8 }), "the board it wrote");
 }
 ```
 

@@ -30,18 +30,18 @@ pub struct Row {
 
 impl Row {
     // Bad: it calls `spill`, so another crate's call stays a call in a build without LTO.
-    pub fn paint(&mut self, at: usize, tile: u8) {
-        match self.tiles.get_mut(at) {
+    pub fn paint(&mut self, index: usize, tile: u8) {
+        match self.tiles.get_mut(index) {
             Some(slot) => *slot = tile,
-            None => self.spill(at, tile),
+            None => self.spill(index, tile),
         }
     }
 
     #[cold]
     #[inline(never)]
-    fn spill(&mut self, at: usize, tile: u8) {
-        self.tiles.resize(at.saturating_add(1), 0);
-        if let Some(slot) = self.tiles.get_mut(at) {
+    fn spill(&mut self, index: usize, tile: u8) {
+        self.tiles.resize(index.saturating_add(1), 0);
+        if let Some(slot) = self.tiles.get_mut(index) {
             *slot = tile;
         }
     }
@@ -56,18 +56,18 @@ pub struct Row {
 
 impl Row {
     #[inline]
-    pub fn paint(&mut self, at: usize, tile: u8) {
-        match self.tiles.get_mut(at) {
+    pub fn paint(&mut self, index: usize, tile: u8) {
+        match self.tiles.get_mut(index) {
             Some(slot) => *slot = tile,
-            None => self.spill(at, tile),
+            None => self.spill(index, tile),
         }
     }
 
     #[cold]
     #[inline(never)]
-    fn spill(&mut self, at: usize, tile: u8) {
-        self.tiles.resize(at.saturating_add(1), 0);
-        if let Some(slot) = self.tiles.get_mut(at) {
+    fn spill(&mut self, index: usize, tile: u8) {
+        self.tiles.resize(index.saturating_add(1), 0);
+        if let Some(slot) = self.tiles.get_mut(index) {
             *slot = tile;
         }
     }
@@ -88,31 +88,35 @@ refuses it. It is a hint too, and the compiler may still decline.
 ```rust,compile_fail
 // fails: clippy::inline_always
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 // Bad: forced at every call, for no reason it can name.
 #[inline(always)]
 #[must_use]
-pub fn flat(at: Pos, cols: u16) -> u32 {
-    u32::from(at.row).wrapping_mul(u32::from(cols)).wrapping_add(u32::from(at.col))
+pub fn flat_index(position: Position, columns: u16) -> u32 {
+    u32::from(position.row)
+        .wrapping_mul(u32::from(columns))
+        .wrapping_add(u32::from(position.column))
 }
 ```
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 #[inline(always)]
 #[expect(clippy::inline_always, reason = "run for every tile painted; a call would dwarf its two instructions")]
 #[must_use]
-pub fn flat(at: Pos, cols: u16) -> u32 {
-    u32::from(at.row).wrapping_mul(u32::from(cols)).wrapping_add(u32::from(at.col))
+pub fn flat_index(position: Position, columns: u16) -> u32 {
+    u32::from(position.row)
+        .wrapping_mul(u32::from(columns))
+        .wrapping_add(u32::from(position.column))
 }
 ```
 
@@ -129,10 +133,10 @@ others are.
 ```rust
 use core::hint::black_box;
 
-pub fn drive<T, F: FnMut() -> T>(rounds: u64, op: &mut F) {
+pub fn drive<T, F: FnMut() -> T>(rounds: u64, operation: &mut F) {
     // Bad: `drive` may be inlined into each caller and merged with its loop.
     for _ in 0..rounds {
-        black_box(op());
+        black_box(operation());
     }
 }
 ```
@@ -141,9 +145,9 @@ pub fn drive<T, F: FnMut() -> T>(rounds: u64, op: &mut F) {
 use core::hint::black_box;
 
 #[inline(never)]
-pub fn drive<T, F: FnMut() -> T>(rounds: u64, op: &mut F) {
+pub fn drive<T, F: FnMut() -> T>(rounds: u64, operation: &mut F) {
     for _ in 0..rounds {
-        black_box(op());
+        black_box(operation());
     }
 }
 ```
@@ -173,14 +177,14 @@ pub struct Row {
 
 impl Row {
     #[inline]
-    pub fn paint(&mut self, at: usize, tile: u8) {
-        if let Some(slot) = self.tiles.get_mut(at) {
+    pub fn paint(&mut self, index: usize, tile: u8) {
+        if let Some(slot) = self.tiles.get_mut(index) {
             *slot = tile;
             return;
         }
         // Bad: the rare growth written into the hot function, with nothing to say it is rare.
-        self.tiles.resize(at.saturating_add(1), 0);
-        if let Some(slot) = self.tiles.get_mut(at) {
+        self.tiles.resize(index.saturating_add(1), 0);
+        if let Some(slot) = self.tiles.get_mut(index) {
             *slot = tile;
         }
     }
@@ -197,18 +201,18 @@ pub struct Row {
 
 impl Row {
     #[inline]
-    pub fn paint(&mut self, at: usize, tile: u8) {
-        match self.tiles.get_mut(at) {
+    pub fn paint(&mut self, index: usize, tile: u8) {
+        match self.tiles.get_mut(index) {
             Some(slot) => *slot = tile,
-            None => self.spill(at, tile),
+            None => self.spill(index, tile),
         }
     }
 
     #[cold]
     #[inline(never)]
-    fn spill(&mut self, at: usize, tile: u8) {
-        self.tiles.resize(at.saturating_add(1), 0);
-        if let Some(slot) = self.tiles.get_mut(at) {
+    fn spill(&mut self, index: usize, tile: u8) {
+        self.tiles.resize(index.saturating_add(1), 0);
+        if let Some(slot) = self.tiles.get_mut(index) {
             *slot = tile;
         }
     }
@@ -231,30 +235,30 @@ Held by review.
 
 ## Let the Loop's Shape Prove Its Bounds
 
-A bounds check the compiler can prove is free: `for at in 0..row.len()` over
-`row[at]` has none. An index into a second slice by the first's length stays in
-the code, though the compiler often splits the loop so it checks once. A `get`
-with a fallback, `over.get(at).unwrap_or(0)`, must carry on past the end, so it
-is a branch on every element, and the loop stays scalar. So a hot loop takes a
-shape that proves its bounds: it iterates, zips the slices, or slices each to
-one length before the loop, which leaves no check at all.
+A bounds check the compiler can prove is free: `for index in 0..row.len()` over
+`row[index]` has none. An index into a second slice by the first's length stays
+in the code, though the compiler often splits the loop so it checks once. A
+`get` with a fallback, `overlay.get(index).unwrap_or(0)`, must carry on past the
+end, so it is a branch on every element, and the loop stays scalar. So a hot
+loop takes a shape that proves its bounds: it iterates, zips the slices, or
+slices each to one length before the loop, which leaves no check at all.
 
 ```rust
 #[must_use]
-pub fn blend(under: &[u32], over: &[u32]) -> u32 {
-    let mut acc = 0_u32;
-    for (at, tile) in under.iter().enumerate() {
-        // Bad: `over` is not known to be as long, so each turn checks it, and nothing vectorizes.
-        acc = acc.wrapping_add(tile.wrapping_mul(over.get(at).copied().unwrap_or(0)));
+pub fn blend(base: &[u32], overlay: &[u32]) -> u32 {
+    let mut sum = 0_u32;
+    for (index, tile) in base.iter().enumerate() {
+        // Bad: each turn checks `overlay`, not known to be as long, and nothing vectorizes.
+        sum = sum.wrapping_add(tile.wrapping_mul(overlay.get(index).copied().unwrap_or(0)));
     }
-    acc
+    sum
 }
 ```
 
 ```rust
 #[must_use]
-pub fn blend(under: &[u32], over: &[u32]) -> u32 {
-    under.iter().zip(over).fold(0, |acc, (tile, top)| acc.wrapping_add(tile.wrapping_mul(*top)))
+pub fn blend(base: &[u32], overlay: &[u32]) -> u32 {
+    base.iter().zip(overlay).fold(0, |sum, (tile, top)| sum.wrapping_add(tile.wrapping_mul(*top)))
 }
 ```
 

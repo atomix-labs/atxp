@@ -23,7 +23,7 @@ which is why it is not the test.
 ///
 /// ```compile_fail
 /// // Bad: fails on any error, so a renamed `slot` passes it as well as a `Send` brush.
-/// let brush = tiles::Brush::here();
+/// let brush = tiles::Brush::for_current_thread();
 /// std::thread::spawn(move || brush.slot());
 /// ```
 ````
@@ -37,7 +37,7 @@ use std::thread;
 use tiles::Brush;
 
 fn main() {
-    let brush = Brush::here();
+    let brush = Brush::for_current_thread();
     thread::spawn(move || brush.slot());
 }
 
@@ -101,7 +101,7 @@ the feature: `cargo nextest run -p tiles --no-default-features --test trybuild`.
 ```text
 // Bad: tests/compile_fail/a_narrow_brush_has_no_width.rs, which compiles once `wide` is on.
 fn main() {
-    let _width = tiles::Brush::here().width();
+    let _width = tiles::Brush::for_current_thread().width();
 }
 ```
 
@@ -186,34 +186,34 @@ Which size a hot type keeps, and why, is `tuning-rust-performance`'s.
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Pos;
+    use super::Position;
 
     // Bad: holds only when the tests run.
     #[test]
-    fn a_pos_is_two_columns_wide() {
-        assert_eq!(size_of::<Pos>(), 4, "two `u16`s and nothing else");
+    fn a_position_is_two_columns_wide() {
+        assert_eq!(size_of::<Position>(), 4, "two `u16`s and nothing else");
     }
 }
 ```
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
-// A pos is copied into every square of a board, and crosses to the renderer's threads.
-const _: () = assert!(size_of::<Pos>() == 4, "two `u16`s and nothing else");
+// A position is copied into every square of a board, and crosses to the renderer's threads.
+const _: () = assert!(size_of::<Position>() == 4, "two `u16`s and nothing else");
 const fn copy_send_sync<T: Copy + Send + Sync>() {}
-const _: () = copy_send_sync::<Pos>();
+const _: () = copy_send_sync::<Position>();
 ```
 
 Held by the crate's own build. A trait that must stay absent, a type that must

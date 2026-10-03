@@ -54,28 +54,28 @@ large or not `Copy`, as a spec that holds a path, by reference.
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 // Bad: a reference to four bytes.
 #[must_use]
-pub const fn right(at: &Pos) -> Pos {
-    Pos { col: at.col.saturating_add(1), row: at.row }
+pub const fn right(position: &Position) -> Position {
+    Position { column: position.column.saturating_add(1), row: position.row }
 }
 ```
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 #[must_use]
-pub const fn right(at: Pos) -> Pos {
-    Pos { col: at.col.saturating_add(1), row: at.row }
+pub const fn right(position: Position) -> Position {
+    Position { column: position.column.saturating_add(1), row: position.row }
 }
 ```
 
@@ -273,15 +273,15 @@ named only to tie an output to one input of several, as `fn longer<'a>(top: &'a
 use core::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
-impl fmt::Display for Pos {
+impl fmt::Display for Position {
     // Bad: nothing shows that the formatter borrows.
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{},{}", self.col, self.row)
+        write!(f, "{},{}", self.column, self.row)
     }
 }
 ```
@@ -290,14 +290,14 @@ impl fmt::Display for Pos {
 use core::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
-impl fmt::Display for Pos {
+impl fmt::Display for Position {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{},{}", self.col, self.row)
+        write!(f, "{},{}", self.column, self.row)
     }
 }
 ```

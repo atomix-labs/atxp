@@ -63,8 +63,8 @@ pub fn fits(text: &str, n: usize) -> bool {
 
 ```rust
 #[must_use]
-pub fn fits(text: &str, widest: usize) -> bool {
-    text.lines().all(|row| row.len() <= widest)
+pub fn fits(text: &str, widest_row: usize) -> bool {
+    text.lines().all(|row| row.len() <= widest_row)
 }
 ```
 
@@ -112,17 +112,17 @@ changes and the comment goes.
 
 ```rust
 #[must_use]
-pub fn squares(cols: u16, rows: u16) -> u32 {
+pub fn squares(columns: u16, rows: u16) -> u32 {
     // Bad: narrates the lint instead of saying anything of the code.
     // Clippy complains about `as`, so use `from` (STY-CAST-2).
-    u32::from(cols).saturating_mul(u32::from(rows))
+    u32::from(columns).saturating_mul(u32::from(rows))
 }
 ```
 
 ```rust
 #[must_use]
-pub fn squares(cols: u16, rows: u16) -> u32 {
-    u32::from(cols).saturating_mul(u32::from(rows))
+pub fn squares(columns: u16, rows: u16) -> u32 {
+    u32::from(columns).saturating_mul(u32::from(rows))
 }
 ```
 
@@ -163,13 +163,13 @@ exception: it sits where its tool reads it, on the directive's line, as
 ```toml
 [grid]
 # Bad: the name again, at the end of the line.
-max_cols = 64 # max cols
+max_columns = 64 # max columns
 ```
 
 ```toml
 [grid]
 # A wider row wraps in an 80-column terminal, where the grid is drawn.
-max_cols = 64
+max_columns = 64
 ```
 
 Held by review.

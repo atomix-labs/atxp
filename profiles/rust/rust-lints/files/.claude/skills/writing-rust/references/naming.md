@@ -69,30 +69,31 @@ needs its `upper-case-acronyms-aggressive` option, which is off.
 ## An Associated Constant Names the Value
 
 A value a type has one of is an associated constant named for what it is,
-`Pos::ORIGIN`, `Tile::BLANK`, `Grid::MAX_COLS`, `ZERO`, `MAX`, `MIN`, not a
-function that returns it and not a free constant with the type's name inside.
+`Position::ORIGIN`, `Tile::BLANK`, `Grid::MAX_COLUMNS`, `ZERO`, `MAX`, `MIN`,
+not a function that returns it and not a free constant with the type's name
+inside.
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 // Bad: a free constant that repeats the type's name.
-pub const POS_ORIGIN: Pos = Pos { col: 0, row: 0 };
+pub const POSITION_ORIGIN: Position = Position { column: 0, row: 0 };
 ```
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
-impl Pos {
+impl Position {
     /// The top-left square.
-    pub const ORIGIN: Self = Self { col: 0, row: 0 };
+    pub const ORIGIN: Self = Self { column: 0, row: 0 };
 }
 ```
 
@@ -101,25 +102,25 @@ Held by review.
 ## A Getter Is Its Noun, Without `get_`
 
 A method that reads a field or a property is named for what it returns,
-`cols()`, `len()`, `capacity()`, since the call's parentheses already say it is
-read. A newtype's value is read in its unit, `as_squares()`, as `Duration` reads
-one with `as_nanos()`, so the call says what the number counts; `get()` only
-where the value has no unit or word of its own, as `NonZero::get`. `get_`
+`columns()`, `len()`, `capacity()`, since the call's parentheses already say it
+is read. A newtype's value is read in its unit, `as_squares()`, as `Duration`
+reads one with `as_nanos()`, so the call says what the number counts; `get()`
+only where the value has no unit or word of its own, as `NonZero::get`. `get_`
 appears only where it mirrors a name of `std`, `get_mut` and `get_unchecked`,
 which index.
 
 ```rust
 #[derive(Debug)]
 pub struct Grid {
-    cols: u16,
+    columns: u16,
     rows: u16,
 }
 
 impl Grid {
     // Bad: `get_` says nothing the parentheses do not.
     #[must_use]
-    pub const fn get_cols(&self) -> u16 {
-        self.cols
+    pub const fn get_columns(&self) -> u16 {
+        self.columns
     }
 
     #[must_use]
@@ -132,14 +133,14 @@ impl Grid {
 ```rust
 #[derive(Debug)]
 pub struct Grid {
-    cols: u16,
+    columns: u16,
     rows: u16,
 }
 
 impl Grid {
     #[must_use]
-    pub const fn cols(&self) -> u16 {
-        self.cols
+    pub const fn columns(&self) -> u16 {
+        self.columns
     }
 
     #[must_use]
@@ -311,8 +312,8 @@ impl Board {
 
     pub fn open_or_create(path: &Path) -> io::Result<Self> {
         match Self::open(path) {
-            Err(absent) if absent.kind() == io::ErrorKind::NotFound => Self::create(path),
-            opened => opened,
+            Err(error) if error.kind() == io::ErrorKind::NotFound => Self::create(path),
+            board_or_other_error => board_or_other_error,
         }
     }
 
@@ -432,7 +433,7 @@ parameters.
 // where they come from.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GridOptions {
-    pub cols: u16,
+    pub columns: u16,
     pub rows: u16,
     pub theme: String,
 }
@@ -444,7 +445,7 @@ use std::env;
 /// What a grid is laid with: the parameters of `Grid::new`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GridSpec {
-    pub cols: u16,
+    pub columns: u16,
     pub rows: u16,
     pub wrap: Wrap,
 }
@@ -465,7 +466,8 @@ pub struct EditorConfig {
 impl EditorConfig {
     #[must_use]
     pub fn from_env() -> Self {
-        Self { theme: env::var("TILES_THEME").unwrap_or_else(|_unset| String::from("plain")) }
+        let theme = env::var("TILES_THEME").unwrap_or_else(|_unset_variable| String::from("plain"));
+        Self { theme }
     }
 }
 ```
@@ -488,8 +490,8 @@ pub struct Grid {
 impl Grid {
     // Bad: a square here, a cell there, for the same place.
     #[must_use]
-    pub fn square(&self, at: usize) -> Option<u8> {
-        self.squares.get(at).copied()
+    pub fn square(&self, index: usize) -> Option<u8> {
+        self.squares.get(index).copied()
     }
 
     #[must_use]
@@ -507,8 +509,8 @@ pub struct Grid {
 
 impl Grid {
     #[must_use]
-    pub fn square(&self, at: usize) -> Option<u8> {
-        self.squares.get(at).copied()
+    pub fn square(&self, index: usize) -> Option<u8> {
+        self.squares.get(index).copied()
     }
 
     #[must_use]

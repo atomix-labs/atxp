@@ -54,8 +54,8 @@ Under `strict`, real code also documents every item.
 ### Proofs
 
 1. **One unsafe operation a block**, so each `// SAFETY:` proves one thing;
-   `ptr.add(at).read()` is two, and `add` lands in bounds even where nothing is
-   read.
+   `ptr.add(offset).read()` is two, and `add` lands in bounds even where nothing
+   is read.
 2. **A `// SAFETY:` proves each precondition the operation's `# Safety` lists,
    from a fact in scope**: a check above, a field's invariant, the caller's
    contract, the step before. Restating the operation proves nothing.

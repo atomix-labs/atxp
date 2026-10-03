@@ -48,18 +48,18 @@ item they show.
    and says more than the name**, since rustdoc shows it in every listing;
    `references/style.md` §1 has every kind, and what not to write:
 
-| item          | summary                                    | write                                               |
-| ------------- | ------------------------------------------ | --------------------------------------------------- |
-| crate         | the pitch, the manifest's `description`    | Boards of tiles, and the moves across them.         |
-| module        | one line, naming its key item              | The moves a tile makes across a [`Board`].          |
-| fn            | a verb first, present tense                | Slides the tile toward `dir`, or `None` at an edge. |
-| getter        | the value: `How many …`, `Whether …`       | How many squares hold a tile.                       |
-| constructor   | the state it yields                        | A board of `cols` by `rows` empty squares.          |
-| type          | its role; a verb phrase for an active one  | A square of a board, by column and row.             |
-| trait         | `How to …` for a capability, else the role | How to paint a tile onto a square.                  |
-| field         | a noun phrase; its invariant after it      | Tiles on the board. At most one a square.           |
-| error type    | `Why …`                                    | Why a column and row name no square of a board.     |
-| error variant | the condition, as a fact                   | The column is past the board's last.                |
+| item          | summary                                    | write                                            |
+| ------------- | ------------------------------------------ | ------------------------------------------------ |
+| crate         | the pitch, the manifest's `description`    | Boards of tiles, and the moves across them.      |
+| module        | one line, naming its key item              | The moves a tile makes across a [`Board`].       |
+| fn            | a verb first, present tense                | Slides toward `direction`, or `None` at an edge. |
+| getter        | the value: `How many …`, `Whether …`       | How many squares hold a tile.                    |
+| constructor   | the state it yields                        | A board of `columns` by `rows` empty squares.    |
+| type          | its role; a verb phrase for an active one  | A square of a board, by column and row.          |
+| trait         | `How to …` for a capability, else the role | How to paint a tile onto a square.               |
+| field         | a noun phrase; its invariant after it      | Tiles on the board. At most one a square.        |
+| error type    | `Why …`                                    | Why a column and row name no square of a board.  |
+| error variant | the condition, as a fact                   | The column is past the board's last.             |
 
 ### Sections
 
@@ -83,21 +83,21 @@ item they show.
    role, three to five bullets.
 
 ````text
-/// The square at `col` and `row`, once both fall on the board.
+/// The square at `column` and `row`, once both fall on the board.
 ///
 /// # Errors
-/// - [`PosError::Col`], `col` is past the last column.
-/// - [`PosError::Row`], `row` is past the last row.
+/// - [`PositionError::ColumnOffBoard`], `column` is past the last column.
+/// - [`PositionError::RowOffBoard`], `row` is past the last row.
 ///
 /// # Examples
 /// ```
-/// use tiles::{Board, Pos, PosError};
+/// use tiles::{Board, Position, PositionError};
 ///
-/// let board = Board { cols: 8, rows: 8 };
-/// assert_eq!(board.pos(3, 1)?, Pos { col: 3, row: 1 }, "a square of the board");
-/// # Ok::<(), PosError>(())
+/// let board = Board { columns: 8, rows: 8 };
+/// assert_eq!(board.position(3, 1)?, Position { column: 3, row: 1 }, "a square of the board");
+/// # Ok::<(), PositionError>(())
 /// ```
-pub const fn pos(self, col: u16, row: u16) -> Result<Pos, PosError>
+pub const fn position(self, column: u16, row: u16) -> Result<Position, PositionError>
 ````
 
 A single variant is one line. An error passed up names the state it leaves,
@@ -255,24 +255,24 @@ Under `strict`, every private item has its summary too.
 
 ## What Not to Do
 
-| Thought                                             | Instead                                                 |
-| --------------------------------------------------- | ------------------------------------------------------- |
-| "A negative offset probably means earlier"          | The code does not say it: leave it out, and ask.        |
-| "The crate is close; I'll fix the gaps I see"       | The inventory and the audit say what is left.           |
-| "``[`PosError`] if the column is off`` reads fine"  | ``[`Variant`], <condition>.``, a `- ` list for several. |
-| "The three-line summary is one thought"             | One sentence, a blank `///`, then the rest.             |
-| "`ignore` for now; the example needs setup"         | `no_run`, a `text` fence, or a smaller example.         |
-| "This path allocates nothing; the types show it"    | Say what shows it, a listing or a measurement, or ask.  |
-| "A `// SAFETY:` is one line"                        | Each precondition and its fact, however many lines.     |
-| "`// SAFETY:` between the `#[expect]` and the code" | Above the `#[expect]`, so the proof reads first.        |
-| "`SeqCst` needs no `// ORDERING:`"                  | Every atomic has one: say what the ordering is for.     |
-| "A comment beside the `#[expect]` explains it"      | Its `reason` is its one home.                           |
-| "My rewrite of that comment reads better"           | A terse line that states its fact is finished.          |
-| "The description is out of scope for docs"          | It is the crate's pitch on crates.io: write it, or ask. |
-| "A newtype needs an example, however tautological"  | Not if a neighbour's shows it and no sibling has one.   |
-| "This sibling crate's concept needs a paragraph"    | Link the crate that defines it; write it there if not.  |
-| "No time to read the tests and the history"         | A doc without its facts costs more later: read them.    |
-| "The checks are slow; `cargo fmt` is enough"        | They take seconds on a warm cache: run them.            |
+| Thought                                          | Instead                                                 |
+| ------------------------------------------------ | ------------------------------------------------------- |
+| "A negative offset probably means earlier"       | The code does not say it: leave it out, and ask.        |
+| "The crate is close; I'll fix the gaps I see"    | The inventory and the audit say what is left.           |
+| "``[`PositionError`] if off the board`` works"   | ``[`Variant`], <condition>.``, a `- ` list for several. |
+| "The three-line summary is one thought"          | One sentence, a blank `///`, then the rest.             |
+| "`ignore` for now; the example needs setup"      | `no_run`, a `text` fence, or a smaller example.         |
+| "This path allocates nothing; the types show it" | Say what shows it, a listing or a measurement, or ask.  |
+| "A `// SAFETY:` is one line"                     | Each precondition and its fact, however many lines.     |
+| "`// SAFETY:` between `#[expect]` and the code"  | Above the `#[expect]`, so the proof reads first.        |
+| "`SeqCst` needs no `// ORDERING:`"               | Every atomic has one: say what the ordering is for.     |
+| "A comment beside the `#[expect]` explains it"   | Its `reason` is its one home.                           |
+| "My rewrite of that comment reads better"        | A terse line that states its fact is finished.          |
+| "The description is out of scope for docs"       | It is the crate's pitch on crates.io: write it, or ask. |
+| "A newtype needs an example, even a tautology"   | Not if a neighbour's shows it and no sibling has one.   |
+| "This sibling crate's concept needs a paragraph" | Link the crate that defines it; write it there if not.  |
+| "No time to read the tests and the history"      | A doc without its facts costs more later: read them.    |
+| "The checks are slow; `cargo fmt` is enough"     | They take seconds on a warm cache: run them.            |
 
 ## References
 

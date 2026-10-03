@@ -11,8 +11,8 @@ A call that creates or opens something, and takes three parameters or more, or
 one a caller may leave at its usual value, takes them as one `*Spec` struct with
 public fields, built as a literal and passed as any value is, by value where it
 is small and `Copy` and by reference where it is not; one or two plain values
-stay arguments, `Board::create(path)`, `Grid::new(cols, rows)`. Every field is
-written at the call site, so nothing is configured by a default nobody wrote
+stay arguments, `Board::create(path)`, `Grid::new(columns, rows)`. Every field
+is written at the call site, so nothing is configured by a default nobody wrote
 down, a missing field is a compile error, and a reader sees the whole
 configuration in one place. A usual value is a named constructor or constant of
 the spec, `GridSpec::square(8)`, never a `Default` nobody sees. A program's
@@ -25,15 +25,15 @@ field, not for a set of values.
 // default.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct GridBuilder {
-    cols: u16,
+    columns: u16,
     rows: u16,
     wrap: bool,
 }
 
 impl GridBuilder {
     #[must_use]
-    pub const fn cols(mut self, cols: u16) -> Self {
-        self.cols = cols;
+    pub const fn columns(mut self, columns: u16) -> Self {
+        self.columns = columns;
         self
     }
 
@@ -55,7 +55,7 @@ impl GridBuilder {
 /// What a grid is laid with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GridSpec {
-    pub cols: u16,
+    pub columns: u16,
     pub rows: u16,
     /// Whether a move off one edge comes back on the other.
     pub wrap: Wrap,
@@ -71,7 +71,7 @@ impl GridSpec {
     /// A square grid of `side` squares a side, whose edges stop a move.
     #[must_use]
     pub const fn square(side: u16) -> Self {
-        Self { cols: side, rows: side, wrap: Wrap::Edges }
+        Self { columns: side, rows: side, wrap: Wrap::Edges }
     }
 }
 
@@ -94,7 +94,7 @@ impl Grid {
 
 #[must_use]
 pub const fn board() -> Grid {
-    Grid::new(GridSpec { cols: 12, rows: 8, wrap: Wrap::Torus })
+    Grid::new(GridSpec { columns: 12, rows: 8, wrap: Wrap::Torus })
 }
 
 #[must_use]
@@ -199,21 +199,21 @@ alias, not a newtype: the name is worth having, a second type is not".
 
 ```rust
 // Bad: an alias for two things a caller can swap, so nothing stops it.
-pub type Col = u16;
+pub type Column = u16;
 pub type Row = u16;
 
 #[must_use]
-pub fn index(col: Col, row: Row, cols: u16) -> Option<usize> {
-    usize::from(row).checked_mul(usize::from(cols))?.checked_add(usize::from(col))
+pub fn index(column: Column, row: Row, columns: u16) -> Option<usize> {
+    usize::from(row).checked_mul(usize::from(columns))?.checked_add(usize::from(column))
 }
 ```
 
 ```rust
 /// A column, counted from the left edge.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Col(u16);
+pub struct Column(u16);
 
-impl Col {
+impl Column {
     #[must_use]
     pub const fn from_index(index: u16) -> Self {
         Self(index)
@@ -245,9 +245,9 @@ impl Row {
 pub type Squares<'a> = &'a [u8];
 
 #[must_use]
-pub fn index(col: Col, row: Row, cols: u16) -> Option<usize> {
-    let squares_above = usize::from(row.as_index()).checked_mul(usize::from(cols))?;
-    squares_above.checked_add(usize::from(col.as_index()))
+pub fn index(column: Column, row: Row, columns: u16) -> Option<usize> {
+    let squares_above = usize::from(row.as_index()).checked_mul(usize::from(columns))?;
+    squares_above.checked_add(usize::from(column.as_index()))
 }
 ```
 
@@ -335,18 +335,18 @@ impl From<TileId> for u32 {
 }
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("tile id error: {held} is past the last id, {max}")]
+#[error("tile id error: {id} is past the last id, {maximum}")]
 pub struct TileIdError {
-    pub held: u32,
-    pub max: u32,
+    pub id: u32,
+    pub maximum: u32,
 }
 
 impl TryFrom<u32> for TileId {
     type Error = TileIdError;
 
-    fn try_from(held: u32) -> Result<Self, Self::Error> {
+    fn try_from(id: u32) -> Result<Self, Self::Error> {
         const MAX: u32 = 1 << 20;
-        if held > MAX { Err(TileIdError { held, max: MAX }) } else { Ok(Self(held)) }
+        if id > MAX { Err(TileIdError { id, maximum: MAX }) } else { Ok(Self(id)) }
     }
 }
 ```
@@ -451,8 +451,8 @@ goes through a helper whose `Display` pads the whole, as below.
 // fails: missing_debug_implementations
 // Bad: no `Debug`, so no failure can print one.
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 ```
@@ -460,8 +460,8 @@ pub struct Pos {
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 ```
@@ -551,9 +551,9 @@ slower, and a line where it stands says which, naming the run that measured it.
 // Bad: a loop by hand for what `position` says in one call.
 #[must_use]
 pub fn first_blank(squares: &[u8]) -> Option<usize> {
-    for (at, &square) in squares.iter().enumerate() {
+    for (index, &square) in squares.iter().enumerate() {
         if square == 0 {
-            return Some(at);
+            return Some(index);
         }
     }
     None
@@ -574,13 +574,16 @@ use core::str;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Label {
     bytes: [u8; 16],
-    len: usize,
+    length: usize,
 }
 
 impl Label {
     #[must_use]
     pub fn as_str(&self) -> &str {
-        self.bytes.get(..self.len).and_then(|bytes| str::from_utf8(bytes).ok()).unwrap_or_default()
+        self.bytes
+            .get(..self.length)
+            .and_then(|bytes| str::from_utf8(bytes).ok())
+            .unwrap_or_default()
     }
 }
 ```
@@ -602,14 +605,14 @@ impl Label {
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Col(u16);
+pub struct Column(u16);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Row(u16);
 
 // Bad: one rule written out for each axis, so a change to it is two edits that
 // can drift apart.
-impl Col {
+impl Column {
     #[must_use]
     pub const fn from_index(index: u16) -> Self {
         Self(index)
@@ -655,7 +658,7 @@ macro_rules! axis {
     };
 }
 
-axis!(Col);
+axis!(Column);
 axis!(Row);
 ```
 
@@ -728,15 +731,15 @@ either inside an `Option` carries the guard's reason, since `Option` is not
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("occupied error: square {at} holds a tile already")]
+#[error("occupied error: square {index} holds a tile already")]
 pub struct OccupiedError {
-    pub at: usize,
+    pub index: usize,
 }
 
 // Bad: `Result` is `#[must_use]` already.
 #[must_use]
-pub const fn claim(at: usize, taken: bool) -> Result<usize, OccupiedError> {
-    if taken { Err(OccupiedError { at }) } else { Ok(at) }
+pub const fn claim(index: usize, taken: bool) -> Result<usize, OccupiedError> {
+    if taken { Err(OccupiedError { index }) } else { Ok(index) }
 }
 ```
 
@@ -760,8 +763,11 @@ pub struct Grid {
 
 impl Grid {
     #[must_use = "the square stays claimed until the guard drops"]
-    pub fn claim(&mut self, at: usize) -> Option<ClaimGuard<'_>> {
-        self.squares.get_mut(at).filter(|square| square.is_none()).map(|square| ClaimGuard { square })
+    pub fn claim(&mut self, index: usize) -> Option<ClaimGuard<'_>> {
+        self.squares
+            .get_mut(index)
+            .filter(|square| square.is_none())
+            .map(|square| ClaimGuard { square })
     }
 
     #[must_use]
@@ -1104,9 +1110,9 @@ pub enum Side {
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum LoadError {
     #[error("load error: the file holds no rows")]
-    Empty,
-    #[error("load error: row {row} has {have} squares, the grid needs {need}")]
-    Short { row: u16, need: u16, have: u16 },
+    NoRows,
+    #[error("load error: row {row} has {available} squares, the grid needs {required}")]
+    RowTooShort { row: u16, required: u16, available: u16 },
 }
 ```
 

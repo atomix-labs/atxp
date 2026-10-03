@@ -75,10 +75,10 @@ Under `strict`, real code also documents every item.
    derived `Clone`'s `clone_from` does not, so clone its fields.
 6. **Borrow from the input rather than copy it**: a parsed value holds `&'a str`
    or `&'a [u8]` of its buffer, since copying each field allocates each field.
-7. **Make a large value where it lives, `vec![0; n].into_boxed_slice()`**, since
-   `Box::new([0; N])` builds the array on the stack first, and overflows it in a
-   build that does not optimize the copy away; `Box::new_zeroed()` serves one
-   value, with an unsafe `assume_init`.
+7. **Make a large value where it lives, `vec![0; length].into_boxed_slice()`**,
+   since `Box::new([0; N])` builds the array on the stack first, and overflows
+   it in a build that does not optimize the copy away; `Box::new_zeroed()`
+   serves one value, with an unsafe `assume_init`.
 8. **A crate that must not allocate lists what allocates in its own
    `clippy.toml`, each with a reason**, which replaces the workspace's, so it
    repeats every key of it.

@@ -17,7 +17,7 @@ surface. Items are defined in modules, never in `lib.rs`.
 //! A grid of tiles.
 pub use crate::grid::Grid;
 mod grid;
-pub struct Pos { pub col: u16, pub row: u16 }
+pub struct Position { pub column: u16, pub row: u16 }
 mod errors;
 ```
 
@@ -41,7 +41,7 @@ mod moves;
 mod testing;
 
 pub use crate::errors::{BoundsError, MoveError};
-pub use crate::grid::{Grid, Pos};
+pub use crate::grid::{Grid, Position};
 pub use crate::moves::Move;
 ```
 
@@ -49,18 +49,18 @@ Held by review.
 
 ## Modules Are Private, and the Root Re-Exports What Callers Name
 
-A caller writes `tiles::Pos`, not `tiles::grid::Pos`: the module a type lives in
-is the crate's to change, and a private module with a flat re-export lets it
-move a type without breaking anyone. A module is `pub` only where its path is
-part of the API, a namespace callers are meant to write, as `tiles::board` for a
-board file's types, and then on purpose.
+A caller writes `tiles::Position`, not `tiles::grid::Position`: the module a
+type lives in is the crate's to change, and a private module with a flat
+re-export lets it move a type without breaking anyone. A module is `pub` only
+where its path is part of the API, a namespace callers are meant to write, as
+`tiles::board` for a board file's types, and then on purpose.
 
 ```rust
 // Bad: every module is public, so the file a type lives in is part of the API.
 pub mod grid {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-    pub struct Pos {
-        pub col: u16,
+    pub struct Position {
+        pub column: u16,
         pub row: u16,
     }
 }
@@ -74,8 +74,8 @@ pub mod tile {
 ```rust
 mod grid {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-    pub struct Pos {
-        pub col: u16,
+    pub struct Position {
+        pub column: u16,
         pub row: u16,
     }
 }
@@ -85,7 +85,7 @@ mod tile {
     pub struct TileId(pub u32);
 }
 
-pub use crate::grid::Pos;
+pub use crate::grid::Position;
 pub use crate::tile::TileId;
 ```
 
@@ -102,8 +102,8 @@ lets an explicit import shadow one of its names.
 ```rust
 mod grid {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-    pub struct Pos {
-        pub col: u16,
+    pub struct Position {
+        pub column: u16,
         pub row: u16,
     }
 }
@@ -115,13 +115,13 @@ pub use crate::grid::*;
 ```rust
 mod grid {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-    pub struct Pos {
-        pub col: u16,
+    pub struct Position {
+        pub column: u16,
         pub row: u16,
     }
 }
 
-pub use crate::grid::Pos;
+pub use crate::grid::Position;
 ```
 
 Held by review, and by `clippy::wildcard_imports`, which refuses a glob `use`
@@ -180,49 +180,53 @@ the item itself how far it reaches. `pub(in path)` is not used.
 // fails: unreachable_pub
 mod grid {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-    pub struct Pos {
-        pub col: u16,
+    pub struct Position {
+        pub column: u16,
         pub row: u16,
     }
 
     // Bad: `pub`, but nothing outside the crate can reach it.
-    pub fn index(at: Pos, cols: u16) -> Option<usize> {
-        usize::from(at.row).checked_mul(usize::from(cols))?.checked_add(usize::from(at.col))
+    pub fn index(position: Position, columns: u16) -> Option<usize> {
+        usize::from(position.row)
+            .checked_mul(usize::from(columns))?
+            .checked_add(usize::from(position.column))
     }
 
-    impl Pos {
+    impl Position {
         #[must_use]
-        pub fn index(self, cols: u16) -> Option<usize> {
-            index(self, cols)
+        pub fn index(self, columns: u16) -> Option<usize> {
+            index(self, columns)
         }
     }
 }
 
-pub use crate::grid::Pos;
+pub use crate::grid::Position;
 ```
 {%- endif %}
 
 ```rust
 mod grid {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-    pub struct Pos {
-        pub col: u16,
+    pub struct Position {
+        pub column: u16,
         pub row: u16,
     }
 
-    pub(crate) fn index(at: Pos, cols: u16) -> Option<usize> {
-        usize::from(at.row).checked_mul(usize::from(cols))?.checked_add(usize::from(at.col))
+    pub(crate) fn index(position: Position, columns: u16) -> Option<usize> {
+        usize::from(position.row)
+            .checked_mul(usize::from(columns))?
+            .checked_add(usize::from(position.column))
     }
 
-    impl Pos {
+    impl Position {
         #[must_use]
-        pub fn index(self, cols: u16) -> Option<usize> {
-            index(self, cols)
+        pub fn index(self, columns: u16) -> Option<usize> {
+            index(self, columns)
         }
     }
 }
 
-pub use crate::grid::Pos;
+pub use crate::grid::Position;
 ```
 
 Held by review.
@@ -313,8 +317,8 @@ feature that only adds. A binary uses `std` and still writes `core::` and
 use std::cmp::Ordering;
 
 #[must_use]
-pub fn by_row(a: (u16, u16), b: (u16, u16)) -> Ordering {
-    a.1.cmp(&b.1).then(a.0.cmp(&b.0))
+pub fn by_row(left: (u16, u16), right: (u16, u16)) -> Ordering {
+    left.1.cmp(&right.1).then(left.0.cmp(&right.0))
 }
 ```
 
@@ -327,13 +331,13 @@ use alloc::vec::Vec;
 use core::cmp::Ordering;
 
 #[must_use]
-pub fn by_row(a: (u16, u16), b: (u16, u16)) -> Ordering {
-    a.1.cmp(&b.1).then(a.0.cmp(&b.0))
+pub fn by_row(left: (u16, u16), right: (u16, u16)) -> Ordering {
+    left.1.cmp(&right.1).then(left.0.cmp(&right.0))
 }
 
 #[must_use]
-pub fn sorted(mut squares: Vec<(u16, u16)>) -> Vec<(u16, u16)> {
-    squares.sort_by(|a, b| by_row(*a, *b));
+pub fn sort_by_row(mut squares: Vec<(u16, u16)>) -> Vec<(u16, u16)> {
+    squares.sort_by(|left, right| by_row(*left, *right));
     squares
 }
 ```
@@ -350,14 +354,14 @@ takes it for part of the API. The macro reaches it through `$crate::`.
 ```rust
 // Bad: public and documented, so callers take it for part of the API.
 #[must_use]
-pub fn squares_of(cols: u16, rows: u16) -> Option<u32> {
-    u32::from(cols).checked_mul(u32::from(rows))
+pub fn squares_of(columns: u16, rows: u16) -> Option<u32> {
+    u32::from(columns).checked_mul(u32::from(rows))
 }
 
 #[macro_export]
 macro_rules! squares {
-    ($cols:expr, $rows:expr) => {
-        $crate::squares_of($cols, $rows)
+    ($columns:expr, $rows:expr) => {
+        $crate::squares_of($columns, $rows)
     };
 }
 ```
@@ -365,14 +369,14 @@ macro_rules! squares {
 ```rust
 #[doc(hidden)]
 #[must_use]
-pub fn __squares(cols: u16, rows: u16) -> Option<u32> {
-    u32::from(cols).checked_mul(u32::from(rows))
+pub fn __squares(columns: u16, rows: u16) -> Option<u32> {
+    u32::from(columns).checked_mul(u32::from(rows))
 }
 
 #[macro_export]
 macro_rules! squares {
-    ($cols:expr, $rows:expr) => {
-        $crate::__squares($cols, $rows)
+    ($columns:expr, $rows:expr) => {
+        $crate::__squares($columns, $rows)
     };
 }
 ```

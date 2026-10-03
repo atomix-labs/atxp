@@ -51,18 +51,25 @@ skill holds what they do not, and its references name the heading of
    tells the reader nothing. Where no domain word fits, the thing is not yet one
    thing.
 2. **A name does not repeat its context**: `grid::Cursor`, not
-   `grid::GridCursor`; `grid.cols()`, not `grid.grid_cols()`; `tiles`, not
+   `grid::GridCursor`; `grid.columns()`, not `grid.grid_columns()`; `tiles`, not
    `tile_vec`, since the reader already sees the module, the receiver and the
    type.
 3. **A function's name says all it does**: one that asks changes nothing, one
    that needs "and" is two functions, and one that hides a write, a wait or an
    allocation misleads, since a caller trusts the name and not the body.
-4. **A name's length follows its reach**: `at` in a three-line closure, whole
-   words for what crosses a module, and an abbreviation only as the domain
-   writes it, `id`, `url`, `io`, since a short scope is read whole and a wide
-   one is not.
-5. **A literal that means something is a named constant**, `MAX_COLS`, not `64`
-   in three places, so its meaning and its value are written once.
+4. **A name is whole words, never a fragment**: a word whose subject the reader
+   cannot find in the name, its type, its pair or the code read with it, `at`,
+   `held`, `fresh`, `want`, leaves them to ask at what or held by whom, so no
+   field, method or variable takes one; `expected` and `actual`, `required` and
+   `available` are whole, each read against its pair. An error's variant or unit
+   type names its whole condition, `RowTooShort`, never `Short`. A short word
+   stays where the code around it says what it holds, `next` beside the
+   `checked_add(1)` that makes it, and a wide reach takes more words; a dropped
+   binding is named for what it holds, `_unsent_tile`, never `_outcome`; an
+   abbreviation only as the domain writes it, `id`, `url`, `io`, `utf8`, and
+   `rx` and `tx` for a channel's two ends.
+5. **A literal that means something is a named constant**, `MAX_COLUMNS`, not
+   `64` in three places, so its meaning and its value are written once.
 6. **A condition is named for what is true, `is_visible`, never `!is_hidden`,
    and a compound condition gets a name**, since each negation is a step the
    reader takes.
@@ -114,8 +121,8 @@ skill holds what they do not, and its references name the heading of
    state's data, never flags and optional fields**, so a combination that cannot
    happen cannot be built, and every use handles every state.
 2. **No boolean parameter that picks what the function does: an enum whose
-   variants name the choice, or two functions**, `place(at, tile,
-   Clash::Refuse)` or `place` and `replace`, never `place(at, tile, true)`,
+   variants name the choice, or two functions**, `place(index, tile,
+   Clash::Refuse)` or `place` and `replace`, never `place(index, tile, true)`,
    since `true` at a call site says nothing of what it chose. A `bool` that is
    the value being set or stored, `set_visible(visible)`, is data, and stays.
 3. **Check input once, where it enters, and turn it into a type that holds the
@@ -165,7 +172,8 @@ skill holds what they do not, and its references name the heading of
 1. **Dead code is deleted, never commented out, kept behind a flag, renamed
    `_old` or left beside its replacement**, since version control keeps it and a
    copy nobody runs goes stale while it looks alive; a change deletes what it
-   makes obsolete, and a parameter nothing reads is removed, not renamed `_at`.
+   makes obsolete, and a parameter nothing reads is removed, not renamed
+   `_index`.
 
 ## Steps
 
@@ -197,7 +205,9 @@ Read each reference a step names, whole, before writing the code.
 
 The tells of code written mechanically, strongest first:
 
-1. A name from the list in the first rule of Names, or one that needs "and".
+1. A name from the list in the first rule of Names, a fragment, `at` or `held`,
+   a variant that names part of its condition, `Past`, or a name that needs
+   "and".
 2. A `bool` parameter that picks behaviour, or flags and optional fields that
    together make a state.
 3. A trait, interface or generic with one implementation; a factory, registry,

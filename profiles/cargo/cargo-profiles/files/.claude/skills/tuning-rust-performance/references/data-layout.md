@@ -61,7 +61,7 @@ order is the author's: widest alignment first, so padding falls at the end.
 // Bad: in declared order, 7 bytes of padding after each `u8`: 24 bytes.
 pub struct Stamp {
     pub layer: u8,
-    pub at: u64,
+    pub time: u64,
     pub flags: u8,
 }
 
@@ -72,7 +72,7 @@ const _: () = assert!(size_of::<Stamp>() == 24, "declared order, padded");
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct Stamp {
-    pub at: u64,
+    pub time: u64,
     pub layer: u8,
     pub flags: u8,
 }
@@ -93,27 +93,29 @@ takes four bytes and not sixteen. The value widens where it is used, with
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 // Bad: sixteen bytes for a position no board needs more than four for.
-pub struct Pos {
-    pub col: usize,
+pub struct Position {
+    pub column: usize,
     pub row: usize,
 }
 ```
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
-impl Pos {
+impl Position {
     #[must_use]
-    pub fn index(self, cols: u16) -> usize {
-        usize::from(self.row).saturating_mul(usize::from(cols)).saturating_add(usize::from(self.col))
+    pub fn index(self, columns: u16) -> usize {
+        usize::from(self.row)
+            .saturating_mul(usize::from(columns))
+            .saturating_add(usize::from(self.column))
     }
 }
 
-const _: () = assert!(size_of::<Pos>() == 4, "two `u16`s and nothing else");
+const _: () = assert!(size_of::<Position>() == 4, "two `u16`s and nothing else");
 ```
 
 Held by review, and by the size assertion.
@@ -377,14 +379,14 @@ use std::collections::HashMap;
 
 #[derive(Debug, Default)]
 pub struct FirstSeen {
-    at: HashMap<char, u16>,
+    indices: HashMap<char, u16>,
 }
 
 impl FirstSeen {
-    pub fn note(&mut self, glyph: char, at: u16) {
+    pub fn note(&mut self, glyph: char, index: u16) {
         // Bad: two lookups where one serves.
-        if !self.at.contains_key(&glyph) {
-            self.at.insert(glyph, at);
+        if !self.indices.contains_key(&glyph) {
+            self.indices.insert(glyph, index);
         }
     }
 }
@@ -395,12 +397,12 @@ use std::collections::HashMap;
 
 #[derive(Debug, Default)]
 pub struct FirstSeen {
-    at: HashMap<char, u16>,
+    indices: HashMap<char, u16>,
 }
 
 impl FirstSeen {
-    pub fn note(&mut self, glyph: char, at: u16) {
-        self.at.entry(glyph).or_insert(at);
+    pub fn note(&mut self, glyph: char, index: u16) {
+        self.indices.entry(glyph).or_insert(index);
     }
 }
 ```
@@ -420,14 +422,14 @@ own. Whether it pays is measured: a loop that reads every field gains nothing.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Sprite {
     pub name: String,
-    pub pos: (f32, f32),
+    pub position: (f32, f32),
     pub history: Vec<(f32, f32)>,
 }
 
-pub fn drift(sprites: &mut [Sprite], by: (f32, f32)) {
+pub fn drift(sprites: &mut [Sprite], offset: (f32, f32)) {
     // Bad: a name and a history pulled through the cache for each position moved.
     for sprite in sprites {
-        sprite.pos = (sprite.pos.0 + by.0, sprite.pos.1 + by.1);
+        sprite.position = (sprite.position.0 + offset.0, sprite.position.1 + offset.1);
     }
 }
 ```
@@ -435,15 +437,15 @@ pub fn drift(sprites: &mut [Sprite], by: (f32, f32)) {
 ```rust
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Sprites {
-    pub pos: Vec<(f32, f32)>,
+    pub positions: Vec<(f32, f32)>,
     pub names: Vec<String>,
     pub histories: Vec<Vec<(f32, f32)>>,
 }
 
 impl Sprites {
-    pub fn drift(&mut self, by: (f32, f32)) {
-        for pos in &mut self.pos {
-            *pos = (pos.0 + by.0, pos.1 + by.1);
+    pub fn drift(&mut self, offset: (f32, f32)) {
+        for position in &mut self.positions {
+            *position = (position.0 + offset.0, position.1 + offset.1);
         }
     }
 }
