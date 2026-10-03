@@ -275,14 +275,51 @@ the root README has the header.
 One crate shows the root README, through `readme = "../../README.md"`: the one
 the root README's first install line is for, `tiles`, the library, by default.
 Every other published crate has a `README.md` beside its `Cargo.toml`, which
-Cargo finds with no `readme` key: its name as the title, the crate's place in
-the project in one paragraph, its install line and first use, its docs, and the
-licence.
+Cargo finds with no `readme` key, and which a reader on crates.io may meet
+before any other page of the project. It holds, in order: its name as the title;
+one paragraph on what the crate holds, its place in the project, and a link to
+the project; its install line, for this crate alone; its first use; its docs;
+and the licence. The first template is a library's, the second a command line's.
 {%- if "readme" in devset.features %}
 
 That crate is the one the `crate` variable names, whose crates.io and docs.rs
 badges the header carries.
 {%- endif %}
+
+````md
+# `tiles-geometry`
+
+The squares of [tiles][project] and the moves between them, with no board:
+positions, the eight directions, and the distance between two squares. Most
+users want the `tiles` crate, which re-exports all of it; this one is for a
+board of your own.
+
+## Install
+
+```sh
+cargo add tiles-geometry
+```
+
+It builds with Rust 1.98 or later.
+
+## Quick Start
+
+(the crate page's first doctest, written out as a program, as in §1)
+
+## Documentation
+
+[The API on docs.rs][docs.rs], with an example for each type.
+
+## License
+
+Either [the MIT License][mit] or [the Apache License, Version 2.0][apache], at
+your option.
+
+[project]: {{ "https://github.com/<owner>/tiles" if blob else "../../README.md" }}
+[docs.rs]: https://docs.rs/tiles-geometry
+[mit]: {{ blob or "../../" }}LICENSE-MIT
+[apache]: {{ blob or "../../" }}LICENSE-APACHE
+````
 
 ````md
 # `tiles-cli`
@@ -312,7 +349,9 @@ your option.
 [apache]: {{ blob or "../../" }}LICENSE-APACHE
 ````
 
-A crate's README has no header and no badges: the root README carries them.
+A crate's README has no header and no badges: the root README carries them. The
+opening paragraph names the crate a reader most likely wants where it is another
+one, as `tiles` is here, since crates.io lists every crate of the project alike.
 {%- if "cargo-publish" in devset.profiles %}
 
 ## 5 How Crates.io Shows a README
@@ -369,8 +408,9 @@ Read [CONTRIBUTING.md][contributing] first; the licence is [MIT][mit].
 [mit]: https://github.com/<owner>/tiles/blob/main/LICENSE-MIT
 ```
 
-Held by review: `just check-cargo-publish` packages each crate and builds it,
-and reads no link in its README.
+Held by `just check-cargo-publish`, which reads the README each published crate
+packages, and refuses each relative `src`, `srcset`, `href` or Markdown link in
+it, with the URL to write. Whether the URL is right is review's.
 
 ### Every Published Crate Has a README Crates.io Shows
 
@@ -411,7 +451,7 @@ readme                 = "../../README.md"
 workspace = true
 ```
 
-Held by review: `cargo package -p tiles --list` lists `README.md` where the
-crate has one; `just check-cargo-publish` fails only a `readme` that names no
-file.
+Held by `just check-cargo-publish`, which refuses a published crate with no
+README, and one whose `readme` names no file; `cargo package -p tiles --list`
+lists `README.md` where the crate has one.
 {%- endif %}

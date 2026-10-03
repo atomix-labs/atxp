@@ -93,10 +93,13 @@ does and what stays the repository's, then the facts the catalog writes.
 2. **Name the package where it differs from the binary**, "The package is
    `tiles-cli`, and the binary `tiles`", since `cargo install tiles` finds
    another crate or none.
-3. **Until crates.io has the crate, install it from git**, `cargo add --git
+3. **Once the first release is out, every install line takes the crate from
+   crates.io, `cargo add <package>`, and none says `--git`**, since a git
+   install builds whatever the default branch holds, unreleased changes and all,
+   at no version a reader can pin. Only before that release, while the
+   registry's command fails, does a line read `cargo add --git
    https://github.com/<owner>/<repo> <package>`, or `cargo install --locked
-   --git … <package>`, since the registry's command fails for a crate not yet
-   published.
+   --git … <package>`, and the release that publishes the crate changes it.
 4. **State the minimum Rust once, in Install, from the workspace's
    `rust-version`**: "`tiles` builds with Rust 1.98 or later.", so a reader on
    an older toolchain knows before the build fails; raising `rust-version`
@@ -120,6 +123,34 @@ does and what stays the repository's, then the facts the catalog writes.
 The crate page, its examples and each manifest's `description` are
 `writing-rustdoc`'s.
 {%- endif %}
+{%- if "cargo-publish" in devset.profiles %}
+
+### Each Published Crate
+{%- if "readme" in devset.features %}
+
+1. **Every crate crates.io publishes has a README there: the crate the `crate`
+   variable names takes the root README, with `readme = "../../README.md"` after
+   the keys it inherits, and every other has a `README.md` beside its
+   `Cargo.toml`, which Cargo finds**, since the header's crates.io and docs.rs
+   badges point to that crate, the library by default, and a crate in
+   `crates/<name>/` with neither has no README on crates.io.
+{%- else %}
+
+1. **Every crate crates.io publishes has a README there: the crate the root
+   README is for takes it, with `readme = "../../README.md"` after the keys it
+   inherits, and every other has a `README.md` beside its `Cargo.toml`, which
+   Cargo finds**, since a crate in `crates/<name>/` with neither has no README
+   on crates.io.
+{%- endif %}
+2. **A crate's own README says first which crate it is and where it sits: its
+   name as the title; one paragraph on what it holds, its place in the project,
+   and a link to the project; then its install line, for this crate and no
+   other; its first use; its docs on docs.rs; and the licence**, as
+   `references/templates.md` §4 has it whole, since a reader on crates.io lands
+   on one crate of several and must know, before the first example, whether it
+   is the one to depend on. It has no header and no badges: the root README
+   carries them.
+{%- endif %}
 {%- endif %}
 
 ### Links and Images
@@ -138,26 +169,17 @@ The crate page, its examples and each manifest's `description` are
    README cargo uploaded: it drops a relative link where `repository` is on a
    host other than GitHub, GitLab or Bitbucket, resolves a root README's against
    the crate's own directory, and never resolves a `<source srcset>`.
-   `references/templates.md` has the detail.
+   `references/templates.md` has the detail, and `just check-cargo-publish`
+   refuses a relative one in any README a published crate packages{% if "lychee" in devset.profiles %}; `just
+   check-lychee` runs offline, so it follows none of these URLs, and `just
+   nightly-lychee` does{% endif %}.
 {%- if "readme" in devset.features %}
-4. **The crate the `crate` variable names takes the root README, with `readme =
-   "../../README.md"` after the keys it inherits, and every other published
-   crate has a `README.md` of its own beside its `Cargo.toml`, which Cargo
-   finds**, since the header's crates.io and docs.rs badges point to that crate,
-   the library by default, and a crate in `crates/<name>/` with neither has no
-   README on crates.io.
-{%- else %}
-4. **The crate the root README is for takes it, with `readme =
-   "../../README.md"` after the keys it inherits, and every other published
-   crate has a `README.md` of its own beside its `Cargo.toml`, which Cargo
-   finds**, since a crate in `crates/<name>/` with neither has no README on
-   crates.io.
-{%- endif %}
-{%- if "readme" in devset.features %}
-5. **The starter's links to CONTRIBUTING.md and the licences become absolute,
-   and `logo` names a URL**, since the starter writes paths GitHub resolves, and
-   the block writes `logo` into `src` and `srcset` as given, which crates.io
-   leaves relative, drops, or resolves in the crate's directory.
+4. **The starter's links to CONTRIBUTING.md and the licences become absolute,
+   and `logo` is a URL, `devset apply --var
+   logo=https://raw.githubusercontent.com/<owner>/<repo>/main/docs/src/media/logo`**,
+   since the starter writes paths GitHub resolves, and the block writes `logo`
+   into `src` and `srcset` as given, which crates.io leaves relative, drops, or
+   resolves in the crate's directory.
 {%- endif %}
 {%- else %}
 3. **Every link to a file of the repository is a relative path, since only
@@ -197,8 +219,9 @@ Read `references/templates.md` whole before writing a README or a section.
    every command pasted into a fresh directory, every output against what it
    printed, every link opened, every version against the current one.
 {%- if "cargo-publish" in devset.profiles %}
-4. **A crate crates.io shows**: its README chosen as the rules say, every URL in
-   it absolute, and `cargo package -p <crate> --list` listing `README.md`.
+4. **A crate crates.io shows**: its README chosen as the rules say, holding what
+   a crate's own README holds, every URL in it absolute, and `cargo package -p
+   <crate> --list` listing `README.md`.
 {%- endif %}
 
 Before finishing, read the page as it renders, on GitHub{% if "cargo-publish" in devset.profiles %}, and for a crate as
@@ -224,9 +247,8 @@ Then run `just fix`, and the checks below.
   render them.
 {%- endif %}
 {%- if "cargo-publish" in devset.profiles %}
-- `just check-cargo-publish`: every crate packaged as crates.io takes it, so a
-  `readme` that names no file fails the change. No check sees a relative link
-  crates.io cannot resolve: that is review's.
+- `just check-cargo-publish`: every published crate has a README, and every link
+  and image in it is absolute. What the README says is review's.
 {%- endif %}
 {%- if "rust-msrv" in devset.profiles %}
 - `just check-rust-msrv`: `cargo check` of every crate, target and feature, on
@@ -249,12 +271,14 @@ Then run `just fix`, and the checks below.
 {%- endif %}
 {%- if "cargo-publish" in devset.profiles %}
 | "`docs/media/board.svg` renders on GitHub"    | crates.io shows the README too: an absolute URL.             |
+| "A crate's README can be one line and a link" | Its name, place, install line, first use, docs and licence.  |
 {%- else %}
 | "An absolute URL, to be safe"                 | A relative path: only GitHub shows it, on any branch.        |
 {%- endif %}
 {%- if "cargo-workspace" in devset.profiles %}
 | "`cargo install tiles`"                       | The package, `cargo install --locked tiles-cli`.             |
 | "`tiles = "0.3"` under `[dependencies]`"      | `cargo add tiles`, which takes the newest.                   |
+| "`cargo add --git …` works, so it can stay"   | Once released, `cargo add tiles`, from crates.io.            |
 | "`#![doc = include_str!("../README.md")]`"    | Two pages for two readers: the crate page is its own `//!`.  |
 | "Supports Rust 1.70+, probably"               | The workspace's `rust-version`, as it is.                    |
 {%- endif %}

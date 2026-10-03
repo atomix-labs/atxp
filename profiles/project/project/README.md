@@ -46,17 +46,18 @@ a README is written around the header block, which it never edits and moves to
 the top where the block was appended; the pitch, Install, Quick Start, the
 project's own sections, then Documentation, Contributing and License, in that
 order; commands that run as shown, `cargo add` for a library and `cargo install
---locked` for a command line, naming the package where its binary is named
-otherwise, and the minimum Rust from `rust-version`; Cargo features in the rows
-of the crate docs' table; the README and the `//!` crate page kept apart; and
-images and links that resolve wherever the README is shown. Where
+--locked` for a command line, from crates.io once the first release is out and
+never `--git` after it, naming the package where its binary is named otherwise,
+and the minimum Rust from `rust-version`; Cargo features in the rows of the
+crate docs' table; the README and the `//!` crate page kept apart; and images
+and links that resolve wherever the README is shown. Where
 [`cargo-publish`](../../cargo/cargo-publish/README.md) publishes the crates, it
-teaches why a README crates.io shows takes absolute URLs, and how each crate
-gets one; where [`vhs`](../../docs/vhs/README.md) records the demo, how its
-picture is kept. Its templates are a library's, a command line's and a
-workspace's README, whole, and it names
-[`rust-doc`](../../rust/rust-doc/README.md)'s `writing-rustdoc` for the crate
-page where that profile's `agents` is on.
+teaches why a README crates.io shows takes absolute URLs, `logo` among them, and
+how each crate gets one and what it holds; where
+[`vhs`](../../docs/vhs/README.md) records the demo, how its picture is kept. Its
+templates are a library's, a command line's and a workspace's README, whole, and
+it names [`rust-doc`](../../rust/rust-doc/README.md)'s `writing-rustdoc` for the
+crate page where that profile's `agents` is on.
 
 <!-- facts: written by devset-collection -->
 
