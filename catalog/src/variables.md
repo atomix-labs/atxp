@@ -119,7 +119,8 @@ Empty by default · Declared by [`cargo-workspace`](cargo/cargo-workspace.md),
 
 The GitHub repository, owner/name.
 
-No default · Declared by [`cargo-workspace`](cargo/cargo-workspace.md),
+No default · Declared by [`cargo-publish`](cargo/cargo-publish.md),
+[`cargo-workspace`](cargo/cargo-workspace.md),
 [`devset-collection`](devset/devset-collection.md), [`mdbook`](docs/mdbook.md),
 [`git-changelog`](git/git-changelog.md),
 [`github-labels`](github/github-labels.md),

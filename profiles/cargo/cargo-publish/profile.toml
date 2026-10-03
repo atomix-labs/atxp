@@ -7,6 +7,12 @@ devset      = ">=0.5.0"
 just           = {}
 rust-toolchain = {}
 
+[vars.repository]
+prompt = "The GitHub repository, owner/name"
+
 [files.".just/cargo-publish.just"]
+template = true
 
 [files.".just/cargo-publish.py"]
+
+[files.".just/cargo-publish/categories.txt"]

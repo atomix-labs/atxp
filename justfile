@@ -77,6 +77,10 @@ test-skill-form:
 test-cargo-manifest:
     mise exec -- bash tests/cargo-manifest.sh
 
+# Tests the publish check against crates that lack what crates.io shows, and one that has it all.
+test-cargo-publish:
+    mise exec -- bash tests/cargo-publish.sh
+
 # Compiles every Rust example the skills show under the strict lints, each as its block says; with
 # skills named, only theirs.
 test-skill-examples *skills:
