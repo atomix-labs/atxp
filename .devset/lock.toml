@@ -51,7 +51,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-ci"
-digest = "e891d0b1bb6db648ae1525f108e4c8e0a69055b2c97787279591366f8d740104"
+digest = "512f1bb5ceec9d9c79dcb9ecc8d1df6d1d9cab27a2d14b8adf054c5baa47b4d3"
 
 [profiles.source]
 path = "profiles"
@@ -69,7 +69,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-bump"
-digest = "71989bec8d7e6bdc433e7629f42e5ae9b2505abb887ee7c513efedeca31e1f80"
+digest = "2343d8738a9fa0636c7afc1db3ceda9f165580e98a205a5e634c76ffcb4b124f"
 
 [profiles.source]
 path = "profiles"
@@ -93,7 +93,7 @@ path = "profiles"
 
 [[profiles]]
 name = "git-commits"
-digest = "7e0312972c875fe7c12fa743f19019e345b9556a642c4edb06e9479b47d95cae"
+digest = "75af17b14b60f0d0ba35cb0860badfea6f1d4f855cebef39d2a4d6e68a27480e"
 
 [profiles.source]
 path = "profiles"
@@ -201,7 +201,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "b7abd1fecbb84b1fa93447a470a9201900eaa756f992f4344690f162bdcdddf7"
+digest = "489d85040ae0f4f6c3d9ee08626aa13164ede3db89335b3e00f44b99c60b13cb"
 
 [profiles.source]
 path = "profiles"
@@ -264,7 +264,7 @@ security = ["default"]
 
 [[profiles]]
 name = "vhs"
-digest = "eb9f20b4e666a181612a443fcf7e085f95be381075db938c2df945a572fbe43f"
+digest = "fba60a6b10a5c539fa15921f33c8516591e42431f68b7c49a54956c48e5a154f"
 
 [profiles.source]
 path = "profiles"
