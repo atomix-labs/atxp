@@ -158,6 +158,15 @@ gh repo edit {{ repository }} --description "<description>" --homepage <website>
   ```
 {%- endif %}
 
+### Files Written Once
+
+- **Each file devset wrote once carries today's values**: the release notes'
+  opening line is the tagline, and the issue chooser and `SUPPORT.md` link
+  Discussions where it is on. A `once` file never follows a variable or a
+  feature changed after its first write, so `devset diff <file>` on each `once`
+  file `devset status -v` lists shows what the profile would write now, and the
+  difference is brought over by hand.
+
 ## After the Release
 
 Once the release run is done, open each page a stranger lands on:

@@ -61,6 +61,11 @@ on; `devset explain <profile>` shows one layer's, with those it leaves off.
   so; `--no-default-features` on `devset add` turns the defaults off.
 - A variable: `devset apply --var <name>=<value>`. Every file that uses it is
   written again, and an edited `merge` file is merged.
+- A `once` file never follows a variable or a feature changed after its first
+  write: `.github/release-notes.md` keeps the tagline of its day, and the issue
+  chooser and `SUPPORT.md` miss Discussions turned on later. After either,
+  `devset diff <file>` on each `once` file `devset status -v` lists shows what
+  the profile would write now; bring over what the change meant.
 
 ### Profiles
 
