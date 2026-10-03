@@ -182,6 +182,9 @@ template = true
 template = true
 when     = { features = ["agents"] }
 
+[files.".claude/skills/writing-the-book/references/library-book.md"]
+when = { features = ["agents"] }
+
 [files."AGENTS.md"]
 scope    = "block"
 template = true

@@ -168,8 +168,9 @@ A profile whose concern an agent needs taught ships a skill, or several, in
 `.claude/skills/<skill>/`, under its own `agents` feature: `rust-lints`, with
 `writing-rust`, `writing-unsafe-rust` and the `review-rust` pass;
 `cargo-nextest`, with `writing-rust-tests`; `cargo-profiles`, with
-`tuning-rust-performance`; and `rust-doc`, `cargo-manifest`, `devset`,
-`devset-collection`, `github-ci`, `github-release`, `mdbook` and `project`, with
+`tuning-rust-performance`; `project`, with `writing-readmes`, `drawing-the-logo`
+and `preparing-a-release-for-open-source`; and `rust-doc`, `cargo-manifest`,
+`devset`, `devset-collection`, `github-ci`, `github-release` and `mdbook`, with
 one each. The layer itself teaches how a repository reads, under its
 `readability` feature: `writing-prose`, for every sentence a reader meets;
 `writing-readable-code`, for the shape of code, each in any language, with a
@@ -207,6 +208,7 @@ tests/agents-hook.sh         the agents profile's hooks through the turns they t
 tests/skill-form.sh          the catalog check's skill form against skills that break it
 tests/skill_examples.py      every Rust example the skills show, compiled under the strict lints
 tests/cargo-manifest.sh      the manifest check against members that write a dependency dotted
+tests/cargo-publish.sh       the publish check against crates that lack what crates.io shows
 tests/bundle.sh              the bundle applied to an empty repository, with the features given
 .devset/                     atxp's record of the profiles it applies to itself
 .just/, .github/             written by those profiles; atxp's own recipes are in the justfile

@@ -46,37 +46,63 @@ a README is written around the header block, which it never edits and moves to
 the top where the block was appended; the pitch, Install, Quick Start, the
 project's own sections, then Documentation, Contributing and License, in that
 order; commands that run as shown, `cargo add` for a library and `cargo install
---locked` for a command line, naming the package where its binary is named
-otherwise, and the minimum Rust from `rust-version`; Cargo features in the rows
-of the crate docs' table; the README and the `//!` crate page kept apart; and
-images and links that resolve wherever the README is shown. Where
+--locked` for a command line, from crates.io once the first release is out and
+never `--git` after it, naming the package where its binary is named otherwise,
+and the minimum Rust from `rust-version`; Cargo features in the rows of the
+crate docs' table; the README and the `//!` crate page kept apart; and images
+and links that resolve wherever the README is shown. Where
 [`cargo-publish`](../../cargo/cargo-publish/README.md) publishes the crates, it
-teaches why a README crates.io shows takes absolute URLs, and how each crate
-gets one; where [`vhs`](../../docs/vhs/README.md) records the demo, how its
-picture is kept. Its templates are a library's, a command line's and a
-workspace's README, whole, and it names
-[`rust-doc`](../../rust/rust-doc/README.md)'s `writing-rustdoc` for the crate
-page where that profile's `agents` is on.
+teaches why a README crates.io shows takes absolute URLs, `logo` among them, and
+how each crate gets one and what it holds; where
+[`vhs`](../../docs/vhs/README.md) records the demo, how its picture is kept. Its
+templates are a library's, a command line's and a workspace's README, whole, and
+it names [`rust-doc`](../../rust/rust-doc/README.md)'s `writing-rustdoc` for the
+crate page where that profile's `agents` is on.
+
+The `agents` feature also adds the `drawing-the-logo` skill: the house style of
+a logo, a 32 by 32 mark of one filled shape and strokes 2.5 wide in GitHub's two
+inks, the name beside it in JetBrains Mono Bold, and the files made from the
+mark, its dark variant, the logo, the favicon, the tile, the social card and the
+book's favicons; how two or three marks are proposed to the owner, and one
+applied only once the owner confirms it, through `logo` and, where
+[`mdbook`](../../docs/mdbook/README.md) builds a book, its `book_logo` and
+`book_social`. Its `scripts/draw.py` makes every file but the mark, with
+fontTools, cairosvg and svgo, and writes devset's and atxp's SVGs again byte for
+byte from their marks.
+
+Its third skill, `preparing-a-release-for-open-source`, checks end to end what a
+repository needs before its first public release, and says whose each item is.
+The README, each published crate's README and metadata, the book's chapters, the
+logo and the labels are the repository's; GitHub's description, which is the
+tagline, its topics, website, social preview and release environment, and each
+crate's first publish and trusted publisher on crates.io, are the owner's, each
+handed over with its value. Once the release is out, it opens each page a
+stranger lands on: the GitHub Release, each crate's page and its docs.rs build,
+and the book. The bundle's `oss` feature brings this profile, and its `agents`
+the skill.
 
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                                     | Part  | Policy | Notes                                                             |
-| -------------------------------------------------------- | ----- | ------ | ----------------------------------------------------------------- |
-| `README.md`                                              | block | owned  | template, feature `readme`                                        |
-| `CONTRIBUTING.md`                                        | block | owned  | feature `contributing`                                            |
-| `LICENSE-MIT`                                            | whole | once   | template, feature `license`, `license` one of `MIT OR Apache-2.0` |
-| `LICENSE-APACHE`                                         | whole | once   | feature `license`, `license` one of `MIT OR Apache-2.0`           |
-| `LICENSE`                                                | whole | once   | template, feature `license`, `license` one of `MIT`, `Apache-2.0` |
-| `SECURITY.md`                                            | whole | once   | template, feature `security`                                      |
-| `BREAKING-CHANGES.md`                                    | whole | once   | template, feature `breaking-changes`                              |
-| `CODE_OF_CONDUCT.md`                                     | whole | once   | template, feature `conduct`                                       |
-| `SUPPORT.md`                                             | whole | once   | template, feature `support`                                       |
-| `ARCHITECTURE.md`                                        | whole | once   | feature `architecture`                                            |
-| `.claude/skills/writing-readmes/SKILL.md`                | whole | owned  | template, feature `agents`                                        |
-| `.claude/skills/writing-readmes/references/sources.md`   | whole | owned  | feature `agents`                                                  |
-| `.claude/skills/writing-readmes/references/templates.md` | whole | owned  | template, feature `agents`                                        |
+| File                                                          | Part  | Policy | Notes                                                             |
+| ------------------------------------------------------------- | ----- | ------ | ----------------------------------------------------------------- |
+| `README.md`                                                   | block | owned  | template, feature `readme`                                        |
+| `CONTRIBUTING.md`                                             | block | owned  | feature `contributing`                                            |
+| `LICENSE-MIT`                                                 | whole | once   | template, feature `license`, `license` one of `MIT OR Apache-2.0` |
+| `LICENSE-APACHE`                                              | whole | once   | feature `license`, `license` one of `MIT OR Apache-2.0`           |
+| `LICENSE`                                                     | whole | once   | template, feature `license`, `license` one of `MIT`, `Apache-2.0` |
+| `SECURITY.md`                                                 | whole | once   | template, feature `security`                                      |
+| `BREAKING-CHANGES.md`                                         | whole | once   | template, feature `breaking-changes`                              |
+| `CODE_OF_CONDUCT.md`                                          | whole | once   | template, feature `conduct`                                       |
+| `SUPPORT.md`                                                  | whole | once   | template, feature `support`                                       |
+| `ARCHITECTURE.md`                                             | whole | once   | feature `architecture`                                            |
+| `.claude/skills/writing-readmes/SKILL.md`                     | whole | owned  | template, feature `agents`                                        |
+| `.claude/skills/writing-readmes/references/sources.md`        | whole | owned  | feature `agents`                                                  |
+| `.claude/skills/writing-readmes/references/templates.md`      | whole | owned  | template, feature `agents`                                        |
+| `.claude/skills/drawing-the-logo/SKILL.md`                    | whole | owned  | template, feature `agents`                                        |
+| `.claude/skills/drawing-the-logo/scripts/draw.py`             | whole | owned  | executable, feature `agents`                                      |
+| `.claude/skills/preparing-a-release-for-open-source/SKILL.md` | whole | owned  | template, feature `agents`                                        |
 
 ## Features
 

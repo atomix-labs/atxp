@@ -35,6 +35,28 @@ description = "The manual and the README"
 paths       = ["docs/**", "*.md"]
 ```
 
+A workspace adds an area for each crate, `area: <crate>` with the crate's
+directory as its `paths`, and `area: docs`, `area: ci` and `area: performance`
+where the repository has a book, workflows or benchmarks, so a pull request says
+by its labels which crates and which concerns it touches:
+
+```toml
+[labels."area: tiles-geometry"]
+color       = "c5def5"
+description = "Squares and the moves between them"
+paths       = ["crates/tiles-geometry/**"]
+
+[labels."area: ci"]
+color       = "c5def5"
+description = "The workflows and the recipes"
+paths       = [".github/**", ".just/**", "justfile"]
+
+[labels."area: performance"]
+color       = "c5def5"
+description = "The benchmarks, and what they measure"
+paths       = ["crates/*/benches/**"]
+```
+
 - **`[retired]`** names a label to remove, with the issue type its issues take
   first. GitHub's first labels are retired: types say the kind, Discussions take
   questions, and closing says duplicate or not planned. A label the file does

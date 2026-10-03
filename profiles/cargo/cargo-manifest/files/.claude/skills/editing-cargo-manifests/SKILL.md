@@ -1,6 +1,6 @@
 ---
 name: editing-cargo-manifests
-description: Use when creating a crate, or writing, reviewing or cleaning any `Cargo.toml` in the workspace, the root's included; when adding, removing or re-pinning a dependency; when adding or reshaping a `[features]` table, or choosing between a feature, an optional dependency and a separate crate; when adding a proc-macro crate or declaring a `[[bench]]`, `[[bin]]`, `[[example]]` or `[lib]` target; when `std` reaches a `no_std` crate through a default; when the manifest check or the unused-dependency check reports a finding. Covers the manifest's shape, the root, dependencies, features, defaults and targets.{% if "agents" in (devset.layers | selectattr("profile", "equalto", "cargo-profiles") | map(attribute="features") | first | default([])) %} Not for build profiles, which tuning-rust-performance covers.{% endif %}{% if "agents" in (devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([])) %} Not for the lint table, which writing-rust covers.{% endif %}
+description: Use when creating a crate or readying one for crates.io, or writing, reviewing or cleaning any `Cargo.toml`, the root's too; when adding, removing or re-pinning a dependency; when adding or reshaping a `[features]` table, or choosing between a feature, an optional dependency and a separate crate; when adding a proc-macro crate or declaring a `[[bench]]`, `[[bin]]`, `[[example]]` or `[lib]` target; when `std` reaches a `no_std` crate through a default; when a manifest, publish or unused-dependency check reports a finding. Covers the manifest's shape, the root, dependencies, features, defaults and targets.{% if "agents" in (devset.layers | selectattr("profile", "equalto", "cargo-profiles") | map(attribute="features") | first | default([])) %} Not for build profiles, which tuning-rust-performance covers.{% endif %}{% if "agents" in (devset.layers | selectattr("profile", "equalto", "rust-lints") | map(attribute="features") | first | default([])) %} Not for the lint table, which writing-rust covers.{% endif %}
 ---
 
 # Editing Cargo Manifests
@@ -28,8 +28,9 @@ documentation behind each.
 2. **`[package]` reads `name`, `description`, then the keys the workspace sets,
    each `<key>.workspace = true`: `version`, `edition`, `rust-version`,
    `license`, `authors`, then `publish` where the workspace keeps its crates off
-   crates.io, or `repository` where it publishes them**, so a crate says only
-   its name and pitch, and one edit to the workspace moves every crate.
+   crates.io, or `repository` where it publishes them, and after it what the
+   crate's page shows**, so a crate says only its name and pitch, and one edit
+   to the workspace moves every crate.
 3. **Every crate has `[lints] workspace = true`, and nothing else under
    `[lints]`**, so no crate leaves the shared lints without anyone deciding it
    should.
@@ -203,6 +204,25 @@ A key a profile writes changes through the profile: an edit by hand is drift,
 which `devset status` reports{% if "agents" in tooling %}, and `using-devset` says how it is changed{% endif %}.
 {%- endif %}
 
+### A Published Crate
+
+A crate without `publish = false` reaches crates.io, whose page for a version
+shows only what that version's manifest and package held. After `repository` it
+carries these, in this order; `references/publishing.md` has each one's reason
+and examples:
+
+1. **`homepage`, the book's URL where there is a book, inherited**, since
+   crates.io links the repository and docs.rs by itself, and the book never.
+2. **A README: `readme = "../../README.md"` for the one crate the root README is
+   for, a `README.md` beside the manifest for every other**, its links absolute,
+   since crates.io shows no README for a crate in `crates/` without one, and
+   resolves no relative `srcset`.
+3. **`keywords`, up to five a search would use, and `categories`, up to five of
+   crates.io's slugs**, how a reader finds the crate.
+4. **Each licence file `license` names, linked into the crate's directory**,
+   since the licence asks its text to travel with every copy.
+5. **`exclude` for what a user need not download**, as `benches/results/`.
+
 ## Steps
 
 1. **A new crate**: its directory where the workspace's `members` finds it, its
@@ -256,9 +276,9 @@ which `devset status` reports{% if "agents" in tooling %}, and `using-devset` sa
 - `just check-cargo-deny`: advisories, licences, bans and sources.
 {%- endif %}
 {%- if "cargo-publish" in devset.profiles %}
-- `just check-cargo-publish`: every crate crates.io will take, packaged and
-  built from its package, so a missing file or a dependency without a version
-  fails the change and not the release.
+- `just check-cargo-publish`: every crate crates.io will take, held to what its
+  page shows, packaged and built from its package, so a missing field, file or
+  version fails the change and not the release.
 {%- endif %}
 {%- if "cargo-hack" in devset.profiles %}
 - `just nightly-cargo-hack`: every feature builds alone.
@@ -289,9 +309,11 @@ which `devset status` reports{% if "agents" in tooling %}, and `using-devset` sa
 
 ## References
 
-Read the reference before citing a source for a rule, or where Cargo's own
-documentation seems to say otherwise, and again after compaction.
+Read each reference when its task comes up, and again after compaction.
 
-- `references/sources.md`: the Cargo documentation and tools behind each rule,
-  what measurement on Cargo 1.98 and the pinned nightly shows of them, and what
-  this workspace settles that the ecosystem contests.
+- `references/publishing.md`: before writing a published crate's `[package]`, or
+  its first release: each field crates.io shows, its rule and its reason.
+- `references/sources.md`: before citing a source for a rule, or where Cargo's
+  own documentation seems to say otherwise: the Cargo documentation and tools
+  behind each rule, what measurement on Cargo 1.98 and the pinned nightly shows
+  of them, and what this workspace settles that the ecosystem contests.

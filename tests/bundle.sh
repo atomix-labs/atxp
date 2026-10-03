@@ -23,5 +23,21 @@ git -C "$work" init -q -b main
 flags=(--var repository=example/project --var name=project)
 [[ -z $features ]] || flags+=(--features "$features")
 (cd "$work" && "$devset" -q --no-input add atxp/rust --path "$root/profiles" "${flags[@]}")
+# A crate crates.io publishes carries what its page there shows, which only its owner can write and
+# check-cargo-publish names until it is there: here, a stand-in for each.
+if [[ ,$features, == *,publish,* ]]; then
+    crate=$work/crates/project
+    sed -i '/^repository.workspace/r /dev/stdin' "$crate/Cargo.toml" << 'EOF'
+homepage               = "https://example.github.io/project/"
+keywords               = ["example"]
+categories             = ["development-tools"]
+EOF
+    cat > "$crate/README.md" << 'EOF'
+# `project`
+
+The crate the rust bundle starts a project with.
+EOF
+    for licence in LICENSE-MIT LICENSE-APACHE; do ln -s "../../$licence" "$crate/$licence"; done
+fi
 (cd "$work" && "$devset" status --exit-code > /dev/null && ./setup.sh --yes && mise exec -- just check)
 echo "ok: rust${features:+ with $features}, from nothing"

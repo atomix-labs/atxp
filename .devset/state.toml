@@ -39,8 +39,8 @@ exact = "2e191b419358e87c0653b5fa26c132385a1bd48071214b95de905bab9256d7d3"
 canonical = "2e191b419358e87c0653b5fa26c132385a1bd48071214b95de905bab9256d7d3"
 
 [files.".claude/skills/cutting-releases/SKILL.md"]
-exact = "b0a1b90b3b64e6b2bb6a930d9011c4c078567175b8b79e8cfa2162ea43f8d063"
-canonical = "b0a1b90b3b64e6b2bb6a930d9011c4c078567175b8b79e8cfa2162ea43f8d063"
+exact = "228be9585385e1c7f1a472efe2dc4b86e935c3db79c5148687289b0a64d96f91"
+canonical = "228be9585385e1c7f1a472efe2dc4b86e935c3db79c5148687289b0a64d96f91"
 
 [files.".claude/skills/fixing-ci/SKILL.md"]
 exact = "996697b5f33ffdc94fd6c54bc23cb1d3cab27645dded9228f45a67dfdc13dc71"
@@ -184,8 +184,8 @@ exact = "badcb39b58a8dae35da9f2a8daa9f11ff3e1a78db95f9571ca76df5626d682cc"
 canonical = "badcb39b58a8dae35da9f2a8daa9f11ff3e1a78db95f9571ca76df5626d682cc"
 
 [files.".github/dependabot.yml"]
-exact = "5e49639373b3eed0c95187ce66f6d71e1bce0e6b69771467958487002c263d4c"
-canonical = "5e49639373b3eed0c95187ce66f6d71e1bce0e6b69771467958487002c263d4c"
+exact = "9dad8794fa5f22b6dd32a335d3de831a2d63d374c587f4486fb69bc5ec224f0f"
+canonical = "9dad8794fa5f22b6dd32a335d3de831a2d63d374c587f4486fb69bc5ec224f0f"
 policy = "merge"
 
 [files.".github/release-notes.md"]
@@ -210,28 +210,28 @@ exact = "59b882fbad94e0849b341b823a212d4f11b1877eb919150310479114d4359829"
 canonical = "59b882fbad94e0849b341b823a212d4f11b1877eb919150310479114d4359829"
 
 [files.".github/workflows/bump.yml"]
-exact = "2e6a5ad7a240c5860e3feef7028a9bfe2e3e035df8c599192945077d24efacf2"
-canonical = "2e6a5ad7a240c5860e3feef7028a9bfe2e3e035df8c599192945077d24efacf2"
+exact = "4f9535f05582c06ebfda55436604e791657a9d825f60e6f7a8606b2f88f59834"
+canonical = "4f9535f05582c06ebfda55436604e791657a9d825f60e6f7a8606b2f88f59834"
 
 [files.".github/workflows/check.yml"]
-exact = "a0a3ef511b25ec1ccb0019bf0b6f6c6be9d0a00287e73fa15c80a4cafd2dd47a"
-canonical = "a0a3ef511b25ec1ccb0019bf0b6f6c6be9d0a00287e73fa15c80a4cafd2dd47a"
+exact = "ebb6644035f66b0b95ffcf4f8971424e758225cc9dd15ba8bcbc05f61ded9fd3"
+canonical = "ebb6644035f66b0b95ffcf4f8971424e758225cc9dd15ba8bcbc05f61ded9fd3"
 
 [files.".github/workflows/demo.yml"]
-exact = "f8b4198d005b9b9a01b23223966e151180a3aa3e2c5324fa2b2dbd9f00dc640d"
-canonical = "f8b4198d005b9b9a01b23223966e151180a3aa3e2c5324fa2b2dbd9f00dc640d"
+exact = "f349dfbcd548fa73ac228d447b0fad0bef28e86d21845a0d66ace35a4fb895f3"
+canonical = "f349dfbcd548fa73ac228d447b0fad0bef28e86d21845a0d66ace35a4fb895f3"
 
 [files.".github/workflows/labels.yml"]
 exact = "3b09611ae913272ce0f0efd481b67c53106acb54fc0f0d6b1fa1d2536da83351"
 canonical = "3b09611ae913272ce0f0efd481b67c53106acb54fc0f0d6b1fa1d2536da83351"
 
 [files.".github/workflows/release.yml"]
-exact = "5df1e6f56c780f23df398117b67444159a38e8d4db39f1abe35720f810fe12bd"
-canonical = "5df1e6f56c780f23df398117b67444159a38e8d4db39f1abe35720f810fe12bd"
+exact = "f2fd1a4e3e987fe7f8ddf3e5f4b701d0b409bd2dbd518c2830d65f46f2a89638"
+canonical = "f2fd1a4e3e987fe7f8ddf3e5f4b701d0b409bd2dbd518c2830d65f46f2a89638"
 
 [files.".github/workflows/title.yml"]
-exact = "075361af1418e1f331c9eaeaec8c028958a9afa510b677ae881d63b06221832c"
-canonical = "075361af1418e1f331c9eaeaec8c028958a9afa510b677ae881d63b06221832c"
+exact = "0e50a75d68dafc871a1ceff09da823a2169c550e1ba277e5e374cb2929e093bc"
+canonical = "0e50a75d68dafc871a1ceff09da823a2169c550e1ba277e5e374cb2929e093bc"
 
 [files.".github/workflows/watch.yml"]
 exact = "924c85f281df0e944b28a753b81f6f536b3c6d5f192ca27aed6c75af5b57280a"

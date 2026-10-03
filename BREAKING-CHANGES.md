@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.19.0](#v0190)
+  - [A published crate carries what its crates.io page shows](#a-published-crate-carries-what-its-cratesio-page-shows)
 - [v0.17.0](#v0170)
   - [A skill is a guide or a pass, and gates what it names](#a-skill-is-a-guide-or-a-pass-and-gates-what-it-names)
 - [v0.16.0](#v0160)
@@ -47,6 +49,46 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.19.0
+
+### A Published Crate Carries What Its Crates.io Page Shows
+
+**What changed.** `check-cargo-publish` holds every crate whose `publish` allows
+crates.io to what its page there shows, before it packages them, and fails where
+one falls short: a README, with every link and image in it absolute; one to five
+`keywords` crates.io takes; one to five `categories`, each a slug of
+crates.io's; the text of each licence `license` names, inside the package; and,
+where `mdbook` builds a book, a `homepage` or a `documentation`. Each finding
+names what to add. A crate with `publish = false` is never read, so a repository
+that publishes nothing is unaffected.
+
+**What to do.** Run `just check-cargo-publish`, and add what it names to each
+crate:
+
+- A `README.md` beside its `Cargo.toml`, or, for the one crate the root README
+  is for, `readme = "../../README.md"`; then make every relative link and image
+  in it absolute, `https://github.com/<owner>/<repo>/blob/main/<path>` for a
+  file and `https://raw.githubusercontent.com/<owner>/<repo>/main/<path>` for an
+  image, and answer `logo` with a URL, as the finding says.
+- `keywords`, `categories` and, where there is a book, `homepage`, in the
+  crate's `[package]`, or in `[workspace.package]` and inherited where every
+  crate shares them:
+
+  ```toml
+  homepage   = "https://<owner>.github.io/<repo>/"
+  keywords   = ["time", "clock", "timestamp"]
+  categories = ["date-and-time", "no-std"]
+  ```
+
+- The licence files, linked from the root into each crate's directory:
+
+  ```sh
+  ln -s ../../LICENSE-MIT crates/<crate>/LICENSE-MIT
+  ln -s ../../LICENSE-APACHE crates/<crate>/LICENSE-APACHE
+  ```
+
+A crate kept off crates.io says so with `publish = false`.
 
 ## V0.17.0
 
