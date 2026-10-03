@@ -193,7 +193,7 @@ async fn paint(tile: u8) -> u8 {
 // panic in one is lost.
 #[must_use]
 pub fn paint_all(tiles: Vec<u8>) -> Vec<JoinHandle<u8>> {
-    tiles.into_iter().map(|tile| tokio::spawn(paint(tile))).collect()
+    tiles.into_iter().map(|tile| task::spawn(paint(tile))).collect()
 }
 ```
 
@@ -247,10 +247,10 @@ pub async fn open_board(tiles: &Path, layout: &Path) -> io::Result<(Vec<u8>, Vec
 use std::io;
 use std::path::Path;
 
-use tokio::fs;
+use tokio::{fs, try_join};
 
 pub async fn open_board(tiles: &Path, layout: &Path) -> io::Result<(Vec<u8>, Vec<u8>)> {
-    tokio::try_join!(fs::read(tiles), fs::read(layout))
+    try_join!(fs::read(tiles), fs::read(layout))
 }
 ```
 
@@ -285,13 +285,13 @@ pub async fn autosave(saves: &mut u32) {
 use core::time::Duration;
 
 use tokio::sync::watch;
-use tokio::time;
+use tokio::{select, time};
 
 /// Saves every five seconds until `stop` changes, or its sender is gone.
 pub async fn autosave(mut stop: watch::Receiver<bool>, saves: &mut u32) {
     let mut every = time::interval(Duration::from_secs(5));
     loop {
-        tokio::select! {
+        select! {
             _ = every.tick() => *saves = saves.saturating_add(1),
             _ = stop.changed() => break,
         }
@@ -312,11 +312,12 @@ branches that lose, so a future that had read half a frame loses the half.
 survive a lost branch lives outside the loop.
 
 ```rust
+use tokio::select;
 use tokio::sync::{mpsc, watch};
 
 pub async fn paint(mut tiles: mpsc::Receiver<u8>, mut stop: watch::Receiver<bool>, painted: &mut Vec<u8>) {
     loop {
-        tokio::select! {
+        select! {
             Some(tile) = tiles.recv() => painted.push(tile),
             _ = stop.changed() => break,
             // Bad: `stop` stays pending, so this never runs once `tiles` closes.
@@ -327,11 +328,12 @@ pub async fn paint(mut tiles: mpsc::Receiver<u8>, mut stop: watch::Receiver<bool
 ```
 
 ```rust
+use tokio::select;
 use tokio::sync::{mpsc, watch};
 
 pub async fn paint(mut tiles: mpsc::Receiver<u8>, mut stop: watch::Receiver<bool>, painted: &mut Vec<u8>) {
     loop {
-        tokio::select! {
+        select! {
             tile = tiles.recv() => match tile {
                 Some(tile) => painted.push(tile),
                 None => break,
@@ -357,10 +359,12 @@ test that needs two tasks truly at once asks for `#[tokio::test(flavor =
 mod tests {
     use std::sync::mpsc;
 
+    use tokio::task;
+
     #[tokio::test]
     async fn a_painter_paints_while_the_test_waits() {
         let (tiles, painted) = mpsc::channel();
-        tokio::spawn(async move {
+        task::spawn(async move {
             let _sent = tiles.send(7_u8);
         });
         // Bad: `recv` blocks the one thread, so the painter never runs.
@@ -373,11 +377,12 @@ mod tests {
 #[cfg(test)]
 mod tests {
     use tokio::sync::oneshot;
+    use tokio::task;
 
     #[tokio::test]
     async fn a_painter_paints_while_the_test_waits() {
         let (tiles, painted) = oneshot::channel();
-        tokio::spawn(async move {
+        task::spawn(async move {
             let _sent = tiles.send(7_u8);
         });
         assert_eq!(painted.await, Ok(7), "the painter's tile");
@@ -489,12 +494,13 @@ use std::path::Path;
 
 use tokio::fs;
 use tokio::sync::mpsc;
+use tracing::info;
 
 pub async fn autosave(mut boards: mpsc::Receiver<Vec<u8>>, path: &Path) {
     while let Some(board) = boards.recv().await {
         // Bad: the values are in the message, and a failed save goes unlogged.
         if fs::write(path, &board).await.is_ok() {
-            tracing::info!("Saved {} squares to {}.", board.len(), path.display());
+            info!("Saved {} squares to {}.", board.len(), path.display());
         }
     }
 }
@@ -505,15 +511,16 @@ use std::path::Path;
 
 use tokio::fs;
 use tokio::sync::mpsc;
+use tracing::{debug, warn};
 
 /// Saves each board it is sent, until the senders are gone.
 pub async fn autosave(mut boards: mpsc::Receiver<Vec<u8>>, path: &Path) {
     while let Some(board) = boards.recv().await {
         match fs::write(path, &board).await {
-            Ok(()) => tracing::debug!(squares = board.len(), "board saved"),
+            Ok(()) => debug!(squares = board.len(), "board saved"),
             // Handled here: the next board tries again, so the error is logged
             // and dropped.
-            Err(e) => tracing::warn!(error = %e, path = %path.display(), "board save failed"),
+            Err(e) => warn!(error = %e, path = %path.display(), "board save failed"),
         }
     }
 }

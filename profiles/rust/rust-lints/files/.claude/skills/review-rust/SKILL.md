@@ -153,7 +153,11 @@ hunk may break rules in several; each is its own finding.
 2. **API and naming**: `writing-rust`'s Layout, Names and API rules, with
    `layout.md`, `naming.md` and `api-design.md`. A public item added, removed,
    renamed or changed is a change its callers see: the finding says whether it
-   breaks them.
+   breaks them. Code written by hand where a neater or more concise way exists,
+   in std, a crate, a derive or a helper the workspace has, is a finding
+   (`api-design.md`, "Search First, and Take the Most Concise Form That Measures
+   as Fast"), unless a line beside it names the run that measured that way
+   slower; the finding names the way.
 3. **Unsafe and atomics**: `writing-unsafe-rust`, for every `unsafe`, raw
    pointer, `unsafe impl` and atomic the change adds or touches. Check that each
    `// SAFETY:` proves its preconditions from facts in scope, not only that it

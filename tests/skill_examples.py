@@ -12,9 +12,10 @@ another build of devset. With skills named, compiles only their examples; a name
 fails.
 
 Each example is a crate of the workspace, a binary where it has a `main`, with the crates its code
-names. Every `rust` block compiles in one run, and each failure points at the example's own file
-and line; each `rust,compile_fail` block compiles alone. A template's block compiles as its source
-stands: the catalog check holds template syntax out of every Rust block, so each renders as written.
+names; a crate an example gates behind a feature is optional, turned on by a feature of its name.
+Every `rust` block compiles in one run, and each failure points at the example's own file and line;
+each `rust,compile_fail` block compiles alone. A template's block compiles as its source stands: the
+catalog check holds template syntax out of every Rust block, so each renders as written.
 """
 
 import os
@@ -48,6 +49,15 @@ DEPENDENCIES = {
     "tracing": 'tracing = "0.1"',
     "proptest": 'proptest = "1.11"',
     "rstest": 'rstest = "0.27"',
+    "arrayvec": 'arrayvec = { version = "0.7", default-features = false }',
+    "itoa": 'itoa = "1"',
+    "powerfmt": 'powerfmt = { version = "0.2", default-features = false }',
+    "cfg_aliases": 'cfg_aliases = "0.2"',
+}
+# The crates an example may gate behind a feature, each optional and turned on by a feature of its
+# name, which clippy's `--all-features` compiles.
+OPTIONAL_DEPENDENCIES = {
+    "zerocopy": 'zerocopy = { version = "0.8", features = ["derive"], optional = true }',
 }
 # An example's manifest: the workspace's package fields and lints, and the crates it names.
 MANIFEST = """\
@@ -62,7 +72,7 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
-{dependencies}"""
+{dependencies}{features}"""
 # The recipes that compile the workspace: clippy, and the lints only nightly has.
 CHECKS = ("check-rust-clippy", "check-rust-lints")
 # An example that has a `main` is a binary.
@@ -166,8 +176,13 @@ def crate(work, n, example):
     text = example.code
     (home / "src" / ("main.rs" if MAIN.search(text) else "lib.rs")).write_text(text)
     named = [spec for name, spec in DEPENDENCIES.items() if re.search(rf"\b{name}::", text)]
+    gated = [name for name in OPTIONAL_DEPENDENCIES if re.search(rf"\b{name}::", text)]
+    named += [OPTIONAL_DEPENDENCIES[name] for name in gated]
     dependencies = "".join(f"{spec}\n" for spec in named)
-    (home / "Cargo.toml").write_text(MANIFEST.format(n=n, dependencies=dependencies))
+    feature_lines = "".join(f'{name} = ["dep:{name}"]\n' for name in gated)
+    features = f"\n[features]\ndefault = []\n{feature_lines}" if gated else ""
+    manifest = MANIFEST.format(n=n, dependencies=dependencies, features=features)
+    (home / "Cargo.toml").write_text(manifest)
     return home
 
 

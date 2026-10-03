@@ -37,7 +37,7 @@ documentation behind each.
    manifest's word that nothing else is on by default.
 5. **No comment in a member but the group markers, `# external` then `#
    internal`, each once and bare, inside a dependency table**; a reason worth
-   keeping goes in the crate's docs, a feature's in its `# Crate features` table
+   keeping goes in the crate's docs, a feature's in its `# Crate Features` table
    and a target's in its file's `//!`.
 6. **Nothing Cargo finds or defaults to by itself**: no `[lib]` or `[[bin]]`
    that restates `src/lib.rs` or `src/main.rs`, no `build = "build.rs"`, no
@@ -225,7 +225,7 @@ which `devset status` reports{% if "agents" in tooling %}, and `using-devset` sa
 {%- endif %}
 4. **A feature**: which of the three earns it; `dep:` for an optional
    dependency; the features it forwards; its row in the crate docs' `# Crate
-   features` table.
+   Features` table.
 5. **A proc-macro crate**: the pair under the parent's `macros/`, each reached
    by `path`, the macro crate's `[lib] proc-macro = true`.
 6. **A target**: only a key that is not its default, from the table above.

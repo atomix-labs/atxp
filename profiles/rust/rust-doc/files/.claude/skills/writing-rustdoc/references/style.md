@@ -166,6 +166,13 @@ Apply in order until the sentence fits.
   carry `# Examples`; trivial accessors do not, and a small type whose whole use
   already appears in a neighbour's example (a `Cut` inside `Span::cut`'s) needs
   none of its own.
+- Siblings are documented alike: the members of one family, each clock, each
+  point type, each error, all have an example or none has, since a reader who
+  finds one on a sibling looks for it on the next. Where this and the two rules
+  above pull apart, siblings win: a small type whose sibling has an example has
+  one of its own, though a neighbour's already shows its use.
+- A crate page's example sits under `# Examples`, as an item's does, a task each
+  under a `##` where it shows several.
 
 ## 6 Links
 
@@ -207,8 +214,9 @@ Apply in order until the sentence fits.
   that is the point**`, `Aligns the **address**, not the offset`); *italics* for
   a coined term where it is defined (*initializer*, *place*) or a stressed word
   (`whose contract *is* reclamation`).
-- Sentence case for headings; no terminal period on headings, table headers, or
-  fragment bullets.
+- Title case for headings and table headers, `# Crate Features`, `## Building
+  One Value`, `| Feature | Adds |`; no terminal period on headings, table
+  headers, or fragment bullets.
 - Numbers as words below ten in prose (``one `T` ``, `two flags`); digits for
   measurements and code (`7 instructions against 6`, `64 GiB`, `4 KiB`).
 - Present tense, indicative. `Prefer …` and `Use …` for guidance, never

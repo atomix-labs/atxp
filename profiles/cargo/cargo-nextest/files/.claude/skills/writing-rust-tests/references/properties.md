@@ -18,13 +18,14 @@ the author already believed in.
 ```rust
 use core::str::FromStr;
 
+use derive_more::Display;
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 #[error("parse pos error: want `<col>,<row>`, like `3,4`")]
 pub struct ParsePosError;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, derive_more::Display)]
+#[derive(Debug, Display, Clone, Copy, PartialEq, Eq)]
 #[display("{col},{row}")]
 pub struct Pos {
     pub col: u16,
@@ -59,13 +60,14 @@ mod tests {
 ```rust
 use core::str::FromStr;
 
+use derive_more::Display;
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 #[error("parse pos error: want `<col>,<row>`, like `3,4`")]
 pub struct ParsePosError;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, derive_more::Display)]
+#[derive(Debug, Display, Clone, Copy, PartialEq, Eq)]
 #[display("{col},{row}")]
 pub struct Pos {
     pub col: u16,

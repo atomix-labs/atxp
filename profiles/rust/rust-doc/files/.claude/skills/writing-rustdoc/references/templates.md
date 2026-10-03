@@ -29,28 +29,29 @@ links; both keep `lib.rs` to docs, `#![…]` attributes, `mod`, and `pub use`.
 //! <The shape: what the crate is, then each departure from the obvious design or from a wrapped
 //! crate, as fact + consequence, one sentence each.>
 //!
-//! # <Task, e.g. Building one value>                 ← task, gerund
+//! # Examples                                        ← fixed, as an item's
+//! ## <Task, e.g. Building One Value>                ← task, gerund
 //! ```
 //! <complete example of the primary path>
 //! ```
 //!
-//! # <Task, e.g. Building many>
+//! ## <Task, e.g. Building Many>
 //! <One sentence naming and linking the entry points.>
 //! ```
 //! <example>
 //! ```
 //!
-//! # <Concept, e.g. Pinned types / Contention / Ordering>   ← concept, noun
+//! # <Concept, e.g. Pinned Types / Contention / Ordering>   ← concept, noun
 //! <Prose; a diagram (§7) if there is a flow, handoff, or state.>
 //!
-//! # What it compiles to                             ← fixed, only with real output in hand
+//! # What It Compiles To                             ← fixed, only with real output in hand
 //! <The exact call, the build (`release build, aarch64`), a `text` fence of the listing with
 //! aligned `;` annotations, one paragraph on what it proves.>
 //!
-//! # Crate features                                  ← fixed, required if any feature exists
+//! # Crate Features                                  ← fixed, required if any feature exists
 //! <One sentence on the defaults.>
 //!
-//! | feature   | enables                                                    |
+//! | Feature   | Adds                                                       |
 //! | --------- | ---------------------------------------------------------- |
 //! | `alloc`   | `InPlaceInit`, to build a `Box`/`Arc` in place             |
 //!
@@ -72,6 +73,7 @@ links; both keep `lib.rs` to docs, `#![…]` attributes, `mod`, and `pub use`.
 //! - **<Role.>** [`D`] is …; [`E`] is what a `b` yields.
 //! - **Refusals.** [`AError`] when …; [`BError`] when ….
 //!
+//! # Examples
 //! ```
 //! <one example of the primary path>
 //! ```
@@ -80,6 +82,11 @@ links; both keep `lib.rs` to docs, `#![…]` attributes, `mod`, and `pub use`.
 `# Types` groups by *role*, three to five bullets, bold lead, each naming its
 types in one clause with a link. It is never one bullet per export, and never
 restates an item's own docs.
+
+Every example a crate page shows sits under `# Examples`, as an item's does, so
+a reader finds them where every page keeps them: a page of one task has its
+example straight under the heading, and a page of several gives each a `##`
+named for the task.
 
 ### 1.3 Attributes That Follow
 
@@ -372,8 +379,10 @@ The example `SKILL.md` shows, whole: the error enum, the types it speaks of, and
 the method whose `# Errors` names each variant.
 
 ````rust
+use thiserror::Error;
+
 /// Why a column and row name no square of a board.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum PosError {
     /// The column is past the board's last.
     #[error("pos error: column {col} is past a board of {cols} columns")]
@@ -612,18 +621,18 @@ Real output only, with the exact call and build named above the fence.
 | numbered | a sequence the reader performs, or an ordered protocol              |
 | prose    | everything else, including any list of two                          |
 
-Tables: header cells lowercase; pipes aligned by hand (`rustfmt` does not touch
-markdown); code in backticks; no terminal periods; one sentence before the table
-and no restatement after it.
+Tables: header cells in title case, as headings are; pipes aligned by hand
+(`rustfmt` does not touch markdown); code in backticks; no terminal periods; one
+sentence before the table and no restatement after it.
 
 ```text
-| feature   | enables                                    |   ← # Crate features
+| Feature   | Adds                                       |   ← # Crate Features
 | --------- | ------------------------------------------ |
 
-| target    | value | source                          |    ← a fact per platform
+| Target    | Value | Source                          |    ← a fact per platform
 | --------- | ----- | ------------------------------- |
 
-| source    | element built | cost          | may refuse |   ← # Choosing a <noun>
+| Source    | Element Built | Cost          | May Refuse |   ← ## Choosing a <Noun>
 | --------- | ------------- | ------------- | ---------- |
 ```
 
@@ -633,13 +642,16 @@ nested bullets deeper than one level.
 
 ## 9 Section Names
 
-- *Task*: gerund, sentence case, what the reader is doing: `Building one value`,
-  `Building many`, `Choosing a source`, `Allocating through the allocator
-  trait`.
-- *Concept*: the noun: `Pinned types`, `Contention`, `Ordering`, `Lifecycle`,
-  `Safety model`.
-- *Fixed*, exact spelling: `Types`, `Crate features`, `What it compiles to`, and
-  the item sections `Safety`, `Errors`, `Panics`, `Examples`.
-- Never: `Overview`, `Introduction`, `Usage`, `Getting started`, `Notes`,
-  `Miscellaneous`, `Implementation details`, `Arguments`, `Parameters`,
+Every heading is in title case, as the repository's Markdown headings are, so a
+crate page and its README read alike.
+
+- *Task*: gerund, a `##` under `# Examples`, what the reader is doing: `Building
+  One Value`, `Building Many`, `Choosing a Source`, `Allocating Through the
+  Allocator Trait`.
+- *Concept*: the noun: `Pinned Types`, `Contention`, `Ordering`, `Lifecycle`,
+  `Safety Model`.
+- *Fixed*, exact spelling: `Types`, `Examples`, `Crate Features`, `What It
+  Compiles To`, and the item sections `Safety`, `Errors`, `Panics`, `Examples`.
+- Never: `Overview`, `Introduction`, `Usage`, `Getting Started`, `Notes`,
+  `Miscellaneous`, `Implementation Details`, `Arguments`, `Parameters`,
   `Returns`, `Example`, `HOT`.

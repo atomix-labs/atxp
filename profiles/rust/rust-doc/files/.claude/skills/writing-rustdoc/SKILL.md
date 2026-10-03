@@ -64,21 +64,23 @@ item they show.
 ### Sections
 
 1. **`# Safety`, `# Errors`, `# Panics`, then `# Examples`, after the prose,
-   each heading after a blank `///`, its content on the next line, `# Examples`
-   always plural**, so a reader learns once where each fact is. An `# Errors`
-   entry names the variant, then the condition as a fact, a `- ` list for
-   several, as below; `references/templates.md` §4 has the example whole.
+   each heading after a blank `///`, its content on the next line**, so a reader
+   learns once where each fact is. An `# Errors` entry names the variant, then
+   the condition as a fact, a `- ` list for several, as below;
+   `references/templates.md` §4 has the example whole.
 2. **An example shows why the item is used, with a type of the domain and a real
    quantity, and ends in an assertion whose message continues the sentence**,
    since a reader knows how to call a function. It unwraps with an `expect` that
    says why the call cannot fail, never `unwrap()`; it closes `?` with a hidden
    `# Ok::<(), E>(())`; it is `no_run` for I/O, `text` for what is not Rust,
    never `ignore`. Every public type a user builds or drives, and every
-   substantial function, has one; a trivial accessor has none.
-3. **The crate page gives the pitch, then the problem or the shape, the tasks
-   under gerund headings, `# Crate features` as a table where there are
-   features, and the reference links last**, so a newcomer can start there; its
-   `# Types` groups the exports by role, three to five bullets.
+   substantial function, has one; siblings, each clock, point or error, have one
+   each or none; a trivial accessor has none.
+3. **The crate page gives the pitch, then the problem or the shape, `# Examples`
+   with a gerund `##` for each of several tasks, `# Crate Features` as a table
+   where there are features, and the reference links last, every heading in
+   title case**, so a newcomer can start there; `# Types` groups the exports by
+   role, three to five bullets.
 
 ````text
 /// The square at `col` and `row`, once both fall on the board.
@@ -239,14 +241,13 @@ Read each reference a step names, whole, before writing.
   reread, with widows and summaries that wrap.
 
 Then read the page the audit builds, `target/<host>/doc/<crate>/index.html`:
-every ``[`Name`]`` a link, no heading over an empty paragraph, the crate page an
-introduction a newcomer can start from.
+every ``[`Name`]`` a link, and no heading over an empty paragraph.
 
 Done means every public item, field and variant has a summary that says more
 than its name, and every file its `//!`; every unsafe site, field a proof relies
 on and atomic its comment, and every section its place; every type a user
-builds, and every substantial function, a runnable `# Examples`; `description`
-set; nothing on the cut list left, nor a widow; the checks passing.
+builds, every substantial function and their siblings, a runnable `# Examples`;
+`description` set; no cut-list item left, nor a widow; the checks passing.
 {%- if "strict" in lints %}
 
 Under `strict`, every private item has its summary too.
@@ -268,7 +269,7 @@ Under `strict`, every private item has its summary too.
 | "A comment beside the `#[expect]` explains it"      | Its `reason` is its one home.                           |
 | "My rewrite of that comment reads better"           | A terse line that states its fact is finished.          |
 | "The description is out of scope for docs"          | It is the crate's pitch on crates.io: write it, or ask. |
-| "A newtype needs an example, however tautological"  | Not where a neighbour's example shows its whole use.    |
+| "A newtype needs an example, however tautological"  | Not if a neighbour's shows it and no sibling has one.   |
 | "This sibling crate's concept needs a paragraph"    | Link the crate that defines it; write it there if not.  |
 | "No time to read the tests and the history"         | A doc without its facts costs more later: read them.    |
 | "The checks are slow; `cargo fmt` is enough"        | They take seconds on a warm cache: run them.            |

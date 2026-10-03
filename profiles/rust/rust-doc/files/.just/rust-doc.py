@@ -42,7 +42,11 @@ MARKETING = re.compile(
 )
 PROCESS = re.compile(r"\b(TODO|FIXME|XXX|HACK|phase [0-9A-Za-z]+|RC[0-9]+\b|chunk [0-9]+)\b")
 RULE_ID = re.compile(r"\b(STR|STY|UNS|API|ERG|DOC|PTN|BLD|TST|BCH|PRF|GIT|CLD|MNT|OVR|POR|MIN)-[A-Z]+-[0-9]+\b")
-BAD_HEADING = re.compile(r"^# (Example|Arguments?|Parameters?|Returns?|HOT|Overview|Introduction|Usage|Notes?|Getting started|Implementation details)\s*$")
+# Headings the house never writes, in title case, as its own are, and in sentence case.
+BAD_HEADING = re.compile(
+    r"^# (Example|Arguments?|Parameters?|Returns?|HOT|Overview|Introduction|Usage|Notes?|"
+    r"Getting [Ss]tarted|Implementation [Dd]etails)\s*$"
+)
 BAD_ERRORS_PROSE = re.compile(r"^(Returns?|Fails?|Errors?) |\bif\b")
 SAFETY_RESTATE = re.compile(r"SAFETY:\s*(this is safe|safe because|it is safe|trust)", re.I)
 # A crate's name as prose writes it: two words or more, `-` or `_` between them. A one-word name

@@ -395,10 +395,11 @@ mod tests {
     use core::alloc::{GlobalAlloc, Layout};
     use core::cell::Cell;
     use std::alloc::System;
+    use std::thread_local;
 
     use super::Painter;
 
-    std::thread_local! {
+    thread_local! {
         static ALLOCATIONS: Cell<usize> = const { Cell::new(0) };
     }
 

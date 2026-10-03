@@ -6,8 +6,9 @@ Usage: doc-inventory.py <crate-dir>
 For every fn, struct, enum, trait, type, const, static, macro and module under src/: its
 visibility, whether it is documented, and which sections (Safety, Errors, Panics, Examples) its
 block has. `unsafe fn` without Safety and `-> Result` without Errors are flagged with `!`; a pub type without
-Examples gets a `?` hint (a type whose use sits in a neighbour's example needs none). Use it for the
-inventory step, not as a gate.
+Examples gets a `?` hint (a type whose use sits in a neighbour's example needs none, unless a sibling
+has one), and so does a pub error type where another error has one, since siblings are documented
+alike. Use it for the inventory step, not as a gate.
 """
 
 import re
@@ -90,6 +91,17 @@ def main(argv):
                     summary,
                 )
             )
+
+    # Siblings are documented alike, so where one error type has an example, each other needs one.
+    def is_error(vis, kind, name):
+        return vis == "pub" and kind in ("struct", "enum") and name.endswith("Error")
+
+    with_examples = [name for _, _, vis, kind, name, secs, _, _ in rows if is_error(vis, kind, name) and "Examples" in secs]
+    if with_examples:
+        for k, (path, ln, vis, kind, name, secs, flags, summary) in enumerate(rows):
+            if is_error(vis, kind, name) and "Examples" not in secs:
+                flags = " ".join(filter(None, (flags, "?Examples")))
+                rows[k] = (path, ln, vis, kind, name, secs, flags, summary)
     w = max((len(r[4]) for r in rows), default=10)
     for path, ln, vis, kind, name, secs, flags, summary in rows:
         print(f"{path}:{ln}: {vis:10} {kind:14} {name:{w}} [{secs}] {flags:22} {summary}")

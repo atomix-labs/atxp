@@ -82,12 +82,19 @@ re-exports name each type.
 
 ## Derive `Error` with `thiserror`
 
-`#[derive(thiserror::Error)]` writes `Display` from `#[error("…")]` and `Error`
-with its `source`, so the type states its message once, beside its fields.
-thiserror 2 with its default features off works in a `no_std` crate. Both impls
-are written by hand only where the derive cannot say it: a `Display` that hands
-off to another type's rendering, as an errno's to `io::Error`'s, or a crate that
-takes no dependency at all, whose doc says so.
+thiserror's `#[derive(Error)]`, after `use thiserror::Error;`, writes `Display`
+from `#[error("…")]` and `Error` with its `source`, so the type states its
+message once, beside its fields. thiserror 2 with its default features off works
+in a `no_std` crate. Both impls are written by hand only where the derive cannot
+say it: a `Display` that hands off to another type's rendering, as an errno's to
+`io::Error`'s, or a crate that takes no dependency at all, whose doc says so.
+{%- if "cargo-deny" in devset.profiles %}
+
+thiserror is the house's derive for an error. Where a crate already derives with
+derive_more, and thiserror would bring a second major version of `syn` into its
+graph, which cargo-deny's `multiple-versions = "deny"` refuses, derive_more's
+`Error` is the choice instead, its message in `#[display("…")]`.
+{%- endif %}
 
 ```rust
 use core::{error, fmt};
@@ -152,7 +159,7 @@ pub enum TilesError {
 ```rust
 //! Why the grid refused. One type for each question a verb can be asked:
 //!
-//! | type             | asks                             | returned by             |
+//! | Type             | Asks                             | Returned By             |
 //! | ---------------- | -------------------------------- | ----------------------- |
 //! | `BoundsError`    | is that a square?                | `Grid::get`             |
 //! | `PlaceError`     | a square, and is it free?        | `Grid::place`           |
@@ -559,8 +566,8 @@ and `PlaceError::Occupied` to `FillError::Occupied`.
 A verb that takes a value and refuses it hands the value back inside the error,
 so a refusal costs nothing and loses nothing: the caller retries, reroutes or
 drops it, as it chooses. The field is public; a payload that has no `Debug` is
-skipped with `derive_more::Debug`'s `#[debug(skip)]`, so the error stays
-printable whatever it holds.
+skipped with `#[debug(skip)]`, from derive_more's `Debug`, imported in place of
+std's, so the error stays printable whatever it holds.
 
 ```rust
 use thiserror::Error;
@@ -595,10 +602,11 @@ impl<T> Grid<T> {
 ```
 
 ```rust
+use derive_more::Debug;
 use thiserror::Error;
 
 /// Why a tile was not placed, with the tile, unchanged.
-#[derive(Error, Clone, Copy, PartialEq, Eq, derive_more::Debug)]
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum PlaceError<T> {
     #[error("place error: square {at} is past the {len} the grid has")]
     Past {

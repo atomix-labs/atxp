@@ -1,8 +1,8 @@
 # Layout
 
-Read this before adding a crate, a module, a file or a re-export, or before
-changing what a crate makes public. It says where code goes and what callers see
-of it.
+Read this before adding a crate, a module, a file, an import or a re-export, or
+a `cfg` several items share, and before changing what a crate makes public. It
+says where code goes, how it names what it uses, and what callers see of it.
 
 ## `lib.rs` Holds Docs, Attributes, Modules, Then Re-Exports
 
@@ -24,7 +24,7 @@ mod errors;
 ```text
 //! A grid of tiles, and the moves across it.
 //!
-//! # Crate features
+//! # Crate Features
 //! ...
 {%- if "strict" in devset.features %}
 
@@ -126,6 +126,47 @@ pub use crate::grid::Pos;
 
 Held by review, and by `clippy::wildcard_imports`, which refuses a glob `use`
 that is not a re-export.
+
+## Code Names an Item Through a `use`, Never by Its Path
+
+A body, a signature or an attribute names an item by a name the file imports,
+never by a path from a crate's root: no `core::`, `std::`, `crate::` or another
+crate's path outside a `use`, so a file's `use` lines say every crate and module
+its code reaches. A module imported whole may lead a path, `fmt::Result` after
+`use core::fmt;`. A derive a feature brings comes in through an import gated as
+the derive is, `#[cfg(feature = "zerocopy")] use zerocopy::FromBytes;` beside
+`#[cfg_attr(feature = "zerocopy", derive(FromBytes))]`, and a framework's
+attribute imports too, divan's `#[bench]` with `use divan::bench;`. Three paths
+stay: a doc link, which rustdoc resolves by its path; `$crate::` in a
+`macro_rules!` body, which expands where the caller's imports hold; and
+`#[tokio::test]`, since an imported `test` takes over every `#[test]` in its
+module.
+
+```rust
+#[repr(transparent)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+// Bad: the crate's paths in an attribute, which no `use` line shows.
+#[cfg_attr(feature = "zerocopy", derive(zerocopy::FromBytes, zerocopy::IntoBytes, zerocopy::Immutable))]
+pub struct TileId(u32);
+```
+
+```rust
+#[cfg(feature = "zerocopy")]
+use zerocopy::{FromBytes, Immutable, IntoBytes};
+
+#[repr(transparent)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "zerocopy", derive(FromBytes, IntoBytes, Immutable))]
+pub struct TileId(u32);
+```
+
+Held by review.
+{%- if "strict" in devset.features %}
+
+Under `strict`, `clippy::absolute_paths` refuses a path of three segments or
+more written inline, `core::mem::take`; one of two, and any in an attribute, is
+review's to hold.
+{%- endif %}
 
 ## Inside a Private Module, What the Crate Does Not Export Is `pub(crate)`
 
@@ -333,6 +374,54 @@ macro_rules! squares {
     ($cols:expr, $rows:expr) => {
         $crate::__squares($cols, $rows)
     };
+}
+```
+
+Held by review.
+
+## A `cfg` Written Twice Is One Alias, Declared in `build.rs`
+
+A condition two items or more compile under is written once, as an alias the
+`cfg_aliases` crate declares in the crate's `build.rs`, and each item names the
+alias, so a platform added or a feature renamed is one edit, and the alias's
+name says what the condition means. `cfg_aliases!` emits each alias's
+`check-cfg` itself, so `unexpected_cfgs` knows it with no entry in the lint
+table, and `cfg_aliases` is a build dependency only. A condition written once
+stays where it is.
+
+```rust
+// Bad: one condition on each item, so a platform added is an edit at each copy.
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub const TERMINAL: &str = "/dev/tty";
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[must_use]
+pub const fn has_terminal() -> bool {
+    true
+}
+```
+
+```rust
+// build.rs
+use cfg_aliases::cfg_aliases;
+
+fn main() {
+    cfg_aliases! {
+        // A terminal at `/dev/tty`.
+        tty: { any(target_os = "linux", target_os = "macos") },
+    }
+}
+```
+
+```text
+// src/lib.rs
+#[cfg(tty)]
+pub const TERMINAL: &str = "/dev/tty";
+
+#[cfg(tty)]
+#[must_use]
+pub const fn has_terminal() -> bool {
+    true
 }
 ```
 
