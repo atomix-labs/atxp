@@ -113,7 +113,9 @@ jobs:
 
   publish:
     needs: [plan, release]
-    if: needs.plan.outputs.publish == 'true'
+    # `package` is skipped where nothing is packaged, as in a library's repository, and a skipped job
+    # skips every job below it, however far down, whose condition calls no status function.
+    if: always() && needs.release.result == 'success' && needs.plan.outputs.publish == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     # The environment a registry's trusted publisher names, so that only this job can publish.

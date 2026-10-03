@@ -32,7 +32,8 @@ next release's notes on every change, so a file that lost its `<!-- changes -->`
 line fails before a tag needs it.
 
 Where the repository has a `publish-*` recipe, the job `publish` then runs `just
-publish`, which puts the release in a registry. Where
+publish`, which puts the release in a registry, whether the release packaged
+archives or, as a library's does, none. Where
 [`cargo-publish`](../cargo/cargo-publish.md) is applied too, the job first takes
 a crates.io token by trusted publishing, good for 30 minutes and revoked when
 the job ends, so the repository stores none. That job runs in the environment

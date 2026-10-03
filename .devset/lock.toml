@@ -201,7 +201,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "786c781fd1c06b74c253bc445113badf96352d7ff705a68f59a828bca7d84bdf"
+digest = "b7abd1fecbb84b1fa93447a470a9201900eaa756f992f4344690f162bdcdddf7"
 
 [profiles.source]
 path = "profiles"
@@ -228,7 +228,7 @@ path = "profiles"
 
 [[profiles]]
 name = "devset-collection"
-digest = "76628f069123fc86070326a3fa91f80f46682944fbed3675a4e07f9fa5313f39"
+digest = "84a69d796cf54e20cfaff242cedf165b4eb75f6f96d7816929e0e358e02fe76e"
 
 [profiles.source]
 path = "profiles"
@@ -252,7 +252,7 @@ support = ["target"]
 
 [[profiles]]
 name = "agents"
-digest = "51c80fe5bc999ba1a03c7e3a0dfef1bca729dcaa2d2b0cefab987dd45e1c302c"
+digest = "3373fccf5781f112c4a1de70ebd12cbbaf393cccb7bca47c475a4861252214df"
 
 [profiles.source]
 path = "profiles"
