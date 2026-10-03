@@ -16,7 +16,8 @@ support      = []
 architecture = []
 # "managed with devset" among the header's badges, linking devset.
 devset-badge = []
-# The writing-readmes and drawing-the-logo skills, in .claude/skills/.
+# The writing-readmes, drawing-the-logo and preparing-a-release-for-open-source skills, in
+# .claude/skills/.
 agents = []
 
 [requires]
@@ -120,3 +121,7 @@ when     = { features = ["agents"] }
 [files.".claude/skills/drawing-the-logo/scripts/draw.py"]
 executable = true
 when       = { features = ["agents"] }
+
+[files.".claude/skills/preparing-a-release-for-open-source/SKILL.md"]
+template = true
+when     = { features = ["agents"] }
