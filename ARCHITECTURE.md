@@ -168,8 +168,9 @@ A profile whose concern an agent needs taught ships a skill, or several, in
 `.claude/skills/<skill>/`, under its own `agents` feature: `rust-lints`, with
 `writing-rust`, `writing-unsafe-rust` and the `review-rust` pass;
 `cargo-nextest`, with `writing-rust-tests`; `cargo-profiles`, with
-`tuning-rust-performance`; and `rust-doc`, `cargo-manifest`, `devset`,
-`devset-collection`, `github-ci`, `github-release`, `mdbook` and `project`, with
+`tuning-rust-performance`; `project`, with `writing-readmes`, `drawing-the-logo`
+and `preparing-a-release-for-open-source`; and `rust-doc`, `cargo-manifest`,
+`devset`, `devset-collection`, `github-ci`, `github-release` and `mdbook`, with
 one each. The layer itself teaches how a repository reads, under its
 `readability` feature: `writing-prose`, for every sentence a reader meets;
 `writing-readable-code`, for the shape of code, each in any language, with a
