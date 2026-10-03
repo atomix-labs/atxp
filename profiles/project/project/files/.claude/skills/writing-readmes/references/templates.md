@@ -96,7 +96,7 @@ your option.
 ````
 
 The minimum Rust is the workspace's `rust-version`, 1.98 where it is the
-default; the feature table has the rows of the crate docs' `# Crate features`,
+default; the feature table has the rows of the crate docs' `# Crate Features`,
 and a crate with no features has no such section.
 {%- if "mdbook" in devset.profiles %}
 

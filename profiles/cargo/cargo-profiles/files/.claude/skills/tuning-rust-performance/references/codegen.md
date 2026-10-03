@@ -481,7 +481,9 @@ pub fn try_paint(paint: fn(&mut [u8]), row: &mut [u8]) -> bool {
 ```
 
 ```rust
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+use thiserror::Error;
+
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 #[error("paint error: tile {tile} is past the palette of {colors}")]
 pub struct PaintError {
     pub tile: u8,

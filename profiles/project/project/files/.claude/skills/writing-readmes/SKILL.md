@@ -103,7 +103,7 @@ does and what stays the repository's, then the facts the catalog writes.
    changes the sentence in the same change.
 5. **A crate with Cargo features lists those a user turns on, what each adds,
    which are on by default, and the command, `cargo add tiles --features
-   serde`**, in the same rows as the crate docs' `# Crate features` table, which
+   serde`**, in the same rows as the crate docs' `# Crate Features` table, which
    changes with it.
 6. **The README and the crate page are two pages, never one**: the crate page is
    `//!` in `lib.rs`, written for someone using the API, never the README pulled
