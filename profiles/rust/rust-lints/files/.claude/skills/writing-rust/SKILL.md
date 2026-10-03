@@ -1,6 +1,6 @@
 ---
 name: writing-rust
-description: Use when writing, changing or reviewing Rust code, whether a crate, module, type, trait, function or error type; when choosing between an error and a panic, a newtype and an alias, a spec struct and a builder, a borrow and a clone; when a rustc or clippy lint fires or an `#[expect]` needs a reason. Covers errors, crate and module layout, naming, API design, ownership and lints{% if "async" in devset.features %}, and async Rust on tokio{% endif %}. Not for unsafe code or atomics, which writing-unsafe-rust covers.
+description: Use when writing, changing or reviewing Rust code, whether a crate, module, type, trait, function or error type; when choosing between an error and a panic, a newtype and an alias, a spec and a builder, a borrow and a clone; when a rustc or clippy lint fires or an `#[expect]` needs a reason. Covers errors, crate and module layout, naming, API design, ownership and lints{% if "async" in devset.features %}, and async Rust on tokio{% endif %}. Not for unsafe code or atomics, which writing-unsafe-rust covers.
 ---
 
 # Writing Rust
@@ -11,15 +11,10 @@ what a call costs and how it refuses; signatures that make a wrong call fail to
 compile; and lints answered where they fire. The rules below are the whole of
 it, each with its reason. The references hold each rule's why, a bad and a good
 example that compile under the workspace's lints, and what holds the rule.
-Unsafe code, raw pointers and atomics are `writing-unsafe-rust`'s.
 
 The examples leave their docs out to stay short, and compile with the lints that
 ask for docs off; real code writes them: `# Errors` on a public function that
 returns a `Result`, and `# Panics` on one that can panic.
-{%- if "strict" in devset.features %}
-
-Under `strict`, real code also documents every item.
-{%- endif %}
 {%- set rustdoc = devset.layers | selectattr("profile", "equalto", "rust-doc") | map(attribute="features") | first | default([]) %}
 {%- set manifests = devset.layers | selectattr("profile", "equalto", "cargo-manifest") | map(attribute="features") | first | default([]) %}
 {%- set tooling = devset.layers | selectattr("profile", "equalto", "devset") | map(attribute="features") | first | default([]) %}
@@ -105,9 +100,12 @@ Under `strict`, real code also documents every item.
 ### API
 
 1. **A call that creates or opens something, with three parameters or more, or
-   one a caller may leave at its usual value, takes a `*Spec` of public fields,
-   built as a literal, not a builder**, so every field is written where it is
-   used; one or two plain values stay arguments.
+   one a caller may leave at its usual value, takes a `*Spec`: the required
+   values in its `new`, each option a `#[must_use]` setter named for it, a
+   `const fn` where its field allows, the fields private, and no builder beside
+   it**, so an option added later breaks no caller and a spec of `Copy` fields
+   can be a `const`; the verb checks it once, naming the settings it refuses.
+   One or two plain values stay arguments.
 2. **A newtype has a private field, and its constructor and accessor name its
    unit, `from_squares` and `as_squares`, as `Duration::from_nanos` does**, so
    two meanings of one primitive cannot be swapped and a call says what the
@@ -251,25 +249,25 @@ Code made faster, a benchmark, and a build profile follow
 
 ## What Not to Do
 
-| Thought                                         | Instead                                                                      |
-| ----------------------------------------------- | ---------------------------------------------------------------------------- |
-| "`#[allow]`, just this once"                    | `#[expect(lint, reason = "…")]` at the site; it fails once its cause goes.   |
-| "A `String` error is enough here"               | A type for its question, facts as fields; in a binary, `io::Error::other`.   |
-| "`fn main() -> Result` reports the error"       | In a command a person runs, `ExitCode`, printing the message and each cause. |
-| "`anyhow` keeps the library simple"             | thiserror types a caller can match; `anyhow` erases them.                    |
-| "One `Error` enum for the whole crate"          | One type for each question a verb can be asked.                              |
-| "`#[error("load error: {0}")]` on a `#[from]`"  | `#[error(transparent)]`, or render the cause and expose nothing.             |
-| "Clamp the index to the last square"            | Refuse it with the index and length; clamping hides the caller's mistake.    |
-| "`get_columns()` reads clearly"                 | `columns()`.                                                                 |
-| "`Distance::new(3)` and `.get()` read plainly"  | `from_squares(3)` and `as_squares()`: the name says what the number counts.  |
-| "`derive(zerocopy::FromBytes)` saves an import" | A gated `use zerocopy::FromBytes;`, then `derive(FromBytes)`.                |
-| "A `Display` impl by hand is only a few lines"  | derive_more's `Display`; by hand only where it measured slower, saying so.   |
-| "A builder for these three fields"              | A `*Spec` literal.                                                           |
-| "`impl Trait` in this public argument"          | A named generic, `fn fill_with<F: FnMut() -> u8>`.                           |
-| "`pub` is simpler than `pub(crate)`"            | `pub(crate)` inside a private module.                                        |
-| "`.clone()` to quiet the borrow checker"        | Shape the borrow: a shorter scope, a reference kept, a move.                 |
-| "`#[non_exhaustive]`, for the future"           | Exhaustive; only a published type meant to grow, judged one by one.          |
-| "`[lints.clippy]`, or a table level changed"    | Cargo refuses the first, devset reports the second; `#[expect]` at the site. |
+| Thought                                         | Instead                                                                    |
+| ----------------------------------------------- | -------------------------------------------------------------------------- |
+| "`#[allow]`, just this once"                    | `#[expect(lint, reason = "…")]` here; it fails once its cause goes.        |
+| "A `String` error is enough here"               | A typed error with its facts as fields; in a binary, `io::Error::other`.   |
+| "`fn main() -> Result` reports the error"       | In a command a person runs, `ExitCode`; print the message, each cause.     |
+| "`anyhow` keeps the library simple"             | thiserror types a caller can match; `anyhow` erases them.                  |
+| "One `Error` enum for the whole crate"          | One type for each question a verb can be asked.                            |
+| "`#[error("load error: {0}")]` on a `#[from]`"  | `#[error(transparent)]`, or render the cause and expose nothing.           |
+| "Clamp the index to the last square"            | Refuse it, with index and length; a clamp hides the caller's mistake.      |
+| "`get_columns()` reads clearly"                 | `columns()`.                                                               |
+| "`Distance::new(3)` and `.get()` read plainly"  | `from_squares(3)` and `as_squares()`: the name says what it counts.        |
+| "`derive(zerocopy::FromBytes)` saves an import" | A gated `use zerocopy::FromBytes;`, then `derive(FromBytes)`.              |
+| "A `Display` impl by hand is only a few lines"  | derive_more's `Display`; by hand only where it measured slower, saying so. |
+| "A builder, or a literal of public fields"      | A `*Spec`: `new` with what is required, a setter each option.              |
+| "`impl Trait` in this public argument"          | A named generic, `fn fill_with<F: FnMut() -> u8>`.                         |
+| "`pub` is simpler than `pub(crate)`"            | `pub(crate)` inside a private module.                                      |
+| "`.clone()` to quiet the borrow checker"        | Shape the borrow: a shorter scope, a reference kept, a move.               |
+| "`#[non_exhaustive]`, for the future"           | Exhaustive; only a published type meant to grow, judged one by one.        |
+| "`[lints.clippy]`, or a table level changed"    | Cargo refuses the first, devset the second; `#[expect]` at the site.       |
 {%- if "strict" in devset.features %}
 
 Under `strict`, also:
