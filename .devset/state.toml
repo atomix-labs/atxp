@@ -184,8 +184,8 @@ exact = "badcb39b58a8dae35da9f2a8daa9f11ff3e1a78db95f9571ca76df5626d682cc"
 canonical = "badcb39b58a8dae35da9f2a8daa9f11ff3e1a78db95f9571ca76df5626d682cc"
 
 [files.".github/dependabot.yml"]
-exact = "5e49639373b3eed0c95187ce66f6d71e1bce0e6b69771467958487002c263d4c"
-canonical = "5e49639373b3eed0c95187ce66f6d71e1bce0e6b69771467958487002c263d4c"
+exact = "9dad8794fa5f22b6dd32a335d3de831a2d63d374c587f4486fb69bc5ec224f0f"
+canonical = "9dad8794fa5f22b6dd32a335d3de831a2d63d374c587f4486fb69bc5ec224f0f"
 policy = "merge"
 
 [files.".github/release-notes.md"]

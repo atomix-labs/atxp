@@ -79,7 +79,7 @@ merge = ["target"]
 
 [[profiles]]
 name = "github-dependabot"
-digest = "df32896fabb84915f67f384a6653c4bce6c863ccceb70c977db0aacf6ee2ff3e"
+digest = "a1fc35307002eb02a1c72040ace02c04293d5c423e252975469e3d097631b5ca"
 
 [profiles.source]
 path = "profiles"

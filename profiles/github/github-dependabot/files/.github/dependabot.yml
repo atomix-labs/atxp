@@ -1,4 +1,15 @@
 {%- set logins = assignees | split(",") | map("trim") | select | list -%}
+{#- Each workflow a profile of the collection writes, by its path, and that profile. -#}
+{%- set written = [
+    [".github/workflows/bump.yml", "github-bump"],
+    [".github/workflows/check.yml", "github-ci"],
+    [".github/workflows/demo.yml", "vhs"],
+    [".github/workflows/labels.yml", "github-labels"],
+    [".github/workflows/nightly.yml", "github-nightly"],
+    [".github/workflows/release.yml", "github-release"],
+    [".github/workflows/title.yml", "git-commits"],
+    [".github/workflows/watch.yml", "github-watch"],
+] -%}
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -18,3 +29,10 @@ updates:
 {%- if logins %}
     assignees: ["{{ logins | join('", "') }}"]
 {%- endif %}
+{%- for path, profile in written if profile in devset.profiles %}
+{%- if loop.first %}
+    # The workflows devset writes, whose actions move with their profiles, not by Dependabot.
+    exclude-paths:
+{%- endif %}
+      - {{ path }}
+{%- endfor %}

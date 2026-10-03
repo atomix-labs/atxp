@@ -35,6 +35,22 @@ check-palette:
     set -euo pipefail
     cmp profiles/docs/mdbook/files/*/theme/palette.css profiles/devset/devset-collection/files/catalog/theme/palette.css
 
+# Checks Dependabot's profile leaves alone every workflow a profile writes: each in its list.
+check-dependabot-paths:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    template=profiles/github/github-dependabot/files/.github/dependabot.yml
+    missing=0
+    for file in profiles/*/*/files/.github/workflows/*.yml; do
+        profile=$(cut -d/ -f3 <<< "$file")
+        path=${file#*/files/}
+        if ! grep -qF "[\"$path\", \"$profile\"]" "$template"; then
+            echo "$template: no [\"$path\", \"$profile\"] among the workflows devset writes" >&2
+            missing=1
+        fi
+    done
+    exit "$missing"
+
 # Points the README's quick start, and the demo the release records, at v$RELEASE_VERSION.
 release-readme:
     #!/usr/bin/env bash
