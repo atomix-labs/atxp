@@ -62,5 +62,11 @@ release's files and tag never change.
 {%- endif %}
 {%- if "cargo-publish" in on %}
 
-   `cargo install --locked <crate>` installs the new version from crates.io.
+   Each crate's page on crates.io shows its README and its metadata, and docs.rs
+   built it, as its builds page says. `cargo install --locked <crate>` installs
+   the new version from crates.io.
+{%- endif %}
+{%- if "mdbook" in on %}
+
+   The book is deployed from the default branch's last `check` run.
 {%- endif %}

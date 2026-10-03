@@ -201,7 +201,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "489d85040ae0f4f6c3d9ee08626aa13164ede3db89335b3e00f44b99c60b13cb"
+digest = "dff5e6dcc59fe2e75958e77f78cd7cc43a119cae4ce884aed7061eaeb7f79cb5"
 
 [profiles.source]
 path = "profiles"
@@ -241,7 +241,7 @@ site = ["target"]
 
 [[profiles]]
 name = "project"
-digest = "a0d4220df2a1417d877fb79f10abbcdeab962e349a2c54e068ccf9035999cc40"
+digest = "d42465a0dc157de05a17fb2cb33cab35b1a76678055dff4b5f7290ec0288f025"
 
 [profiles.source]
 path = "profiles"

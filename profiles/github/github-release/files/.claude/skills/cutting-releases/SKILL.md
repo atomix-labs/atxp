@@ -10,6 +10,14 @@ starts `release.yml`. The changelog, the versions and the migration notes are
 prepared in a pull request, like any change; the tag's push is the one step that
 cannot be taken back, so it is the maintainer's. RELEASE.md is the repository's
 own account of the steps; this skill is how to carry them out.
+{%- set project = devset.layers | selectattr("profile", "equalto", "project") | map(attribute="features") | first | default([]) %}
+{%- set owner = repository | split("/") | first %}
+{%- set repo = repository | split("/") | last %}
+{%- if "agents" in project %}
+
+A repository's first public release walks `preparing-a-release-for-open-source`
+first: everything a stranger meets, and what only the owner can set.
+{%- endif %}
 
 ## Rules
 
@@ -60,6 +68,10 @@ own account of the steps; this skill is how to carry them out.
    git push origin vX.Y.Z
    ```
 
+10. **Check what the release made**, once its run is done, as the checks below
+    say: a release ends when each page it made is opened, not when its run
+    passes.
+
 ## What `release.yml` Does
 {% if "cargo-binaries" in devset.profiles %}
 - Builds what every `package-*` recipe packages on each platform, and attests
@@ -74,12 +86,19 @@ own account of the steps; this skill is how to carry them out.
 
 ## Checks
 
-Once the tag is pushed, `gh run watch` follows the release run, then:
+Once the tag is pushed, `gh run watch` follows the release run, then each page
+the release made is opened:
 
 ```sh
 gh release view vX.Y.Z
 {%- if "cargo-binaries" in devset.profiles %}
 gh attestation verify <archive> --repo {{ repository }}
+{%- endif %}
+{%- if "cargo-publish" in devset.profiles %}
+curl -fsS -A '{{ repository }} release check' https://crates.io/api/v1/crates/<crate>/X.Y.Z | jq .version.num
+{%- endif %}
+{%- if "mdbook" in devset.profiles %}
+curl -fsS -o /dev/null https://{{ owner }}.github.io/{{ repo }}/
 {%- endif %}
 ```
 
@@ -90,7 +109,20 @@ Every archive is attached, with a `.sha256` beside it.
 {%- endif %}
 {%- if "cargo-publish" in devset.profiles %}
 
-crates.io lists the new version of every crate.
+crates.io lists the new version of every crate, and each crate's page,
+`https://crates.io/crates/<crate>`, shows its README, every image in it, and its
+description, keywords, categories and homepage. docs.rs built each one:
+`https://docs.rs/crate/<crate>/X.Y.Z/builds` shows the build succeeded.
+{%- endif %}
+{%- if "mdbook" in devset.profiles %}
+
+The book is deployed from the default branch's last `check` run, and shows what
+the release changed.
+{%- endif %}
+{%- if "agents" in project %}
+
+After a first public release, `preparing-a-release-for-open-source`'s After the
+Release opens every other page a stranger meets.
 {%- endif %}
 
 ## What Not to Do

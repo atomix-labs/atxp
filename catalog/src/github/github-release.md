@@ -50,7 +50,11 @@ the attestations; the jobs that build hold neither.
 
 The `agents` feature adds the `cutting-releases` skill in `.claude/skills/`:
 choosing the version, the release's pull request, and checking the published
-release. The tag stays the maintainer's to push.
+release, which ends each release: every page it made is opened, the GitHub
+Release, each crate's page on crates.io and its docs.rs build, and the book.
+Before a first public release it names [`project`](../project/project.md)'s
+`preparing-a-release-for-open-source`, where that profile's `agents` is on. The
+tag stays the maintainer's to push.
 
 ## Owns
 
