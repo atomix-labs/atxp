@@ -76,7 +76,7 @@ In a repository, even an empty one, apply the bundle, set the machine up, and
 run every check:
 
 ```sh
-devset add atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.19.0 --var repository=<owner>/<name>
+devset add atxp/rust --git https://github.com/atomix-labs/atxp --tag v0.19.1 --var repository=<owner>/<name>
 ./setup.sh
 just check
 ```
@@ -137,7 +137,7 @@ description = "Our Rust repositories: atxp's bundle, with the book, and our depl
 devset      = ">=0.5.0"
 
 [requires]
-rust = { git = "https://github.com/atomix-labs/atxp", tag = "v0.19.0", features = ["docs"] }
+rust = { git = "https://github.com/atomix-labs/atxp", tag = "v0.19.1", features = ["docs"] }
 
 [files.".github/workflows/deploy.yml"]
 ```
