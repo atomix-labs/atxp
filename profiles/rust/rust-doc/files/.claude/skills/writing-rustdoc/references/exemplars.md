@@ -75,7 +75,7 @@ Re-exports and omissions
   Each clause says what the type *buys*, not what it is made of.
 
 ````text
-//! # Building many
+//! ## Building Many
 //! [`run::each`] builds each of `n` elements from an initializer, in its slot; [`run::copied`] and
 //! [`run::cloned`] are the bulk slice sources.
 //! ```
@@ -86,11 +86,12 @@ Re-exports and omissions
 //! `<-` for a large field, so nothing is copied.
 ````
 
-- Gerund task heading; blank line before, none after; the one-sentence lead
-  links the entry points; guidance is `Prefer …, so …` with the cost stated.
+- A task's heading, a gerund `##` under `# Examples`, in title case; blank line
+  before, none after; the one-sentence lead links the entry points; guidance is
+  `Prefer …, so …` with the cost stated.
 
 ````text
-//! # What it compiles to
+//! # What It Compiles To
 //! `raw_try_init(dst, init!(Order { id, near <- init!(Leg { px, qty }), tag: [0; 32] }))` from the
 //! example above, release build, aarch64:
 //!

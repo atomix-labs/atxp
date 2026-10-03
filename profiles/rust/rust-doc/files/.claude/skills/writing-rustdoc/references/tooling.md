@@ -141,7 +141,7 @@ in a check without it, read the output for `warning:`, not only for errors.
 
 ## 3 Features and Cfg Axes
 
-Features are explained once, in the crate docs' `# Crate features` table; never
+Features are explained once, in the crate docs' `# Crate Features` table; never
 in item prose (the item is either there or not for the reader's build).
 {%- if "cargo-hack" in devset.profiles %}
 

@@ -350,7 +350,7 @@ stdout")]`.
   table. A dependency whose purpose is not its name is named in the crate docs
   where its guarantee is used, not beside the entry.
 - A feature that is not self-explanatory is explained once, in the crate docs'
-  `# Crate features` table, never in the manifest.
+  `# Crate Features` table, never in the manifest.
 {%- if "agents" in manifests %}
 - Everything else about a manifest (shape, inheritance, features, targets, the
   gates) is `editing-cargo-manifests`.
