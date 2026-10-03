@@ -1,6 +1,6 @@
 ---
 name: writing-the-book
-description: Use when writing or restructuring a page of the project's book, adding a chapter, math, a diagram, a callout, an included listing or a link to the API documentation, or when `just check-mdbook` fails.
+description: Use when writing or restructuring a page of the project's book, adding a chapter, math, a diagram, a callout, an included listing or a link to the API documentation; when filling in a library's book before its first release, or judging whether the book is ready for one; or when `just check-mdbook` fails.
 ---
 
 # Writing the Book
@@ -17,6 +17,15 @@ yet; the API documentation holds the item-by-item detail.
 
 - **Write only what the code and its tests show.** A behaviour the code does not
   have, or a promise it does not make, is not the book's to state: ask.
+
+- **A library's book is whole before its first release**: after the introduction
+  and Getting Started, a chapter for each concept a user must learn, then how to
+  choose among its types, crates or features, performance where speed is a
+  reason to use it, platforms and features, interop with the crates it converts
+  to, testing code that uses it, and how it compares with the alternatives;
+  `references/library-book.md` has the outline and what each chapter holds. A
+  release whose book is still the scaffold's two pages is not ready, since the
+  README's book badge sends every reader to it.
 
 - **Callouts are mdBook's own**: a blockquote whose first line is `[!NOTE]`,
   `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` or `[!CAUTION]`. Not a bold "Note:".
@@ -76,6 +85,9 @@ yet; the API documentation holds the item-by-item detail.
 3. **Preview it**: `mdbook serve` in the book's directory rebuilds on every save
    and serves the book at `http://localhost:3000`.
 4. **Check it**: `just check-mdbook`, then `just check`.
+5. **Before a library's first release**, hold `SUMMARY.md` to the outline in
+   `references/library-book.md`: each chapter the library has is there, and none
+   is a placeholder.
 
 ## Checks
 
@@ -91,10 +103,15 @@ yet; the API documentation holds the item-by-item detail.
 - every link of the built book, fragments included, offline.
 {%- endif %}
 
+No check sees whether the book holds what a reader needs: before a first
+release, that is review's, against the outline.
+
 ## What Not to Do
 
 - Do not add a preprocessor, a stylesheet or a script to `book.toml` by hand:
   turn on the feature that brings it.
 - Do not create an empty page to satisfy `SUMMARY.md`.
+- Do not call a library ready for its first release while its book is the
+  scaffold's introduction and Getting Started.
 - Do not draw a diagram as text art where mermaid is available.
 - Do not copy code into a page that an include can show.
