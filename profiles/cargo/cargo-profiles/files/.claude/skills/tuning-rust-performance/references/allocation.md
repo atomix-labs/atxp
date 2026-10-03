@@ -19,14 +19,14 @@ value that makes them, as the last rule's `Painter` holds its own.
 
 ```rust
 #[must_use]
-pub fn lit(rows: &[&[u8]]) -> usize {
-    let mut lit = 0_usize;
+pub fn lit_weight(rows: &[&[u8]]) -> usize {
+    let mut total = 0_usize;
     for row in rows {
         // Bad: a vector allocated and freed on every row.
         let tiles: Vec<u8> = row.iter().copied().filter(|tile| *tile > 0).collect();
-        lit = lit.saturating_add(weight(&tiles));
+        total = total.saturating_add(weight(&tiles));
     }
-    lit
+    total
 }
 
 fn weight(tiles: &[u8]) -> usize {
@@ -36,15 +36,15 @@ fn weight(tiles: &[u8]) -> usize {
 
 ```rust
 #[must_use]
-pub fn lit(rows: &[&[u8]]) -> usize {
-    let mut lit = 0_usize;
+pub fn lit_weight(rows: &[&[u8]]) -> usize {
+    let mut total = 0_usize;
     let mut tiles = Vec::new();
     for row in rows {
         tiles.clear();
         tiles.extend(row.iter().copied().filter(|tile| *tile > 0));
-        lit = lit.saturating_add(weight(&tiles));
+        total = total.saturating_add(weight(&tiles));
     }
-    lit
+    total
 }
 
 fn weight(tiles: &[u8]) -> usize {
@@ -67,17 +67,17 @@ and `reserve` serves a collection that already exists.
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 #[must_use]
-pub fn row_of(row: u16, cols: u16) -> Vec<Pos> {
+pub fn row_of(row: u16, columns: u16) -> Vec<Position> {
     // Bad: grows by doubling, allocating and copying as it goes.
     let mut squares = Vec::new();
-    for col in 0..cols {
-        squares.push(Pos { col, row });
+    for column in 0..columns {
+        squares.push(Position { column, row });
     }
     squares
 }
@@ -85,14 +85,14 @@ pub fn row_of(row: u16, cols: u16) -> Vec<Pos> {
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 #[must_use]
-pub fn row_of(row: u16, cols: u16) -> Vec<Pos> {
-    (0..cols).map(|col| Pos { col, row }).collect()
+pub fn row_of(row: u16, columns: u16) -> Vec<Position> {
+    (0..columns).map(|column| Position { column, row }).collect()
 }
 ```
 
@@ -149,22 +149,22 @@ none.
 // fails: clippy::format_push_string
 #[must_use]
 pub fn render(row: &[u16]) -> String {
-    let mut out = String::new();
-    for col in row {
+    let mut line = String::new();
+    for column in row {
         // Bad: a string allocated for each column, copied, and freed.
-        out.push_str(&format!("{col},"));
+        line.push_str(&format!("{column},"));
     }
-    out
+    line
 }
 ```
 
 ```rust
 use core::fmt::{self, Write};
 
-pub fn render(row: &[u16], out: &mut String) -> fmt::Result {
-    out.clear();
-    for col in row {
-        write!(out, "{col},")?;
+pub fn render(row: &[u16], line: &mut String) -> fmt::Result {
+    line.clear();
+    for column in row {
+        write!(line, "{column},")?;
     }
     Ok(())
 }
@@ -174,9 +174,9 @@ Held by `clippy::format_push_string`.
 
 ## Clone into a Held Value with `clone_from`
 
-`held = saved.clone()` allocates a new copy and frees what `held` had;
-`held.clone_from(&saved)` copies into `held`'s own allocation where it has room,
-so a hundred of them into a `String` with room allocate nothing. A derived
+`palette = saved.clone()` allocates a new copy and frees what `palette` had;
+`palette.clone_from(&saved)` copies into `palette`'s own allocation where it has
+room, so a hundred of them into a `String` with room allocate nothing. A derived
 `Clone` implements `clone` alone, and its `clone_from` is `*self =
 source.clone()`, which reuses nothing: a type cloned into a held value often
 clones field by field, or implements `clone_from` by hand.
@@ -188,9 +188,9 @@ pub struct Palette {
     pub glyphs: String,
 }
 
-pub fn restore(held: &mut Palette, saved: &Palette) {
-    // Bad: frees what `held` had, and allocates a copy.
-    held.glyphs = saved.glyphs.clone();
+pub fn restore(palette: &mut Palette, saved: &Palette) {
+    // Bad: frees what `palette` had, and allocates a copy.
+    palette.glyphs = saved.glyphs.clone();
 }
 ```
 
@@ -200,8 +200,8 @@ pub struct Palette {
     pub glyphs: String,
 }
 
-pub fn restore(held: &mut Palette, saved: &Palette) {
-    held.glyphs.clone_from(&saved.glyphs);
+pub fn restore(palette: &mut Palette, saved: &Palette) {
+    palette.glyphs.clone_from(&saved.glyphs);
 }
 ```
 
@@ -253,8 +253,8 @@ Held by review.
 Rust promises no elision of that copy, so a large array is built on the stack:
 `Box::new([0_u8; 16 << 20])` overflows any stack smaller than its 16 MiB, as a
 main thread's usually is, in a build that does not optimize the copy away, as
-the `test` profile does not. `vec![0; n]` asks the allocator for zeroed memory
-directly, and `.into_boxed_slice()` keeps it, all in safe code.
+the `test` profile does not. `vec![0; length]` asks the allocator for zeroed
+memory directly, and `.into_boxed_slice()` keeps it, all in safe code.
 `Box::new_zeroed()` and `Box::new_uninit()` make one value in place too, but
 hand back a `MaybeUninit`, and its `assume_init` is `unsafe`: a proof that every
 byte of the value is valid for its type.
@@ -358,16 +358,16 @@ use alloc::vec::Vec;
 
 #[derive(Debug, Default)]
 pub struct Painter {
-    lit: Vec<u8>,
+    lit_tiles: Vec<u8>,
 }
 
 impl Painter {
     // Bad: a promise nothing checks.
     /// Allocates nothing once warm.
     pub fn paint(&mut self, row: &[u8]) -> &[u8] {
-        self.lit.clear();
-        self.lit.extend(row.iter().copied().filter(|tile| *tile > 0));
-        &self.lit
+        self.lit_tiles.clear();
+        self.lit_tiles.extend(row.iter().copied().filter(|tile| *tile > 0));
+        &self.lit_tiles
     }
 }
 ```
@@ -379,14 +379,14 @@ use alloc::vec::Vec;
 
 #[derive(Debug, Default)]
 pub struct Painter {
-    lit: Vec<u8>,
+    lit_tiles: Vec<u8>,
 }
 
 impl Painter {
     pub fn paint(&mut self, row: &[u8]) -> &[u8] {
-        self.lit.clear();
-        self.lit.extend(row.iter().copied().filter(|tile| *tile > 0));
-        &self.lit
+        self.lit_tiles.clear();
+        self.lit_tiles.extend(row.iter().copied().filter(|tile| *tile > 0));
+        &self.lit_tiles
     }
 }
 
@@ -440,9 +440,9 @@ mod tests {
         let row = [0, 3, 0, 5];
         painter.paint(&row);
         let before = allocations();
-        let lit = painter.paint(&row).len();
+        let lit_count = painter.paint(&row).len();
         assert_eq!(allocations(), before, "a second row allocates nothing");
-        assert_eq!(lit, 2, "and paints its two lit tiles");
+        assert_eq!(lit_count, 2, "and paints its two lit tiles");
     }
 }
 ```

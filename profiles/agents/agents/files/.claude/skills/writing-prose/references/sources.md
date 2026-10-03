@@ -31,8 +31,8 @@ Checked by running, on the tools the profiles pin:
   action surely helps.
 {%- if "rust-lints" in devset.profiles %}
 - A Rust `main` that returns `Err` prints `Error: ` and the error's `Debug`:
-  `Error: GridError { row: 3, need: 8, have: 7 }` for a thiserror type, and
-  `Error: Custom { kind: Other, error: "…" }` for `io::Error::other`.
+  `Error: GridError { row: 3, required: 8, available: 7 }` for a thiserror type,
+  and `Error: Custom { kind: Other, error: "…" }` for `io::Error::other`.
 - clap's derive drops the period that devset's own doc comments end with, where
   its help shows them.
 {%- endif %}

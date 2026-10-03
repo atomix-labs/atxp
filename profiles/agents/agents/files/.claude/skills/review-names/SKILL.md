@@ -191,7 +191,9 @@ finding for each.
    or one named for what the two make together.
 2. **Unclear**: the name does not say what the thing is: a word that fits
    anything, `data`, `info`, `handle`, `process`, `manager` or `util`; an
-   abbreviation the domain does not write; a name shorter than its reach; a
+   abbreviation the domain does not write; a fragment, `at` or `held`, for a
+   value; an error's variant or type that names part of its condition, `Held` or
+   `HeldError` for `HeldByAnotherEditor`; a name shorter than its reach; a
    negated condition; a name that repeats its module, its receiver or its type.
 3. **Inconsistent**: the name clashes with the codebase: a second word for what
    the codebase already names one way, `cell` beside `square`; a type whose last
@@ -256,19 +258,19 @@ names, which rustc warns of. `since` is the version the change sets in
 mod grid {
     #[derive(Debug)]
     pub struct Grid {
-        cols: u16,
+        columns: u16,
     }
 
     impl Grid {
         #[must_use]
-        pub const fn cols(&self) -> u16 {
-            self.cols
+        pub const fn columns(&self) -> u16 {
+            self.columns
         }
 
-        #[deprecated(since = "0.4.0", note = "renamed to `cols`")]
+        #[deprecated(since = "0.4.0", note = "renamed to `columns`")]
         #[must_use]
-        pub const fn get_cols(&self) -> u16 {
-            self.cols()
+        pub const fn get_columns(&self) -> u16 {
+            self.columns()
         }
     }
 

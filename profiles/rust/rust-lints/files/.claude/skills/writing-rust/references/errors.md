@@ -20,10 +20,10 @@ mod grid {
     use thiserror::Error;
 
     #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-    #[error("bounds error: square {at} is past the {len} the grid has")]
+    #[error("bounds error: square {index} is past the {length} the grid has")]
     pub struct BoundsError {
-        pub at: usize,
-        pub len: usize,
+        pub index: usize,
+        pub length: usize,
     }
 }
 
@@ -47,10 +47,10 @@ mod errors {
     use thiserror::Error;
 
     #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-    #[error("bounds error: square {at} is past the {len} the grid has")]
+    #[error("bounds error: square {index} is past the {length} the grid has")]
     pub struct BoundsError {
-        pub at: usize,
-        pub len: usize,
+        pub index: usize,
+        pub length: usize,
     }
 
     #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
@@ -103,13 +103,13 @@ use core::{error, fmt};
 // message is far from the fields it renders.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BoundsError {
-    pub at: usize,
-    pub len: usize,
+    pub index: usize,
+    pub length: usize,
 }
 
 impl fmt::Display for BoundsError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "bounds error: square {} is past the {} the grid has", self.at, self.len)
+        write!(f, "bounds error: square {} is past the {} the grid has", self.index, self.length)
     }
 }
 
@@ -120,10 +120,10 @@ impl error::Error for BoundsError {}
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("bounds error: square {at} is past the {len} the grid has")]
+#[error("bounds error: square {index} is past the {length} the grid has")]
 pub struct BoundsError {
-    pub at: usize,
-    pub len: usize,
+    pub index: usize,
+    pub length: usize,
 }
 ```
 
@@ -147,10 +147,10 @@ use thiserror::Error;
 // `place` does.
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum TilesError {
-    #[error("tiles error: square {at} is past the {len} the grid has")]
-    OffGrid { at: usize, len: usize },
-    #[error("tiles error: square {at} holds a tile already")]
-    Occupied { at: usize },
+    #[error("tiles error: square {index} is past the {length} the grid has")]
+    OffGrid { index: usize, length: usize },
+    #[error("tiles error: square {index} holds a tile already")]
+    Occupied { index: usize },
     #[error("tiles error: not a tile id")]
     NotATile,
 }
@@ -168,18 +168,18 @@ pub enum TilesError {
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("bounds error: square {at} is past the {len} the grid has")]
+#[error("bounds error: square {index} is past the {length} the grid has")]
 pub struct BoundsError {
-    pub at: usize,
-    pub len: usize,
+    pub index: usize,
+    pub length: usize,
 }
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum PlaceError {
     #[error(transparent)]
-    Bounds(#[from] BoundsError),
-    #[error("place error: square {at} holds a tile already")]
-    Occupied { at: usize },
+    OffGrid(#[from] BoundsError),
+    #[error("place error: square {index} holds a tile already")]
+    Occupied { index: usize },
 }
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
@@ -223,22 +223,30 @@ Held by review.
 ## Name the Type for Its Question and Each Variant for Its Condition
 
 A type is `<Question>Error`: `BoundsError`, `PlaceError`, `ParseTileError`,
-`LoadError`. A variant is a short word for the condition that holds, `Occupied`,
-`Past`, `Empty`, `Held`, `Corrupt`, read after the type's name: it never repeats
-the type's words or ends in `Error`. Crates whose refusals read better as
-something else may keep one family of their own, as a lock's `LockRefused`, and
-keep it throughout.
+`LoadError`. A variant names the whole condition that holds, so a `match` arm
+reads without its message: `OffGrid`, `Occupied`, `RowTooShort`,
+`HeldByAnotherEditor`, `CorruptHeader`; and so does a unit error that is one
+condition, its type named for it, `GridFullError`, `HeldByAnotherEditorError`,
+never `HeldError`. One word is whole where the type supplies its subject,
+`PlaceError::Occupied`, `RegionError::TooSmall`, `LoadError::Io`, and a fragment
+where the reader must still ask which or by whom, `LoadError::Short`,
+`ClaimError::Held`: past what, what is short, held by whom, answered by a
+message out of sight. A variant is read after the type's name, so it never
+repeats the type's words or ends in `Error`. Crates whose refusals read better
+as something else may keep one family of their own, as a lock's `LockRefused`,
+and keep it throughout.
 
 ```rust
 use thiserror::Error;
 
-// Bad: every variant repeats the type and ends in `Error`.
+// Bad: `Past` leaves its message to say past what, and the second variant
+// repeats the type and ends in `Error`.
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum PlaceError {
-    #[error("place error: square {at} is past the {len} the grid has")]
-    PlaceOffGridError { at: usize, len: usize },
-    #[error("place error: square {at} holds a tile already")]
-    PlaceOccupiedError { at: usize },
+    #[error("place error: square {index} is past the {length} the grid has")]
+    Past { index: usize, length: usize },
+    #[error("place error: square {index} holds a tile already")]
+    PlaceOccupiedError { index: usize },
 }
 ```
 
@@ -247,16 +255,16 @@ use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum PlaceError {
-    #[error("place error: square {at} is past the {len} the grid has")]
-    Past { at: usize, len: usize },
-    #[error("place error: square {at} holds a tile already")]
-    Occupied { at: usize },
+    #[error("place error: square {index} is past the {length} the grid has")]
+    OffGrid { index: usize, length: usize },
+    #[error("place error: square {index} holds a tile already")]
+    Occupied { index: usize },
 }
 ```
 
 Held by review: `clippy::enum_variant_names` sees a shared prefix or suffix only
 on an enum the crate does not export, and only on an enum of three variants or
-more.
+more, and nothing sees a name that says only part of its condition.
 
 ## Errors Are `Copy` and `Eq` Where the Payload Allows
 
@@ -270,10 +278,10 @@ use thiserror::Error;
 
 // Bad: plain fields, but a test cannot compare it and a caller cannot copy it.
 #[derive(Debug, Error)]
-#[error("bounds error: square {at} is past the {len} the grid has")]
+#[error("bounds error: square {index} is past the {length} the grid has")]
 pub struct BoundsError {
-    pub at: usize,
-    pub len: usize,
+    pub index: usize,
+    pub length: usize,
 }
 ```
 
@@ -281,10 +289,10 @@ pub struct BoundsError {
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("bounds error: square {at} is past the {len} the grid has")]
+#[error("bounds error: square {index} is past the {length} the grid has")]
 pub struct BoundsError {
-    pub at: usize,
-    pub len: usize,
+    pub index: usize,
+    pub length: usize,
 }
 
 #[derive(Debug)]
@@ -293,8 +301,8 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn get(&self, at: usize) -> Result<u8, BoundsError> {
-        self.squares.get(at).copied().ok_or(BoundsError { at, len: self.squares.len() })
+    pub fn get(&self, index: usize) -> Result<u8, BoundsError> {
+        self.squares.get(index).copied().ok_or(BoundsError { index, length: self.squares.len() })
     }
 }
 
@@ -305,7 +313,7 @@ mod tests {
     #[test]
     fn a_square_past_the_end_is_refused_with_the_length() {
         let grid = Grid { squares: vec![0; 9] };
-        assert_eq!(grid.get(9), Err(BoundsError { at: 9, len: 9 }), "one past the last");
+        assert_eq!(grid.get(9), Err(BoundsError { index: 9, length: 9 }), "one past the last");
     }
 }
 ```
@@ -332,7 +340,7 @@ use thiserror::Error;
 pub enum PlaceError {
     // Bad: capitalized, a full stop, no source, and no square.
     #[error("The square is already taken.")]
-    Occupied { at: usize },
+    Occupied { index: usize },
 }
 ```
 
@@ -341,30 +349,33 @@ use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum PlaceError {
-    #[error("place error: square {at} holds a tile already")]
-    Occupied { at: usize },
+    #[error("place error: square {index} holds a tile already")]
+    Occupied { index: usize },
 }
 ```
 
 Held by review.
 
-## Fields Say What Was Wanted and What Was Held
+## Fields Say What Was Expected and What Was Found
 
-The fields of every error read alike, so a reader knows a field's side before
-its type: `want` is what was asked for and `held` what was found instead; `need`
-is what the operation requires and `have` what there was; `at` is an index and
-`len` the length it overshot. Fields are declared in that order, `want` before
-`held` and `need` before `have`.
+The fields of every error read alike, in whole words, so a reader knows a
+field's side before its type: `expected` is the value asked for and `actual` the
+one found instead; `required` is the quantity the operation needs and
+`available` what there was; `index` is a position and `length` the length it is
+past. Fields are declared in that order, `expected` before `actual`, `required`
+before `available` and `index` before `length`. Any other field is the domain's
+noun for what it holds, `row` or `tile`, never a fragment such as `at`, `held`
+or `have`, which leaves the reader to ask at what, or held where.
 
 ```rust
 use thiserror::Error;
 
 // Bad: words of this type's own, so each error reads differently.
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("rows error: the grid expects {expected_rows} rows, the board has {actual_rows}")]
+#[error("rows error: the grid expects {grid_rows} rows, the board has {board_rows}")]
 pub struct RowsError {
-    pub expected_rows: u16,
-    pub actual_rows: u16,
+    pub grid_rows: u16,
+    pub board_rows: u16,
 }
 ```
 
@@ -372,10 +383,10 @@ pub struct RowsError {
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("rows error: the grid needs {need} rows, the board has {have}")]
+#[error("rows error: the grid needs {required} rows, the board has {available}")]
 pub struct RowsError {
-    pub need: u16,
-    pub have: u16,
+    pub required: u16,
+    pub available: u16,
 }
 ```
 
@@ -409,7 +420,7 @@ use thiserror::Error;
 
 /// What a board load was doing when the file system refused.
 #[derive(Debug, Display, Clone, Copy, PartialEq, Eq)]
-pub enum IoOp {
+pub enum IoOperation {
     #[display("open the board file")]
     Open,
     #[display("read the board file")]
@@ -418,20 +429,20 @@ pub enum IoOp {
 
 #[derive(Debug, Error)]
 pub enum LoadError {
-    #[error("load error: i/o error during {op}: {cause}")]
-    Io { op: IoOp, cause: io::Error },
+    #[error("load error: i/o error during {operation}: {cause}")]
+    Io { operation: IoOperation, cause: io::Error },
 }
 
 impl LoadError {
     /// The one place an `io::Error` becomes a load error.
-    pub(crate) const fn io(op: IoOp, cause: io::Error) -> Self {
-        Self::Io { op, cause }
+    pub(crate) const fn io(operation: IoOperation, cause: io::Error) -> Self {
+        Self::Io { operation, cause }
     }
 }
 
 pub fn read<R: io::Read>(file: &mut R) -> Result<Vec<u8>, LoadError> {
     let mut bytes = Vec::new();
-    file.read_to_end(&mut bytes).map_err(|cause| LoadError::io(IoOp::Read, cause))?;
+    file.read_to_end(&mut bytes).map_err(|cause| LoadError::io(IoOperation::Read, cause))?;
     Ok(bytes)
 }
 ```
@@ -458,7 +469,7 @@ pub struct ParseTileError;
 pub enum LoadError {
     // Bad: the message prints the cause, and `#[from]` hands it out again.
     #[error("load error: {0}")]
-    Tile(#[from] ParseTileError),
+    NotATile(#[from] ParseTileError),
 }
 ```
 
@@ -472,9 +483,9 @@ pub struct ParseTileError;
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum LoadError {
     #[error(transparent)]
-    Tile(#[from] ParseTileError),
-    #[error("load error: row {row} has {have} squares, the grid needs {need}")]
-    Short { row: u16, need: u16, have: u16 },
+    NotATile(#[from] ParseTileError),
+    #[error("load error: row {row} has {available} squares, the grid needs {required}")]
+    RowTooShort { row: u16, required: u16, available: u16 },
 }
 
 #[cfg(test)]
@@ -497,24 +508,24 @@ Held by review, and by a test that pins the rendering, as above.
 can arrive for one reason. Where it can arrive for two, as a bounds refusal for
 either end of a move, a conversion would lose which: each reason is its own
 variant with no `#[from]`, whose message says what the cause meant and renders
-it, and the call site writes `.map_err(MoveError::Source)`. An error from a
-caller's closure, which the crate cannot interpret, is prefixed the same way.
+it, and the call site writes `.map_err(MoveError::SourceOffGrid)`. An error from
+a caller's closure, which the crate cannot interpret, is prefixed the same way.
 
 ```rust
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("bounds error: square {at} is past the {len} the grid has")]
+#[error("bounds error: square {index} is past the {length} the grid has")]
 pub struct BoundsError {
-    pub at: usize,
-    pub len: usize,
+    pub index: usize,
+    pub length: usize,
 }
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum MoveError {
     // Bad: `?` converts either end's refusal, and the caller cannot tell which.
     #[error(transparent)]
-    Bounds(#[from] BoundsError),
+    OffGrid(#[from] BoundsError),
 }
 ```
 
@@ -522,18 +533,18 @@ pub enum MoveError {
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("bounds error: square {at} is past the {len} the grid has")]
+#[error("bounds error: square {index} is past the {length} the grid has")]
 pub struct BoundsError {
-    pub at: usize,
-    pub len: usize,
+    pub index: usize,
+    pub length: usize,
 }
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum MoveError {
     #[error("move error: the square to move from is off the grid: {0}")]
-    Source(BoundsError),
+    SourceOffGrid(BoundsError),
     #[error("move error: the square to move to is off the grid: {0}")]
-    Target(BoundsError),
+    TargetOffGrid(BoundsError),
 }
 
 #[derive(Debug)]
@@ -542,14 +553,14 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn get(&self, at: usize) -> Result<Option<u8>, BoundsError> {
-        self.squares.get(at).copied().ok_or(BoundsError { at, len: self.squares.len() })
+    pub fn get(&self, index: usize) -> Result<Option<u8>, BoundsError> {
+        self.squares.get(index).copied().ok_or(BoundsError { index, length: self.squares.len() })
     }
 
-    pub fn swap(&mut self, from: usize, to: usize) -> Result<(), MoveError> {
-        self.get(from).map_err(MoveError::Source)?;
-        self.get(to).map_err(MoveError::Target)?;
-        self.squares.swap(from, to);
+    pub fn swap(&mut self, source: usize, target: usize) -> Result<(), MoveError> {
+        self.get(source).map_err(MoveError::SourceOffGrid)?;
+        self.get(target).map_err(MoveError::TargetOffGrid)?;
+        self.squares.swap(source, target);
         Ok(())
     }
 }
@@ -557,9 +568,9 @@ impl Grid {
 
 Held by review. Where one error's arms each belong to another, thiserror cannot
 flatten it, and `From` is written by hand, one arm for each: where a fill's
-`FillError` has a `Past` and an `Occupied` arm of its own, `impl
-From<PlaceError> for FillError` sends `PlaceError::Past` to `FillError::Past`
-and `PlaceError::Occupied` to `FillError::Occupied`.
+`FillError` has an `OffGrid` and an `Occupied` arm of its own, `impl
+From<PlaceError> for FillError` sends `PlaceError::OffGrid` to
+`FillError::OffGrid` and `PlaceError::Occupied` to `FillError::Occupied`.
 
 ## A Refused Value Goes Back to the Caller
 
@@ -574,10 +585,10 @@ use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum PlaceError {
-    #[error("place error: square {at} is past the {len} the grid has")]
-    Past { at: usize, len: usize },
-    #[error("place error: square {at} holds a tile already")]
-    Occupied { at: usize },
+    #[error("place error: square {index} is past the {length} the grid has")]
+    OffGrid { index: usize, length: usize },
+    #[error("place error: square {index} holds a tile already")]
+    Occupied { index: usize },
 }
 
 #[derive(Debug)]
@@ -587,15 +598,15 @@ pub struct Grid<T> {
 
 impl<T> Grid<T> {
     // Bad: a refused tile is dropped, so a caller must clone before it asks.
-    pub fn place(&mut self, at: usize, tile: T) -> Result<(), PlaceError> {
-        let len = self.squares.len();
-        match self.squares.get_mut(at) {
+    pub fn place(&mut self, index: usize, tile: T) -> Result<(), PlaceError> {
+        let length = self.squares.len();
+        match self.squares.get_mut(index) {
             Some(square @ None) => {
                 *square = Some(tile);
                 Ok(())
             },
-            Some(Some(_)) => Err(PlaceError::Occupied { at }),
-            None => Err(PlaceError::Past { at, len }),
+            Some(Some(_)) => Err(PlaceError::Occupied { index }),
+            None => Err(PlaceError::OffGrid { index, length }),
         }
     }
 }
@@ -608,16 +619,16 @@ use thiserror::Error;
 /// Why a tile was not placed, with the tile, unchanged.
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum PlaceError<T> {
-    #[error("place error: square {at} is past the {len} the grid has")]
-    Past {
-        at: usize,
-        len: usize,
+    #[error("place error: square {index} is past the {length} the grid has")]
+    OffGrid {
+        index: usize,
+        length: usize,
         #[debug(skip)]
         tile: T,
     },
-    #[error("place error: square {at} holds a tile already")]
+    #[error("place error: square {index} holds a tile already")]
     Occupied {
-        at: usize,
+        index: usize,
         #[debug(skip)]
         tile: T,
     },
@@ -627,7 +638,7 @@ impl<T> PlaceError<T> {
     /// The tile that was refused, whichever the reason.
     pub fn into_tile(self) -> T {
         match self {
-            Self::Past { tile, .. } | Self::Occupied { tile, .. } => tile,
+            Self::OffGrid { tile, .. } | Self::Occupied { tile, .. } => tile,
         }
     }
 }
@@ -638,15 +649,15 @@ pub struct Grid<T> {
 }
 
 impl<T> Grid<T> {
-    pub fn place(&mut self, at: usize, tile: T) -> Result<(), PlaceError<T>> {
-        let len = self.squares.len();
-        match self.squares.get_mut(at) {
+    pub fn place(&mut self, index: usize, tile: T) -> Result<(), PlaceError<T>> {
+        let length = self.squares.len();
+        match self.squares.get_mut(index) {
             Some(square @ None) => {
                 *square = Some(tile);
                 Ok(())
             },
-            Some(Some(_)) => Err(PlaceError::Occupied { at, tile }),
-            None => Err(PlaceError::Past { at, len, tile }),
+            Some(Some(_)) => Err(PlaceError::Occupied { index, tile }),
+            None => Err(PlaceError::OffGrid { index, length, tile }),
         }
     }
 }
@@ -668,10 +679,10 @@ use thiserror::Error;
 #[derive(Debug, Error, Clone, PartialEq, Eq)]
 pub enum AddError {
     #[error("add error: every square holds a tile")]
-    Full,
+    GridFull,
     // Bad: `add` never fails this way, but its callers must handle it anyway.
     #[error("add error: the tile could not be made: {0}")]
-    Failed(String),
+    MakerFailed(String),
 }
 ```
 
@@ -685,22 +696,22 @@ use thiserror::Error;
 pub struct GridFullError;
 
 /// Why a tile was not added. `E` is the maker's own error: `add`, which is
-/// given a tile, pins it to `Infallible`, leaving `Failed` uninhabited.
+/// given a tile, pins it to `Infallible`, leaving `MakerFailed` uninhabited.
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum AddError<E> {
     #[error(transparent)]
-    Full(#[from] GridFullError),
+    GridFull(#[from] GridFullError),
     #[error("add error: the tile could not be made: {0}")]
-    Failed(E),
+    MakerFailed(E),
 }
 
 impl AddError<Infallible> {
     /// The one arm there is, for a verb that was given its tile.
     #[must_use]
-    pub const fn full(self) -> GridFullError {
+    pub const fn into_grid_full_error(self) -> GridFullError {
         match self {
-            Self::Full(full) => full,
-            Self::Failed(never) => match never {},
+            Self::GridFull(error) => error,
+            Self::MakerFailed(never) => match never {},
         }
     }
 }
@@ -712,14 +723,14 @@ pub struct Grid<T> {
 
 impl<T> Grid<T> {
     pub fn add_with<E, F: FnOnce() -> Result<T, E>>(&mut self, make: F) -> Result<usize, AddError<E>> {
-        let (at, square) =
+        let (index, square) =
             self.squares.iter_mut().enumerate().find(|(_, square)| square.is_none()).ok_or(GridFullError)?;
-        *square = Some(make().map_err(AddError::Failed)?);
-        Ok(at)
+        *square = Some(make().map_err(AddError::MakerFailed)?);
+        Ok(index)
     }
 
     pub fn add(&mut self, tile: T) -> Result<usize, GridFullError> {
-        self.add_with(|| Ok(tile)).map_err(AddError::full)
+        self.add_with(|| Ok(tile)).map_err(AddError::into_grid_full_error)
     }
 }
 ```
@@ -743,9 +754,9 @@ use thiserror::Error;
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum ClaimError {
     #[error("claim error: another editor holds the board")]
-    Held,
+    HeldByAnotherEditor,
     #[error("claim error: the board's header names no board")]
-    Corrupt,
+    CorruptHeader,
 }
 ```
 
@@ -763,28 +774,28 @@ pub enum TryError<N, F> {
 
 /// Transient: another editor holds the board, so a caller may retry.
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("held error: another editor holds the board")]
-pub struct HeldError;
+#[error("held by another editor error: another editor holds the board")]
+pub struct HeldByAnotherEditorError;
 
 /// Permanent: the header names no board, and no attempt will change that.
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("corrupt error: the board's header names no board")]
-pub struct CorruptError;
+#[error("corrupt header error: the board's header names no board")]
+pub struct CorruptHeaderError;
 
 /// Attempts up to `attempts` times, waiting out each refusal another attempt
 /// could beat; the last refusal comes back once they are spent.
-pub fn waited<T, N, F, A>(attempts: u32, mut attempt: A) -> Result<T, TryError<N, F>>
+pub fn retry<T, N, F, A>(attempts: u32, mut attempt: A) -> Result<T, TryError<N, F>>
 where
     A: FnMut() -> Result<T, TryError<N, F>>,
 {
-    let mut left = attempts;
+    let mut attempts_left = attempts;
     loop {
         match attempt() {
-            Err(TryError::NonFatal(_held)) if left > 1 => {
-                left = left.saturating_sub(1);
+            Err(TryError::NonFatal(_failed_attempt)) if attempts_left > 1 => {
+                attempts_left = attempts_left.saturating_sub(1);
                 hint::spin_loop();
             },
-            done => return done,
+            last_attempt => return last_attempt,
         }
     }
 }
@@ -822,18 +833,22 @@ pub enum TryError<N, F> {
 }
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("held error: another editor holds the board")]
-pub struct HeldError;
+#[error("held by another editor error: another editor holds the board")]
+pub struct HeldByAnotherEditorError;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("corrupt error: the board's header names no board")]
-pub struct CorruptError;
+#[error("corrupt header error: the board's header names no board")]
+pub struct CorruptHeaderError;
 
 /// What claiming a board answers with.
-pub type ClaimError = TryError<HeldError, CorruptError>;
+pub type ClaimError = TryError<HeldByAnotherEditorError, CorruptHeaderError>;
 
-pub const fn claim(held: bool) -> Result<(), ClaimError> {
-    if held { Err(TryError::NonFatal(HeldError)) } else { Ok(()) }
+pub const fn claim(held_by_another_editor: bool) -> Result<(), ClaimError> {
+    if held_by_another_editor {
+        Err(TryError::NonFatal(HeldByAnotherEditorError))
+    } else {
+        Ok(())
+    }
 }
 ```
 
@@ -846,14 +861,14 @@ failure and stops; nobody matches on it. It returns `Result<(), BoxError>`,
 where `BoxError` boxes any error that is `Send` and `Sync`, so `?` converts
 every library error into it, and a one-off failure is `io::Error::other("…")`:
 no error type is defined for a failure only an operator reads. A dropped cause
-is named: a thread's panic payload is `_panicked`. A command a person runs fails
-the same way inside, and its `main` reports the message instead, as "A Command a
-Person Runs Reports the Error's Message" says.
+is named: a thread's panic payload is `_panic_payload`. A command a person runs
+fails the same way inside, and its `main` reports the message instead, as "A
+Command a Person Runs Reports the Error's Message" says.
 
 ```rust
 // Bad: a `String` loses the chain, and every `?` needs a `map_err` first.
-fn squares(cols: u16, rows: u16) -> Result<u16, String> {
-    cols.checked_mul(rows).ok_or_else(|| String::from("the board is too big"))
+fn squares(columns: u16, rows: u16) -> Result<u16, String> {
+    columns.checked_mul(rows).ok_or_else(|| String::from("the board is too big"))
 }
 
 fn main() -> Result<(), String> {
@@ -868,14 +883,16 @@ use std::{io, thread};
 /// What a failure in this binary is.
 type BoxError = Box<dyn Error + Send + Sync>;
 
-fn squares(cols: u16, rows: u16) -> Result<u16, BoxError> {
-    let squares = cols.checked_mul(rows);
+fn squares(columns: u16, rows: u16) -> Result<u16, BoxError> {
+    let squares = columns.checked_mul(rows);
     Ok(squares.ok_or_else(|| io::Error::other("the board has more squares than a u16 counts"))?)
 }
 
 fn main() -> Result<(), BoxError> {
     let render = thread::spawn(|| squares(3, 3));
-    let drawn = render.join().map_err(|_panicked| io::Error::other("the render thread panicked"))??;
+    let drawn = render
+        .join()
+        .map_err(|_panic_payload| io::Error::other("the render thread panicked"))??;
     if drawn == 0 {
         return Err(io::Error::other("an empty board has nothing to draw").into());
     }
@@ -915,17 +932,17 @@ use thiserror::Error;
 type BoxError = Box<dyn error::Error + Send + Sync>;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("bounds error: square {at} is past the {len} the grid has")]
+#[error("bounds error: square {index} is past the {length} the grid has")]
 struct BoundsError {
-    at: usize,
-    len: usize,
+    index: usize,
+    length: usize,
 }
 
-// Bad: `tiles 12` prints `Error: BoundsError { at: 12, len: 9 }`, the error's `Debug`.
+// Bad: `tiles 12` prints `Error: BoundsError { index: 12, length: 9 }`, the error's `Debug`.
 fn main() -> Result<(), BoxError> {
-    let at = env::args().nth(1).unwrap_or_default().parse()?;
-    if at >= 9 {
-        return Err(BoundsError { at, len: 9 }.into());
+    let index = env::args().nth(1).unwrap_or_default().parse()?;
+    if index >= 9 {
+        return Err(BoundsError { index, length: 9 }.into());
     }
     Ok(())
 }
@@ -942,16 +959,16 @@ use thiserror::Error;
 type BoxError = Box<dyn error::Error + Send + Sync>;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("bounds error: square {at} is past the {len} the grid has")]
+#[error("bounds error: square {index} is past the {length} the grid has")]
 struct BoundsError {
-    at: usize,
-    len: usize,
+    index: usize,
+    length: usize,
 }
 
 fn run() -> Result<(), BoxError> {
-    let at = env::args().nth(1).unwrap_or_default().parse()?;
-    if at >= 9 {
-        return Err(BoundsError { at, len: 9 }.into());
+    let index = env::args().nth(1).unwrap_or_default().parse()?;
+    if index >= 9 {
+        return Err(BoundsError { index, length: 9 }.into());
     }
     Ok(())
 }
@@ -996,9 +1013,9 @@ pub struct Grid {
 impl Grid {
     // Bad: a caller's index panics the process instead of being refused.
     #[must_use]
-    pub fn get(&self, at: usize) -> Option<&u8> {
-        assert!(at < self.squares.len(), "the square is on the grid");
-        self.squares.get(at)
+    pub fn get(&self, index: usize) -> Option<&u8> {
+        assert!(index < self.squares.len(), "the square is on the grid");
+        self.squares.get(index)
     }
 }
 ```
@@ -1007,10 +1024,10 @@ impl Grid {
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("bounds error: square {at} is past the {len} the grid has")]
+#[error("bounds error: square {index} is past the {length} the grid has")]
 pub struct BoundsError {
-    pub at: usize,
-    pub len: usize,
+    pub index: usize,
+    pub length: usize,
 }
 
 #[derive(Debug)]
@@ -1019,8 +1036,8 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn get(&self, at: usize) -> Result<&u8, BoundsError> {
-        self.squares.get(at).ok_or(BoundsError { at, len: self.squares.len() })
+    pub fn get(&self, index: usize) -> Result<&u8, BoundsError> {
+        self.squares.get(index).ok_or(BoundsError { index, length: self.squares.len() })
     }
 }
 ```
@@ -1058,27 +1075,27 @@ use core::num::NonZeroU16;
 
 #[derive(Debug)]
 pub struct Grid {
-    cols: NonZeroU16,
+    columns: NonZeroU16,
     squares: Vec<u8>,
 }
 
 impl Grid {
-    /// A grid of `cols` columns and `rows` rows, every square blank.
+    /// A grid of `columns` columns and `rows` rows, every square blank.
     #[must_use]
-    pub fn new(cols: NonZeroU16, rows: u16) -> Self {
-        let squares = usize::from(cols.get()).saturating_mul(usize::from(rows));
-        Self { cols, squares: vec![0; squares] }
+    pub fn new(columns: NonZeroU16, rows: u16) -> Self {
+        let squares = usize::from(columns.get()).saturating_mul(usize::from(rows));
+        Self { columns, squares: vec![0; squares] }
     }
 
-    /// The grid's rows, each `cols` squares long.
+    /// The grid's rows, each `columns` squares long.
     pub fn rows(&self) -> impl Iterator<Item = &[u8]> {
         // `new` lays whole rows, and nothing changes the length after it: an
         // invariant of this type's own, which no caller can break.
         debug_assert!(
-            self.squares.len().is_multiple_of(usize::from(self.cols.get())),
+            self.squares.len().is_multiple_of(usize::from(self.columns.get())),
             "a row cut short at the grid's end"
         );
-        self.squares.chunks(usize::from(self.cols.get()))
+        self.squares.chunks(usize::from(self.columns.get()))
     }
 }
 ```
@@ -1188,9 +1205,11 @@ one, on the helper.
 ## An Error Is Handled, or Dropped by Name
 
 A `Result` nobody reads is a refusal nobody saw, so the compiler refuses an
-unused one. Where dropping the error is the decision, the code names what it
-drops, `|_gone|`, `Err(_held)`, `Ok(_vacant)`, so a reader sees it was chosen;
-`.map(drop)` drops an `Ok` value the caller does not need.
+unused one. Where dropping the error is the decision, the binding is named for
+what it holds where it is dropped, `|_unsent_tile|`, `Err(_failed_attempt)`,
+`Ok(_empty_square)`, never a stock word that fits any drop, `_outcome`,
+`_result` or `_error`, so a reader sees what was given up and that it was
+chosen; `.map(drop)` drops an `Ok` value the caller does not need.
 
 ```rust,compile_fail
 // fails: unused_must_use
@@ -1213,7 +1232,7 @@ use thiserror::Error;
 pub struct RenderGoneError;
 
 pub fn announce(tiles: &Sender<u8>) -> Result<(), RenderGoneError> {
-    tiles.send(7).map_err(|_gone| RenderGoneError)
+    tiles.send(7).map_err(|_unsent_tile| RenderGoneError)
 }
 ```
 

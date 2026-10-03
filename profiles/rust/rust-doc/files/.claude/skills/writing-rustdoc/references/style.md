@@ -2,7 +2,7 @@
 
 Read this before any summary line or body prose, before tightening a doc, and
 before an example, a link or a list. Derived from the crates `exemplars.md`
-quotes: `mem-init`, `mem-region` and `mem-allocators`. Where the
+adapts: `mem-init`, `mem-region` and `mem-allocators`. Where the
 [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/documentation.html)
 or the
 [Pragmatic Rust Guidelines](https://microsoft.github.io/rust-guidelines/guidelines/docs/index.html)
@@ -26,7 +26,7 @@ does not. Then a blank `///` line, then the body.
 | getter          | name the value: `The …`, `Where …`, `Bytes …`, `How many …`                            | Bytes the span holds.                                                                 | Returns the length of the span.                |
 | predicate       | `Whether …`                                                                            | Whether the span holds no bytes.                                                      | Returns true if empty.                         |
 | `Option` result | the value, then ``, or `None` when …``                                                 | The next `layout`-shaped region, or `None` when what is left cannot hold one.         | Returns an Option containing the region.       |
-| constructor     | the state it yields, or the door it is; never `Creates a new`                          | The range of `len` bytes at `start`.                                                  | Creates a new `Span`.                          |
+| constructor     | the state it yields, or the door it is; never `Creates a new`                          | The range of `length` bytes at `start`.                                               | Creates a new `Span`.                          |
 | struct / enum   | its role: noun phrase, or verb phrase for an active object                             | Drops the prefix a run wrote, unless the run completes.                               | A struct that represents a guard.              |
 | adapter type    | ``What [`f`] builds.``                                                                 | What [`each`] builds.                                                                 | The return type of `each`.                     |
 | trait           | `How to …` for a capability, the role otherwise                                        | How to build a run of `T` at a destination that already exists.                       | Trait for run initializers.                    |
@@ -84,51 +84,51 @@ re-explain a substrate concept the defining crate documents.
 
 Apply in order until the sentence fits.
 
-| move                                      | before                                                              | after                                                                |
-| ----------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| drop the subject                          | This function writes the value into `dst`.                          | Writes the value at `dst`.                                           |
-| name the value, drop `Returns`            | Returns the number of elements that will be written.                | How many it writes.                                                  |
-| clause → participle                       | The prefix is dropped after it has been written.                    | …, having dropped the prefix it had written.                         |
-| two sentences → semicolon or colon        | `Ok` means all are initialized. `Err` means none are.               | `Ok` means all are initialized; `Err` means none are.                |
-| explanation → link                        | See the pin-init docs at <url> for details on `PinInit`.            | It produces a [`PinInit`].                                           |
-| condition list → comma list               | `dst` must be aligned. It must be writable. It must not be aliased. | `dst` is aligned, writable, and unaliased.                           |
-| `in order to` → `to`; `is used to` → verb | Used in order to build in place.                                    | Builds in place.                                                     |
-| `which is` / `that is` → apposition       | A guard, which is a struct that drops the prefix.                   | A guard that drops the prefix.                                       |
-| cut the hedge                             | This should generally be preferred for large types.                 | Prefer it for a large `T`.                                           |
-| cut the metaphor's setup                  | Think of it as a factory: it hands out values.                      | Hands out values.                                                    |
-| reason → fact + consequence               | We chose an alias because we felt a newtype was unnecessary here.   | An alias, not a newtype: every caller already means this exact word. |
+| move                                      | before                                                                      | after                                                                |
+| ----------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| drop the subject                          | This function writes the value into `destination`.                          | Writes the value at `destination`.                                   |
+| name the value, drop `Returns`            | Returns the number of elements that will be written.                        | How many it writes.                                                  |
+| clause → participle                       | The prefix is dropped after it has been written.                            | …, having dropped the prefix it had written.                         |
+| two sentences → semicolon or colon        | `Ok` means all are initialized. `Err` means none are.                       | `Ok` means all are initialized; `Err` means none are.                |
+| explanation → link                        | See the pin-init docs at <url> for details on `PinInit`.                    | It produces a [`PinInit`].                                           |
+| condition list → comma list               | `destination` must be aligned. It must be writable. It must not be aliased. | `destination` is aligned, writable, and unaliased.                   |
+| `in order to` → `to`; `is used to` → verb | Used in order to build in place.                                            | Builds in place.                                                     |
+| `which is` / `that is` → apposition       | A guard, which is a struct that drops the prefix.                           | A guard that drops the prefix.                                       |
+| cut the hedge                             | This should generally be preferred for large types.                         | Prefer it for a large `T`.                                           |
+| cut the metaphor's setup                  | Think of it as a factory: it hands out values.                              | Hands out values.                                                    |
+| reason → fact + consequence               | We chose an alias because we felt a newtype was unnecessary here.           | An alias, not a newtype: every caller already means this exact word. |
 
 ## 4 Cut List with Rewrites
 
-| cut                                                            | why                                      | write instead                                           |
-| -------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------- |
-| `This struct/fn/method …`                                      | the subject is the item                  | start with the verb or the role                         |
-| `Returns a new instance of X` / `Creates a new X`              | says nothing the signature does not      | the state it yields: `An empty tally.`                  |
-| `A struct that holds …` / `Represents …`                       | the kind is visible                      | the role                                                |
-| `# Arguments` / `# Parameters` / `# Returns`                   | Rust convention is prose                 | fold names into the summary: ``Copies `src` to `dst`.`` |
-| ``The `src` slice.`` on `src: &[T]`                            | restates the type                        | `What to copy.`                                         |
-| `// increment len` above `len += 1`                            | narrates the line                        | delete, or the invariant it maintains                   |
-| `Note that …`, `It is important to …`, `Please`                | filler                                   | the fact                                                |
-| `simply`, `just`, `basically`, `essentially`                   | filler                                   | delete                                                  |
-| `will`                                                         | tense drift                              | present tense                                           |
-| `can be used to`, `allows you to`, `provides`                  | indirection                              | the verb                                                |
-| `for more information see …`, `See also`                       | link ceremony                            | link the noun inline                                    |
-| `powerful`, `simple`, `easy`, `efficient`, `zero-cost`         | unverifiable                             | the measured fact, or nothing                           |
-| `generic`, `reusable`                                          | editorializing; being in a lib proves it | what it does                                            |
-| `etc.`, `and so on`, `various`                                 | vague                                    | the full list, or the rule that generates it            |
-| `# Example` (singular)                                         | nonstandard                              | `# Examples`                                            |
-| blank line after `# Heading`                                   | house style                              | content on the next line                                |
-| a heading over one sentence                                    | structure without content                | a clause in the prose                                   |
-| a bullet list of two                                           | a sentence with `and`                    | prose                                                   |
-| `TODO`, `FIXME`, `(?)`, `should probably`                      | debris                                   | ask (SKILL.md), and omit                                |
-| `RC10 phase B`, `chunk 3`, `as agreed`, PR/issue talk          | dev-process noise                        | nothing; history lives in git                           |
-| `# HOT`, rule IDs (`STY-CMT-5`), `DEVIATION` tags              | belong to a suite this tree lacks        | nothing                                                 |
-| the summary repeated as the first body sentence                | duplication                              | start the body with *why*                               |
-| a `///` on a `#[derive(Debug, Clone)]` or an obvious `Default` | nothing to say                           | nothing                                                 |
-| a module doc that lists its items                              | the listing is the module page           | one line naming the role                                |
-| `Entry point: …` / `Entry points: …`                           | restates signatures                      | nothing; or the one-line contract                       |
-| a doc that explains an `#[expect]` beside it                   | the `reason` is its one home             | nothing                                                 |
-| a comment naming the lint (`clippy wants …`)                   | lint machinery narration                 | the fact the code rests on                              |
+| cut                                                            | why                                      | write instead                                                      |
+| -------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------ |
+| `This struct/fn/method …`                                      | the subject is the item                  | start with the verb or the role                                    |
+| `Returns a new instance of X` / `Creates a new X`              | says nothing the signature does not      | the state it yields: `An empty tally.`                             |
+| `A struct that holds …` / `Represents …`                       | the kind is visible                      | the role                                                           |
+| `# Arguments` / `# Parameters` / `# Returns`                   | Rust convention is prose                 | fold names into the summary: ``Copies `source` to `destination`.`` |
+| ``The `source` slice.`` on `source: &[T]`                      | restates the type                        | `What to copy.`                                                    |
+| `// increment length` above `length += 1`                      | narrates the line                        | delete, or the invariant it maintains                              |
+| `Note that …`, `It is important to …`, `Please`                | filler                                   | the fact                                                           |
+| `simply`, `just`, `basically`, `essentially`                   | filler                                   | delete                                                             |
+| `will`                                                         | tense drift                              | present tense                                                      |
+| `can be used to`, `allows you to`, `provides`                  | indirection                              | the verb                                                           |
+| `for more information see …`, `See also`                       | link ceremony                            | link the noun inline                                               |
+| `powerful`, `simple`, `easy`, `efficient`, `zero-cost`         | unverifiable                             | the measured fact, or nothing                                      |
+| `generic`, `reusable`                                          | editorializing; being in a lib proves it | what it does                                                       |
+| `etc.`, `and so on`, `various`                                 | vague                                    | the full list, or the rule that generates it                       |
+| `# Example` (singular)                                         | nonstandard                              | `# Examples`                                                       |
+| blank line after `# Heading`                                   | house style                              | content on the next line                                           |
+| a heading over one sentence                                    | structure without content                | a clause in the prose                                              |
+| a bullet list of two                                           | a sentence with `and`                    | prose                                                              |
+| `TODO`, `FIXME`, `(?)`, `should probably`                      | debris                                   | ask (SKILL.md), and omit                                           |
+| `RC10 phase B`, `chunk 3`, `as agreed`, PR/issue talk          | dev-process noise                        | nothing; history lives in git                                      |
+| `# HOT`, rule IDs (`STY-CMT-5`), `DEVIATION` tags              | belong to a suite this tree lacks        | nothing                                                            |
+| the summary repeated as the first body sentence                | duplication                              | start the body with *why*                                          |
+| a `///` on a `#[derive(Debug, Clone)]` or an obvious `Default` | nothing to say                           | nothing                                                            |
+| a module doc that lists its items                              | the listing is the module page           | one line naming the role                                           |
+| `Entry point: …` / `Entry points: …`                           | restates signatures                      | nothing; or the one-line contract                                  |
+| a doc that explains an `#[expect]` beside it                   | the `reason` is its one home             | nothing                                                            |
+| a comment naming the lint (`clippy wants …`)                   | lint machinery narration                 | the fact the code rests on                                         |
 
 ## 5 Examples
 

@@ -54,11 +54,11 @@ static TILESET: OnceLock<Vec<char>> = OnceLock::new();
 #[derive(Debug, Error, Clone, PartialEq, Eq)]
 #[error("install error: a tile set is installed already")]
 pub struct InstallError {
-    pub refused: Vec<char>,
+    pub glyphs: Vec<char>,
 }
 
 pub fn install(glyphs: Vec<char>) -> Result<(), InstallError> {
-    TILESET.set(glyphs).map_err(|refused| InstallError { refused })
+    TILESET.set(glyphs).map_err(|glyphs| InstallError { glyphs })
 }
 
 #[must_use]
@@ -125,19 +125,19 @@ use core::sync::atomic::{AtomicBool, AtomicU8};
 #[derive(Debug, Default)]
 pub struct Game {
     winner: AtomicU8,
-    over: AtomicBool,
+    finished: AtomicBool,
 }
 
 impl Game {
     pub fn finish(&self, winner: u8) {
         self.winner.store(winner, Relaxed);
         // Bad: `Relaxed` orders nothing, so a reader may see the game over and no winner yet.
-        self.over.store(true, Relaxed);
+        self.finished.store(true, Relaxed);
     }
 
     #[must_use]
     pub fn winner(&self) -> Option<u8> {
-        self.over.load(Relaxed).then(|| self.winner.load(Relaxed))
+        self.finished.load(Relaxed).then(|| self.winner.load(Relaxed))
     }
 }
 ```
@@ -149,24 +149,24 @@ use core::sync::atomic::{AtomicBool, AtomicU8};
 #[derive(Debug, Default)]
 pub struct Game {
     winner: AtomicU8,
-    over: AtomicBool,
+    finished: AtomicBool,
 }
 
 impl Game {
     pub fn finish(&self, winner: u8) {
-        // ORDERING: Relaxed; the Release store of `over` below publishes it.
+        // ORDERING: Relaxed; the Release store of `finished` below publishes it.
         self.winner.store(winner, Relaxed);
         // ORDERING: Release, pairing with the Acquire load in `winner`, so a reader that sees the
         // game over sees the winner stored before it.
-        self.over.store(true, Release);
+        self.finished.store(true, Release);
     }
 
     #[must_use]
     pub fn winner(&self) -> Option<u8> {
         // ORDERING: Acquire, pairing with the Release store in `finish`.
-        let over = self.over.load(Acquire);
+        let finished = self.finished.load(Acquire);
         // ORDERING: Relaxed; the Acquire load above orders it after the store `finish` published.
-        over.then(|| self.winner.load(Relaxed))
+        finished.then(|| self.winner.load(Relaxed))
     }
 }
 ```
@@ -267,12 +267,12 @@ impl Square {
 
     #[must_use]
     pub fn enter(&self, painter: Painter) -> bool {
-        let (mine, theirs) = self.flags(painter);
-        mine.store(true, Release);
+        let (own_flag, other_flag) = self.flags(painter);
+        own_flag.store(true, Release);
         // Bad: the load may see the other painter's flag as it was before its store, and so may
         // theirs of this one: both paint.
-        if theirs.load(Acquire) {
-            mine.store(false, Release);
+        if other_flag.load(Acquire) {
+            own_flag.store(false, Release);
             return false;
         }
         true
@@ -306,19 +306,19 @@ impl Square {
 
     #[must_use]
     pub fn enter(&self, painter: Painter) -> bool {
-        let (mine, theirs) = self.flags(painter);
+        let (own_flag, other_flag) = self.flags(painter);
         // ORDERING: Release, so a painter that sees this flag sees what this one did before; then
         // a SeqCst fence, the store-load order the exclusion rests on. Both painters announce,
         // then look, and the fences' one order puts one painter's look after the other's
         // announcement, so at most one finds the square clear. A fence rather than SeqCst
         // accesses, since loom models the fence and not the accesses.
-        mine.store(true, Release);
+        own_flag.store(true, Release);
         fence(SeqCst);
         // ORDERING: Acquire, pairing with the Release store in `leave`, so a painter that enters
         // sees what the last one painted.
-        if theirs.load(Acquire) {
+        if other_flag.load(Acquire) {
             // ORDERING: Release, as in `leave`.
-            mine.store(false, Release);
+            own_flag.store(false, Release);
             return false;
         }
         true
@@ -373,9 +373,9 @@ use thiserror::Error;
 const FREE: u32 = 0;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("claim error: editor {held} holds the square")]
+#[error("claim error: editor {owner} holds the square")]
 pub struct ClaimError {
-    pub held: u32,
+    pub owner: u32,
 }
 
 #[derive(Debug, Default)]
@@ -390,7 +390,7 @@ impl Claim {
         self.owner
             .compare_exchange(FREE, editor.get(), Acquire, Relaxed)
             .map(drop)
-            .map_err(|held| ClaimError { held })
+            .map_err(|owner| ClaimError { owner })
     }
 
     pub fn release(&self) {
@@ -416,7 +416,7 @@ threads at once needs `T: Sync`, and one that does both, as `RwLock` and
 reached through `with_mut` as loom's is, so a model sees every access to it.
 
 ```text
-// Bad: `with` lends `&mut T`, so a `T` that is `Sync` but not `Send`, a `MutexGuard`, can be
+// Bad: `lock_with` lends `&mut T`, so a `T` that is `Sync` but not `Send`, a `MutexGuard`, can be
 // swapped out onto another thread.
 // SAFETY: sharing the lock shares `&T`s, which `T: Sync` allows.
 #[expect(unsafe_code, reason = "an `UnsafeCell` field takes away the auto `Sync`")]
@@ -440,8 +440,8 @@ mod sync {
             Self(cell::UnsafeCell::new(value))
         }
 
-        pub(crate) fn with_mut<R, F: FnOnce(*mut T) -> R>(&self, f: F) -> R {
-            f(self.0.get())
+        pub(crate) fn with_mut<R, F: FnOnce(*mut T) -> R>(&self, access: F) -> R {
+            access(self.0.get())
         }
     }
 }
@@ -450,12 +450,12 @@ use crate::sync::{Acquire, AtomicBool, Relaxed, Release, UnsafeCell, spin_loop};
 
 #[derive(Debug)]
 pub struct SpinLock<T> {
-    held: AtomicBool,
-    // INVARIANT: reached only inside `with`, by the thread whose exchange set `held`.
+    locked: AtomicBool,
+    // INVARIANT: reached only inside `lock_with`, by the thread whose exchange set `locked`.
     value: UnsafeCell<T>,
 }
 
-// SAFETY: `with` lends `&mut T` to one thread at a time, through which it may move a `T` in or
+// SAFETY: `lock_with` lends `&mut T` to one thread at a time, through which it may move a `T` in or
 // out, so sharing the lock moves `T`s between threads, which `T: Send` allows; it never lends two
 // threads a `&T` at once, so it needs no `T: Sync`.
 #[expect(unsafe_code, reason = "an `UnsafeCell` field takes away the auto `Sync`")]
@@ -467,20 +467,20 @@ impl<T> SpinLock<T> {
         reason = "loom's atomics, which a model swaps in, have no `const fn new`"
     )]
     pub fn new(value: T) -> Self {
-        Self { held: AtomicBool::new(false), value: UnsafeCell::new(value) }
+        Self { locked: AtomicBool::new(false), value: UnsafeCell::new(value) }
     }
 
-    pub fn with<R, F: FnOnce(&mut T) -> R>(&self, f: F) -> R {
+    pub fn lock_with<R, F: FnOnce(&mut T) -> R>(&self, access: F) -> R {
         // ORDERING: Acquire on success, pairing with the Release store in `Unlock::drop`, so this
         // thread sees what the last holder wrote; Relaxed on failure, which only retries.
-        while self.held.compare_exchange_weak(false, true, Acquire, Relaxed).is_err() {
+        while self.locked.compare_exchange_weak(false, true, Acquire, Relaxed).is_err() {
             spin_loop();
         }
-        let _unlock = Unlock(&self.held);
+        let _guard = Unlock(&self.locked);
         // SAFETY: by the field INVARIANT only the holder reaches the value, and the exchange above
-        // made this thread the holder until `_unlock` drops, after `f` returns or unwinds.
+        // made this thread the holder until `_guard` drops, after `access` returns or unwinds.
         #[expect(unsafe_code, reason = "the holder's exclusive borrow of the value")]
-        self.value.with_mut(|value| f(unsafe { &mut *value }))
+        self.value.with_mut(|value| access(unsafe { &mut *value }))
     }
 }
 
@@ -488,7 +488,7 @@ struct Unlock<'a>(&'a AtomicBool);
 
 impl Drop for Unlock<'_> {
     fn drop(&mut self) {
-        // ORDERING: Release, pairing with the Acquire exchange in `with`, so the next holder sees
+        // ORDERING: Release, pairing with the Acquire exchange in `lock_with`, so the next holder sees
         // what this one wrote.
         self.0.store(false, Release);
     }
@@ -523,20 +523,20 @@ pub struct Tileset {
 #[derive(Debug, Default)]
 pub struct Theme {
     // Bad: an address, so the tile set's provenance is dropped with each store.
-    current: AtomicUsize,
+    tileset: AtomicUsize,
 }
 
 impl Theme {
     pub fn set(&self, tileset: &'static Tileset) {
-        self.current.store(ptr::from_ref(tileset).expose_provenance(), Release);
+        self.tileset.store(ptr::from_ref(tileset).expose_provenance(), Release);
     }
 
     #[must_use]
     #[expect(unsafe_code, reason = "a tile set rebuilt from the address the theme holds")]
     pub fn get(&self) -> Option<&'static Tileset> {
-        let current = ptr::with_exposed_provenance::<Tileset>(self.current.load(Acquire));
+        let tileset = ptr::with_exposed_provenance::<Tileset>(self.tileset.load(Acquire));
         // SAFETY: zero, or the address of a `&'static Tileset` whose provenance `set` exposed.
-        unsafe { current.as_ref() }
+        unsafe { tileset.as_ref() }
     }
 }
 ```
@@ -554,24 +554,24 @@ pub struct Tileset {
 #[derive(Debug, Default)]
 pub struct Theme {
     // INVARIANT: null, or a `&'static Tileset` that `set` stored, never written through.
-    current: AtomicPtr<Tileset>,
+    tileset: AtomicPtr<Tileset>,
 }
 
 impl Theme {
     pub fn set(&self, tileset: &'static Tileset) {
         // ORDERING: Release, pairing with the Acquire load in `get`, so a reader sees the tile set
         // as it was built.
-        self.current.store(ptr::from_ref(tileset).cast_mut(), Release);
+        self.tileset.store(ptr::from_ref(tileset).cast_mut(), Release);
     }
 
     #[must_use]
     #[expect(unsafe_code, reason = "the tile set the theme's pointer names")]
     pub fn get(&self) -> Option<&'static Tileset> {
         // ORDERING: Acquire, pairing with the Release store in `set`.
-        let current = self.current.load(Acquire);
+        let tileset = self.tileset.load(Acquire);
         // SAFETY: by the field INVARIANT the pointer is null or a `&'static Tileset`'s, with its
         // provenance, and nothing writes through it.
-        unsafe { current.as_ref() }
+        unsafe { tileset.as_ref() }
     }
 }
 ```
@@ -629,7 +629,7 @@ impl Stack {
             // failure, which retries.
             match self.head.compare_exchange_weak(head, node, Release, Relaxed) {
                 Ok(_) => return,
-                Err(now) => head = now,
+                Err(actual) => head = actual,
             }
         }
     }
@@ -650,7 +650,7 @@ impl Stack {
                     let node = unsafe { Box::from_raw(head) };
                     return Some(node.tile);
                 },
-                Err(now) => head = now,
+                Err(actual) => head = actual,
             }
         }
         None
@@ -694,7 +694,7 @@ impl Log {
             // on failure, which retries.
             match self.head.compare_exchange_weak(head, node, Release, Relaxed) {
                 Ok(_) => return,
-                Err(now) => head = now,
+                Err(actual) => head = actual,
             }
         }
     }
@@ -704,14 +704,15 @@ impl Log {
     pub fn contains(&self, tile: u8) -> bool {
         // ORDERING: Acquire, pairing with the Release exchange that published the head, and,
         // since each later exchange carries the earlier ones along, with those of the nodes below.
-        let mut at = self.head.load(Acquire);
-        while !at.is_null() {
-            // SAFETY: by the field INVARIANT `at` is a live node, freed only once the log drops.
-            let node = unsafe { &*at };
+        let mut cursor = self.head.load(Acquire);
+        while !cursor.is_null() {
+            // SAFETY: by the field INVARIANT `cursor` is a live node, freed only once the log
+            // drops.
+            let node = unsafe { &*cursor };
             if node.tile == tile {
                 return true;
             }
-            at = node.next;
+            cursor = node.next;
         }
         false
     }
@@ -721,12 +722,12 @@ impl Drop for Log {
     #[expect(unsafe_code, reason = "the log frees its nodes once no reader is left")]
     fn drop(&mut self) {
         // ORDERING: Relaxed; `&mut self` means every push has happened before this.
-        let mut at = self.head.load(Relaxed);
-        while !at.is_null() {
+        let mut cursor = self.head.load(Relaxed);
+        while !cursor.is_null() {
             // SAFETY: `&mut self` leaves no reader, and by the field INVARIANT each node came from
             // `Box::into_raw` and is freed only here.
-            let node = unsafe { Box::from_raw(at) };
-            at = node.next;
+            let node = unsafe { Box::from_raw(cursor) };
+            cursor = node.next;
         }
     }
 }

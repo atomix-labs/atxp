@@ -169,7 +169,7 @@ pub fn …
 ````
 
 Getters and constructors are one line with no example: `/// Bytes the span
-holds.`, ``/// The range of `len` bytes at `start`.``, `/// Wraps a raw
+holds.`, ``/// The range of `length` bytes at `start`.``, `/// Wraps a raw
 address.`
 
 ### 3.2 Unsafe Function
@@ -178,7 +178,7 @@ address.`
 /// <Verb> ….
 ///
 /// # Safety
-/// `dst` is <precondition>, <precondition>, and <precondition>[; and, unless <case>,
+/// `destination` is <precondition>, <precondition>, and <precondition>[; and, unless <case>,
 /// <conditional precondition>].
 ///
 /// # Errors
@@ -366,7 +366,7 @@ pub enum FooError {
     #[error("foo error: <fragment with {fields} inline>")]
     Variant {
         /// <What the field carries.>
-        need: usize,
+        required: usize,
     },
 }
 ```
@@ -383,67 +383,71 @@ use thiserror::Error;
 
 /// Why a column and row name no square of a board.
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-pub enum PosError {
+pub enum PositionError {
     /// The column is past the board's last.
-    #[error("pos error: column {col} is past a board of {cols} columns")]
-    Col {
+    #[error("position error: column {index} is past a board of {length} columns")]
+    ColumnOffBoard {
         /// The column asked for.
-        col: u16,
+        index: u16,
         /// Columns the board has.
-        cols: u16,
+        length: u16,
     },
     /// The row is past the board's last.
-    #[error("pos error: row {row} is past a board of {rows} rows")]
-    Row {
+    #[error("position error: row {index} is past a board of {length} rows")]
+    RowOffBoard {
         /// The row asked for.
-        row: u16,
+        index: u16,
         /// Rows the board has.
-        rows: u16,
+        length: u16,
     },
 }
 
 /// A square of a board, by column and row from the top left.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
+pub struct Position {
     /// Columns from the left edge.
-    pub col: u16,
+    pub column: u16,
     /// Rows from the top edge.
     pub row: u16,
 }
 
-/// A board of tiles, `cols` wide and `rows` deep.
+/// A board of tiles, `columns` wide and `rows` deep.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Board {
     /// Columns the board has.
-    pub cols: u16,
+    pub columns: u16,
     /// Rows the board has.
     pub rows: u16,
 }
 
 impl Board {
-    /// The square at `col` and `row`, once both fall on the board.
+    /// The square at `column` and `row`, once both fall on the board.
     ///
     /// # Errors
-    /// - [`PosError::Col`], `col` is past the last column.
-    /// - [`PosError::Row`], `row` is past the last row.
+    /// - [`PositionError::ColumnOffBoard`], `column` is past the last column.
+    /// - [`PositionError::RowOffBoard`], `row` is past the last row.
     ///
     /// # Examples
     /// ```
-    /// use tiles::{Board, Pos, PosError};
+    /// use tiles::{Board, Position, PositionError};
     ///
-    /// let board = Board { cols: 8, rows: 8 };
-    /// assert_eq!(board.pos(3, 1)?, Pos { col: 3, row: 1 }, "a square of the board");
-    /// assert_eq!(board.pos(8, 1), Err(PosError::Col { col: 8, cols: 8 }), "and not past it");
-    /// # Ok::<(), PosError>(())
+    /// let board = Board { columns: 8, rows: 8 };
+    /// assert_eq!(board.position(3, 1)?, Position { column: 3, row: 1 }, "a square of the board");
+    /// assert_eq!(
+    ///     board.position(8, 1),
+    ///     Err(PositionError::ColumnOffBoard { index: 8, length: 8 }),
+    ///     "and not past it"
+    /// );
+    /// # Ok::<(), PositionError>(())
     /// ```
-    pub const fn pos(self, col: u16, row: u16) -> Result<Pos, PosError> {
-        if col >= self.cols {
-            return Err(PosError::Col { col, cols: self.cols });
+    pub const fn position(self, column: u16, row: u16) -> Result<Position, PositionError> {
+        if column >= self.columns {
+            return Err(PositionError::ColumnOffBoard { index: column, length: self.columns });
         }
         if row >= self.rows {
-            return Err(PosError::Row { row, rows: self.rows });
+            return Err(PositionError::RowOffBoard { index: row, length: self.rows });
         }
-        Ok(Pos { col, row })
+        Ok(Position { column, row })
     }
 }
 ````

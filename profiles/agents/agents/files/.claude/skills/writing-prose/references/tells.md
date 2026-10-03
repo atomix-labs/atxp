@@ -544,7 +544,7 @@ Technical text uses some watched words in a literal sense; that sense is kept.
 | `robust`           | a defined property, "robust to outliers"              | "a robust solution"                        |
 | `gate`, `gated`    | a feature gate, a condition in a template, a CI gate  | "gated behind careful review"              |
 | `align`, `aligned` | memory alignment, `align_of`, aligned columns         | "aligns with the project's goals"          |
-| `underscore`       | the `_` character, a `_gone` binding                  | "underscores the importance of"            |
+| `underscore`       | the `_` character, a `_unsent_tile` binding           | "underscores the importance of"            |
 | `landscape`        | a page's orientation                                  | "the evolving landscape"                   |
 | `serve`            | a server serves a request, `mdbook serve`             | "serves as the core"                       |
 | `mark`             | a marker, a comment that marks lines, `#[must_use]`   | "marks a pivotal moment"                   |

@@ -165,23 +165,23 @@ use crate::sync::{Acquire, AtomicBool, AtomicU8, Relaxed, Release};
 #[derive(Debug, Default)]
 pub struct Game {
     winner: AtomicU8,
-    over: AtomicBool,
+    finished: AtomicBool,
 }
 
 impl Game {
     pub fn finish(&self, winner: u8) {
-        // ORDERING: Relaxed; the Release store of `over` below publishes it.
+        // ORDERING: Relaxed; the Release store of `finished` below publishes it.
         self.winner.store(winner, Relaxed);
         // ORDERING: Release, pairing with the Acquire load in `winner`.
-        self.over.store(true, Release);
+        self.finished.store(true, Release);
     }
 
     #[must_use]
     pub fn winner(&self) -> Option<u8> {
         // ORDERING: Acquire, pairing with the Release store in `finish`.
-        let over = self.over.load(Acquire);
+        let finished = self.finished.load(Acquire);
         // ORDERING: Relaxed; the Acquire load above orders it after the store `finish` published.
-        over.then(|| self.winner.load(Relaxed))
+        finished.then(|| self.winner.load(Relaxed))
     }
 }
 
@@ -224,14 +224,14 @@ mod model {
     fn a_reader_that_sees_the_game_over_sees_its_winner() {
         loom::model(|| {
             let game = Arc::new(Game::default());
-            let finishing = {
+            let finisher = {
                 let game = Arc::clone(&game);
                 thread::spawn(move || game.finish(3))
             };
             if let Some(winner) = game.winner() {
                 assert_eq!(winner, 3, "the winner stored before the game ended");
             }
-            finishing.join().expect("the finishing thread ends");
+            finisher.join().expect("the finishing thread ends");
         });
     }
 }
@@ -296,7 +296,7 @@ stays unsafe by a test that calls it inside `unsafe` under
 ///
 /// ```compile_fail
 /// // Bad: fails on any error, so a renamed function passes it as well as a `Send` brush.
-/// let brush = tiles::Brush::here();
+/// let brush = tiles::Brush::for_current_thread();
 /// std::thread::spawn(move || brush.slot());
 /// ```
 ````
@@ -310,7 +310,7 @@ use std::thread;
 use tiles::Brush;
 
 fn main() {
-    let brush = Brush::here();
+    let brush = Brush::for_current_thread();
     thread::spawn(move || brush.slot());
 }
 
@@ -354,15 +354,16 @@ pub struct Grid {
 }
 
 impl Grid {
-    /// The square at `at`, unchecked.
+    /// The square at `index`, unchecked.
     ///
     /// # Safety
-    /// `at` is below the grid's square count.
+    /// `index` is below the grid's square count.
     #[expect(unsafe_code, reason = "an unchecked read for callers that have bounded the index")]
     #[must_use]
-    pub unsafe fn square_unchecked(&self, at: usize) -> u8 {
-        // SAFETY: the caller promises `at` is below the count, which is all `get_unchecked` asks.
-        unsafe { *self.squares.get_unchecked(at) }
+    pub unsafe fn square_unchecked(&self, index: usize) -> u8 {
+        // SAFETY: the caller promises `index` is below the count, which is all `get_unchecked`
+        // asks.
+        unsafe { *self.squares.get_unchecked(index) }
     }
 }
 

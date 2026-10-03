@@ -41,7 +41,7 @@ now.
 
 ```rust
 pub trait TileStore {
-    fn tile_at(&self, at: usize) -> Option<u8>;
+    fn tile_at(&self, index: usize) -> Option<u8>;
 }
 
 #[derive(Debug, Default)]
@@ -50,8 +50,8 @@ pub struct VecStore {
 }
 
 impl TileStore for VecStore {
-    fn tile_at(&self, at: usize) -> Option<u8> {
-        self.squares.get(at).copied()
+    fn tile_at(&self, index: usize) -> Option<u8> {
+        self.squares.get(index).copied()
     }
 }
 
@@ -64,8 +64,8 @@ pub struct Grid<S> {
 
 impl<S: TileStore> Grid<S> {
     #[must_use]
-    pub fn tile_at(&self, at: usize) -> Option<u8> {
-        self.store.tile_at(at)
+    pub fn tile_at(&self, index: usize) -> Option<u8> {
+        self.store.tile_at(index)
     }
 }
 ```
@@ -78,8 +78,8 @@ pub struct Grid {
 
 impl Grid {
     #[must_use]
-    pub fn tile_at(&self, at: usize) -> Option<u8> {
-        self.squares.get(at).copied()
+    pub fn tile_at(&self, index: usize) -> Option<u8> {
+        self.squares.get(index).copied()
     }
 }
 ```
@@ -168,8 +168,8 @@ pub struct Grid {
 
 impl Grid {
     #[must_use]
-    pub fn tile_at(&self, at: usize) -> Option<u8> {
-        self.squares.get(at).copied()
+    pub fn tile_at(&self, index: usize) -> Option<u8> {
+        self.squares.get(index).copied()
     }
 }
 
@@ -181,8 +181,8 @@ pub struct GridService {
 
 impl GridService {
     #[must_use]
-    pub fn tile_at(&self, at: usize) -> Option<u8> {
-        self.grid.tile_at(at)
+    pub fn tile_at(&self, index: usize) -> Option<u8> {
+        self.grid.tile_at(index)
     }
 }
 ```
@@ -195,8 +195,8 @@ pub struct Grid {
 
 impl Grid {
     #[must_use]
-    pub fn tile_at(&self, at: usize) -> Option<u8> {
-        self.squares.get(at).copied()
+    pub fn tile_at(&self, index: usize) -> Option<u8> {
+        self.squares.get(index).copied()
     }
 }
 ```
@@ -220,9 +220,9 @@ use thiserror::Error;
 pub const EMPTY: u8 = 0;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("off grid error: square {at} is past the last")]
+#[error("off grid error: square {index} is past the last")]
 pub struct OffGridError {
-    at: usize,
+    index: usize,
 }
 
 #[derive(Debug, Default)]
@@ -232,14 +232,14 @@ pub struct Grid {
 
 // Bad: asked for `place`, and given three more that nothing calls.
 impl Grid {
-    pub fn place(&mut self, at: usize, tile: u8) -> Result<(), OffGridError> {
-        let square = self.squares.get_mut(at).ok_or(OffGridError { at })?;
+    pub fn place(&mut self, index: usize, tile: u8) -> Result<(), OffGridError> {
+        let square = self.squares.get_mut(index).ok_or(OffGridError { index })?;
         *square = tile;
         Ok(())
     }
 
-    pub fn remove(&mut self, at: usize) -> Option<u8> {
-        self.squares.get_mut(at).map(mem::take)
+    pub fn remove(&mut self, index: usize) -> Option<u8> {
+        self.squares.get_mut(index).map(mem::take)
     }
 
     pub fn clear(&mut self) {
@@ -247,7 +247,7 @@ impl Grid {
     }
 
     pub fn place_all(&mut self, tiles: &[(usize, u8)]) -> Result<(), OffGridError> {
-        tiles.iter().try_for_each(|&(at, tile)| self.place(at, tile))
+        tiles.iter().try_for_each(|&(index, tile)| self.place(index, tile))
     }
 }
 ```
@@ -256,9 +256,9 @@ impl Grid {
 use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("off grid error: square {at} is past the last")]
+#[error("off grid error: square {index} is past the last")]
 pub struct OffGridError {
-    at: usize,
+    index: usize,
 }
 
 #[derive(Debug, Default)]
@@ -267,8 +267,8 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn place(&mut self, at: usize, tile: u8) -> Result<(), OffGridError> {
-        let square = self.squares.get_mut(at).ok_or(OffGridError { at })?;
+    pub fn place(&mut self, index: usize, tile: u8) -> Result<(), OffGridError> {
+        let square = self.squares.get_mut(index).ok_or(OffGridError { index })?;
         *square = tile;
         Ok(())
     }
@@ -312,8 +312,8 @@ pub const fn limit(value: u16, max: u16, refuse: bool) -> Option<u16> {
 pub const MAX_SCORE: u16 = 999;
 
 #[must_use]
-pub const fn col(value: u16, cols: u16) -> Option<u16> {
-    if value < cols { Some(value) } else { None }
+pub const fn column(value: u16, columns: u16) -> Option<u16> {
+    if value < columns { Some(value) } else { None }
 }
 
 #[must_use]
@@ -339,9 +339,9 @@ pub const EMPTY: u8 = 0;
 // does.
 #[must_use]
 pub fn first_empty(squares: &[u8]) -> Option<usize> {
-    for (at, tile) in squares.iter().enumerate() {
+    for (index, tile) in squares.iter().enumerate() {
         if *tile == EMPTY {
-            return Some(at);
+            return Some(index);
         }
     }
     None
@@ -422,15 +422,15 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn place(&mut self, at: usize, tile: u8) {
-        if let Some(square) = self.squares.get_mut(at) {
+    pub fn place(&mut self, index: usize, tile: u8) {
+        if let Some(square) = self.squares.get_mut(index) {
             *square = tile;
         }
     }
 
     // Bad: the old version, kept in case.
-    // pub fn place_old(&mut self, at: usize, tile: u8) {
-    //     self.squares.insert(at, tile);
+    // pub fn place_old(&mut self, index: usize, tile: u8) {
+    //     self.squares.insert(index, tile);
     // }
 }
 ```
@@ -442,8 +442,8 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn place(&mut self, at: usize, tile: u8) {
-        if let Some(square) = self.squares.get_mut(at) {
+    pub fn place(&mut self, index: usize, tile: u8) {
+        if let Some(square) = self.squares.get_mut(index) {
             *square = tile;
         }
     }
@@ -465,8 +465,8 @@ A parameter the body no longer reads is removed from the signature and from
 every call, not renamed with a leading `_` to quiet the lint that found it. The
 `_` keeps a lie in the signature: every caller still computes and passes a value
 that goes nowhere, and a reader of the call assumes it matters. A parameter a
-trait or a callback's signature fixes stays, named with `_` and a word, `_at`,
-so the drop reads as chosen.
+trait or a callback's signature fixes stays, named with `_` and a word,
+`_index`, so the drop reads as chosen.
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -482,8 +482,8 @@ pub struct Grid {
 
 impl Grid {
     // Bad: `clash` stopped mattering, and was renamed rather than removed.
-    pub fn place(&mut self, at: usize, tile: u8, _clash: Clash) {
-        if let Some(square) = self.squares.get_mut(at) {
+    pub fn place(&mut self, index: usize, tile: u8, _clash: Clash) {
+        if let Some(square) = self.squares.get_mut(index) {
             *square = tile;
         }
     }
@@ -497,8 +497,8 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn place(&mut self, at: usize, tile: u8) {
-        if let Some(square) = self.squares.get_mut(at) {
+    pub fn place(&mut self, index: usize, tile: u8) {
+        if let Some(square) = self.squares.get_mut(index) {
             *square = tile;
         }
     }
@@ -534,22 +534,22 @@ from abc import ABC, abstractmethod
 
 class TileStore(ABC):
     @abstractmethod
-    def tile_at(self, at: int) -> int | None:
-        """The tile at square `at`, or None off the grid."""
+    def tile_at(self, index: int) -> int | None:
+        """The tile at square `index`, or None off the grid."""
 
 
 class ListStore(TileStore):
     def __init__(self, squares: list[int]) -> None:
         self.squares = squares
 
-    def tile_at(self, at: int) -> int | None:
-        """The tile at square `at`, or None off the grid."""
-        return self.squares[at] if 0 <= at < len(self.squares) else None
+    def tile_at(self, index: int) -> int | None:
+        """The tile at square `index`, or None off the grid."""
+        return self.squares[index] if 0 <= index < len(self.squares) else None
 ```
 
 ```python
-def tile_at(squares: list[int], at: int) -> int | None:
-    return squares[at] if 0 <= at < len(squares) else None
+def tile_at(squares: list[int], index: int) -> int | None:
+    return squares[index] if 0 <= index < len(squares) else None
 ```
 {%- if "lint" in python %}
 

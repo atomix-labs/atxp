@@ -31,7 +31,7 @@ use std::time::Instant;
 
 #[derive(Debug)]
 pub struct Session {
-    started: Instant,
+    start_time: Instant,
 }
 
 impl Session {
@@ -39,12 +39,12 @@ impl Session {
     #[must_use]
     #[allow(clippy::new_without_default, reason = "a session starts its clock when made")]
     pub fn new() -> Self {
-        Self { started: Instant::now() }
+        Self { start_time: Instant::now() }
     }
 
     #[must_use]
-    pub const fn started(&self) -> Instant {
-        self.started
+    pub const fn start_time(&self) -> Instant {
+        self.start_time
     }
 }
 ```
@@ -55,7 +55,7 @@ use std::time::Instant;
 
 #[derive(Debug)]
 pub struct Session {
-    started: Instant,
+    start_time: Instant,
 }
 
 impl Session {
@@ -65,12 +65,12 @@ impl Session {
         reason = "a session starts its clock when made, which `Default::default()` would hide"
     )]
     pub fn new() -> Self {
-        Self { started: Instant::now() }
+        Self { start_time: Instant::now() }
     }
 
     #[must_use]
-    pub const fn started(&self) -> Instant {
-        self.started
+    pub const fn start_time(&self) -> Instant {
+        self.start_time
     }
 }
 ```
@@ -174,7 +174,7 @@ use std::time::Instant;
 
 #[derive(Debug)]
 pub struct Timer {
-    started: Instant,
+    start_time: Instant,
 }
 
 impl Timer {
@@ -182,12 +182,12 @@ impl Timer {
     #[must_use]
     #[expect(clippy::new_without_default, reason = "needed")]
     pub fn new() -> Self {
-        Self { started: Instant::now() }
+        Self { start_time: Instant::now() }
     }
 
     #[must_use]
-    pub const fn started(&self) -> Instant {
-        self.started
+    pub const fn start_time(&self) -> Instant {
+        self.start_time
     }
 }
 ```
@@ -197,7 +197,7 @@ use std::time::Instant;
 
 #[derive(Debug)]
 pub struct Timer {
-    started: Instant,
+    start_time: Instant,
 }
 
 impl Timer {
@@ -207,12 +207,12 @@ impl Timer {
         reason = "a timer reads the clock when made, which a default would not say"
     )]
     pub fn new() -> Self {
-        Self { started: Instant::now() }
+        Self { start_time: Instant::now() }
     }
 
     #[must_use]
-    pub const fn started(&self) -> Instant {
-        self.started
+    pub const fn start_time(&self) -> Instant {
+        self.start_time
     }
 }
 ```
@@ -234,18 +234,18 @@ use std::time::Instant;
 
 #[derive(Debug)]
 pub struct Session {
-    started: Instant,
+    start_time: Instant,
 }
 
 impl Session {
     #[must_use]
     pub fn new() -> Self {
-        Self { started: Instant::now() }
+        Self { start_time: Instant::now() }
     }
 
     #[must_use]
-    pub const fn started(&self) -> Instant {
-        self.started
+    pub const fn start_time(&self) -> Instant {
+        self.start_time
     }
 }
 ```
@@ -255,19 +255,19 @@ use std::time::Instant;
 
 #[derive(Debug)]
 pub struct Session {
-    started: Instant,
+    start_time: Instant,
 }
 
 impl Session {
     #[must_use]
     #[expect(clippy::new_without_default, reason = "a session starts its clock when made")]
     pub fn new() -> Self {
-        Self { started: Instant::now() }
+        Self { start_time: Instant::now() }
     }
 
     #[must_use]
-    pub const fn started(&self) -> Instant {
-        self.started
+    pub const fn start_time(&self) -> Instant {
+        self.start_time
     }
 }
 ```
@@ -394,15 +394,15 @@ Held by review.
 
 `as` between integers truncates, wraps or changes sign without a word, and
 between an integer and a float it rounds. A widening that cannot lose is `From`,
-`u32::from(cols)`, and a narrowing is `TryFrom`, whose refusal the code handles;
-a width conversion the crate repeats has one home, a function named for what it
-converts.
+`u32::from(columns)`, and a narrowing is `TryFrom`, whose refusal the code
+handles; a width conversion the crate repeats has one home, a function named for
+what it converts.
 
 ```rust,compile_fail
 // fails: clippy::cast_possible_truncation
 // Bad: a count past 65,535 comes back as something smaller.
 #[must_use]
-pub fn cols(squares: u32) -> u16 {
+pub fn columns(squares: u32) -> u16 {
     squares as u16
 }
 ```
@@ -410,13 +410,13 @@ pub fn cols(squares: u32) -> u16 {
 ```rust
 use core::num::TryFromIntError;
 
-pub fn cols(squares: u32) -> Result<u16, TryFromIntError> {
+pub fn columns(squares: u32) -> Result<u16, TryFromIntError> {
     u16::try_from(squares)
 }
 
 #[must_use]
-pub fn squares(cols: u16, rows: u16) -> u32 {
-    u32::from(cols).saturating_mul(u32::from(rows))
+pub fn squares(columns: u16, rows: u16) -> u32 {
+    u32::from(columns).saturating_mul(u32::from(rows))
 }
 ```
 
@@ -459,9 +459,9 @@ pub const fn clamped_row(row: u16) -> u16 {
 }
 
 #[must_use]
-pub const fn wrapped_col(col: u16, cols: u16) -> u16 {
-    match col.wrapping_add(1).checked_rem(cols) {
-        Some(col) => col,
+pub const fn wrapped_column(column: u16, columns: u16) -> u16 {
+    match column.wrapping_add(1).checked_rem(columns) {
+        Some(column) => column,
         None => 0,
     }
 }
@@ -471,32 +471,32 @@ Held by `clippy::arithmetic_side_effects`.
 
 ## Reach an Element with `get`, Not an Index
 
-`squares[at]` panics when `at` is out of range, and the range is usually the
-caller's to get wrong. `get` returns an `Option` the code answers, an iterator
-walks without an index, and `split_first` and the slice patterns take a slice
-apart. An index the code has just proved in bounds keeps its brackets under an
-`#[expect]` whose reason names the proof.
+`squares[index]` panics when `index` is out of range, and the range is usually
+the caller's to get wrong. `get` returns an `Option` the code answers, an
+iterator walks without an index, and `split_first` and the slice patterns take a
+slice apart. An index the code has just proved in bounds keeps its brackets
+under an `#[expect]` whose reason names the proof.
 
 ```rust,compile_fail
 // fails: clippy::indexing_slicing
 #[must_use]
-pub fn tile(squares: &[u8], at: usize) -> u8 {
+pub fn tile(squares: &[u8], index: usize) -> u8 {
     // Bad: a square past the end panics.
-    squares[at]
+    squares[index]
 }
 ```
 
 ```rust
 #[must_use]
-pub fn tile(squares: &[u8], at: usize) -> Option<u8> {
-    squares.get(at).copied()
+pub fn tile(squares: &[u8], index: usize) -> Option<u8> {
+    squares.get(index).copied()
 }
 
 #[must_use]
 pub const fn corners(squares: &[u8]) -> Option<(u8, u8)> {
     match squares {
         [first, .., last] => Some((*first, *last)),
-        [only] => Some((*only, *only)),
+        [square] => Some((*square, *square)),
         [] => None,
     }
 }
@@ -605,16 +605,16 @@ The `strict` feature adds:
 | `unwrap_used`, `expect_used`                                                                                          | `unwrap` and `expect`                                                                                                                                                                        | `?`, `ok_or`, a `match`; an `#[expect]` on a broken invariant |
 | `panic`, `todo`, `unimplemented`, `unreachable`                                                                       | the panicking macros                                                                                                                                                                         | an error; `match never {}` for an uninhabited arm             |
 | `panic_in_result_fn`, `unwrap_in_result`                                                                              | a panic, an assertion or an `unwrap` in a function that returns a `Result`                                                                                                                   | the error the function already returns                        |
-| `indexing_slicing`                                                                                                    | `squares[at]` and `squares[a..b]`                                                                                                                                                            | `get`, an iterator, a slice pattern                           |
-| `string_slice`                                                                                                        | `text[a..b]` on a `str`, which panics off a character boundary                                                                                                                               | `text.get(a..b)`                                              |
-| `get_unwrap`                                                                                                          | `.get(at).unwrap()`                                                                                                                                                                          | `.get(at)` and an answer to `None`                            |
+| `indexing_slicing`                                                                                                    | `squares[index]` and `squares[start..end]`                                                                                                                                                   | `get`, an iterator, a slice pattern                           |
+| `string_slice`                                                                                                        | `text[start..end]` on a `str`, which panics off a character boundary                                                                                                                         | `text.get(start..end)`                                        |
+| `get_unwrap`                                                                                                          | `.get(index).unwrap()`                                                                                                                                                                       | `.get(index)` and an answer to `None`                         |
 | `arithmetic_side_effects`                                                                                             | `+`, `-`, `*`, `/`, `%` and `<<` on integers                                                                                                                                                 | `checked_`, `saturating_`, `wrapping_`                        |
 | `as_conversions`                                                                                                      | `as`                                                                                                                                                                                         | `From`, `TryFrom`                                             |
 | `lossy_float_literal`                                                                                                 | a float literal its type cannot hold exactly                                                                                                                                                 | one it can                                                    |
 | `error_impl_error`                                                                                                    | a type named `Error` that implements `Error`                                                                                                                                                 | `<Question>Error`                                             |
-| `map_err_ignore`                                                                                                      | `map_err(\|_\| …)`                                                                                                                                                                           | `map_err(\|_gone\| …)`, naming what is dropped                |
+| `map_err_ignore`                                                                                                      | `map_err(\|_\| …)`                                                                                                                                                                           | `map_err(\|_unsent_tile\| …)`, naming what is dropped         |
 | `unused_result_ok`                                                                                                    | `.ok();` as a statement                                                                                                                                                                      | an answer to the error, or a named drop                       |
-| `let_underscore_must_use`                                                                                             | `let _ = ` on a `#[must_use]` value                                                                                                                                                          | an answer, or `let _held = `                                  |
+| `let_underscore_must_use`                                                                                             | `let _ = ` on a `#[must_use]` value                                                                                                                                                          | an answer, or `let _refusal = `                               |
 | `mem_forget`                                                                                                          | `mem::forget` on a value with a destructor                                                                                                                                                   | let it drop, or `ManuallyDrop` with a reason                  |
 | `dbg_macro`                                                                                                           | `dbg!`                                                                                                                                                                                       | delete it                                                     |
 | `print_stdout`, `print_stderr`                                                                                        | `print!` and `eprint!`                                                                                                                                                                       | return the text; in a binary, an `#[expect]` with a reason    |

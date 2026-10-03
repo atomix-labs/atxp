@@ -80,9 +80,9 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub enum ReadSetError {
     #[error("read set error: the set leads outside the checkout")]
-    Outside,
+    OutsideCheckout,
     #[error(transparent)]
-    Read(#[from] io::Error),
+    Io(#[from] io::Error),
 }
 
 /// A tile set from a checkout someone else wrote, links and all.
@@ -90,7 +90,7 @@ pub fn read_checked_out_set(checkout: &Path, name: &str) -> Result<Vec<u8>, Read
     let base = checkout.canonicalize()?;
     let path = base.join(name).canonicalize()?;
     if !path.starts_with(&base) {
-        return Err(ReadSetError::Outside);
+        return Err(ReadSetError::OutsideCheckout);
     }
     Ok(fs::read(path)?)
 }
@@ -205,9 +205,9 @@ feature provides, and a format that takes a size limit is given one.
 use std::io::{self, Read};
 
 // Bad: holds whatever the sender sends, however much.
-pub fn read_sheet<R: Read>(mut from: R) -> io::Result<Vec<u8>> {
+pub fn read_sheet<R: Read>(mut source: R) -> io::Result<Vec<u8>> {
     let mut sheet = Vec::new();
-    from.read_to_end(&mut sheet)?;
+    source.read_to_end(&mut sheet)?;
     Ok(sheet)
 }
 ```
@@ -225,12 +225,12 @@ pub enum ReadSheetError {
     #[error("read sheet error: the sheet reaches the {SHEET_LIMIT} byte limit")]
     TooLong,
     #[error(transparent)]
-    Read(#[from] io::Error),
+    Io(#[from] io::Error),
 }
 
-pub fn read_sheet<R: Read>(from: R) -> Result<Vec<u8>, ReadSheetError> {
+pub fn read_sheet<R: Read>(source: R) -> Result<Vec<u8>, ReadSheetError> {
     let mut sheet = Vec::new();
-    let mut limited = from.take(SHEET_LIMIT);
+    let mut limited = source.take(SHEET_LIMIT);
     limited.read_to_end(&mut sheet)?;
     if limited.limit() == 0 {
         return Err(ReadSheetError::TooLong);
@@ -339,12 +339,12 @@ use std::fs;
 use std::io;
 use std::path::Path;
 
-pub fn export(grid: &[u8], to: &Path) -> io::Result<()> {
-    // Bad: a link made at `to` after this check is written through.
-    if to.exists() {
+pub fn export(grid: &[u8], destination: &Path) -> io::Result<()> {
+    // Bad: a link made at `destination` after this check is written through.
+    if destination.exists() {
         return Err(io::Error::from(io::ErrorKind::AlreadyExists));
     }
-    fs::write(to, grid)
+    fs::write(destination, grid)
 }
 ```
 
@@ -353,8 +353,8 @@ use std::fs::OpenOptions;
 use std::io::{self, Write};
 use std::path::Path;
 
-pub fn export(grid: &[u8], to: &Path) -> io::Result<()> {
-    OpenOptions::new().write(true).create_new(true).open(to)?.write_all(grid)
+pub fn export(grid: &[u8], destination: &Path) -> io::Result<()> {
+    OpenOptions::new().write(true).create_new(true).open(destination)?.write_all(grid)
 }
 ```
 
@@ -468,21 +468,21 @@ wrong.
 
 ```rust
 #[must_use]
-pub const fn grid_size(rows: u32, cols: u32) -> u32 {
+pub const fn grid_size(rows: u32, columns: u32) -> u32 {
     // Bad: 65,536 rows of 65,536 wrap to a grid of none.
-    rows.wrapping_mul(cols)
+    rows.wrapping_mul(columns)
 }
 ```
 
 ```rust
 #[must_use]
-pub const fn grid_size(rows: u32, cols: u32) -> Option<u32> {
-    rows.checked_mul(cols)
+pub const fn grid_size(rows: u32, columns: u32) -> Option<u32> {
+    rows.checked_mul(columns)
 }
 ```
 
-`rows * cols` wraps the same way wherever overflow checks are off, as they are
-in a release build by default.
+`rows * columns` wraps the same way wherever overflow checks are off, as they
+are in a release build by default.
 {%- if "agents" in lints %}
 
 How each operation says how it overflows is `writing-rust`'s "Arithmetic Says
@@ -490,8 +490,8 @@ How It Overflows", in `.claude/skills/writing-rust/references/lints.md`; for a
 size from input, the answer is `checked_`.
 {%- endif %}
 
-An `as` that narrows a length cuts it as the product wraps: `len as u32` of five
-billion is 705,032,704.
+An `as` that narrows a length cuts it as the product wraps: `length as u32` of
+five billion is 705,032,704.
 {%- if clippy %} `clippy::cast_possible_truncation`, in the pedantic
 group the lint table denies, refuses it; `u32::try_from` says how it fails.
 {%- endif %}

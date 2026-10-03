@@ -58,11 +58,12 @@ share, an error the library refuses with. Its chapter answers, in order:
 ```markdown
 # Squares and Moves
 
-A [`Pos`][tiles::Pos] names one square of a board by its column and row. A move
-from it is a [`Step`][tiles::Step], one of the eight directions, and
+A [`Position`][tiles::Position] names one square of a board by its column and
+row. A move from it is a [`Step`][tiles::Step], one of the eight directions, and
 [`Board::step`][tiles::Board::step] refuses a step off the edge rather than
-wrapping it, with [`PosError::Col`][tiles::PosError::Col] or
-[`PosError::Row`][tiles::PosError::Row].
+wrapping it, with
+[`PositionError::ColumnOffBoard`][tiles::PositionError::ColumnOffBoard] or
+[`PositionError::RowOffBoard`][tiles::PositionError::RowOffBoard].
 ```
 
 ## Compared with Others

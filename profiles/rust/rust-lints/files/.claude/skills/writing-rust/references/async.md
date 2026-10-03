@@ -21,10 +21,10 @@ use std::sync::{Mutex, PoisonError};
 use tokio::time;
 
 pub async fn place_later(squares: &Mutex<Vec<u8>>, tile: u8) {
-    let mut held = squares.lock().unwrap_or_else(PoisonError::into_inner);
+    let mut guard = squares.lock().unwrap_or_else(PoisonError::into_inner);
     // Bad: the guard waits out the sleep, and every task that wants it waits too.
     time::sleep(Duration::from_millis(10)).await;
-    held.push(tile);
+    guard.push(tile);
 }
 ```
 
@@ -58,13 +58,13 @@ use tokio::sync::Mutex;
 pub struct Tally {
     // Bad: an async lock for a section that never awaits, paying for an
     // `.await` on every count.
-    painted: Mutex<u32>,
+    painted_count: Mutex<u32>,
 }
 
 impl Tally {
     pub async fn count(&self) {
-        let mut painted = self.painted.lock().await;
-        *painted = painted.saturating_add(1);
+        let mut count = self.painted_count.lock().await;
+        *count = count.saturating_add(1);
     }
 }
 ```
@@ -109,11 +109,11 @@ use tokio::sync::mpsc;
 use tokio::sync::mpsc::error::SendError;
 
 /// Squares waiting to be painted: a producer that gets this far ahead waits.
-const QUEUED: usize = 64;
+const QUEUE_CAPACITY: usize = 64;
 
 #[must_use]
 pub fn painter() -> (mpsc::Sender<u8>, mpsc::Receiver<u8>) {
-    mpsc::channel(QUEUED)
+    mpsc::channel(QUEUE_CAPACITY)
 }
 
 pub async fn queue(tiles: &mpsc::Sender<u8>, tile: u8) -> Result<(), SendError<u8>> {
@@ -161,8 +161,9 @@ fn render(board: &[u8]) -> Vec<u8> {
 
 pub async fn save(boards: &mut mpsc::Receiver<Vec<u8>>, path: &Path) -> io::Result<()> {
     while let Some(board) = boards.recv().await {
-        let drawn = task::spawn_blocking(move || render(&board)).await.map_err(io::Error::other)?;
-        fs::write(path, drawn).await?;
+        let drawing =
+            task::spawn_blocking(move || render(&board)).await.map_err(io::Error::other)?;
+        fs::write(path, drawing).await?;
     }
     Ok(())
 }
@@ -210,11 +211,11 @@ pub async fn paint_all(tiles: Vec<u8>) -> Result<Vec<u8>, JoinError> {
     for tile in tiles {
         painting.spawn(paint(tile));
     }
-    let mut painted = Vec::with_capacity(painting.len());
-    while let Some(done) = painting.join_next().await {
-        painted.push(done?);
+    let mut painted_tiles = Vec::with_capacity(painting.len());
+    while let Some(painted_tile) = painting.join_next().await {
+        painted_tiles.push(painted_tile?);
     }
-    Ok(painted)
+    Ok(painted_tiles)
 }
 ```
 
@@ -273,9 +274,9 @@ use tokio::time;
 
 // Bad: nothing stops this loop but dropping it, wherever it is.
 pub async fn autosave(saves: &mut u32) {
-    let mut every = time::interval(Duration::from_secs(5));
+    let mut interval = time::interval(Duration::from_secs(5));
     loop {
-        every.tick().await;
+        interval.tick().await;
         *saves = saves.saturating_add(1);
     }
 }
@@ -289,10 +290,10 @@ use tokio::{select, time};
 
 /// Saves every five seconds until `stop` changes, or its sender is gone.
 pub async fn autosave(mut stop: watch::Receiver<bool>, saves: &mut u32) {
-    let mut every = time::interval(Duration::from_secs(5));
+    let mut interval = time::interval(Duration::from_secs(5));
     loop {
         select! {
-            _ = every.tick() => *saves = saves.saturating_add(1),
+            _ = interval.tick() => *saves = saves.saturating_add(1),
             _ = stop.changed() => break,
         }
     }
@@ -315,10 +316,12 @@ survive a lost branch lives outside the loop.
 use tokio::select;
 use tokio::sync::{mpsc, watch};
 
-pub async fn paint(mut tiles: mpsc::Receiver<u8>, mut stop: watch::Receiver<bool>, painted: &mut Vec<u8>) {
+pub async fn paint(
+    mut tiles: mpsc::Receiver<u8>, mut stop: watch::Receiver<bool>, painted_tiles: &mut Vec<u8>,
+) {
     loop {
         select! {
-            Some(tile) = tiles.recv() => painted.push(tile),
+            Some(tile) = tiles.recv() => painted_tiles.push(tile),
             _ = stop.changed() => break,
             // Bad: `stop` stays pending, so this never runs once `tiles` closes.
             else => break,
@@ -331,11 +334,13 @@ pub async fn paint(mut tiles: mpsc::Receiver<u8>, mut stop: watch::Receiver<bool
 use tokio::select;
 use tokio::sync::{mpsc, watch};
 
-pub async fn paint(mut tiles: mpsc::Receiver<u8>, mut stop: watch::Receiver<bool>, painted: &mut Vec<u8>) {
+pub async fn paint(
+    mut tiles: mpsc::Receiver<u8>, mut stop: watch::Receiver<bool>, painted_tiles: &mut Vec<u8>,
+) {
     loop {
         select! {
             tile = tiles.recv() => match tile {
-                Some(tile) => painted.push(tile),
+                Some(tile) => painted_tiles.push(tile),
                 None => break,
             },
             _ = stop.changed() => break,
@@ -363,12 +368,12 @@ mod tests {
 
     #[tokio::test]
     async fn a_painter_paints_while_the_test_waits() {
-        let (tiles, painted) = mpsc::channel();
+        let (tiles, painted_tiles) = mpsc::channel();
         task::spawn(async move {
-            let _sent = tiles.send(7_u8);
+            let _unsent_tile = tiles.send(7_u8);
         });
         // Bad: `recv` blocks the one thread, so the painter never runs.
-        assert_eq!(painted.recv(), Ok(7), "the painter's tile");
+        assert_eq!(painted_tiles.recv(), Ok(7), "the painter's tile");
     }
 }
 ```
@@ -381,11 +386,11 @@ mod tests {
 
     #[tokio::test]
     async fn a_painter_paints_while_the_test_waits() {
-        let (tiles, painted) = oneshot::channel();
+        let (tiles, painted_tiles) = oneshot::channel();
         task::spawn(async move {
-            let _sent = tiles.send(7_u8);
+            let _unsent_tile = tiles.send(7_u8);
         });
-        assert_eq!(painted.await, Ok(7), "the painter's tile");
+        assert_eq!(painted_tiles.await, Ok(7), "the painter's tile");
     }
 }
 ```
@@ -425,7 +430,10 @@ pub struct Memory {
 impl Store for Memory {
     async fn load(&self, name: &str) -> Vec<u8> {
         let boards = self.boards.read().await;
-        boards.iter().find(|(held, _)| held == name).map_or_else(Vec::new, |(_, board)| board.clone())
+        boards
+            .iter()
+            .find(|(board_name, _)| board_name == name)
+            .map_or_else(Vec::new, |(_, board)| board.clone())
     }
 }
 ```
@@ -443,31 +451,35 @@ whose future borrows from the closure.
 use core::future::Future;
 
 // Bad: two parameters for one closure, and no future that borrows from it.
-pub async fn retried<T, E, F, Fut>(attempts: u32, attempt: F) -> Result<T, E>
+pub async fn retry<T, E, F, Fut>(attempts: u32, attempt: F) -> Result<T, E>
 where
     F: Fn() -> Fut,
     Fut: Future<Output = Result<T, E>>,
 {
-    let mut left = attempts;
+    let mut attempts_left = attempts;
     loop {
         match attempt().await {
-            Err(_refused) if left > 1 => left = left.saturating_sub(1),
-            done => return done,
+            Err(_failed_attempt) if attempts_left > 1 => {
+                attempts_left = attempts_left.saturating_sub(1);
+            },
+            last_attempt => return last_attempt,
         }
     }
 }
 ```
 
 ```rust
-pub async fn retried<T, E, F>(attempts: u32, attempt: F) -> Result<T, E>
+pub async fn retry<T, E, F>(attempts: u32, attempt: F) -> Result<T, E>
 where
     F: AsyncFn() -> Result<T, E>,
 {
-    let mut left = attempts;
+    let mut attempts_left = attempts;
     loop {
         match attempt().await {
-            Err(_refused) if left > 1 => left = left.saturating_sub(1),
-            done => return done,
+            Err(_failed_attempt) if attempts_left > 1 => {
+                attempts_left = attempts_left.saturating_sub(1);
+            },
+            last_attempt => return last_attempt,
         }
     }
 }
@@ -481,13 +493,13 @@ A service, and async code generally, logs through `tracing`, whose events carry
 fields a collector can filter on. The message is a stable lowercase phrase with
 no final period, and every value is a field, never text in the message, so each
 line of one kind reads alike and can be searched. An error is logged once, where
-it is handled, dropped, retried or answered, as `error = %e`: code that passes
-it on with `?` or `map_err` does not log it, or the one failure is logged at
-every level it crosses. An `Err(_)` or an `is_err()` that logs nothing hides the
-failure. A library emits events and never installs a subscriber, which is the
-binary's. A secret, a token or a user's data is never a field. Code that takes
-no logging crate reports through what it returns, and only a binary prints,
-where an operator watches.
+it is handled, dropped, retried or answered, as `error = %error`: code that
+passes it on with `?` or `map_err` does not log it, or the one failure is logged
+at every level it crosses. An `Err(_)` or an `is_err()` that logs nothing hides
+the failure. A library emits events and never installs a subscriber, which is
+the binary's. A secret, a token or a user's data is never a field. Code that
+takes no logging crate reports through what it returns, and only a binary
+prints, where an operator watches.
 
 ```rust
 use std::path::Path;
@@ -520,7 +532,7 @@ pub async fn autosave(mut boards: mpsc::Receiver<Vec<u8>>, path: &Path) {
             Ok(()) => debug!(squares = board.len(), "board saved"),
             // Handled here: the next board tries again, so the error is logged
             // and dropped.
-            Err(e) => warn!(error = %e, path = %path.display(), "board save failed"),
+            Err(error) => warn!(error = %error, path = %path.display(), "board save failed"),
         }
     }
 }

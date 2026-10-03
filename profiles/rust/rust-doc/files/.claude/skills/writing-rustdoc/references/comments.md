@@ -48,7 +48,7 @@ fact:
 | --------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | the caller's contract | `the caller upholds <item>'s contract[, …]` | ``// SAFETY: the caller upholds `__init`'s contract, including pinning unless `I` cancels it.`` |
 | the preceding step    | `<what just happened>, so <permission>`     | `// SAFETY: the initializer reported success, so the guard may count it.`                       |
-| a check in scope      | `<the bound>, checked above[, so …]`        | ``// SAFETY: `at` is below the length, checked above.``                                         |
+| a check in scope      | `<the bound>, checked above[, so …]`        | ``// SAFETY: `index` is below the length, checked above.``                                      |
 | a field's invariant   | `by the field INVARIANT <the fact>`         | `// SAFETY: by the field INVARIANT the slot holds a tile that nothing else drops.`              |
 
 A proof of several preconditions runs over the lines it needs:
@@ -101,12 +101,12 @@ field INVARIANT".
 
 ```text
 pub struct Row<'a> {
-    // INVARIANT: `base` and `len` are the pointer and length of one `&'a [u8]`; `new` is their
+    // INVARIANT: `base` and `length` are the pointer and length of one `&'a [u8]`; `new` is their
     // only writer.
     /// The row's first square.
     base: NonNull<u8>,
     /// Squares the row holds.
-    len: usize,
+    length: usize,
     /// Borrows the squares for `'a`.
     squares: PhantomData<&'a [u8]>,
 }
@@ -117,7 +117,7 @@ pub struct Row<'a> {
 // initialized, inside one allocation of at most `isize::MAX` bytes, and shared for `'a`, so no
 // `&mut` overlaps them.
 #[expect(unsafe_code, reason = "a view of the row `new` borrowed")]
-unsafe { slice::from_raw_parts(self.base.as_ptr(), self.len) }
+unsafe { slice::from_raw_parts(self.base.as_ptr(), self.length) }
 ```
 
 A field that no proof relies on needs none: its invariant, if it has one, is a
@@ -135,7 +135,7 @@ what orders the rest.
 ```text
 // ORDERING: Release, pairing with the Acquire load in `winner`, so a reader that sees the game
 // over sees the winner stored before it.
-self.over.store(true, Release);
+self.finished.store(true, Release);
 ```
 
 A function whose operations share one ordering says so once, at its top:
@@ -153,7 +153,7 @@ and why nothing weaker gives it.
 // ORDERING: Release, so a painter that sees this flag sees what this one did before; then a
 // SeqCst fence, the store-load order the exclusion rests on. Both painters announce, then look,
 // and the fences' one order puts one painter's look after the other's announcement.
-mine.store(true, Release);
+own_flag.store(true, Release);
 fence(SeqCst);
 ```
 
@@ -166,7 +166,7 @@ comment.
 | use                    | example                                                                                               |
 | ---------------------- | ----------------------------------------------------------------------------------------------------- |
 | a non-obvious choice   | ``// A mask, not a remainder: `align()` is a power of two, but only a divide would prove it.``        |
-| a phase label          | ``// Commit: `chunk` shrinks to `need` and turns in use, in one store.``                              |
+| a phase label          | ``// Commit: `chunk` shrinks to `required` and turns in use, in one store.``                          |
 | a deliberate absence   | ``// No `Reclaiming`: a bump cursor never steps back, so a block returned here is not served again.`` |
 | a deliberate omission  | ``// `Zeroable` … are deliberately absent: <reason as fact + consequence>.``                          |
 | a `#![feature]` entry  | ``// `impl_restriction`: the settle is sealed by the payload it indexes, which a module cannot say.`` |
@@ -243,16 +243,16 @@ unfulfilled: delete it.
 Every message is a lowercase fragment, no terminal period, saying what is true
 or what went wrong, never what the code is doing.
 
-| site                                 | form                                            | example                                                                  |
-| ------------------------------------ | ----------------------------------------------- | ------------------------------------------------------------------------ |
-| `const _: () = assert!(cond, "…");`  | the property, as a claim                        | `assert!(size_of::<Pos>() == 4, "a column and a row, and nothing else")` |
-| `debug_assert!(cond, "…")`           | the violation, as a fact                        | `"a pointer outside the recorded mapping"`                               |
-| `.expect("…")` in tests and examples | why it cannot fail here                         | `expect("the slack absorbs the pad")`, `expect("8 bytes, 8-aligned")`    |
-| `assert_eq!(a, b, "…")` in tests     | the property pinned, continuing the sentence    | `"the word survives a decode"`, then `"and the value an encode"`         |
-| `#[error("…")]` on a variant         | `<type words> error: <fragment>`, fields inline | `"region error: needs {need} bytes, region holds {have}"`                |
-| `#[must_use = "…"]` on a guard       | what stays held until it drops                  | `"the tile stays locked until the guard drops"`                          |
-| `#[ignore = "…"]` on a test          | what the test needs to run                      | `ignore = "needs a tile server on localhost:7070"`                       |
-| `panic!` in a test's impossible arm  | what was wanted, and what arrived               | `panic!("a one-byte layout fits, not {other:?}")`                        |
+| site                                    | form                                            | example                                                                       |
+| --------------------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------- |
+| `const _: () = assert!(cond, "…");`     | the property, as a claim                        | `assert!(size_of::<Position>() == 4, "a column and a row, and nothing else")` |
+| `debug_assert!(cond, "…")`              | the violation, as a fact                        | `"a pointer outside the recorded mapping"`                                    |
+| `.expect("…")` in tests and examples    | why it cannot fail here                         | `expect("the slack absorbs the pad")`, `expect("8 bytes, 8-aligned")`         |
+| `assert_eq!(left, right, "…")` in tests | the property pinned, continuing the sentence    | `"the word survives a decode"`, then `"and the value an encode"`              |
+| `#[error("…")]` on a variant            | `<type words> error: <fragment>`, fields inline | `"region error: needs {required} bytes, region holds {available}"`            |
+| `#[must_use = "…"]` on a guard          | what stays held until it drops                  | `"the tile stays locked until the guard drops"`                               |
+| `#[ignore = "…"]` on a test             | what the test needs to run                      | `ignore = "needs a tile server on localhost:7070"`                            |
+| `panic!` in a test's impossible arm     | what was wanted, and what arrived               | `panic!("a one-byte layout fits, not {other:?}")`                             |
 {%- if "miri" in toolchain %}
 
 Under Miri, a test it cannot run carries `#[cfg_attr(miri, ignore = "…")]`, the

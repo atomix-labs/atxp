@@ -55,21 +55,25 @@ cargo add tiles
 ## Quick Start
 
 ```rust
-use tiles::{Board, Pos, PosError};
+use tiles::{Board, Position, PositionError};
 
-fn main() -> Result<(), PosError> {
-    let board = Board { cols: 8, rows: 8 };
-    assert_eq!(board.pos(3, 1)?, Pos { col: 3, row: 1 }, "a square of the board");
-    assert_eq!(board.pos(8, 1), Err(PosError::Col { col: 8, cols: 8 }), "and not past it");
+fn main() -> Result<(), PositionError> {
+    let board = Board { columns: 8, rows: 8 };
+    assert_eq!(board.position(3, 1)?, Position { column: 3, row: 1 }, "a square of the board");
+    assert_eq!(
+        board.position(8, 1),
+        Err(PositionError::ColumnOffBoard { index: 8, length: 8 }),
+        "and not past it"
+    );
     Ok(())
 }
 ```
 
 ## Features
 
-| Feature | Adds                                                |
-| ------- | --------------------------------------------------- |
-| `serde` | `Serialize` and `Deserialize` for `Board` and `Pos` |
+| Feature | Adds                                                     |
+| ------- | -------------------------------------------------------- |
+| `serde` | `Serialize` and `Deserialize` for `Board` and `Position` |
 
 None is on by default: `cargo add tiles --features serde`.
 
@@ -164,10 +168,10 @@ tiles show board.txt
 
 ## Usage
 
-| Command                         | Does                                          |
-| ------------------------------- | --------------------------------------------- |
-| `tiles show <file>`             | draws the board                               |
-| `tiles move <file> <from> <to>` | moves a tile, refusing a square off the board |
+| Command                               | Does                                          |
+| ------------------------------------- | --------------------------------------------- |
+| `tiles show <file>`                   | draws the board                               |
+| `tiles move <file> <source> <target>` | moves a tile, refusing a square off the board |
 
 `tiles --help` lists every command and flag.
 

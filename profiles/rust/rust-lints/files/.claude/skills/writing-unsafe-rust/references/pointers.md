@@ -27,7 +27,7 @@ read is `NonNull::dangling()`.
 ```rust,compile_fail
 // fails: implicit_provenance_casts
 #[must_use]
-pub fn aligned(squares: &[u8]) -> bool {
+pub fn is_aligned(squares: &[u8]) -> bool {
     // Bad: the cast exposes the pointer's provenance, to read an address.
     (squares.as_ptr() as usize).is_multiple_of(64)
 }
@@ -42,7 +42,7 @@ pub fn aligned(squares: &[u8]) -> bool {
 
 ```rust
 #[must_use]
-pub fn aligned(squares: &[u8]) -> bool {
+pub fn is_aligned(squares: &[u8]) -> bool {
     squares.as_ptr().addr().is_multiple_of(64)
 }
 ```
@@ -82,8 +82,8 @@ pub struct Grid {
 
 impl Grid {
     #[must_use]
-    pub fn square(&self, at: usize) -> Option<NonNull<u8>> {
-        self.squares.get(at).map(NonNull::from)
+    pub fn square(&self, index: usize) -> Option<NonNull<u8>> {
+        self.squares.get(index).map(NonNull::from)
     }
 
     /// The square after `square`.
@@ -95,10 +95,10 @@ impl Grid {
     pub const unsafe fn after(&self, square: NonNull<u8>) -> u8 {
         // SAFETY: the caller promises a square of this grid that is not its last, so the square
         // after it is one too.
-        let next = unsafe { square.add(1) };
+        let next_square = unsafe { square.add(1) };
         // Bad: `square` came from a `&u8`, whose provenance may cover that square alone.
         // SAFETY: as above.
-        unsafe { next.read() }
+        unsafe { next_square.read() }
     }
 }
 ```
@@ -113,22 +113,22 @@ pub struct Grid {
 
 impl Grid {
     #[must_use]
-    pub fn square(&self, at: usize) -> Option<NonNull<u8>> {
-        self.squares.get(at).map(NonNull::from)
+    pub fn square(&self, index: usize) -> Option<NonNull<u8>> {
+        self.squares.get(index).map(NonNull::from)
     }
 
     #[must_use]
     pub fn after(&self, square: NonNull<u8>) -> Option<u8> {
         let base = NonNull::from(&*self.squares).cast::<u8>();
-        let next = square.addr().checked_add(1)?;
-        let offset = next.get().checked_sub(base.addr().get())?;
+        let next_address = square.addr().checked_add(1)?;
+        let offset = next_address.get().checked_sub(base.addr().get())?;
         if offset >= self.squares.len() {
             return None;
         }
-        // SAFETY: `with_addr` gives `next` the provenance of every square, which are live and
-        // initialized for `&self`, and `offset` is below their count, checked above.
+        // SAFETY: `with_addr` gives `next_address` the provenance of every square, which are
+        // live and initialized for `&self`, and `offset` is below their count, checked above.
         #[expect(unsafe_code, reason = "a read at an address a handle names, on the grid's own provenance")]
-        Some(unsafe { base.with_addr(next).read() })
+        Some(unsafe { base.with_addr(next_address).read() })
     }
 }
 ```
@@ -157,13 +157,13 @@ use core::ptr;
 #[derive(Debug)]
 pub struct Cursor {
     // Bad: an address that dropped its provenance, so the read below guesses which it had.
-    at: usize,
+    address: usize,
 }
 
 impl Cursor {
     #[must_use]
     pub fn new(square: &u8) -> Self {
-        Self { at: ptr::from_ref(square).expose_provenance() }
+        Self { address: ptr::from_ref(square).expose_provenance() }
     }
 
     /// The square the cursor is on.
@@ -173,7 +173,7 @@ impl Cursor {
     #[expect(unsafe_code, reason = "a read at the address the cursor keeps")]
     #[must_use]
     pub const unsafe fn square(&self) -> u8 {
-        let square = ptr::with_exposed_provenance::<u8>(self.at);
+        let square = ptr::with_exposed_provenance::<u8>(self.address);
         // SAFETY: the caller promises the square is live, and `new` exposed its provenance.
         unsafe { square.read() }
     }
@@ -366,7 +366,7 @@ use core::mem;
 
 #[expect(unsafe_code, reason = "four squares read as one word")]
 #[must_use]
-pub const fn packed(squares: [u8; 4]) -> u32 {
+pub const fn pack(squares: [u8; 4]) -> u32 {
     // Bad: says nothing of byte order.
     // SAFETY: any four bytes are a `u32`.
     unsafe { mem::transmute::<[u8; 4], u32>(squares) }
@@ -375,7 +375,7 @@ pub const fn packed(squares: [u8; 4]) -> u32 {
 
 ```rust
 #[must_use]
-pub const fn packed(squares: [u8; 4]) -> u32 {
+pub const fn pack(squares: [u8; 4]) -> u32 {
     u32::from_le_bytes(squares)
 }
 ```
@@ -497,16 +497,16 @@ use core::pin::Pin;
 
 #[derive(Debug, Default)]
 pub struct Cursor {
-    at: usize,
+    index: usize,
     _pinned: PhantomPinned,
 }
 
 impl Cursor {
     #[expect(unsafe_code, reason = "a field of a pinned cursor changed in place")]
     pub const fn advance(self: Pin<&mut Self>) {
-        // SAFETY: `at` is not structurally pinned, and nothing here moves the cursor.
-        let this = unsafe { self.get_unchecked_mut() };
-        this.at = this.at.wrapping_add(1);
+        // SAFETY: `index` is not structurally pinned, and nothing here moves the cursor.
+        let cursor = unsafe { self.get_unchecked_mut() };
+        cursor.index = cursor.index.wrapping_add(1);
     }
 }
 
@@ -517,8 +517,8 @@ pub fn walk() -> usize {
     // Bad: the pin lasts one call, and `cursor` moves on the next line.
     // SAFETY: the cursor stays put while it is pinned.
     unsafe { Pin::new_unchecked(&mut cursor) }.advance();
-    let moved = cursor;
-    moved.at
+    let moved_cursor = cursor;
+    moved_cursor.index
 }
 ```
 
@@ -528,16 +528,16 @@ use core::pin::{Pin, pin};
 
 #[derive(Debug, Default)]
 pub struct Cursor {
-    at: usize,
+    index: usize,
     _pinned: PhantomPinned,
 }
 
 impl Cursor {
     #[expect(unsafe_code, reason = "a field of a pinned cursor changed in place")]
     pub const fn advance(self: Pin<&mut Self>) {
-        // SAFETY: `at` is not structurally pinned, and nothing here moves the cursor.
-        let this = unsafe { self.get_unchecked_mut() };
-        this.at = this.at.wrapping_add(1);
+        // SAFETY: `index` is not structurally pinned, and nothing here moves the cursor.
+        let cursor = unsafe { self.get_unchecked_mut() };
+        cursor.index = cursor.index.wrapping_add(1);
     }
 }
 
@@ -545,7 +545,7 @@ impl Cursor {
 pub fn walk() -> usize {
     let mut cursor = pin!(Cursor::default());
     cursor.as_mut().advance();
-    cursor.at
+    cursor.index
 }
 ```
 
@@ -630,12 +630,12 @@ pub enum Kind {
 #[expect(unsafe_code, reason = "the tile library's C interface")]
 unsafe extern "C" {
     // Bad: a library that returns 7 hands Rust a `Kind` with no variant.
-    safe fn tiles_kind(at: u32) -> Kind;
+    safe fn tiles_kind(index: u32) -> Kind;
 }
 
 #[must_use]
-pub fn kind(at: u32) -> Kind {
-    tiles_kind(at)
+pub fn kind(index: u32) -> Kind {
+    tiles_kind(index)
 }
 ```
 
@@ -650,19 +650,19 @@ pub enum Kind {
 }
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
-#[error("kind error: {held} names no kind of tile")]
+#[error("kind error: {discriminant} names no kind of tile")]
 pub struct KindError {
-    pub held: u8,
+    pub discriminant: u8,
 }
 
 impl TryFrom<u8> for Kind {
     type Error = KindError;
 
-    fn try_from(held: u8) -> Result<Self, KindError> {
-        match held {
+    fn try_from(discriminant: u8) -> Result<Self, KindError> {
+        match discriminant {
             0 => Ok(Self::Blank),
             1 => Ok(Self::Wall),
-            _ => Err(KindError { held }),
+            _ => Err(KindError { discriminant }),
         }
     }
 }
@@ -670,11 +670,11 @@ impl TryFrom<u8> for Kind {
 #[expect(unsafe_code, reason = "the tile library's C interface")]
 unsafe extern "C" {
     // Safe for any square: it reads the library's own table, and writes nothing.
-    safe fn tiles_kind(at: u32) -> u8;
+    safe fn tiles_kind(index: u32) -> u8;
 }
 
-pub fn kind(at: u32) -> Result<Kind, KindError> {
-    Kind::try_from(tiles_kind(at))
+pub fn kind(index: u32) -> Result<Kind, KindError> {
+    Kind::try_from(tiles_kind(index))
 }
 ```
 
@@ -693,13 +693,13 @@ use core::slice;
 /// The squares C passed.
 ///
 /// # Safety
-/// `squares` points at `len` initialized squares that live and stay unwritten for `'a`.
+/// `squares` points at `length` initialized squares that live and stay unwritten for `'a`.
 #[expect(unsafe_code, reason = "a slice from the pointer and length C passed")]
 #[must_use]
-pub const unsafe fn squares<'a>(squares: *const u8, len: usize) -> &'a [u8] {
+pub const unsafe fn squares<'a>(squares: *const u8, length: usize) -> &'a [u8] {
     // Bad: C may pass a null pointer with a length of zero.
-    // SAFETY: the caller promises `len` squares at `squares`.
-    unsafe { slice::from_raw_parts(squares, len) }
+    // SAFETY: the caller promises `length` squares at `squares`.
+    unsafe { slice::from_raw_parts(squares, length) }
 }
 ```
 
@@ -709,16 +709,16 @@ use core::slice;
 /// The squares C passed.
 ///
 /// # Safety
-/// Where `len` is not zero, `squares` points at `len` initialized squares that live and stay
-/// unwritten for `'a`.
+/// Where `length` is not zero, `squares` points at `length` initialized squares that live and
+/// stay unwritten for `'a`.
 #[expect(unsafe_code, reason = "a slice from the pointer and length C passed")]
 #[must_use]
-pub const unsafe fn squares<'a>(squares: *const u8, len: usize) -> &'a [u8] {
-    if len == 0 {
+pub const unsafe fn squares<'a>(squares: *const u8, length: usize) -> &'a [u8] {
+    if length == 0 {
         return &[];
     }
-    // SAFETY: `len` is not zero, so the caller promises `len` squares at `squares`.
-    unsafe { slice::from_raw_parts(squares, len) }
+    // SAFETY: `length` is not zero, so the caller promises `length` squares at `squares`.
+    unsafe { slice::from_raw_parts(squares, length) }
 }
 ```
 
@@ -734,14 +734,14 @@ an `extern "C"` import is undefined behaviour, so a foreign function that may
 throw is declared `"C-unwind"`, or wrapped on its own side.
 
 ```rust
-fn place(at: u32) {
-    assert!(at < 81, "a square of the nine-by-nine board");
+fn place(index: u32) {
+    assert!(index < 81, "a square of the nine-by-nine board");
 }
 
 // Bad: a panic in `place` aborts the program C is running.
 #[must_use]
-pub extern "C" fn tiles_on_place(at: u32) -> i32 {
-    place(at);
+pub extern "C" fn tiles_on_place(index: u32) -> i32 {
+    place(index);
     0
 }
 ```
@@ -749,13 +749,13 @@ pub extern "C" fn tiles_on_place(at: u32) -> i32 {
 ```rust
 use std::panic::catch_unwind;
 
-fn place(at: u32) {
-    assert!(at < 81, "a square of the nine-by-nine board");
+fn place(index: u32) {
+    assert!(index < 81, "a square of the nine-by-nine board");
 }
 
 #[must_use]
-pub extern "C" fn tiles_on_place(at: u32) -> i32 {
-    match catch_unwind(|| place(at)) {
+pub extern "C" fn tiles_on_place(index: u32) -> i32 {
+    match catch_unwind(|| place(index)) {
         Ok(()) => 0,
         Err(_panic) => -1,
     }

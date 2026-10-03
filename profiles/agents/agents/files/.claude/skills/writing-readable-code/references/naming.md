@@ -60,24 +60,24 @@ Held by review.
 
 A reader already sees the module a type is in, the receiver a method is called
 on, and the type a value has. `grid::GridCursor` reads "grid" twice at every
-use, `grid.grid_cols()` twice at every call, and a field `grid_rows` on a `Grid`
-twice at every read; the repeated word pushes the part that differs to the end.
-A type in a name, `tile_vec` or `name_str`, says what the signature already says
-and goes stale when the type changes.
+use, `grid.grid_columns()` twice at every call, and a field `grid_rows` on a
+`Grid` twice at every read; the repeated word pushes the part that differs to
+the end. A type in a name, `tile_vec` or `name_str`, says what the signature
+already says and goes stale when the type changes.
 
 ```rust
 // Bad: every name says "grid" again, inside the grid.
 mod grid {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     pub struct GridCursor {
-        pub grid_col: u16,
+        pub grid_column: u16,
         pub grid_row: u16,
     }
 
     impl GridCursor {
         #[must_use]
         pub const fn grid_origin() -> Self {
-            Self { grid_col: 0, grid_row: 0 }
+            Self { grid_column: 0, grid_row: 0 }
         }
     }
 }
@@ -89,12 +89,12 @@ pub use crate::grid::GridCursor;
 mod grid {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     pub struct Cursor {
-        pub col: u16,
+        pub column: u16,
         pub row: u16,
     }
 
     impl Cursor {
-        pub const ORIGIN: Self = Self { col: 0, row: 0 };
+        pub const ORIGIN: Self = Self { column: 0, row: 0 };
     }
 }
 
@@ -135,9 +135,9 @@ pub struct Grid {
 impl Grid {
     // Bad: a question that also counts, so a caller asking twice changes the
     // grid twice.
-    pub fn tile_at(&mut self, at: usize) -> Option<u8> {
+    pub fn tile_at(&mut self, index: usize) -> Option<u8> {
         self.reads = self.reads.saturating_add(1);
-        self.squares.get(at).copied()
+        self.squares.get(index).copied()
     }
 }
 ```
@@ -150,8 +150,8 @@ pub struct Grid {
 
 impl Grid {
     #[must_use]
-    pub fn tile_at(&self, at: usize) -> Option<u8> {
-        self.squares.get(at).copied()
+    pub fn tile_at(&self, index: usize) -> Option<u8> {
+        self.squares.get(index).copied()
     }
 }
 ```
@@ -159,14 +159,131 @@ impl Grid {
 Held by review, which reads the body against the name. In Rust, a method named
 as a question that takes `&mut self` is where to look first.
 
+## A Name Is Whole Words, Never a Fragment
+
+A name is whole when its reader can tell what it is about from the name and what
+is read with it, and a fragment when they cannot: `at` leaves them to ask at
+what, `held` held where, `fresh` fresh since when, `want` wanted by whom, and
+they answer from a definition out of sight. Three things supply what a name is
+about: a noun for what it holds, `index`, `length`, `tile`; the type a field or
+a variant sits in, `square.visible`, `PlaceError::Occupied`; and a pair.
+`expected` and `actual`, `required` and `available` are whole for that last
+reason: each names one side of a comparison, the value asked for and the value
+found, the quantity needed and the quantity there, and its partner and the error
+that holds both say what was compared. `want` and `have` are not: each says what
+someone does, and leaves out both the value and who. A boolean's name is the
+state that holds when it is true, `square.visible`, or `is_first_visit` where
+nothing near says of what; a function's, a verb for what it does, or the noun it
+returns, and a preposition that joins it to the argument after it belongs to a
+whole phrase, `tile_at`, `split_at`, `fill_with`. A field is read furthest from
+its definition, so a fragment costs most there, and a short scope alone does not
+excuse one: only the code read with a word can say what it is about, as "A
+Name's Length Follows Its Reach" says. Two fields that name the two sides of one
+thing take one pair across the codebase: `expected` and `actual`, `required` and
+`available`, `index` and `length`.
+
+```rust
+// Bad: fragments, each a relation or a verb that leaves out what it names.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Step {
+    pub from: usize,
+    pub to: usize,
+    pub held: u8,
+}
+
+#[must_use]
+pub fn count(steps: &[Step], want: u8) -> usize {
+    steps.iter().filter(|at| at.held == want).count()
+}
+```
+
+```rust
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Step {
+    pub source: usize,
+    pub target: usize,
+    pub tile: u8,
+}
+
+#[must_use]
+pub fn times_moved(steps: &[Step], tile: u8) -> usize {
+    steps.iter().filter(|step| step.tile == tile).count()
+}
+```
+
+Held by review.
+
+## An Error's Name Says Its Whole Condition
+
+A refusal is read where it is matched, handled or logged, far from the message
+that explains it, so its name says the whole condition that holds, a variant's
+and a unit error type's alike: `OffGrid`, `RowTooShort`, `HeldByAnotherEditor`,
+`HeldByAnotherEditorError`. One word is whole where the type it sits in supplies
+its subject, `PlaceError::Occupied`, `RegionError::TooSmall`, and a fragment
+where the reader must still ask which or by whom: `Past`, `Short`, `Held`,
+`Corrupt`, `Busy` or `HeldError` leaves them to ask past what, what is short,
+held by whom, and to answer from a message out of sight. A variant is read with
+its type, so it never repeats the type: `PlaceError::OffGrid`, never
+`PlaceError::PlaceOffGrid`. An exception's class and an error's code are named
+the same way.
+{%- if "agents" in lints %}
+
+In Rust, `writing-rust`'s `references/errors.md`, "Name the Type for Its
+Question and Each Variant for Its Condition", shows it.
+
+Held by review, as `writing-rust`'s errors say.
+{%- else %}
+
+```rust
+use thiserror::Error;
+
+// Bad: each variant names part of its condition and leaves the rest to its
+// message.
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+pub enum LoadError {
+    #[error("load error: row {row} has {available} squares, the grid needs {required}")]
+    Short { row: u16, required: u16, available: u16 },
+    #[error("load error: another editor holds the board")]
+    Held,
+}
+```
+
+```rust
+use thiserror::Error;
+
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+pub enum LoadError {
+    #[error("load error: row {row} has {available} squares, the grid needs {required}")]
+    RowTooShort { row: u16, required: u16, available: u16 },
+    #[error("load error: another editor holds the board")]
+    HeldByAnotherEditor,
+}
+```
+
+Held by review.
+{%- endif %}
+
 ## A Name's Length Follows Its Reach
 
 A name used in three lines is read with its definition in view, so it can be
-short: `at` in a closure, `row` in a loop over rows. A name that crosses a
-function or a module is read where its definition is out of sight, so it is
-whole words. An abbreviation is used only as the domain writes it, `id`, `url`,
-`io`, `utf8`, never one made up to save letters, `cnt`, `plc`, `calc_tl`, which
-the reader must decode at each use.
+short, a short word and never a fragment: `row` in a loop over rows, `tile` in a
+closure over tiles. A name that crosses a function or a module is read where its
+definition is out of sight, so it says more, `widest_row`.
+
+The code around a short word decides whether it is plain, never a list of words
+allowed or refused. `next` matched from the `column.checked_add(1)` above it,
+`now` beside the `painted_at` it is compared with, `mid` passed straight to
+`split_at`: each is read with what says what it holds, and stays. The same word
+where nothing near says what it holds, a `next` three screens from the cursor it
+steps, or a `here` that could be a square or a thread, is renamed for what it
+holds. A binding dropped on purpose is named the same way, for what it holds
+where it is dropped, `_unsent_tile`, `_position`, never a stock word that fits
+any drop, `_outcome` or `_result`.
+
+An abbreviation is used only as the domain writes it, `id`, `url`, `io`, `utf8`,
+and `rx` and `tx` for a channel's two ends, as std writes them, never one made
+up to save letters, `cnt`, `plc`, `calc_tl`, which the reader must decode at
+each use.
 
 ```rust
 // Bad: a public name cut short, and a local one made long.
@@ -185,7 +302,8 @@ pub fn empty_squares(squares: &[Option<u8>]) -> usize {
 {%- if "rust-lints" in devset.profiles and "rust-clippy" in devset.profiles %}
 
 Held by review. `clippy::many_single_char_names` and `clippy::similar_names`
-catch the worst of it among local bindings; nothing sees an abbreviation.
+catch the worst of it among local bindings; nothing sees an abbreviation or a
+fragment.
 {%- else %}
 
 Held by review.
@@ -201,8 +319,8 @@ itself, the `0` a count starts from, the `1` a step adds, stays a literal.
 ```rust
 // Bad: what 64 and 0 mean is left for the reader to guess, in each place.
 #[must_use]
-pub fn has_room(cols: u16, squares: &[u8]) -> bool {
-    cols <= 64 && squares.contains(&0)
+pub fn has_room(columns: u16, squares: &[u8]) -> bool {
+    columns <= 64 && squares.contains(&0)
 }
 ```
 
@@ -212,13 +330,13 @@ pub struct Grid;
 
 impl Grid {
     /// The widest row a grid is laid with.
-    pub const MAX_COLS: u16 = 64;
+    pub const MAX_COLUMNS: u16 = 64;
     /// The tile an empty square holds.
     pub const EMPTY: u8 = 0;
 
     #[must_use]
-    pub fn has_room(cols: u16, squares: &[u8]) -> bool {
-        cols <= Self::MAX_COLS && squares.contains(&Self::EMPTY)
+    pub fn has_room(columns: u16, squares: &[u8]) -> bool {
+        columns <= Self::MAX_COLUMNS && squares.contains(&Self::EMPTY)
     }
 }
 ```
@@ -230,7 +348,7 @@ Value".
 {%- else %}
 
 Held by review. A value a type has one of is an associated constant of that
-type, as `Grid::MAX_COLS` is, never a free constant that repeats its name.
+type, as `Grid::MAX_COLUMNS` is, never a free constant that repeats its name.
 {%- endif %}
 
 ## A Condition Is Named for What Is True
@@ -253,8 +371,8 @@ pub struct Square {
 // Bad: the name is the negation of what the caller wants, and the compound
 // condition says how, not what.
 #[must_use]
-pub const fn is_drawn(square: &Square, cols: u16, col: u16) -> bool {
-    !square.hidden && square.tile != EMPTY && col < cols
+pub const fn is_drawn(square: &Square, columns: u16, column: u16) -> bool {
+    !square.hidden && square.tile != EMPTY && column < columns
 }
 ```
 
@@ -275,8 +393,8 @@ impl Square {
 }
 
 #[must_use]
-pub const fn is_drawn(square: &Square, cols: u16, col: u16) -> bool {
-    let on_grid = col < cols;
+pub const fn is_drawn(square: &Square, columns: u16, column: u16) -> bool {
+    let on_grid = column < columns;
     on_grid && square.has_visible_tile()
 }
 ```
@@ -315,8 +433,8 @@ pub struct Grid {
 impl Grid {
     // Bad: a square here, a cell there, for the same place.
     #[must_use]
-    pub fn square(&self, at: usize) -> Option<u8> {
-        self.squares.get(at).copied()
+    pub fn square(&self, index: usize) -> Option<u8> {
+        self.squares.get(index).copied()
     }
 
     #[must_use]
@@ -334,8 +452,8 @@ pub struct Grid {
 
 impl Grid {
     #[must_use]
-    pub fn square(&self, at: usize) -> Option<u8> {
-        self.squares.get(at).copied()
+    pub fn square(&self, index: usize) -> Option<u8> {
+        self.squares.get(index).copied()
     }
 
     #[must_use]
@@ -411,9 +529,9 @@ Read it before naming anything a caller sees.
 
 The rest follows the
 [Rust API Guidelines' naming](https://rust-lang.github.io/api-guidelines/naming.html):
-a getter is its noun, `cols()`, never `get_cols()`; `as_` is a free borrow,
-`to_` does work and `into_` consumes; a yes-or-no method starts `is_` or `has_`;
-an acronym is one word, `TileId`, not `TileID`.
+a getter is its noun, `columns()`, never `get_columns()`; `as_` is a free
+borrow, `to_` does work and `into_` consumes; a yes-or-no method starts `is_` or
+`has_`; an acronym is one word, `TileId`, not `TileID`.
 {%- endif %}
 {%- endif %}
 {%- if "python" in devset.profiles %}

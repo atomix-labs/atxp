@@ -39,12 +39,16 @@ Under `strict`, real code also documents every item.
 2. **One private `errors.rs` a crate, its types re-exported flat from
    `lib.rs`**, so one file says every way the crate refuses. A public module
    with refusals of its own has its own.
-3. **One error type for each question a verb can be asked, `<Question>Error`**,
-   so a signature says which refusals are possible: a unit struct for one cause,
-   `Copy` and `Eq` where the payload allows, and no crate-wide `Error`.
+3. **One error type for each question a verb can be asked, `<Question>Error`; a
+   variant, or a unit error's type, names its whole condition, `RowTooShort`,
+   `HeldByAnotherEditorError`, never `Short` or `HeldError`, and a variant never
+   repeats its type**, so a signature says which refusals are possible and a
+   `match` reads without the messages: a unit struct for one cause, `Copy` and
+   `Eq` where the payload allows, and no crate-wide `Error`.
 4. **A message is `"<type words> error: <lowercase fragment>"`, its fields
    inline**, so a line read alone names its source. Context is a type, not a
-   string, and fields read `want` and `held`, `need` and `have`, `at` and `len`.
+   string, and fields read `expected` and `actual`, `required` and `available`,
+   `index` and `length`.
 5. **An error renders its cause or exposes it, never both**, since a reporter
    prints the whole chain: `#[error(transparent)]` with `#[from]` across a
    boundary, and `#[from]` only where the lower error means one thing, else a
@@ -59,8 +63,8 @@ Under `strict`, real code also documents every item.
    BoxError>` where only an operator reads a failure; a command a person runs
    prints the message and each cause and returns `ExitCode`, since an `Err` from
    `main` prints its `Debug`.
-8. **A dropped error is named, `|_gone|`**, so a reader sees the drop was
-   chosen.
+8. **A dropped error is named for what it holds there, `|_unsent_tile|`, never a
+   stock word, `_outcome`**, so a reader sees what the drop gave up.
 
 ### Layout
 
@@ -90,7 +94,7 @@ Under `strict`, real code also documents every item.
    `open_or_create` does either; `*Spec` for one call's parameters, `*Config`
    for a program's settings, `*Guard` and `*Error` by role, never `*Options` or
    `*Params`; an acronym is one word; a type parameter is one capital letter.
-2. **A type's one value is an associated constant, `Pos::ORIGIN`, and a
+2. **A type's one value is an associated constant, `Position::ORIGIN`, and a
    yes-or-no method starts `is_` or `has_`**, with `is_empty` beside every
    `len`.
 3. **A collection's iterators are `iter` and `iter_mut`, each with its
@@ -199,10 +203,8 @@ Read each reference a step names, whole, before writing the code.
    `references/naming.md` and `references/ownership.md`: a spec, a newtype or a
    typestate; its derives; constructors and conversions by name; `#[must_use]`;
    borrowed parameters; named generics.
-6. **A binary**: `references/errors.md`, for its `BoxError` and
-   `io::Error::other`, and a `main` that returns `Result<(), BoxError>` where
-   only an operator reads a failure, or, in a command a person runs, prints the
-   message and each cause and returns `ExitCode`.
+6. **A binary**: `references/errors.md`, for its `BoxError`, `io::Error::other`
+   and `main`, as "Alias an error type, never `Result`" says.
 7. **A lint that fires**: find it in `references/lints.md` and write what it
    asks. Only where the lint misreads the code, `#[expect]` it at the narrowest
    scope with a reason; never edit the lint table or give a crate its own
@@ -249,36 +251,36 @@ Code made faster, a benchmark, and a build profile follow
 
 ## What Not to Do
 
-| Thought                                                  | Instead                                                                        |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| "`#[allow]`, just this once"                             | `#[expect(lint, reason = "…")]` at the site: it fails once the cause is gone.  |
-| "A `String` error is enough here"                        | A type for the question, its facts as fields; in a binary, `io::Error::other`. |
-| "`fn main() -> Result` reports the error"                | In a command a person runs, `ExitCode`, printing the message and each cause.   |
-| "`anyhow` keeps the library simple"                      | thiserror types a caller can match; `anyhow` erases them.                      |
-| "One `Error` enum for the whole crate"                   | One type for each question a verb can be asked.                                |
-| "`#[error("load error: {0}")]` on a `#[from]`"           | `#[error(transparent)]`, or render the cause and expose nothing.               |
-| "Clamp the index to the last square"                     | Refuse it with the index and the length; clamping hides the caller's mistake.  |
-| "`get_cols()` reads clearly"                             | `cols()`.                                                                      |
-| "`Distance::new(3)` and `.get()` read plainly"           | `from_squares(3)` and `as_squares()`: the name says what the number counts.    |
-| "`derive(zerocopy::FromBytes)` saves an import"          | A gated `use zerocopy::FromBytes;`, then `derive(FromBytes)`.                  |
-| "A `Display` impl by hand is only a few lines"           | derive_more's `Display`; by hand only where it measured slower, saying so.     |
-| "A builder for these three fields"                       | A `*Spec` literal.                                                             |
-| "`impl Trait` in this public argument"                   | A named generic, `fn fill_with<F: FnMut() -> u8>`.                             |
-| "`pub` is simpler than `pub(crate)`"                     | `pub(crate)` inside a private module.                                          |
-| "`.clone()` to quiet the borrow checker"                 | Shape the borrow: a shorter scope, a reference kept, a move.                   |
-| "`#[non_exhaustive]`, for the future"                    | Exhaustive; only a published type meant to grow, judged one by one.            |
-| "`[lints.clippy]` here, or a level changed in the table" | Cargo refuses the first, devset reports the second; `#[expect]` at the site.   |
+| Thought                                         | Instead                                                                      |
+| ----------------------------------------------- | ---------------------------------------------------------------------------- |
+| "`#[allow]`, just this once"                    | `#[expect(lint, reason = "…")]` at the site; it fails once its cause goes.   |
+| "A `String` error is enough here"               | A type for its question, facts as fields; in a binary, `io::Error::other`.   |
+| "`fn main() -> Result` reports the error"       | In a command a person runs, `ExitCode`, printing the message and each cause. |
+| "`anyhow` keeps the library simple"             | thiserror types a caller can match; `anyhow` erases them.                    |
+| "One `Error` enum for the whole crate"          | One type for each question a verb can be asked.                              |
+| "`#[error("load error: {0}")]` on a `#[from]`"  | `#[error(transparent)]`, or render the cause and expose nothing.             |
+| "Clamp the index to the last square"            | Refuse it with the index and length; clamping hides the caller's mistake.    |
+| "`get_columns()` reads clearly"                 | `columns()`.                                                                 |
+| "`Distance::new(3)` and `.get()` read plainly"  | `from_squares(3)` and `as_squares()`: the name says what the number counts.  |
+| "`derive(zerocopy::FromBytes)` saves an import" | A gated `use zerocopy::FromBytes;`, then `derive(FromBytes)`.                |
+| "A `Display` impl by hand is only a few lines"  | derive_more's `Display`; by hand only where it measured slower, saying so.   |
+| "A builder for these three fields"              | A `*Spec` literal.                                                           |
+| "`impl Trait` in this public argument"          | A named generic, `fn fill_with<F: FnMut() -> u8>`.                           |
+| "`pub` is simpler than `pub(crate)`"            | `pub(crate)` inside a private module.                                        |
+| "`.clone()` to quiet the borrow checker"        | Shape the borrow: a shorter scope, a reference kept, a move.                 |
+| "`#[non_exhaustive]`, for the future"           | Exhaustive; only a published type meant to grow, judged one by one.          |
+| "`[lints.clippy]`, or a table level changed"    | Cargo refuses the first, devset reports the second; `#[expect]` at the site. |
 {%- if "strict" in devset.features %}
 
 Under `strict`, also:
 
-| Thought                                 | Instead                                                                |
-| --------------------------------------- | ---------------------------------------------------------------------- |
-| "`unwrap()`, it cannot fail"            | `?` or `ok_or`; for a broken invariant, `expect` under an `#[expect]`. |
-| "`as u16` is fine, it fits"             | `u16::try_from`, or `u32::from` for a widening.                        |
-| "`row + 1` cannot overflow here"        | `checked_add`, `saturating_add` or `wrapping_add`, as it means.        |
-| "`squares[at]`, the index is in bounds" | `squares.get(at)`, or an `#[expect]` whose reason names the bound.     |
-| "A `println!` to show progress"         | Return it to the binary, which prints under an `#[expect]`.            |
+| Thought                                    | Instead                                                                |
+| ------------------------------------------ | ---------------------------------------------------------------------- |
+| "`unwrap()`, it cannot fail"               | `?` or `ok_or`; for a broken invariant, `expect` under an `#[expect]`. |
+| "`as u16` is fine, it fits"                | `u16::try_from`, or `u32::from` for a widening.                        |
+| "`row + 1` cannot overflow here"           | `checked_add`, `saturating_add` or `wrapping_add`, as it means.        |
+| "`squares[index]`, the index is in bounds" | `squares.get(index)`, or an `#[expect]` whose reason names the bound.  |
+| "A `println!` to show progress"            | Return it to the binary, which prints under an `#[expect]`.            |
 {%- endif %}
 
 ## References

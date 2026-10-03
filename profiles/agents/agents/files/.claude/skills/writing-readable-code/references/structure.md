@@ -35,19 +35,19 @@ pub enum PlaceError {
 
 #[derive(Debug)]
 pub struct Grid {
-    cols: u16,
+    columns: u16,
     squares: Vec<u8>,
 }
 
 impl Grid {
     // Bad: the rule of the grid and the arithmetic of its storage, in one body.
-    pub fn place(&mut self, col: u16, row: u16, tile: u8) -> Result<(), PlaceError> {
-        if col >= self.cols {
+    pub fn place(&mut self, column: u16, row: u16, tile: u8) -> Result<(), PlaceError> {
+        if column >= self.columns {
             return Err(PlaceError::OffGrid);
         }
         let index = usize::from(row)
-            .checked_mul(usize::from(self.cols))
-            .and_then(|start| start.checked_add(usize::from(col)))
+            .checked_mul(usize::from(self.columns))
+            .and_then(|start| start.checked_add(usize::from(column)))
             .ok_or(PlaceError::OffGrid)?;
         let square = self.squares.get_mut(index).ok_or(PlaceError::OffGrid)?;
         if *square != EMPTY {
@@ -73,20 +73,20 @@ pub enum PlaceError {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Pos {
-    pub col: u16,
+pub struct Position {
+    pub column: u16,
     pub row: u16,
 }
 
 #[derive(Debug)]
 pub struct Grid {
-    cols: u16,
+    columns: u16,
     squares: Vec<u8>,
 }
 
 impl Grid {
-    pub fn place(&mut self, at: Pos, tile: u8) -> Result<(), PlaceError> {
-        let square = self.square_mut(at).ok_or(PlaceError::OffGrid)?;
+    pub fn place(&mut self, position: Position, tile: u8) -> Result<(), PlaceError> {
+        let square = self.square_mut(position).ok_or(PlaceError::OffGrid)?;
         if *square != EMPTY {
             return Err(PlaceError::Occupied);
         }
@@ -94,19 +94,19 @@ impl Grid {
         Ok(())
     }
 
-    fn square_mut(&mut self, at: Pos) -> Option<&mut u8> {
-        if at.col >= self.cols {
+    fn square_mut(&mut self, position: Position) -> Option<&mut u8> {
+        if position.column >= self.columns {
             return None;
         }
-        let start = usize::from(at.row).checked_mul(usize::from(self.cols))?;
-        self.squares.get_mut(start.checked_add(usize::from(at.col))?)
+        let start = usize::from(position.row).checked_mul(usize::from(self.columns))?;
+        self.squares.get_mut(start.checked_add(usize::from(position.column))?)
     }
 }
 ```
 
 A function extracted to name a step earns its place even with one caller. One
-whose name says no more than its body, `fn add_tile(v: &mut Vec<u8>, t: u8) {
-v.push(t) }`, is a jump that repays nothing, and is inlined.
+whose name says no more than its body, `fn add_tile(tiles: &mut Vec<u8>, tile:
+u8) { tiles.push(tile) }`, is a jump that repays nothing, and is inlined.
 {%- if "rust-lints" in devset.profiles and "rust-clippy" in devset.profiles %}
 
 Held by review. `clippy::too_many_lines` refuses a function past 100 lines, long
@@ -137,7 +137,7 @@ pub const EMPTY: u8 = 0;
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum PlaceError {
     #[error("place error: a blank is no tile")]
-    Blank,
+    BlankTile,
     #[error("place error: the square is off the grid")]
     OffGrid,
     #[error("place error: the square holds a tile already")]
@@ -151,11 +151,11 @@ pub struct Grid {
 
 impl Grid {
     // Bad: the main path three levels in, and each refusal far from its test.
-    pub fn place(&mut self, at: usize, tile: u8) -> Result<(), PlaceError> {
+    pub fn place(&mut self, index: usize, tile: u8) -> Result<(), PlaceError> {
         if tile == EMPTY {
-            Err(PlaceError::Blank)
+            Err(PlaceError::BlankTile)
         } else {
-            if let Some(square) = self.squares.get_mut(at) {
+            if let Some(square) = self.squares.get_mut(index) {
                 if *square == EMPTY {
                     *square = tile;
                     return Ok(());
@@ -176,7 +176,7 @@ pub const EMPTY: u8 = 0;
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 pub enum PlaceError {
     #[error("place error: a blank is no tile")]
-    Blank,
+    BlankTile,
     #[error("place error: the square is off the grid")]
     OffGrid,
     #[error("place error: the square holds a tile already")]
@@ -189,11 +189,11 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn place(&mut self, at: usize, tile: u8) -> Result<(), PlaceError> {
+    pub fn place(&mut self, index: usize, tile: u8) -> Result<(), PlaceError> {
         if tile == EMPTY {
-            return Err(PlaceError::Blank);
+            return Err(PlaceError::BlankTile);
         }
-        let square = self.squares.get_mut(at).ok_or(PlaceError::OffGrid)?;
+        let square = self.squares.get_mut(index).ok_or(PlaceError::OffGrid)?;
         if *square != EMPTY {
             return Err(PlaceError::Occupied);
         }
@@ -319,8 +319,8 @@ pub struct EditorId(u32);
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Square {
     Empty,
-    Claimed { by: EditorId },
-    Sealed { tile: u8, by: EditorId },
+    Claimed { editor: EditorId },
+    Sealed { tile: u8, editor: EditorId },
 }
 
 impl Square {
@@ -350,14 +350,14 @@ Held by review.
 
 ## A Choice Is an Enum or Two Functions, Never a Boolean Parameter
 
-A `true` at a call site says nothing of what it chose: `grid.place(at, tile,
+A `true` at a call site says nothing of what it chose: `grid.place(index, tile,
 true)` could mean overwrite, wrap or check, and a reader must open the
 definition to learn which. A choice the caller makes is an enum whose variants
-name each side, so the call reads `grid.place(at, tile, Clash::Replace)`. Where
-the two sides do different work, rather than one step differently, they are two
-functions, `place` and `replace`, each named for what it does, and neither
-carries the other's branch. Two booleans side by side are worse again: `(true,
-false)` and `(false, true)` look alike and swap unseen.
+name each side, so the call reads `grid.place(index, tile, Clash::Replace)`.
+Where the two sides do different work, rather than one step differently, they
+are two functions, `place` and `replace`, each named for what it does, and
+neither carries the other's branch. Two booleans side by side are worse again:
+`(true, false)` and `(false, true)` look alike and swap unseen.
 
 ```rust
 use thiserror::Error;
@@ -378,9 +378,9 @@ pub struct Grid {
 }
 
 impl Grid {
-    // Bad: `grid.place(at, tile, true)` reads as nothing.
-    pub fn place(&mut self, at: usize, tile: u8, overwrite: bool) -> Result<(), PlaceError> {
-        let square = self.squares.get_mut(at).ok_or(PlaceError::OffGrid)?;
+    // Bad: `grid.place(index, tile, true)` reads as nothing.
+    pub fn place(&mut self, index: usize, tile: u8, overwrite: bool) -> Result<(), PlaceError> {
+        let square = self.squares.get_mut(index).ok_or(PlaceError::OffGrid)?;
         if *square != EMPTY && !overwrite {
             return Err(PlaceError::Occupied);
         }
@@ -416,8 +416,8 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn place(&mut self, at: usize, tile: u8, clash: Clash) -> Result<(), PlaceError> {
-        let square = self.squares.get_mut(at).ok_or(PlaceError::OffGrid)?;
+    pub fn place(&mut self, index: usize, tile: u8, clash: Clash) -> Result<(), PlaceError> {
+        let square = self.squares.get_mut(index).ok_or(PlaceError::OffGrid)?;
         if *square != EMPTY && clash == Clash::Refuse {
             return Err(PlaceError::Occupied);
         }
@@ -484,7 +484,7 @@ impl FromStr for TileId {
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
         let digits = text.strip_prefix('t').ok_or(ParseTileError)?;
-        digits.parse().map(Self).map_err(|_bad| ParseTileError)
+        digits.parse().map(Self).map_err(|_not_a_number| ParseTileError)
     }
 }
 ```
@@ -581,10 +581,10 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn place(&mut self, at: usize, tile: u8) -> Result<(), PlaceError> {
+    pub fn place(&mut self, index: usize, tile: u8) -> Result<(), PlaceError> {
         // Bad: each banner says what the line under it says.
         // Step 1: find the square.
-        let square = self.squares.get_mut(at).ok_or(PlaceError::OffGrid)?;
+        let square = self.squares.get_mut(index).ok_or(PlaceError::OffGrid)?;
         // Step 2: refuse a square that is taken.
         if *square != EMPTY {
             return Err(PlaceError::Occupied);
@@ -615,8 +615,8 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn place(&mut self, at: usize, tile: u8) -> Result<(), PlaceError> {
-        let square = self.squares.get_mut(at).ok_or(PlaceError::OffGrid)?;
+    pub fn place(&mut self, index: usize, tile: u8) -> Result<(), PlaceError> {
+        let square = self.squares.get_mut(index).ok_or(PlaceError::OffGrid)?;
         if *square != EMPTY {
             return Err(PlaceError::Occupied);
         }
@@ -641,23 +641,23 @@ The rules hold as they stand, in Python's forms:
 - **States are an `Enum`, or a union of frozen dataclasses where each state has
   its own data**, never flags and `None` fields.
 - **A choice is an `Enum`, or two functions**. A boolean that a public signature
-  must keep is keyword-only, after `*`, so every call names it: `place(grid, at,
-  tile, replace=True)`.
+  must keep is keyword-only, after `*`, so every call names it: `place(grid,
+  index, tile, replace=True)`.
 - **Input is parsed where it enters** into a frozen dataclass or an `Enum`, and
   functions inside take that type, not the `dict` or `str` it came from.
 
 ```python
 # Bad: `place(grid, 3, 7, True)` reads as nothing, and the nesting hides the
 # refusals.
-def place(grid, at, tile, overwrite=False):
-    if 0 <= at < len(grid):
-        if grid[at] == 0 or overwrite:
-            grid[at] = tile
+def place(grid, index, tile, overwrite=False):
+    if 0 <= index < len(grid):
+        if grid[index] == 0 or overwrite:
+            grid[index] = tile
             return True
         else:
             return False
     else:
-        raise IndexError(at)
+        raise IndexError(index)
 ```
 
 ```python
@@ -675,12 +675,12 @@ class OccupiedError(Exception):
     pass
 
 
-def place(squares: list[int], at: int, tile: int, clash: Clash) -> None:
-    if not 0 <= at < len(squares):
-        raise IndexError(at)
-    if squares[at] != EMPTY and clash is Clash.REFUSE:
-        raise OccupiedError(at)
-    squares[at] = tile
+def place(squares: list[int], index: int, tile: int, clash: Clash) -> None:
+    if not 0 <= index < len(squares):
+        raise IndexError(index)
+    if squares[index] != EMPTY and clash is Clash.REFUSE:
+        raise OccupiedError(index)
+    squares[index] = tile
 ```
 {%- if "lint" in python %}
 
@@ -724,14 +724,14 @@ place() {
 
 ```bash
 place() {
-    local grid=$1 at=$2 tile=$3 clash=$4
+    local grid=$1 index=$2 tile=$3 clash=$4
     [[ -f $grid ]] || { echo "place: no grid at $grid" >&2; return 1; }
-    if [[ $clash == refuse ]] && grep -q "^$at " "$grid"; then
-        echo "place: square $at holds a tile already" >&2
+    if [[ $clash == refuse ]] && grep -q "^$index " "$grid"; then
+        echo "place: square $index holds a tile already" >&2
         return 1
     fi
-    awk -v at="$at" '$1 != at' "$grid" > "$grid.new"
-    echo "$at $tile" >> "$grid.new"
+    awk -v square="$index" '$1 != square' "$grid" > "$grid.new"
+    echo "$index $tile" >> "$grid.new"
     mv "$grid.new" "$grid"
 }
 ```

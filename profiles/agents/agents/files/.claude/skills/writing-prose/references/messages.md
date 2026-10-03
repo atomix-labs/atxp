@@ -133,7 +133,7 @@ In Rust, a `main` that returns `Err` prints `Error: ` and the error's `Debug`,
 not its message. For a command a person runs, that is the wrong line:
 
 ```text
-Bad:  Error: GridError { row: 3, need: 8, have: 7 }
+Bad:  Error: GridError { row: 3, required: 8, available: 7 }
 Good: error: grid error: row 3 has 7 squares, the first has 8
 ```
 {%- if "agents" in lints %}

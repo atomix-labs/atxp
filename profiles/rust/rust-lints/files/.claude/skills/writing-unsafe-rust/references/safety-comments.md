@@ -34,30 +34,31 @@ use core::slice;
 
 #[derive(Debug)]
 pub struct Grid {
-    cols: usize,
+    columns: usize,
     squares: Vec<u8>,
 }
 
 impl Grid {
     // Bad: four proofs to keep, where `split_at_mut_checked` keeps its own.
     #[expect(unsafe_code, reason = "two rows of one grid borrowed mutably at once")]
-    pub fn rows_mut(&mut self, top: usize) -> Option<(&mut [u8], &mut [u8])> {
-        let start = top.checked_mul(self.cols)?;
-        let end = self.cols.checked_mul(2)?.checked_add(start)?;
+    pub fn rows_mut(&mut self, first_row: usize) -> Option<(&mut [u8], &mut [u8])> {
+        let start = first_row.checked_mul(self.columns)?;
+        let end = self.columns.checked_mul(2)?.checked_add(start)?;
         if end > self.squares.len() {
             return None;
         }
         let base = self.squares.as_mut_ptr();
         // SAFETY: `start` is below `end`, which is within the squares.
-        let upper = unsafe { base.add(start) };
-        // SAFETY: `start + cols` is below `end` too.
-        let lower = unsafe { upper.add(self.cols) };
-        // SAFETY: the `cols` squares from `upper` end where `lower` starts, inside the vector
-        // that `&mut self` holds alone.
-        let upper = unsafe { slice::from_raw_parts_mut(upper, self.cols) };
-        // SAFETY: the `cols` squares from `lower` end at `end`, and none of them is `upper`'s.
-        let lower = unsafe { slice::from_raw_parts_mut(lower, self.cols) };
-        Some((upper, lower))
+        let upper_row = unsafe { base.add(start) };
+        // SAFETY: `start + columns` is below `end` too.
+        let lower_row = unsafe { upper_row.add(self.columns) };
+        // SAFETY: the `columns` squares from `upper_row` end where `lower_row` starts, inside the
+        // vector that `&mut self` holds alone.
+        let upper_row = unsafe { slice::from_raw_parts_mut(upper_row, self.columns) };
+        // SAFETY: the `columns` squares from `lower_row` end at `end`, and none of them is
+        // `upper_row`'s.
+        let lower_row = unsafe { slice::from_raw_parts_mut(lower_row, self.columns) };
+        Some((upper_row, lower_row))
     }
 }
 ```
@@ -65,15 +66,16 @@ impl Grid {
 ```rust
 #[derive(Debug)]
 pub struct Grid {
-    cols: usize,
+    columns: usize,
     squares: Vec<u8>,
 }
 
 impl Grid {
-    pub fn rows_mut(&mut self, top: usize) -> Option<(&mut [u8], &mut [u8])> {
-        let start = top.checked_mul(self.cols)?;
-        let (upper, rest) = self.squares.get_mut(start..)?.split_at_mut_checked(self.cols)?;
-        Some((upper, rest.get_mut(..self.cols)?))
+    pub fn rows_mut(&mut self, first_row: usize) -> Option<(&mut [u8], &mut [u8])> {
+        let start = first_row.checked_mul(self.columns)?;
+        let (upper_row, rest) =
+            self.squares.get_mut(start..)?.split_at_mut_checked(self.columns)?;
+        Some((upper_row, rest.get_mut(..self.columns)?))
     }
 }
 ```
@@ -175,8 +177,8 @@ pub const fn first(squares: *const u8) -> u8 {
 
 ```rust
 #[must_use]
-pub fn square(squares: &[u8], at: usize) -> Option<u8> {
-    squares.get(at).copied()
+pub fn square(squares: &[u8], index: usize) -> Option<u8> {
+    squares.get(index).copied()
 }
 ```
 
@@ -195,38 +197,38 @@ scope, as any other body does. An `unsafe fn` beside a safe twin is named
 
 ```rust,compile_fail
 // fails: unsafe_op_in_unsafe_fn
-/// The square at `at`, unchecked.
+/// The square at `index`, unchecked.
 ///
 /// # Safety
-/// `at` is below `squares.len()`.
+/// `index` is below `squares.len()`.
 #[expect(unsafe_code, reason = "an unchecked read for callers that have bounded the index")]
 #[must_use]
-pub unsafe fn square_unchecked(squares: &[u8], at: usize) -> u8 {
+pub unsafe fn square_unchecked(squares: &[u8], index: usize) -> u8 {
     // Bad: the body's unsafe call has no block, and so no proof of its own.
-    *squares.get_unchecked(at)
+    *squares.get_unchecked(index)
 }
 ```
 
 ```rust
-/// The square at `at`, unchecked.
+/// The square at `index`, unchecked.
 ///
 /// # Safety
-/// `at` is below `squares.len()`.
+/// `index` is below `squares.len()`.
 #[expect(unsafe_code, reason = "an unchecked read for callers that have bounded the index")]
 #[must_use]
-pub unsafe fn square_unchecked(squares: &[u8], at: usize) -> u8 {
-    // SAFETY: the caller promises `at` is below the length, which is all `get_unchecked` asks.
-    unsafe { *squares.get_unchecked(at) }
+pub unsafe fn square_unchecked(squares: &[u8], index: usize) -> u8 {
+    // SAFETY: the caller promises `index` is below the length, which is all `get_unchecked` asks.
+    unsafe { *squares.get_unchecked(index) }
 }
 
 #[must_use]
-pub fn square(squares: &[u8], at: usize) -> Option<u8> {
-    if at >= squares.len() {
+pub fn square(squares: &[u8], index: usize) -> Option<u8> {
+    if index >= squares.len() {
         return None;
     }
-    // SAFETY: `at` is below the length, checked above.
+    // SAFETY: `index` is below the length, checked above.
     #[expect(unsafe_code, reason = "the checked twin of an unchecked read")]
-    Some(unsafe { square_unchecked(squares, at) })
+    Some(unsafe { square_unchecked(squares, index) })
 }
 ```
 
@@ -258,10 +260,10 @@ pub fn place<I: ExactSizeIterator<Item = u8>>(row: &mut [u8], tiles: I) {
     if tiles.len() > row.len() {
         return;
     }
-    for (at, tile) in tiles.enumerate() {
+    for (index, tile) in tiles.enumerate() {
         // Bad: `len` is a safe method, and an iterator that reports too few writes past the row.
         // SAFETY: `len` said every tile fits the row.
-        let square = unsafe { row.get_unchecked_mut(at) };
+        let square = unsafe { row.get_unchecked_mut(index) };
         *square = tile;
     }
 }
@@ -281,49 +283,49 @@ Held by review.
 
 Each unsafe operation has preconditions of its own, and a block that holds two
 has one comment for both, so no reader can tell which fact proves which. An
-offset and a read, `ptr.add(at).read()`, are two operations, and the offset has
-a precondition of its own: `add` lands inside the allocation, or one past its
-end, even where nothing is read through it. A call whose argument is another
+offset and a read, `ptr.add(offset).read()`, are two operations, and the offset
+has a precondition of its own: `add` lands inside the allocation, or one past
+its end, even where nothing is read through it. A call whose argument is another
 unsafe call is two as well. Each goes in a block of its own, with its own `//
-SAFETY:`, and a proof one line up is cited, "as above", not repeated.
-{%- if "strict" in devset.features %}
+SAFETY:`, and a proof one line up is cited, "as above", not repeated. {%- if
+"strict" in devset.features %}
 
 ```rust,compile_fail
 // fails: clippy::multiple_unsafe_ops_per_block
-/// The square `at` squares past `squares`.
+/// The square `offset` squares past `squares`.
 ///
 /// # Safety
-/// `squares` and the `at` squares after it lie inside one live, initialized row that nothing
-/// writes during the call.
+/// `squares` and the `offset` squares after it lie inside one live, initialized row that
+/// nothing writes during the call.
 #[expect(unsafe_code, reason = "an unchecked read inside a row the caller holds")]
 #[must_use]
-pub const unsafe fn square_at(squares: *const u8, at: usize) -> u8 {
+pub const unsafe fn square_at(squares: *const u8, offset: usize) -> u8 {
     // Bad: an offset and a read, and one proof for both.
-    // SAFETY: the caller promises the row reaches past `at`.
-    unsafe { squares.add(at).read() }
+    // SAFETY: the caller promises the row reaches past `offset`.
+    unsafe { squares.add(offset).read() }
 }
 ```
 {%- else %}
 
 ```text
 // Bad: an offset and a read, and one proof for both.
-// SAFETY: the caller promises the row reaches past `at`.
-unsafe { squares.add(at).read() }
+// SAFETY: the caller promises the row reaches past `offset`.
+unsafe { squares.add(offset).read() }
 ```
 {%- endif %}
 
 ```rust
-/// The square `at` squares past `squares`.
+/// The square `offset` squares past `squares`.
 ///
 /// # Safety
-/// `squares` and the `at` squares after it lie inside one live, initialized row that nothing
-/// writes during the call.
+/// `squares` and the `offset` squares after it lie inside one live, initialized row that
+/// nothing writes during the call.
 #[expect(unsafe_code, reason = "an unchecked read inside a row the caller holds")]
 #[must_use]
-pub const unsafe fn square_at(squares: *const u8, at: usize) -> u8 {
-    // SAFETY: the caller promises the `at` squares after `squares` lie in one row, so the offset
-    // stays inside it.
-    let square = unsafe { squares.add(at) };
+pub const unsafe fn square_at(squares: *const u8, offset: usize) -> u8 {
+    // SAFETY: the caller promises the `offset` squares after `squares` lie in one row, so the
+    // offset stays inside it.
+    let square = unsafe { squares.add(offset) };
     // SAFETY: `square` is inside that live row, whose squares are initialized and which nothing
     // writes, and a `u8` is aligned anywhere.
     unsafe { square.read() }
@@ -400,16 +402,16 @@ use core::slice;
 pub struct Row<'a> {
     // Bad: public, so safe code can build a row over any address, and nothing says what holds.
     pub base: NonNull<u8>,
-    pub len: usize,
+    pub length: usize,
     pub squares: PhantomData<&'a [u8]>,
 }
 
 impl<'a> Row<'a> {
     #[must_use]
     pub const fn squares(self) -> &'a [u8] {
-        // SAFETY: `base` and `len` are a live row's.
+        // SAFETY: `base` and `length` are a live row's.
         #[expect(unsafe_code, reason = "a view of the row the fields describe")]
-        unsafe { slice::from_raw_parts(self.base.as_ptr(), self.len) }
+        unsafe { slice::from_raw_parts(self.base.as_ptr(), self.length) }
     }
 }
 ```
@@ -421,17 +423,21 @@ use core::slice;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Row<'a> {
-    // INVARIANT: `base` and `len` are the pointer and length of one `&'a [u8]`; `new` is their
-    // only writer.
+    // INVARIANT: `base` and `length` are the pointer and length of one `&'a [u8]`; `new` is
+    // their only writer.
     base: NonNull<u8>,
-    len: usize,
+    length: usize,
     squares: PhantomData<&'a [u8]>,
 }
 
 impl<'a> Row<'a> {
     #[must_use]
     pub const fn new(squares: &'a [u8]) -> Self {
-        Self { base: NonNull::from_ref(squares).cast(), len: squares.len(), squares: PhantomData }
+        Self {
+            base: NonNull::from_ref(squares).cast(),
+            length: squares.len(),
+            squares: PhantomData,
+        }
     }
 
     #[must_use]
@@ -440,7 +446,7 @@ impl<'a> Row<'a> {
         // aligned, initialized, inside one allocation of at most `isize::MAX` bytes, and shared
         // for `'a`, so no `&mut` overlaps them.
         #[expect(unsafe_code, reason = "a view of the row `new` borrowed")]
-        unsafe { slice::from_raw_parts(self.base.as_ptr(), self.len) }
+        unsafe { slice::from_raw_parts(self.base.as_ptr(), self.length) }
     }
 }
 ```
@@ -474,7 +480,7 @@ use core::ptr::NonNull;
 pub struct Board<T> {
     // INVARIANT: from `Box::leak` in `new`, owned by this board alone, and freed once, in `drop`.
     squares: NonNull<[T]>,
-    owns: PhantomData<T>,
+    ownership: PhantomData<T>,
 }
 
 // Bad: no `T: Send`, so a board of `Rc`s crosses threads, and two threads count one `Rc`.
@@ -485,7 +491,7 @@ unsafe impl<T> Send for Board<T> {}
 impl<T> Board<T> {
     #[must_use]
     pub fn new(squares: Box<[T]>) -> Self {
-        Self { squares: NonNull::from(Box::leak(squares)), owns: PhantomData }
+        Self { squares: NonNull::from(Box::leak(squares)), ownership: PhantomData }
     }
 }
 
@@ -511,7 +517,7 @@ use core::ptr::NonNull;
 pub struct Board<T> {
     // INVARIANT: from `Box::leak` in `new`, owned by this board alone, and freed once, in `drop`.
     squares: NonNull<[T]>,
-    owns: PhantomData<T>,
+    ownership: PhantomData<T>,
 }
 
 // SAFETY: by the field INVARIANT the board owns its squares alone, so sending it sends its `T`s,
@@ -526,7 +532,7 @@ unsafe impl<T: Sync> Sync for Board<T> {}
 impl<T> Board<T> {
     #[must_use]
     pub fn new(squares: Box<[T]>) -> Self {
-        Self { squares: NonNull::from(Box::leak(squares)), owns: PhantomData }
+        Self { squares: NonNull::from(Box::leak(squares)), ownership: PhantomData }
     }
 
     #[must_use]
@@ -590,7 +596,7 @@ use core::marker::PhantomData;
 pub struct Brush {
     slot: usize,
     // Neither `Send` nor `Sync`: the slot is one in this thread's palette.
-    here: PhantomData<*const ()>,
+    _home_thread: PhantomData<*const ()>,
 }
 
 impl Brush {
@@ -614,26 +620,26 @@ is unsound there: its check is a real one, or it is an `unsafe fn`.
 
 ```rust
 #[must_use]
-pub fn square(squares: &[u8], at: usize) -> u8 {
+pub fn square(squares: &[u8], index: usize) -> u8 {
     // Bad: gone in a release build, and with it every guard on the read below.
-    debug_assert!(at < squares.len(), "an index past the row");
-    // SAFETY: the assertion above bounds `at`.
+    debug_assert!(index < squares.len(), "an index past the row");
+    // SAFETY: the assertion above bounds `index`.
     #[expect(unsafe_code, reason = "a read the assertion has bounded")]
-    unsafe { *squares.get_unchecked(at) }
+    unsafe { *squares.get_unchecked(index) }
 }
 ```
 
 ```rust
-/// The square at `at`, unchecked.
+/// The square at `index`, unchecked.
 ///
 /// # Safety
-/// `at` is below `squares.len()`.
+/// `index` is below `squares.len()`.
 #[expect(unsafe_code, reason = "an unchecked read for callers that have bounded the index")]
 #[must_use]
-pub unsafe fn square_unchecked(squares: &[u8], at: usize) -> u8 {
-    debug_assert!(at < squares.len(), "an index past the row");
-    // SAFETY: the caller promises `at` is below the length, which is all `get_unchecked` asks.
-    unsafe { *squares.get_unchecked(at) }
+pub unsafe fn square_unchecked(squares: &[u8], index: usize) -> u8 {
+    debug_assert!(index < squares.len(), "an index past the row");
+    // SAFETY: the caller promises `index` is below the length, which is all `get_unchecked` asks.
+    unsafe { *squares.get_unchecked(index) }
 }
 ```
 
@@ -711,15 +717,15 @@ pub struct Tile {
     pub label: String,
 }
 
-struct Written<'a> {
+struct FillGuard<'a> {
     row: &'a mut [MaybeUninit<Tile>],
-    // INVARIANT: the first `written` slots of `row` hold tiles that nothing else drops.
-    written: usize,
+    // INVARIANT: the first `count` slots of `row` hold tiles that nothing else drops.
+    count: usize,
 }
 
-impl Drop for Written<'_> {
+impl Drop for FillGuard<'_> {
     fn drop(&mut self) {
-        for slot in self.row.iter_mut().take(self.written) {
+        for slot in self.row.iter_mut().take(self.count) {
             // SAFETY: by the field INVARIANT the slot holds a tile that nothing else drops.
             #[expect(unsafe_code, reason = "drops the tiles a stopped build wrote")]
             unsafe {
@@ -732,13 +738,13 @@ impl Drop for Written<'_> {
 #[must_use]
 pub fn fill(tile: &Tile) -> [Tile; 4] {
     let mut row = [const { MaybeUninit::<Tile>::uninit() }; 4];
-    let mut guard = Written { row: &mut row, written: 0 };
-    while let Some(slot) = guard.row.get_mut(guard.written) {
+    let mut guard = FillGuard { row: &mut row, count: 0 };
+    while let Some(slot) = guard.row.get_mut(guard.count) {
         slot.write(tile.clone());
-        guard.written = guard.written.wrapping_add(1);
+        guard.count = guard.count.wrapping_add(1);
     }
     // The row owns its tiles from here, so the guard drops none.
-    guard.written = 0;
+    guard.count = 0;
     drop(guard);
     // SAFETY: the loop wrote every slot before the guard let go of them.
     #[expect(unsafe_code, reason = "a row whose every slot the loop above wrote")]
@@ -805,12 +811,12 @@ impl Drop for Draft {
 impl Draft {
     #[must_use]
     pub fn commit(self) -> Vec<u8> {
-        let this = ManuallyDrop::new(self);
-        // SAFETY: `this` is never dropped, so the squares read out here have one owner, the
+        let draft = ManuallyDrop::new(self);
+        // SAFETY: `draft` is never dropped, so the squares read out here have one owner, the
         // caller.
         #[expect(unsafe_code, reason = "the squares moved out of a draft with its own `Drop`")]
         unsafe {
-            ptr::read(&raw const this.squares)
+            ptr::read(&raw const draft.squares)
         }
     }
 }

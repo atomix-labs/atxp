@@ -33,8 +33,8 @@ alloc;`, and `alloc`'s names, `alloc::string::ToString`, imported by name.
 ### Where Tests Go
 
 1. **Unit tests sit at the bottom of the file they pin, in `#[cfg(test)] mod
-   tests`, importing each name, `use super::{Board, Pos}`**, so a reader meets
-   the code first and sees what the tests touch; never `use super::*`.
+   tests`, importing each name, `use super::{Board, Position}`**, so a reader
+   meets the code first and sees what the tests touch; never `use super::*`.
 2. **What a caller does is tested in `tests/<name>.rs`, through the public API,
    its tests in a `#[cfg(test)] mod tests` too, the file opening with a `//!`
    that says what it proves**, so every test has one form; a test of several
@@ -59,8 +59,9 @@ alloc;`, and `alloc`'s names, `alloc::string::ToString`, imported by name.
    never `test_`, `it_works` or the function's name, since the name is what a
    failure prints first.
 2. **Compare whole values with `assert_eq!`, an error included**, so a failure
-   prints what arrived beside what was wanted; `assert!(a == b)`, `is_err()` and
-   `matches!` say only that it was wrong, and `format!("{x:?}")` is no contract.
+   prints what arrived beside what was wanted; `assert!(left == right)`,
+   `is_err()` and `matches!` say only that it was wrong, and
+   `format!("{error:?}")` is no contract.
 3. **An assertion's message says the property, a lowercase fragment, and one
    test's messages read as a running sentence, `"to itself"`, `"and
    forwards"`**, never `"test failed"`; it is left out only where the expression
@@ -273,8 +274,8 @@ A doctest's form, and the `//!` of a test file or a fixture, are
 | Thought                                    | Instead                                                         |
 | ------------------------------------------ | --------------------------------------------------------------- |
 | "`use super::*` is shorter"                | Import each name the tests use.                                 |
-| "`test_parse` says what it tests"          | The property: `a_pos_with_no_row_is_refused`.                   |
-| "`assert!(result.is_err())`"               | `assert_eq!(result, Err(BoundsError { col: 8, cols: 8 }))`.     |
+| "`test_parse` says what it tests"          | The property: `a_position_with_no_row_is_refused`.              |
+| "`assert!(result.is_err())`"               | `assert_eq!(result, Err(BoundsError { index: 8, length: 8 }))`. |
 | "`unwrap()`, it is only a test"            | `expect("…")`, saying why it cannot fail here.                  |
 | "`-> Result` and `?` keep the test short"  | `()` and `expect`: an `Err` out of a test prints no line.       |
 | "`#[should_panic]` is enough"              | `expected = "…"`, with the text of the message.                 |
