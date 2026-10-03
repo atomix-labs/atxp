@@ -3,6 +3,22 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.19.0](https://github.com/atomix-labs/atxp/releases/tag/v0.19.0) - 2026-10-03
+
+### Features
+
+- [a968854](https://github.com/atomix-labs/atxp/commit/a9688541bd199fb1ab9846588f64b1369e83aecc) Hold published crates to their crates.io page, and check a repository end to end before its first release ([#140](https://github.com/atomix-labs/atxp/pull/140)) **breaking**
+
+### Bug Fixes
+
+- [4fb25c7](https://github.com/atomix-labs/atxp/commit/4fb25c7fb9504ce6f20cb3442b1b5ab79c7ee5f3) *(rust-lints)* Teach unit-named accessors, derives, imports and search-first; title-case rustdoc headings ([#139](https://github.com/atomix-labs/atxp/pull/139))
+
+### Documentation
+
+- [fd760c4](https://github.com/atomix-labs/atxp/commit/fd760c464b58c85e5137a224c012cf7ec5ea44e3) Record the demo for v0.18.1 ([#137](https://github.com/atomix-labs/atxp/pull/137))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.18.1...v0.19.0>
+
 ## [0.18.1](https://github.com/atomix-labs/atxp/releases/tag/v0.18.1) - 2026-10-02
 
 ### Bug Fixes
