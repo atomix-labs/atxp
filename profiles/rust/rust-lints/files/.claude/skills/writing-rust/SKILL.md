@@ -76,9 +76,8 @@ Under `strict`, real code also documents every item.
    `helpers` or `common`.
 4. **What a macro calls is `#[doc(hidden)] pub`, named with `__`**, so no caller
    takes it for the API.
-5. **Code names an item through a `use`, never by a path from a crate's root**:
-   no `core::`, `crate::` or another crate's path in a body, a signature or an
-   attribute, and a feature's derive through an import gated as it is, so a
+5. **Code names an item through a `use`, never by a path from `core::`,
+   `crate::` or another crate**, a feature's derive through a gated import, so a
    file's `use` lines say all it reaches; a doc link may name a path.
 6. **A `cfg` written twice is one alias, from `cfg_aliases` in `build.rs`**,
    which emits its `check-cfg`, so the condition changes in one place.
@@ -87,11 +86,10 @@ Under `strict`, real code also documents every item.
 
 1. **Names follow `references/naming.md`**: no `get_`; `as_`, `to_` and `into_`
    by cost; `try_` refuses, `_with` takes a closure, `_in` an allocator; `new`
-   builds from parts, `from_squares` from a count in its unit, `create` lays,
-   `open` binds, `open_or_create` does either; `*Spec` for one call's
-   parameters, `*Config` for a program's settings, `*Guard` and `*Error` by
-   role, never `*Options` or `*Params`; an acronym is one word; a type parameter
-   is one capital letter.
+   builds from parts, `from_squares` from a count, `create` lays, `open` binds,
+   `open_or_create` does either; `*Spec` for one call's parameters, `*Config`
+   for a program's settings, `*Guard` and `*Error` by role, never `*Options` or
+   `*Params`; an acronym is one word; a type parameter is one capital letter.
 2. **A type's one value is an associated constant, `Pos::ORIGIN`, and a
    yes-or-no method starts `is_` or `has_`**, with `is_empty` beside every
    `len`.
@@ -107,11 +105,10 @@ Under `strict`, real code also documents every item.
    built as a literal, not a builder**, so every field is written where it is
    used; one or two plain values stay arguments.
 2. **A newtype has a private field, and its constructor and accessor name its
-   unit, `from_squares` and `as_squares`, as `Duration`'s `from_nanos` and
-   `as_nanos` do**, so two meanings of one primitive cannot be swapped and a
-   call says what the number counts; `get` only where the value has no unit, as
-   `NonZero::get`, and an alias only where the name is worth having and a second
-   type is not.
+   unit, `from_squares` and `as_squares`, as `Duration::from_nanos` does**, so
+   two meanings of one primitive cannot be swapped and a call says what the
+   number counts; `get` only where the value has no unit, as `NonZero::get`, and
+   an alias only where the name is worth having and a second type is not.
 3. **Check input once, at the boundary, with `FromStr` or `TryFrom` and a typed
    error**, so holding the type is the proof; `From` only for what cannot fail,
    and never `Into`.
@@ -123,7 +120,7 @@ Under `strict`, real code also documents every item.
 6. **`#[must_use]` on a pure function, with a reason on a guard, one in an
    `Option` too, and never on a `Result`**, which has it already.
 7. **Derive `Debug` always, and each common trait the type's meaning supports,
-   with std's derive or, where it does not fit, derive_more's, never by hand**;
+   with std's derive or, where it does not fit, derive_more's, not by hand**;
    `Default` where one value is obvious, with `new` delegating to it; bounds on
    the `impl`, not the type.
 8. **A public signature names its generics, and dispatch is static**, `dyn` only
@@ -132,11 +129,13 @@ Under `strict`, real code also documents every item.
 9. **Enums and structs are exhaustive; `#[non_exhaustive]` goes only on a
    published crate's type that is meant to grow, judged type by type**, since it
    costs every caller its exhaustive match.
-10. **What a crate already does is that crate's**: a fixed-capacity buffer is
-    arrayvec's `ArrayString` or `ArrayVec`, padding to a formatter's width
-    powerfmt's `pad_with_width`, an integer's digits itoa's; code is written by
-    hand only where no crate fits or one measured slower, and says so where it
-    stands, since code written again is code to test and keep.
+10. **Before code is written, std, the workspace's helpers and the ecosystem are
+    searched for what does it more neatly, and the most concise form that
+    measures as fast is taken**: a fixed buffer is arrayvec's, a derivable trait
+    derived, a padding powerfmt's, a shape repeated for one reason one macro or
+    helper; code by hand only where nothing fits or what fits measured slower,
+    saying so where it stands, since code written again is one more thing to
+    read, test and keep.
 
 ### Ownership
 
@@ -262,7 +261,7 @@ Code made faster, a benchmark, and a build profile follow
 | "`get_cols()` reads clearly"                             | `cols()`.                                                                      |
 | "`Distance::new(3)` and `.get()` read plainly"           | `from_squares(3)` and `as_squares()`: the name says what the number counts.    |
 | "`derive(zerocopy::FromBytes)` saves an import"          | A gated `use zerocopy::FromBytes;`, then `derive(FromBytes)`.                  |
-| "A `Display` impl by hand is only a few lines"           | derive_more's `Display`; by hand only where no derive fits, saying why.        |
+| "A `Display` impl by hand is only a few lines"           | derive_more's `Display`; by hand only where it measured slower, saying so.     |
 | "A builder for these three fields"                       | A `*Spec` literal.                                                             |
 | "`impl Trait` in this public argument"                   | A named generic, `fn fill_with<F: FnMut() -> u8>`.                             |
 | "`pub` is simpler than `pub(crate)`"                     | `pub(crate)` inside a private module.                                          |

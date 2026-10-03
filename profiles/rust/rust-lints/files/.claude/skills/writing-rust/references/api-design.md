@@ -524,19 +524,48 @@ Under `strict`, `missing_debug_implementations` refuses a public type with no
 `Eq` it could have.
 {%- endif %}
 
-## What a Crate Already Does Is That Crate's
+## Search First, and Take the Most Concise Form That Measures as Fast
 
-What a crate of the ecosystem already does is not written again here, since code
-written again is one more thing to test and keep, where the crate's is tested by
-every crate that takes it. A fixed-capacity buffer is arrayvec's `ArrayString`
-or `ArrayVec`, never an array and a length of the crate's own. Padding text to a
-formatter's width is powerfmt's `FormatterExt::pad_with_width`, which reads the
-width, the fill and the alignment and leaves the precision alone, where
-`Formatter::pad` cuts the text to the precision, which an instant may read as
-its fraction's digits. An integer written into a buffer is itoa's
-`Buffer::format`, which hands back its digits as a `&str`; the helper above uses
-all three. Code is written by hand only where no crate fits or one measured
+Before code is written, std, the workspace's own helpers and the ecosystem's
+crates are searched for what does it more neatly, and the most concise form that
+measures as fast is the one taken, since code written again is one more thing to
+read, test and keep, where std's and a crate's are read and tested by everyone
+who takes them. A loop that finds an index is `position`. A trait a derive can
+write is derived, as the section above says. A fixed-capacity buffer is
+arrayvec's `ArrayString` or `ArrayVec`, never an array and a length of the
+crate's own. Padding text to a formatter's width is powerfmt's
+`FormatterExt::pad_with_width`, which reads the width, the fill and the
+alignment and leaves the precision alone, where `Formatter::pad` cuts the text
+to the precision, which an instant may read as its fraction's digits. An integer
+written into a buffer is itoa's `Buffer::format`, which hands back its digits as
+a `&str`; the helper above uses all three crates.
+
+A shape that repeats for one reason, the same methods on each type of a family,
+is one `macro_rules!` or one helper, so the rule is changed in one place; a
+helper the workspace already has is called, never written again. Two shapes
+alike by chance stay two, since the day one changes, a shared helper grows a
+flag. Code is written by hand only where nothing fits or what fits measured
 slower, and a line where it stands says which, naming the run that measured it.
+
+```rust
+// Bad: a loop by hand for what `position` says in one call.
+#[must_use]
+pub fn first_blank(squares: &[u8]) -> Option<usize> {
+    for (at, &square) in squares.iter().enumerate() {
+        if square == 0 {
+            return Some(at);
+        }
+    }
+    None
+}
+```
+
+```rust
+#[must_use]
+pub fn first_blank(squares: &[u8]) -> Option<usize> {
+    squares.iter().position(|&square| square == 0)
+}
+```
 
 ```rust
 use core::str;
@@ -571,7 +600,67 @@ impl Label {
 }
 ```
 
-Held by review.
+```rust
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Col(u16);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Row(u16);
+
+// Bad: one rule written out for each axis, so a change to it is two edits that
+// can drift apart.
+impl Col {
+    #[must_use]
+    pub const fn from_index(index: u16) -> Self {
+        Self(index)
+    }
+
+    #[must_use]
+    pub const fn as_index(self) -> u16 {
+        self.0
+    }
+}
+
+impl Row {
+    #[must_use]
+    pub const fn from_index(index: u16) -> Self {
+        Self(index)
+    }
+
+    #[must_use]
+    pub const fn as_index(self) -> u16 {
+        self.0
+    }
+}
+```
+
+```rust
+/// An axis of the grid: a position along it, counted from its edge.
+macro_rules! axis {
+    ($name:ident) => {
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+        pub struct $name(u16);
+
+        impl $name {
+            #[must_use]
+            pub const fn from_index(index: u16) -> Self {
+                Self(index)
+            }
+
+            #[must_use]
+            pub const fn as_index(self) -> u16 {
+                self.0
+            }
+        }
+    };
+}
+
+axis!(Col);
+axis!(Row);
+```
+
+Held by review: the workspace's lints pass each Bad block here, the loop
+included.
 
 ## `Default` Where One Value Is Obvious, and `new` Delegates to It
 
