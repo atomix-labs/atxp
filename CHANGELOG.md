@@ -3,6 +3,15 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.19.1](https://github.com/atomix-labs/atxp/releases/tag/v0.19.1) - 2026-10-03
+
+### Documentation
+
+- [39965e6](https://github.com/atomix-labs/atxp/commit/39965e6c790c632bea8a7c8e9e64718a396ce1c4) *(devset)* Check what devset wrote once against a changed variable or feature ([#143](https://github.com/atomix-labs/atxp/pull/143))
+- [6f19c26](https://github.com/atomix-labs/atxp/commit/6f19c260411ac72c27661ee60cd4042142120391) Record the demo for v0.19.0 ([#142](https://github.com/atomix-labs/atxp/pull/142))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.19.0...v0.19.1>
+
 ## [0.19.0](https://github.com/atomix-labs/atxp/releases/tag/v0.19.0) - 2026-10-03
 
 ### Features
