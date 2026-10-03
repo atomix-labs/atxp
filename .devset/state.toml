@@ -71,8 +71,8 @@ exact = "363b40ffa6cd758b08d880fc7270fb8a69c1c8e42a6d70f7c8ab639433700fee"
 canonical = "363b40ffa6cd758b08d880fc7270fb8a69c1c8e42a6d70f7c8ab639433700fee"
 
 [files.".claude/skills/using-devset/SKILL.md"]
-exact = "1b58e22f094fc69b393afe5ad006e4c801799970f8ebf89a26e689a43b9a9a1a"
-canonical = "1b58e22f094fc69b393afe5ad006e4c801799970f8ebf89a26e689a43b9a9a1a"
+exact = "76bd0e2921620997ce87ae94edacf744a1f471a6d419d3bd29527ec32b178307"
+canonical = "76bd0e2921620997ce87ae94edacf744a1f471a6d419d3bd29527ec32b178307"
 
 [files.".claude/skills/writing-prose/SKILL.md"]
 exact = "03cdd8470d634c97c5dee3640a20f4a07be632e45e77d5c7cf0cf20ed091d414"
