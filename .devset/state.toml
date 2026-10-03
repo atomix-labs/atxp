@@ -581,8 +581,8 @@ policy = "merge"
 
 [parts."taplo.toml".toml]
 scope = "keys"
-exact = "9c8d648c73e9e6f40a6dddeeeb04c14c64f81ca8f13a87345386314f293b3d2d"
-canonical = "9c8d648c73e9e6f40a6dddeeeb04c14c64f81ca8f13a87345386314f293b3d2d"
+exact = "dbc1d08984b2a974f72b40cae541814901abf16d0aebb89ed5217a9e3136d209"
+canonical = "dbc1d08984b2a974f72b40cae541814901abf16d0aebb89ed5217a9e3136d209"
 policy = "merge"
 
 [parts."typos.toml".spelling]

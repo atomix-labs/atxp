@@ -120,7 +120,7 @@ path = "profiles"
 
 [[profiles]]
 name = "toml"
-digest = "534dff07d7cc15c3bbdb7c6195a580e2132c7145fca80b18bf3b796cc224b39a"
+digest = "bc57ff8d34fffc51221daee7de0a576ebff1fb0f72f41dbe703a0c69b0f3297e"
 
 [profiles.source]
 path = "profiles"
@@ -228,7 +228,7 @@ path = "profiles"
 
 [[profiles]]
 name = "devset-collection"
-digest = "84a69d796cf54e20cfaff242cedf165b4eb75f6f96d7816929e0e358e02fe76e"
+digest = "49a4863b8e8a46edc6cd4f303d2ed0a5c609c92759eb3335bf859de9c4d327e8"
 
 [profiles.source]
 path = "profiles"
@@ -252,7 +252,7 @@ support = ["target"]
 
 [[profiles]]
 name = "agents"
-digest = "3373fccf5781f112c4a1de70ebd12cbbaf393cccb7bca47c475a4861252214df"
+digest = "b144b2ecd38489864aa489def0270ef036b3d3d728bda998d7f2ee7db5bc1bfc"
 
 [profiles.source]
 path = "profiles"
