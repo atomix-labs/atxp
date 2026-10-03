@@ -59,6 +59,17 @@ templates are a library's, a command line's and a workspace's README, whole, and
 it names [`rust-doc`](../../rust/rust-doc/README.md)'s `writing-rustdoc` for the
 crate page where that profile's `agents` is on.
 
+It adds the `drawing-the-logo` skill too: the house style of a logo, a 32 by 32
+mark of one filled shape and strokes 2.5 wide in GitHub's two inks, the name
+beside it in JetBrains Mono Bold, and the files made from the mark, its dark
+variant, the logo, the favicon, the tile, the social card and the book's
+favicons; how two or three marks are proposed to the owner, and one applied only
+once the owner confirms it, through `logo` and, where
+[`mdbook`](../../docs/mdbook/README.md) builds a book, its `book_logo` and
+`book_social`. Its `scripts/draw.py` makes every file but the mark, with
+fontTools, cairosvg and svgo, and writes devset's and atxp's SVGs again byte for
+byte from their marks.
+
 <!-- facts: written by devset-collection -->
 
 ## Owns
@@ -78,6 +89,8 @@ crate page where that profile's `agents` is on.
 | `.claude/skills/writing-readmes/SKILL.md`                | whole | owned  | template, feature `agents`                                        |
 | `.claude/skills/writing-readmes/references/sources.md`   | whole | owned  | feature `agents`                                                  |
 | `.claude/skills/writing-readmes/references/templates.md` | whole | owned  | template, feature `agents`                                        |
+| `.claude/skills/drawing-the-logo/SKILL.md`               | whole | owned  | template, feature `agents`                                        |
+| `.claude/skills/drawing-the-logo/scripts/draw.py`        | whole | owned  | executable, feature `agents`                                      |
 
 ## Features
 
