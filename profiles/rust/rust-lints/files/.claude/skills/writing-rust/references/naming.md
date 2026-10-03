@@ -102,8 +102,11 @@ Held by review.
 
 A method that reads a field or a property is named for what it returns,
 `cols()`, `len()`, `capacity()`, since the call's parentheses already say it is
-read. A newtype's one value is `get()`. `get_` appears only where it mirrors a
-name of `std`, `get_mut` and `get_unchecked`, which index.
+read. A newtype's value is read in its unit, `as_squares()`, as `Duration` reads
+one with `as_nanos()`, so the call says what the number counts; `get()` only
+where the value has no unit or word of its own, as `NonZero::get`. `get_`
+appears only where it mirrors a name of `std`, `get_mut` and `get_unchecked`,
+which index.
 
 ```rust
 #[derive(Debug)]
@@ -151,10 +154,10 @@ Held by review.
 ## `as_`, `to_` and `into_` Say What a Conversion Costs
 
 The prefix is the price. `as_` is free and borrows, `&self` to a view, or reads
-a `Copy` value in another unit; `to_` does work, allocating or computing, from
-`&self`, or from `self` for a `Copy` type; `into_` consumes `self` and hands its
-parts on. A type that renders as text implements `Display`, which gives
-`to_string`; it never defines a `to_string` of its own.
+a `Copy` value in a unit, `as_squares`; `to_` does work, allocating or
+computing, from `&self`, or from `self` for a `Copy` type; `into_` consumes
+`self` and hands its parts on. A type that renders as text implements `Display`,
+which gives `to_string`; it never defines a `to_string` of its own.
 
 ```rust
 #[derive(Debug)]
@@ -255,12 +258,14 @@ Held by review.
 
 ## `new` Builds, `create` Lays, `open` Binds
 
-`new` builds a value from its parts and `from_` converts one, `from_raw` and
-`into_raw` going both ways; `with_capacity` sizes one. A resource that outlives
-the process, a file or a shared segment, has three constructors: `create` lays a
-new one and refuses if one is there, `open` binds to one that exists and refuses
-if none is, and `open_or_create` does either. `install` sets a value the whole
-process shares, once.
+`new` builds a value from parts no unit names, a builder, a clock, a pair; a
+value of one number is built from its unit, `from_squares`, as
+`Duration::from_nanos` builds one; and `from_` otherwise converts one,
+`from_raw` and `into_raw` going both ways; `with_capacity` sizes one. A resource
+that outlives the process, a file or a shared segment, has three constructors:
+`create` lays a new one and refuses if one is there, `open` binds to one that
+exists and refuses if none is, and `open_or_create` does either. `install` sets
+a value the whole process shares, once.
 
 ```rust
 use std::fs::File;

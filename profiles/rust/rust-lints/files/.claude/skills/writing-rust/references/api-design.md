@@ -112,45 +112,79 @@ rule on exhaustive types below says. Outside its crate such a spec cannot be
 built as a literal at all, not even with `..GridSpec::square(8)`, so callers
 start from its constructor and assign the fields they change.
 
-## A Newtype Has a Private Field, `new` and `get`
+## A Newtype's Constructor and Accessor Name Its Unit
 
-Two values of one primitive type that mean different things, a tile id and a
-count, are different types, so one cannot be passed for the other. The field is
-private, so the type can later check or change what it holds; `const fn new`
-wraps and `const fn get` unwraps, both `#[must_use]`. A newtype that must cost
-nothing is `#[repr(transparent)]`, with a compile-time assertion that it is the
-size of what it wraps.
+Two values of one primitive type that mean different things, a distance in
+squares and a count of moves, are different types, so one cannot be passed for
+the other. The field is private, so the type can later check or change what it
+holds. The constructor and the accessor name the unit the number counts,
+`from_squares` and `as_squares`, both `const fn` and `#[must_use]`, so a call
+says what the number is without its reader opening the type: std names
+`Duration`'s so, `from_nanos` and `as_nanos`, and fugit its `from_ticks`. A
+conversion to another type is named for what it gives, `to_duration`. `get` is
+right only where the value has no unit or word of its own, as `NonZero::get` and
+`Cell::get`, and `new` only for a type built from parts no unit names: a
+builder, a clock, a pair. A newtype that must cost nothing is
+`#[repr(transparent)]`, with a compile-time assertion that it is the size of
+what it wraps.
 
 ```rust
-// Bad: a bare `u32` for an id and a count, so a caller can swap them.
+// Bad: a caller can swap a distance and a count of moves, both a bare `u16`.
 #[must_use]
-pub const fn place(tile: u32, count: u32) -> (u32, u32) {
-    (tile, count)
+pub const fn slide(distance: u16, moves: u16) -> (u16, u16) {
+    (distance, moves)
 }
 ```
 
 ```rust
-#[repr(transparent)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct TileId(u32);
+// Bad: `Distance::new(3)` and `.get()` say nothing of what the number counts.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Distance(u16);
 
-const _: () = assert!(size_of::<TileId>() == size_of::<u32>(), "a tile id, and nothing else");
-
-impl TileId {
+impl Distance {
     #[must_use]
-    pub const fn new(raw: u32) -> Self {
+    pub const fn new(raw: u16) -> Self {
         Self(raw)
     }
 
     #[must_use]
-    pub const fn get(self) -> u32 {
+    pub const fn get(self) -> u16 {
         self.0
+    }
+}
+```
+
+```rust
+use core::time::Duration;
+
+/// How far a tile slides, in squares.
+#[repr(transparent)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct Distance(u16);
+
+const _: () = assert!(size_of::<Distance>() == size_of::<u16>(), "a count of squares, and nothing else");
+
+impl Distance {
+    #[must_use]
+    pub const fn from_squares(squares: u16) -> Self {
+        Self(squares)
+    }
+
+    #[must_use]
+    pub const fn as_squares(self) -> u16 {
+        self.0
+    }
+
+    /// How long the slide takes, at `per_square` for each square.
+    #[must_use]
+    pub fn to_duration(self, per_square: Duration) -> Duration {
+        per_square.saturating_mul(u32::from(self.0))
     }
 }
 
 #[must_use]
-pub const fn place(tile: TileId, count: u32) -> (TileId, u32) {
-    (tile, count)
+pub const fn slide(distance: Distance, moves: u16) -> (Distance, u16) {
+    (distance, moves)
 }
 ```
 
@@ -181,12 +215,12 @@ pub struct Col(u16);
 
 impl Col {
     #[must_use]
-    pub const fn new(raw: u16) -> Self {
-        Self(raw)
+    pub const fn from_index(index: u16) -> Self {
+        Self(index)
     }
 
     #[must_use]
-    pub const fn get(self) -> u16 {
+    pub const fn as_index(self) -> u16 {
         self.0
     }
 }
@@ -197,12 +231,12 @@ pub struct Row(u16);
 
 impl Row {
     #[must_use]
-    pub const fn new(raw: u16) -> Self {
-        Self(raw)
+    pub const fn from_index(index: u16) -> Self {
+        Self(index)
     }
 
     #[must_use]
-    pub const fn get(self) -> u16 {
+    pub const fn as_index(self) -> u16 {
         self.0
     }
 }
@@ -212,7 +246,8 @@ pub type Squares<'a> = &'a [u8];
 
 #[must_use]
 pub fn index(col: Col, row: Row, cols: u16) -> Option<usize> {
-    usize::from(row.get()).checked_mul(usize::from(cols))?.checked_add(usize::from(col.get()))
+    let squares_above = usize::from(row.as_index()).checked_mul(usize::from(cols))?;
+    squares_above.checked_add(usize::from(col.as_index()))
 }
 ```
 
@@ -394,9 +429,22 @@ Every public type is `Debug`, so any value can be printed in a failure. Each of
 `Clone`, `Copy`, `PartialEq`, `Eq`, `Hash`, `PartialOrd`, `Ord` and `Default` is
 derived where it holds for the type's meaning, not only for its fields: a caller
 cannot add one later, and a missing `Eq` or `Hash` keeps the type out of a set.
-A derive that would put a bound on a type parameter nobody needs is written by
-hand, or with `derive_more` or `derive_where`, and a hand-written `Debug` that
-leaves fields out ends in `finish_non_exhaustive()`.
+
+A trait a derive can write is derived, never implemented by hand, since a derive
+states the impl in one line beside the fields it reads. The standard library's
+derive comes first; where it does not fit, derive_more's does, `Display`,
+`Debug`, `Deref`, `DerefMut`, `From`, `Into` and the rest: a `Display` that is a
+fixed spelling, a `Debug` that skips a field, a derive that would bound a type
+parameter nobody needs, which derive_where's serve too. An impl is written by
+hand only where no derive says it, or one measured slower, and a line beside it
+says which. A hand-written `Debug` that leaves fields out ends in
+`finish_non_exhaustive()`.
+
+derive_more hands the formatter's width and fill on only where the format is one
+placeholder alone, `#[display("{_0}")]` or `#[display("{}", expr)]`, which it
+writes as a call to that value's own `Display`. A spelling with its unit in the
+format, `#[display("{_0} tiles")]`, drops them, so `{:>10}` pads nothing; it
+goes through a helper whose `Display` pads the whole, as below.
 {%- if "strict" in devset.features %}
 
 ```rust,compile_fail
@@ -418,13 +466,112 @@ pub struct Pos {
 }
 ```
 
-Held by review.
+```rust
+use derive_more::Display;
+
+// Bad: the unit in the format leaves `format!("{:>10}", Tiles(12))` unpadded.
+#[derive(Debug, Display, Clone, Copy, PartialEq, Eq)]
+#[display("{_0} tiles")]
+pub struct Tiles(u32);
+```
+
+```rust
+use core::fmt::{self, Write as _};
+
+use arrayvec::ArrayString;
+use derive_more::Display;
+use itoa::Buffer;
+use powerfmt::ext::FormatterExt as _;
+
+/// The longest count and its unit: `u32::MAX` tiles.
+const LONGEST: usize = "4294967295 tiles".len();
+
+/// A count, then its unit, padded together to the formatter's width: by hand,
+/// since no derive pads a spelling of two parts as one.
+#[derive(Debug, Clone, Copy)]
+struct Count(u32, &'static str);
+
+impl fmt::Display for Count {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut text = ArrayString::<LONGEST>::new();
+        text.write_str(Buffer::new().format(self.0))?;
+        text.write_str(self.1)?;
+        formatter.pad_with_width(text.len(), format_args!("{text}"))
+    }
+}
+
+/// A count of tiles, written `12 tiles`.
+#[derive(Debug, Display, Clone, Copy, PartialEq, Eq)]
+#[display("{}", Count(*_0, " tiles"))]
+pub struct Tiles(u32);
+
+#[cfg(test)]
+mod tests {
+    use super::Tiles;
+
+    #[test]
+    fn a_count_of_tiles_pads_as_one_spelling() {
+        assert_eq!(format!("{:>10}", Tiles(12)), "  12 tiles", "the count and its unit, padded together");
+    }
+}
+```
+
+Held by review, and by a test that pins a padded spelling, as above.
 {%- if "strict" in devset.features %}
 
 Under `strict`, `missing_debug_implementations` refuses a public type with no
 `Debug`, and `clippy::derive_partial_eq_without_eq` a `PartialEq` without the
 `Eq` it could have.
 {%- endif %}
+
+## What a Crate Already Does Is That Crate's
+
+What a crate of the ecosystem already does is not written again here, since code
+written again is one more thing to test and keep, where the crate's is tested by
+every crate that takes it. A fixed-capacity buffer is arrayvec's `ArrayString`
+or `ArrayVec`, never an array and a length of the crate's own. Padding text to a
+formatter's width is powerfmt's `FormatterExt::pad_with_width`, which reads the
+width, the fill and the alignment and leaves the precision alone, where
+`Formatter::pad` cuts the text to the precision, which an instant may read as
+its fraction's digits. An integer written into a buffer is itoa's
+`Buffer::format`, which hands back its digits as a `&str`; the helper above uses
+all three. Code is written by hand only where no crate fits or one measured
+slower, and a line where it stands says which, naming the run that measured it.
+
+```rust
+use core::str;
+
+// Bad: an array and a length of its own, which every write must keep in step.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Label {
+    bytes: [u8; 16],
+    len: usize,
+}
+
+impl Label {
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        self.bytes.get(..self.len).and_then(|bytes| str::from_utf8(bytes).ok()).unwrap_or_default()
+    }
+}
+```
+
+```rust
+use arrayvec::ArrayString;
+
+/// A tile's label, held inline, at most 16 bytes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Label(ArrayString<16>);
+
+impl Label {
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
+}
+```
+
+Held by review.
 
 ## `Default` Where One Value Is Obvious, and `new` Delegates to It
 
