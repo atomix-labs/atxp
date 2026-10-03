@@ -23,21 +23,24 @@ in `[workspace.dependencies]`, with a proc-macro crate the one a member reaches
 by path; what earns a feature, features that only add, and small defaults, with
 `std` the opt-in where [`rust-lints`](../../rust/rust-lints/README.md) is
 `strict`; the targets that need a table; what the workspace root holds, and
-which of its keys the profiles write; and how to add a crate, a dependency, a
-feature or a target within it.
+which of its keys the profiles write; what a crate crates.io publishes carries
+for its page there, its `homepage`, README, `keywords`, `categories`, licence
+files and `exclude`, each with its reason; and how to add a crate, a dependency,
+a feature or a target within it.
 
 <!-- facts: written by devset-collection -->
 
 ## Owns
 
-| File                                                           | Part  | Policy | Notes                      |
-| -------------------------------------------------------------- | ----- | ------ | -------------------------- |
-| `.just/cargo-manifest.just`                                    | whole | owned  |                            |
-| `.just/cargo-manifest.py`                                      | whole | owned  |                            |
-| `.config/mise/conf.d/devset-cargo-manifest.toml`               | whole | owned  |                            |
-| `.config/mise/mise.lock`                                       | keys  | owned  |                            |
-| `.claude/skills/editing-cargo-manifests/SKILL.md`              | whole | owned  | template, feature `agents` |
-| `.claude/skills/editing-cargo-manifests/references/sources.md` | whole | owned  | template, feature `agents` |
+| File                                                              | Part  | Policy | Notes                      |
+| ----------------------------------------------------------------- | ----- | ------ | -------------------------- |
+| `.just/cargo-manifest.just`                                       | whole | owned  |                            |
+| `.just/cargo-manifest.py`                                         | whole | owned  |                            |
+| `.config/mise/conf.d/devset-cargo-manifest.toml`                  | whole | owned  |                            |
+| `.config/mise/mise.lock`                                          | keys  | owned  |                            |
+| `.claude/skills/editing-cargo-manifests/SKILL.md`                 | whole | owned  | template, feature `agents` |
+| `.claude/skills/editing-cargo-manifests/references/sources.md`    | whole | owned  | template, feature `agents` |
+| `.claude/skills/editing-cargo-manifests/references/publishing.md` | whole | owned  | template, feature `agents` |
 
 ## Features
 

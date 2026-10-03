@@ -26,3 +26,7 @@ when     = { features = ["agents"] }
 [files.".claude/skills/editing-cargo-manifests/references/sources.md"]
 template = true
 when     = { features = ["agents"] }
+
+[files.".claude/skills/editing-cargo-manifests/references/publishing.md"]
+template = true
+when     = { features = ["agents"] }
