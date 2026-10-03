@@ -3,6 +3,28 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.20.0](https://github.com/atomix-labs/atxp/releases/tag/v0.20.0) - 2026-10-03
+
+### Features
+
+- [562a990](https://github.com/atomix-labs/atxp/commit/562a9903c13dddfcb2ea04a5454dcc3fec1ddeb3) Configure a call with a spec of chained setters, its required values in new ([#133](https://github.com/atomix-labs/atxp/pull/133))
+- [946c849](https://github.com/atomix-labs/atxp/commit/946c849ed3a3c456a2a2e21c83daf5ea439a0298) Write names in whole words across the skills, never fragments such as at or held ([#132](https://github.com/atomix-labs/atxp/pull/132))
+
+### Bug Fixes
+
+- [371d51f](https://github.com/atomix-labs/atxp/commit/371d51f0d8def7366765aa32fe9afd65cf1f2dd2) *(github-ci)* Run mise-action 5.0.1, which checks a cached mise before it runs it ([#146](https://github.com/atomix-labs/atxp/pull/146))
+- [4ab84fb](https://github.com/atomix-labs/atxp/commit/4ab84fb84e28056765d8cd433135d78d5b649171) *(toml)* Skip .notes/ and .secrets/, which taplo reads though .gitignore lists them ([#131](https://github.com/atomix-labs/atxp/pull/131))
+
+### Pins
+
+- [1bfe016](https://github.com/atomix-labs/atxp/commit/1bfe0168e2a3a0c8a9b072733b5478089d0fd6a4) *(deps)* Bump jdx/mise-action from 5.0.0 to 5.0.1 in the actions group across 1 directory ([#138](https://github.com/atomix-labs/atxp/pull/138))
+
+### Documentation
+
+- [308a786](https://github.com/atomix-labs/atxp/commit/308a786a85b540ccc6612287633efba878270912) Record the demo for v0.19.1 ([#145](https://github.com/atomix-labs/atxp/pull/145))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.19.1...v0.20.0>
+
 ## [0.19.1](https://github.com/atomix-labs/atxp/releases/tag/v0.19.1) - 2026-10-03
 
 ### Documentation
