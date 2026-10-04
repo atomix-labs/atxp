@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.21.0](#v0210)
+  - [`check-cargo-deny` checks every feature's dependencies](#check-cargo-deny-checks-every-features-dependencies)
 - [v0.19.0](#v0190)
   - [A published crate carries what its crates.io page shows](#a-published-crate-carries-what-its-cratesio-page-shows)
 - [v0.17.0](#v0170)
@@ -49,6 +51,48 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.21.0
+
+### `check-cargo-deny` Checks Every Feature's Dependencies
+
+**What changed.** `deny.toml` sets `all-features = true` in `[graph]`, so
+cargo-deny resolves the graph with every feature of every workspace crate on,
+and holds an optional dependency to the policy as it does a default one: its
+advisories, its licence, its source, one version of each crate, and the bans.
+Before, it read the default features' graph alone, so a crate that only a
+feature brings, as `serde` behind a `serde` feature, was never checked. Every
+run reads the key: `check-cargo-deny`, `nightly-cargo-deny`, and `cargo deny
+check` by hand. The key is the profile's; the rest of `[graph]` stays the
+repository's, and `targets` still filters the graph. A repository whose optional
+dependencies pass the policy has nothing to do.
+
+**What to do.** Run `just check-cargo-deny`, and answer each finding: a newer
+version or another crate where one fits; otherwise an exception with its reason,
+which is the maintainer's choice. An exception goes in a key `deny.toml` leaves
+to the repository, which devset keeps as it is:
+
+- A second version of a crate, in `[bans]`:
+
+  ```toml
+  skip = [
+      { crate = "syn@1", reason = "darling, behind `derive`, is still on syn 1" },
+  ]
+  ```
+
+- A licence outside the permissive set, allowed for that crate alone, in
+  `[licenses]`, its reason in a comment:
+
+  ```toml
+  # option-ext, behind `config`, is MPL-2.0 alone; the maintainer allowed it here.
+  exceptions = [{ crate = "option-ext", allow = ["MPL-2.0"] }]
+  ```
+
+- An advisory whose code is not reached, in `[advisories]`: `ignore`, each entry
+  its `id` and its `reason`.
+
+The keys the profile writes, `allow` and `multiple-versions` among them, are its
+own: an edit to them is drift, which `devset status` names.
 
 ## V0.19.0
 

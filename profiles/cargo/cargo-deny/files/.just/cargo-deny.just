@@ -1,4 +1,4 @@
-# Checks advisories, licences, bans and sources.
+# Checks advisories, licences, bans and sources, with every feature on.
 [metadata("rust")]
 check-cargo-deny:
     cargo deny check

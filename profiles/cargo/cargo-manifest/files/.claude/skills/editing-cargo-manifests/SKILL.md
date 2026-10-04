@@ -273,7 +273,8 @@ and examples:
   `[package.metadata.cargo-shear]`, `ignored = ["<name>"]`.
 {%- endif %}
 {%- if "cargo-deny" in devset.profiles %}
-- `just check-cargo-deny`: advisories, licences, bans and sources.
+- `just check-cargo-deny`: advisories, licences, bans and sources, with every
+  feature on, so an optional dependency answers to them too.
 {%- endif %}
 {%- if "cargo-publish" in devset.profiles %}
 - `just check-cargo-publish`: every crate crates.io will take, held to what its
