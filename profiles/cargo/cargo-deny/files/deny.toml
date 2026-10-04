@@ -1,3 +1,7 @@
+# Every feature on, so an optional dependency answers to the policy as a default one does.
+[graph]
+all-features = true
+
 [advisories]
 yanked       = "deny"
 unmaintained = "all"

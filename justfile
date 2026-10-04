@@ -73,6 +73,10 @@ test-agents-hook:
 test-skill-form:
     mise exec -- bash tests/skill-form.sh
 
+# Tests the dependency check against an optional dependency whose licence the policy refuses.
+test-cargo-deny:
+    mise exec -- bash tests/cargo-deny.sh
+
 # Tests the manifest check against members that write a dependency in dotted form.
 test-cargo-manifest:
     mise exec -- bash tests/cargo-manifest.sh
