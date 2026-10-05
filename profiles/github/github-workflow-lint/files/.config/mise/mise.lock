@@ -46,21 +46,24 @@ provenance = "github-attestations"
 {% endif %}
 {% if "policies" in devset.features %}
 [[tools.conftest]]
-version = "0.70.1"
+version = "0.71.0"
 backend = "aqua:open-policy-agent/conftest"
 
 [tools.conftest."platforms.linux-arm64"]
-checksum = "sha256:8eb914755cb1b3c610d557019d5f373d5528b366ba706961d1a23f2ec55eab57"
-url = "https://github.com/open-policy-agent/conftest/releases/download/v0.70.1/conftest_0.70.1_Linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/open-policy-agent/conftest/releases/assets/575168381"
+checksum = "sha256:542f255081cfab9919cba327d3c4014fd46d6ee3f0441c634b14b1465e9469d9"
+url = "https://github.com/open-policy-agent/conftest/releases/download/v0.71.0/conftest_0.71.0_Linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/open-policy-agent/conftest/releases/assets/599706184"
+provenance = "github-attestations"
 
 [tools.conftest."platforms.linux-x64"]
-checksum = "sha256:613d124b8f6c1f3cee890491f7ab19114cca5a2102ca47cb2e6c35b4c23f9c8a"
-url = "https://github.com/open-policy-agent/conftest/releases/download/v0.70.1/conftest_0.70.1_Linux_x86_64.tar.gz"
-url_api = "https://api.github.com/repos/open-policy-agent/conftest/releases/assets/575168385"
+checksum = "sha256:765dfefdf0730693d7541ea0147e10d530a54ed257bbfec055ff34c837ffdf72"
+url = "https://github.com/open-policy-agent/conftest/releases/download/v0.71.0/conftest_0.71.0_Linux_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/open-policy-agent/conftest/releases/assets/599706185"
+provenance = "github-attestations"
 
 [tools.conftest."platforms.macos-arm64"]
-checksum = "sha256:b8eae5ce6c7c3a768a9b9c6c12b0c01f8fc065a99267c94646d309c479b218dd"
-url = "https://github.com/open-policy-agent/conftest/releases/download/v0.70.1/conftest_0.70.1_Darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/open-policy-agent/conftest/releases/assets/575168334"
+checksum = "sha256:78051b6ef0422082ba237f0df10a636737878941927880a68893469663b9e724"
+url = "https://github.com/open-policy-agent/conftest/releases/download/v0.71.0/conftest_0.71.0_Darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/open-policy-agent/conftest/releases/assets/599706112"
+provenance = "github-attestations"
 {% endif %}

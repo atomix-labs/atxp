@@ -34,7 +34,7 @@ jobs:
           persist-credentials: false
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.13
+          version: 2026.10.0
           install_args: just
           cache: false
       - id: plan
@@ -62,7 +62,7 @@ jobs:
       # just, and before it the toolchain the preinstall hook installs; a release builds uncached.
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.13
+          version: 2026.10.0
           install_args: just
           cache: false
       - run: RELEASE_VERSION=${GITHUB_REF_NAME#v} just package
@@ -90,7 +90,7 @@ jobs:
           fetch-depth: 0
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.13
+          version: 2026.10.0
           install_args: git-cliff
           cache: false
       - if: needs.package.result == 'success'
@@ -133,7 +133,7 @@ jobs:
       # just and Python, and before them the toolchain the preinstall hook installs.
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.13
+          version: 2026.10.0
           install_args: just python
           cache: false
 {%- endraw %}

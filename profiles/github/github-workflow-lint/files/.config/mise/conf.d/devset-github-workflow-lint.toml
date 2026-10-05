@@ -6,5 +6,5 @@ actionlint = "1.7.12"
 zizmor = "1.30.1"
 {% endif %}
 {% if "policies" in devset.features %}
-conftest = "0.70.1"
+conftest = "0.71.0"
 {% endif %}
