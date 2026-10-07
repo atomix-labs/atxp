@@ -3,6 +3,18 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.21.1](https://github.com/atomix-labs/atxp/releases/tag/v0.21.1) - 2026-10-07
+
+### Bug Fixes
+
+- [4d8a491](https://github.com/atomix-labs/atxp/commit/4d8a491fef3d86ac1d2ecee5a02033dc6350e395) *(cargo-nextest)* Run the doctests with no target named, so a proc-macro crate's take the target's flags ([#153](https://github.com/atomix-labs/atxp/pull/153))
+
+### Documentation
+
+- [cf124f1](https://github.com/atomix-labs/atxp/commit/cf124f168144293515468a4b0b1c0a2693276203) Record the demo for v0.21.0 ([#151](https://github.com/atomix-labs/atxp/pull/151))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.21.0...v0.21.1>
+
 ## [0.21.0](https://github.com/atomix-labs/atxp/releases/tag/v0.21.0) - 2026-10-04
 
 ### Features
