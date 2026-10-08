@@ -3,6 +3,14 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.22.0](https://github.com/atomix-labs/atxp/releases/tag/v0.22.0) - 2026-10-08
+
+### Bug Fixes
+
+- [f7ff1bc](https://github.com/atomix-labs/atxp/commit/f7ff1bc00c1c9d9c593f4d853939b87bfc1f0042) Keep the rustdocflags a workspace's configuration sets wherever a recipe runs rustdoc ([#159](https://github.com/atomix-labs/atxp/pull/159)) **breaking**
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.21.2...v0.22.0>
+
 ## [0.21.2](https://github.com/atomix-labs/atxp/releases/tag/v0.21.2) - 2026-10-08
 
 ### Bug Fixes
