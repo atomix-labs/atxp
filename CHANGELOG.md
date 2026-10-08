@@ -3,6 +3,18 @@
 Every release, newest first, written by [git-cliff](https://git-cliff.org) from the commits.
 [BREAKING-CHANGES.md](BREAKING-CHANGES.md) says how to move across a breaking change.
 
+## [0.21.2](https://github.com/atomix-labs/atxp/releases/tag/v0.21.2) - 2026-10-08
+
+### Bug Fixes
+
+- [6d3b49c](https://github.com/atomix-labs/atxp/commit/6d3b49c92feb79eb465a425b3a0b31092973ff48) *(rust-doc)* Know a crate by its library's name too, so a package named apart from its library keeps its family ([#156](https://github.com/atomix-labs/atxp/pull/156))
+
+### Documentation
+
+- [a172717](https://github.com/atomix-labs/atxp/commit/a1727178033e5527a08314bb07c9632ee8b2488f) Record the demo for v0.21.1 ([#155](https://github.com/atomix-labs/atxp/pull/155))
+
+**Full Changelog**: <https://github.com/atomix-labs/atxp/compare/v0.21.1...v0.21.2>
+
 ## [0.21.1](https://github.com/atomix-labs/atxp/releases/tag/v0.21.1) - 2026-10-07
 
 ### Bug Fixes
