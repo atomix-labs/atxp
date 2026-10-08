@@ -86,9 +86,13 @@ test-cargo-publish:
     mise exec -- bash tests/cargo-publish.sh
 
 # Tests the doc check's rule that a crate speaks only for itself, where a package's library is named
-# apart from it.
+# apart from it, and that it holds proc-macro crates and items only a floor builds to `-D warnings`.
 test-rust-doc:
     mise exec -- bash tests/rust-doc.sh
+
+# Tests the book's check against a workspace whose configuration sets a floor an API item needs.
+test-mdbook:
+    mise exec -- bash tests/mdbook.sh
 
 # Compiles every Rust example the skills show under the strict lints, each as its block says; with
 # skills named, only theirs.

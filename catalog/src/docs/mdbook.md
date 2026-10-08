@@ -47,7 +47,9 @@ The features, all but `mermaid` on by default:
   book builds. A page links an item by its path, as rustdoc does, and a path
   that does not resolve fails the build. A landing page groups the crates by the
   directory they are in, each with the first sentence of its docs, and the menu
-  bar links to it. It needs the nightly toolchain, for rustdoc's index page.
+  bar links to it. It needs the nightly toolchain, for rustdoc's index page,
+  whose flags join the rustdocflags Cargo's configuration sets, so a CPU floor
+  set there still holds for the API.
 - `pages`: the book on GitHub Pages, through
   [`github-ci`](../github/github-ci.md)'s `pages`, and the keys of
   `.github/automation.json` that name the recipe and the site.

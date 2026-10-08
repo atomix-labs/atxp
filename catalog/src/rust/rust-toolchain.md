@@ -41,8 +41,10 @@ It owns those keys of `rust-toolchain.toml`: `targets` stays the repository's.
 so every cargo command names its target and keeps `RUSTFLAGS` off host build
 scripts, which a build under `target-cpu=native` can break. The triple is the
 machine's, from just's `arch()` and `os()` and the C library, not rustc's, so a
-recipe that runs no Rust tool starts no toolchain; a recipe whose output must
-land in `target/doc` rather than `target/<triple>/doc` unsets it.
+recipe that runs no Rust tool starts no toolchain. A recipe that runs rustdoc
+unsets `CARGO_BUILD_TARGET`, since under a named target cargo passes a
+proc-macro crate none of the target's flags; its docs land in the target
+directory's `doc/`, not its `<triple>/doc/`.
 
 ## Owns
 
