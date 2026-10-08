@@ -85,6 +85,11 @@ test-cargo-manifest:
 test-cargo-publish:
     mise exec -- bash tests/cargo-publish.sh
 
+# Tests the doc check's rule that a crate speaks only for itself, where a package's library is named
+# apart from it.
+test-rust-doc:
+    mise exec -- bash tests/rust-doc.sh
+
 # Compiles every Rust example the skills show under the strict lints, each as its block says; with
 # skills named, only theirs.
 test-skill-examples *skills:
