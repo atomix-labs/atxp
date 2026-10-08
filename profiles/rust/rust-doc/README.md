@@ -2,7 +2,12 @@
 
 rustdoc builds every crate's documentation with every feature, private items
 included, and fails on any warning: a broken intra-doc link, a malformed code
-block, a missing item it refers to.
+block, a missing item it refers to. Its `-D warnings` joins the rustdocflags
+Cargo's configuration sets, so the CPU floors
+[`cargo-workspace`](../../cargo/cargo-workspace/README.md) sets still hold; a
+`RUSTDOCFLAGS` the caller sets replaces those, as it does for any build, and the
+flag joins it instead. Under a named target, cargo passes a proc-macro crate no
+rustdocflags, so `check-rust-doc` names none, and its docs land in `target/doc`.
 
 The `strict` feature, the house policy, adds the house's doc lint to
 `check-rust-doc`, over every crate of the workspace: summaries that open weakly,

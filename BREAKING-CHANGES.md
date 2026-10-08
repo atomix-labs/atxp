@@ -6,6 +6,8 @@ every change; this lists only those a repository must act on.
 
 ## Summary
 
+- [v0.22.0](#v0220)
+  - [`check-rust-doc` holds the floor's items and proc-macro crates to its warnings](#check-rust-doc-holds-the-floors-items-and-proc-macro-crates-to-its-warnings)
 - [v0.21.0](#v0210)
   - [`check-cargo-deny` checks every feature's dependencies](#check-cargo-deny-checks-every-features-dependencies)
 - [v0.19.0](#v0190)
@@ -51,6 +53,25 @@ every change; this lists only those a repository must act on.
   - [A collection's tooling is `devset-collection`](#a-collections-tooling-is-devset-collection)
 - [v0.2.0](#v020)
   - `lints` no longer carries the two lints only nightly has
+
+## V0.22.0
+
+### `check-rust-doc` Holds the Floor's Items and Proc-Macro Crates to Its Warnings
+
+**What changed.** `check-rust-doc` passes `-D warnings` through `--config`,
+which cargo joins to the rustdocflags `.cargo/config.toml` sets; before, it set
+`RUSTDOCFLAGS`, which replaced them. It also names no target: under one, cargo
+passes a proc-macro crate no rustdocflags at all. So rustdoc now builds every
+item a CPU floor in rustdocflags gates, as a 16-byte atomic that needs
+`cmpxchg16b` on x86_64, and fails on a warning in its docs or in a proc-macro
+crate's; before, it built no such item, and let a proc-macro crate's warnings
+pass. The docs land in `target/doc`, not `target/<triple>/doc`. A repository
+whose configuration sets no rustdocflags, and that has no proc-macro crate, has
+nothing to do.
+
+**What to do.** Run `just check-rust-doc`, and fix each warning it now reports
+in the docs of an item the floor builds or of a proc-macro crate. The rendered
+pages are at `target/doc/<crate>/index.html`.
 
 ## V0.21.0
 

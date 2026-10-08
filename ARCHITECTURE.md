@@ -213,6 +213,8 @@ tests/skill_examples.py      every Rust example the skills show, compiled under 
 tests/cargo-deny.sh          the dependency check against an optional dependency it must refuse
 tests/cargo-manifest.sh      the manifest check against members that write a dependency dotted
 tests/cargo-publish.sh       the publish check against crates that lack what crates.io shows
+tests/rust-doc.sh            the doc check against a library named apart, a floor, and a proc macro
+tests/mdbook.sh              the book's check against a workspace whose configuration sets a floor
 tests/bundle.sh              the bundle applied to an empty repository, with the features given
 .devset/                     atxp's record of the profiles it applies to itself
 .just/, .github/             written by those profiles; atxp's own recipes are in the justfile
