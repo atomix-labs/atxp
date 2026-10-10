@@ -2,7 +2,7 @@
 {%- if channel == "stable" %}
 channel    = "stable"
 {%- else %}
-channel    = "nightly-2026-09-28"
+channel    = "nightly-2026-10-05"
 {%- endif %}
 components = ["rust-src", "rustfmt", "clippy"{% if "miri" in devset.features %}, "miri"{% endif %}{% if "rustc-dev" in devset.features %}, "rustc-dev"{% endif %}{% if "llvm-tools" in devset.features %}, "llvm-tools"{% endif %}]
 profile    = "minimal"

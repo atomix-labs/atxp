@@ -43,7 +43,7 @@ jobs:
       # Every locked tool, then the task `bootstrap`: `just setup`, as on a laptop.
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.13
+          version: 2026.10.0
           bootstrap: true
       - name: Bump
         env:
