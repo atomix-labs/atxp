@@ -1,21 +1,21 @@
 [[tools."github:atomix-labs/devset"]]
-version = "0.5.2"
+version = "0.5.3"
 backend = "github:atomix-labs/devset"
 
 [tools."github:atomix-labs/devset"."platforms.linux-arm64"]
-checksum = "sha256:58bfc2b4d84ac1157ff5ce17fb2d155565da39d092da2842490c54bb0ef69304"
-url = "https://github.com/atomix-labs/devset/releases/download/v0.5.2/devset-0.5.2-aarch64-unknown-linux-musl.tar.xz"
-url_api = "https://api.github.com/repos/atomix-labs/devset/releases/assets/593784103"
+checksum = "sha256:3cef1f52d44da1d4c195dd87e206565b6df443b72348bbe19fb11c5114fda339"
+url = "https://github.com/atomix-labs/devset/releases/download/v0.5.3/devset-0.5.3-aarch64-unknown-linux-musl.tar.xz"
+url_api = "https://api.github.com/repos/atomix-labs/devset/releases/assets/595294961"
 provenance = "github-attestations"
 
 [tools."github:atomix-labs/devset"."platforms.linux-x64"]
-checksum = "sha256:9d3cac309d7a90b784a1c79d50d2485d4e141d7a57c4a517bdd12984d74ed8a5"
-url = "https://github.com/atomix-labs/devset/releases/download/v0.5.2/devset-0.5.2-x86_64-unknown-linux-musl.tar.xz"
-url_api = "https://api.github.com/repos/atomix-labs/devset/releases/assets/593784106"
+checksum = "sha256:d7e6628d99b69c48a624b4a584d696ad1389d629207247115539dcd016d6f6ac"
+url = "https://github.com/atomix-labs/devset/releases/download/v0.5.3/devset-0.5.3-x86_64-unknown-linux-musl.tar.xz"
+url_api = "https://api.github.com/repos/atomix-labs/devset/releases/assets/595294959"
 provenance = "github-attestations"
 
 [tools."github:atomix-labs/devset"."platforms.macos-arm64"]
-checksum = "sha256:11e6fe9b0c287ae90e398ed0c9166ad3e507976b49a20f9bc221bd3a884023a4"
-url = "https://github.com/atomix-labs/devset/releases/download/v0.5.2/devset-0.5.2-aarch64-apple-darwin.tar.xz"
-url_api = "https://api.github.com/repos/atomix-labs/devset/releases/assets/593784105"
+checksum = "sha256:15d68ae312aa9e5676677aa38c23bb8f108fcafd8c3a010f0b98bb40e23e12b0"
+url = "https://github.com/atomix-labs/devset/releases/download/v0.5.3/devset-0.5.3-aarch64-apple-darwin.tar.xz"
+url_api = "https://api.github.com/repos/atomix-labs/devset/releases/assets/595294958"
 provenance = "github-attestations"
