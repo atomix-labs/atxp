@@ -50,7 +50,9 @@ def steps(lines):
             continue
         indent = len(step.group(1)) + (2 if step.group(2) else 0)
         end = at + 1
-        while end < len(lines) and (not lines[end].strip() or len(lines[end]) - len(lines[end].lstrip()) >= indent):
+        while end < len(lines) and (
+            not lines[end].strip() or len(lines[end]) - len(lines[end].lstrip()) >= indent
+        ):
             end += 1
         yield range(at + 1, end)
 
@@ -84,7 +86,11 @@ def check():
     if not minimum or minimum.group(1) != version:
         problems.append(f"{MINIMUM}: min_version must be {version}, the stub's mise")
     for path in workflows():
-        problems += [f"{path}: mise-action installs {found or 'the latest mise'}, not {version}" for found in versions(path) if found != version]
+        problems += [
+            f"{path}: mise-action installs {found or 'the latest mise'}, not {version}"
+            for found in versions(path)
+            if found != version
+        ]
     release = published(version)
     for key, asset in ASSETS.items():
         name = f"mise-v{version}-{asset}.tar.gz"
@@ -108,7 +114,9 @@ def repin(version):
     text = VERSION.sub(f"MISE_VERSION={version}", STUB.read_text())
     for key, asset in ASSETS.items():
         digest = release[f"mise-v{version}-{asset}.tar.gz"]
-        text = re.sub(rf"^MISE_SHA256_{key}=\S+$", f"MISE_SHA256_{key}={digest}", text, flags=re.MULTILINE)
+        text = re.sub(
+            rf"^MISE_SHA256_{key}=\S+$", f"MISE_SHA256_{key}={digest}", text, flags=re.MULTILINE
+        )
     STUB.write_text(text)
     MINIMUM.write_text(MIN_VERSION.sub(f'min_version = "{version}"', MINIMUM.read_text()))
     for path in workflows():
