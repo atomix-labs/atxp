@@ -23,21 +23,21 @@ path = "profiles"
 
 [[profiles]]
 name = "mise"
-digest = "5f35eeb235a92af1d548ae0b46847ef02d0b79be82e498a6ad5ad702965c59b6"
+digest = "55644123c9ec3e70df9bbe01d540643e19dceca845a31bcf16821590045fa2bc"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "just"
-digest = "7b3687051e2c7037f0a19201d20e343d995e51114cc5bea4843fa34fd762f703"
+digest = "9749bbc66ec09272a93a62b594962ef644777a948c939e12bc9c4c29e201aedf"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "setup"
-digest = "e27d112625605930681215e36476c685f60669f01aa38ad31249e8da750f803f"
+digest = "0f632d5f63e4e7d7a31214e383cd37d1fe2371ac67d24143ea337cadbf503574"
 
 [profiles.source]
 path = "profiles"
@@ -51,7 +51,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-ci"
-digest = "85767ea6d24fe23af33779a69ff6cbd95cd39b72c1ae6b6c50948f086f4d6014"
+digest = "efa0f13e38d3e389266bf579bb76a9058fe9170f80b2561a005dc9456c057a72"
 
 [profiles.source]
 path = "profiles"
@@ -69,7 +69,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-bump"
-digest = "b2a88f4df29d78d30f040cf50d899f13e145906d9f64b007925b8f798244e45f"
+digest = "3bb5c132004066e0e5a9e1f1c232e380daff2f0e33573d9746ccb1aab08de9cd"
 
 [profiles.source]
 path = "profiles"
@@ -93,7 +93,7 @@ path = "profiles"
 
 [[profiles]]
 name = "git-commits"
-digest = "f65b004d4e5e81eb41a9c24e456bef24584eca2ed5eed6f8a7f3028a9f36b380"
+digest = "df7c60470dd14c91a3b2e8767488d962d6a56951a5f9103b8d11b5e16a56bac1"
 
 [profiles.source]
 path = "profiles"
@@ -113,7 +113,7 @@ breaking-changes = ["target"]
 
 [[profiles]]
 name = "spelling"
-digest = "172e999cb3e525669e536963dde38ed2632c29e3b4813d064967595f0e670e22"
+digest = "cdac7479cfccd83be7a42a6fdbee548174f2d126e57fd9b100800a21ad830217"
 
 [profiles.source]
 path = "profiles"
@@ -132,14 +132,14 @@ schemas = ["devset-collection/schemas"]
 
 [[profiles]]
 name = "dprint"
-digest = "8c85d7ab6242a0d2aff16010af192ee1cc01323147c4b2622eb3f77ae5c9e6b2"
+digest = "99f5d8a9e5604f4462446ba8f4ae21856f15b2f54037029a1813ac3b51349148"
 
 [profiles.source]
 path = "profiles"
 
 [[profiles]]
 name = "markdown"
-digest = "75442bf10ec9c3f3dcd3e9e15d427f2fc9fecfc42375fc08ce3346969b617b6e"
+digest = "6d4fdee00db1572a6af249a10aeb9dd59db0824507160e6970256c6053645008"
 
 [profiles.source]
 path = "profiles"
@@ -150,7 +150,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "python"
-digest = "72b39c451656b80a23228076e31dbf4110d797dae04f14f31a095b6b8c706581"
+digest = "ccb889102fc8e04372ae7b81268806acfd64017e3d185a80c130e99b3ef33cb7"
 
 [profiles.source]
 path = "profiles"
@@ -182,7 +182,7 @@ lint = ["default"]
 
 [[profiles]]
 name = "github-workflow-lint"
-digest = "87401a21b27ccd7a988d0dccdc2c18e8947161b89104fb6ec32b869d36bf7466"
+digest = "002f7f081ff51eef35d2a59a9ec699cd6f41d5d8aa0a049eb657488b5801c1a4"
 
 [profiles.source]
 path = "profiles"
@@ -201,7 +201,7 @@ path = "profiles"
 
 [[profiles]]
 name = "github-release"
-digest = "f0f0920c90ca276290f4622808736aba01ed5195a99020e1208da43d1667bd2b"
+digest = "8589b27ce3ac938368b0413cb862b96daa1226f5cf359169b03e145725554b04"
 
 [profiles.source]
 path = "profiles"
@@ -211,7 +211,7 @@ agents = ["target"]
 
 [[profiles]]
 name = "devset"
-digest = "df355ce87f39e51efefd62f1e03bcfce88d122cae1f4992ba2b0753516378cb7"
+digest = "3c6950c1ace13cdcff97cb99889fb5a5f720e38c8da010158190ea40552eebdf"
 
 [profiles.source]
 path = "profiles"
@@ -228,7 +228,7 @@ path = "profiles"
 
 [[profiles]]
 name = "devset-collection"
-digest = "ab4fd35cf58e2c32ac4cc443ecb4ab9c336801bd1daa07fa6c00c4d140c046a9"
+digest = "84a69d796cf54e20cfaff242cedf165b4eb75f6f96d7816929e0e358e02fe76e"
 
 [profiles.source]
 path = "profiles"
@@ -252,7 +252,7 @@ support = ["target"]
 
 [[profiles]]
 name = "agents"
-digest = "b9c2e9a74a87629c27113b8ba7ce456f8bb9c9990c3a0dad856a95b8b78a1995"
+digest = "00276ac0a68e4610a78008ee197c604ab1a1e0530ea84d5c71765326564e7ddb"
 
 [profiles.source]
 path = "profiles"
@@ -264,7 +264,7 @@ security = ["default"]
 
 [[profiles]]
 name = "vhs"
-digest = "f0ddc334a7a17899733bf97fe7a67da7435b6a20d046171b3d97fd79069b5667"
+digest = "13b6839323c94c495e191995e067e191a4ebde51bb255a8d4b045084f49376ad"
 
 [profiles.source]
 path = "profiles"

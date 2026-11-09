@@ -1,0 +1,8 @@
+["excludes"]	[".just/**","CHANGELOG.md","**/*.min.css","**/*.min.js"]
+["includes"]	["**/*.{json,jsonc,css,js,md,yml,yaml,py}"]
+["json","array.preferSingleLine"]	true
+["json","lineWidth"]	160
+["json","object.preferSingleLine"]	true
+["json","trailingCommas"]	"never"
+["lineWidth"]	100
+["plugins"]	["https://plugins.dprint.dev/markdown-0.29.0.wasm@714aea7555dd9831861be466da8b26b2d92316d3cde550ef3e1f63b31f4ea302","https://plugins.dprint.dev/g-plane/pretty_yaml-v0.6.0.wasm@40a2fdda7040317eb1b23520f3a00769a5571eedb049c4ca9175c1b9eeba01ae","https://plugins.dprint.dev/ruff-0.12.1.wasm@1582df5fbbb4faeab90bd55dd26dda053d2c494055d1369e30e23368f33ae6f1","https://plugins.dprint.dev/json-0.26.0.wasm@9abcd6eb43b3d04655649090c2e7ad14948da6acfe0374cb47ccd9eb3c48903d","https://plugins.dprint.dev/typescript-0.98.0.wasm@16d41338f3ce1b9ab6073ac4cf2af28f38e56d71b3cdd02aaefef58c0ace0a94","https://plugins.dprint.dev/g-plane/malva-v0.16.0.wasm@1c1b31f972ef5aae052f97b6723aaf962e0175c5bbe4ba877e092512af354113"]
