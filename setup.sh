@@ -5,10 +5,10 @@
 set -euo pipefail
 
 # The mise every machine bootstraps with, and the sha256 of its release for each platform.
-MISE_VERSION=2026.9.13
-MISE_SHA256_LINUX_X64=03052ce8247285b8b5ec40dd04f8058dabc1eaa29881550b7d21199cb133fbf5
-MISE_SHA256_LINUX_ARM64=9a6c72ee899c1e95988e6eb668a9860c4f8e3c01bc2aedd9de113d58b1e35869
-MISE_SHA256_MACOS_ARM64=4698c2537eef78830bd5acf98204100fb0ad9a8884861e55265e855f35aa3fa0
+MISE_VERSION=2026.11.3
+MISE_SHA256_LINUX_X64=af4122789a7ede3e2c308c9aaa03e55d0d88956ba6bece2cd46b002630e38f9c
+MISE_SHA256_LINUX_ARM64=975fcaac68ddf1a667ceceab30168989d3645f6894b39b40a7b0e6de94096101
+MISE_SHA256_MACOS_ARM64=de9a54330fee4edede51a3cf6196bbf522f01c5e3fd981e0bebea33f561a0431
 
 repo="" dir="" host=false activate=false yes=false dry_run=false mise=""
 

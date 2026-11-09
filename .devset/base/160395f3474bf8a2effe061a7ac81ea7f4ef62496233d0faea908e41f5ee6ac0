@@ -1,0 +1,10 @@
+[tools]
+
+actionlint = "1.7.12"
+
+
+zizmor = "1.32.0"
+
+
+conftest = "0.71.1"
+
