@@ -30,7 +30,9 @@ def manifest(day):
     """The nightly manifest of `day`, or None when that night has none."""
     url = f"https://static.rust-lang.org/dist/{day}/channel-rust-nightly.toml"
     try:
-        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "atxp"})) as response:
+        with urllib.request.urlopen(
+            urllib.request.Request(url, headers={"User-Agent": "atxp"})
+        ) as response:
             return tomllib.loads(response.read().decode())
     except urllib.error.HTTPError as error:
         if error.code == 404:
